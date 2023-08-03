@@ -46,9 +46,13 @@ async function loadSteps(steps) {
         mermaidDiv.appendChild(mermaidPane);
       }
     }
-    yamlDiv.innerHTML =
-      '<pre class="yaml-content">' +
-      JSON.stringify(step.example.value, null, 2) +
+    // yamlDiv.innerHTML =
+    //   '<pre class="yaml-content">' +
+    //   JSON.stringify(step.example.value, null, 2) +
+    //   "</pre>";
+    yamlDiv.innerHTML = step?.api === "form" ? '<div>'+'<pre class="yaml-content">'+'<xmp>'+step.example.value+'</xmp>'+'</pre>'+'<div class="flow-forms">'+step.example.value+'</div>'+'</div>'
+      :'<pre class="yaml-content">' +
+       JSON.stringify(step.example.value, null, 2) +
       "</pre>";
     content.innerHTML = "<div>" + "<h3>" + step.summary + "</h3>" + "</div>";
 
