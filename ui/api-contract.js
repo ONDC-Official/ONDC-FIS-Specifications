@@ -9,7 +9,7 @@ function getStringAfterEquals(inputString) {
 
 async function readBuildFile(branchName) {
   if (!branchName) return;
-  const url = `https://api.github.com/repos/ondc-official/mobility-specification/contents/ui/build.js?ref=${branchName}`;
+  const url = `https://api.github.com/repos/ondc-official/ONDC-FIS-Specifications/contents/ui/build.js?ref=${branchName}`;
 
   try {
     const response = await fetch(url, {
@@ -20,7 +20,7 @@ async function readBuildFile(branchName) {
     const formattedResponse = await response?.json();
     let splitedText = atob(formattedResponse?.content);
     build_spec = JSON.parse(getStringAfterEquals(splitedText));
-    //onFirstLoad(build_spec);
+    onFirstLoad(build_spec);
   } catch (error) {
     console.log("Error fetching contract", error?.message || error);
     alert('Something went wrong, Please try again later')
