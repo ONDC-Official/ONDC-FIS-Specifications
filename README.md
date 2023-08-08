@@ -19,7 +19,7 @@ ONDC Financial Services developer guide [link](https://ondc-official.github.io/O
 
 ## Introduction
 
-Open Network for Digital Commerce (ONDC) is a network based on beckn open protocol and will enable local commerce across segments, such as mobility, retail etc, to be discovered and engaged by any network-enabled application.
+Open Network for Digital Commerce (ONDC) is a network based on beckn open protocol and will enable local commerce across segments, such as financial services, mobility, retail etc, to be discovered and engaged by any network-enabled application.
 
 ONDC financial services aims to build a nationwide multi-modal network that provides seamless experiences, supports growth & innovation by,
 
