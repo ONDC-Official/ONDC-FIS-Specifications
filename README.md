@@ -6,11 +6,11 @@ ONDC mobility specification is an adaptation of [beckn financial specifications]
 
 These specifications will be released in multiple phases enabling different use case and enhancements.
 
-ONDC Financial Services developer guide [link](https://ondc-official.github.io/mobility-specification/)
+ONDC Financial Services developer guide [link](https://ondc-official.github.io/ONDC-FIS-Specifications)
 
 ## Latest Version
 
-[v1.0.0](https://github.com/ONDC-Official/mobility-specification/releases/tag/v1.0.0)
+[v1.0.0](https://docs.google.com/document/d/1pxbDGag8GBzCFXju8YbnIxEFv17DifzyvFI4OsU8oEA)
 
 ## Earlier Versions
 
@@ -51,7 +51,7 @@ The evolution of ONDC FIS specification driven by 2 factors:
 
 To know more about how the specification evolves, visit the Network GOVERNANCE document.
 
-To follow discussions related to the financial services specification please visit the [Discussions Forum](https://github.com/ONDC-Official/mobility-specification/discussions) on GitHub
+To follow discussions related to the financial services specification please visit the [Discussions Forum](https://github.com/ONDC-Official/ONDC-FIS-Specifications/discussions) on GitHub
 
 Each major release of ONDC financial service specification will be approved by ONDC financial service working group members for which are listed [here](./Committee.md)
 
