@@ -201,81 +201,6 @@ paths:
       responses:
         default:
           $ref: '#/paths/~1init/post/responses/default'
-  /track:
-    post:
-      tags:
-        - Provider Platform
-      description: Track an active order
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                context:
-                  allOf:
-                    - $ref: '#/components/schemas/Context'
-                    - type: object
-                      properties:
-                        action:
-                          enum:
-                            - track
-                      required:
-                        - action
-                message:
-                  type: object
-                  properties:
-                    order_id:
-                      $ref: '#/components/schemas/Order/properties/id'
-                    callback_url:
-                      type: string
-                      format: uri
-                  required:
-                    - order_id
-              required:
-                - context
-                - message
-      responses:
-        default:
-          $ref: '#/paths/~1init/post/responses/default'
-  /cancel:
-    post:
-      tags:
-        - Provider Platform
-      description: Cancel an order
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                context:
-                  allOf:
-                    - $ref: '#/components/schemas/Context'
-                    - type: object
-                      properties:
-                        action:
-                          enum:
-                            - cancel
-                      required:
-                        - action
-                message:
-                  type: object
-                  properties:
-                    order_id:
-                      $ref: '#/components/schemas/Order/properties/id'
-                    cancellation_reason_id:
-                      $ref: '#/components/schemas/Option/properties/id'
-                    descriptor:
-                      $ref: '#/components/schemas/Descriptor'
-                  required:
-                    - order_id
-              required:
-                - context
-                - message
-      responses:
-        default:
-          $ref: '#/paths/~1init/post/responses/default'
   /update:
     post:
       tags:
@@ -507,78 +432,6 @@ paths:
                         action:
                           enum:
                             - on_confirm
-                      required:
-                        - action
-                message:
-                  type: object
-                  properties:
-                    order:
-                      $ref: '#/components/schemas/Order'
-                  required:
-                    - order
-                error:
-                  $ref: '#/components/schemas/Error'
-              required:
-                - context
-      responses:
-        default:
-          $ref: '#/paths/~1init/post/responses/default'
-  /on_track:
-    post:
-      tags:
-        - Consumer Platform
-      description: Send tracking details of an active order
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                context:
-                  allOf:
-                    - $ref: '#/components/schemas/Context'
-                    - type: object
-                      properties:
-                        action:
-                          enum:
-                            - on_track
-                      required:
-                        - action
-                message:
-                  type: object
-                  properties:
-                    tracking:
-                      $ref: '#/components/schemas/Tracking'
-                  required:
-                    - tracking
-                error:
-                  $ref: '#/components/schemas/Error'
-              required:
-                - context
-      responses:
-        default:
-          $ref: '#/paths/~1init/post/responses/default'
-  /on_cancel:
-    post:
-      tags:
-        - Consumer Platform
-      description: >-
-        Send cancellation request_id with reasons list in case of cancellation
-        request. Else send cancelled order object
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                context:
-                  allOf:
-                    - $ref: '#/components/schemas/Context'
-                    - type: object
-                      properties:
-                        action:
-                          enum:
-                            - on_cancel
                       required:
                         - action
                 message:
@@ -2799,14 +2652,6 @@ x-enum:
     context: *ref_0
   on_status:
     context: *ref_0
-  cancel:
-    context: *ref_0
-  on_cancel:
-    context: *ref_0
-  track:
-    context: *ref_0
-  on_track:
-    context: *ref_0
 x-tags:
   on_search:
     message:
@@ -2879,7 +2724,6 @@ x-tags:
   confirm: *ref_2
   on_confirm: *ref_2
   on_status: *ref_2
-  on_cancel: *ref_2
   on_update: *ref_2
 x-flows:
   - summary: Personal Loan
@@ -6667,6 +6511,1021 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://icicibank.com/loan/tnc.html
+  - summary: Mutual funds
+    details:
+      - description: Mutual fund description
+    references: if any
+    steps:
+      - summary: Explore available Mutual Fund options over the network.
+        api: search
+        details:
+          - description: >-
+              Conduct searches over the network to discover a variety of Mutual
+              Fund investment opportunities.
+        reference: if any
+        example:
+          value: &ref_34
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: search
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 1.1.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+            message:
+              intent:
+                category:
+                  descriptor:
+                    code: mutual-funds
+      - summary: >-
+          Receive a catalog of different Mutual Fund products offered by
+          providers.
+        api: on_search
+        details:
+          - description: >-
+              Platform provides a comprehensive catalog of various Mutual Fund
+              products from different providers, tailored to your investment
+              needs.
+        reference: if any
+        example:
+          value: &ref_35
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              version: 1.1.0
+              action: on_search
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              catalog:
+                descriptor:
+                  name: Stockwiz Corp
+                providers:
+                  - id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                    categories:
+                      - id: '1'
+                        descriptor:
+                          name: Large Cap
+                          long_desc: >-
+                            This mutual fund aims to provide long-term capital
+                            growth by investing in large-cap equities.
+                      - id: '2'
+                        descriptor:
+                          name: Corporate Bonds
+                          long_desc: >-
+                            This mutual fund aims to generate income by
+                            investing in high-quality corporate bonds.
+                      - id: '3'
+                        descriptor:
+                          name: Balanced
+                          long_desc: >-
+                            This mutual fund aims to provide a balance between
+                            capital growth and income by investing in a mix of
+                            equities and bonds.
+                    items:
+                      - id: '1'
+                        descriptor:
+                          name: ABC Large Cap Mutual Fund - SIP
+                          code: sip
+                        price:
+                          value: '1'
+                          currency: INR
+                        quantity:
+                          minimum:
+                            count: 100
+                        category_ids:
+                          - '1'
+                        fulfillment_ids:
+                          - '1'
+                        matched: true
+                        xinput:
+                          head:
+                            descriptor:
+                              name: Customer Information
+                            index:
+                              min: 0
+                              cur: 0
+                              max: 0
+                            headings:
+                              - Personal Information
+                          form:
+                            id: d097c2f5-cb8d-42fe-900e-dfecdede16fb
+                            mime_type: text/html
+                            url: >-
+                              https://6vs8xnx5i7.abcmf.co.in/mf/xinput/formid/a23f2fdfbbb8ac402bf259d75
+                            resubmit: false
+                            multiple_sumbissions: false
+                          required: true
+                      - id: '2'
+                        descriptor:
+                          name: ABC Large Cap Mutual Fund - Lumpsum
+                          code: lumpsum
+                        price:
+                          value: '5000'
+                          currency: INR
+                        category_ids:
+                          - '1'
+                        fulfillment_ids:
+                          - '1'
+                        matched: true
+                        xinput:
+                          head:
+                            descriptor:
+                              name: Customer Information
+                            index:
+                              min: 0
+                              cur: 0
+                              max: 0
+                            headings:
+                              - Personal Information
+                          form:
+                            id: d097c2f5-cb8d-42fe-900e-dfecdede16fb
+                            mime_type: text/html
+                            url: >-
+                              https://6vs8xnx5i7.abcmf.co.in/mf/xinput/formid/a23f2fdfbbb8ac402bf259d75
+                            resubmit: false
+                            multiple_sumbissions: false
+                          required: true
+                    fulfillments:
+                      - id: '1'
+                        type: SIP
+                        agent:
+                          person:
+                            name: John Doe
+                      - id: '2'
+                        type: ONE-TIME
+                        agent:
+                          person:
+                            name: John Doe
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: fund-info
+                        list:
+                          - descriptor:
+                              name: Type
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: sector-allocation
+                        list:
+                          - descriptor:
+                              name: Financials
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+      - summary: Receive personal info form
+        api: form
+        details:
+          description: Provide platform sends the form for personal info
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"firstName\">First Name</label>\r\n    <input type=\"text\" id=\"firstName\" name=\"firstName\" />\r\n    <label for=\"lastName\">Last Name</label>\r\n    <input type=\"text\" id=\"lastName\" name=\"lastName\" />\r\n    <label for=\"dob\">Date of Birth</label>\r\n    <input type=\"date\" id=\"dob\" name=\"dob\" />\r\n    <label for=\"sex\">Sex</label>\r\n    <select name=\"sex\" id=\"sex\">\r\n      <option value=\"male\">Male</option>\r\n      <option value=\"female\">Female</option>\r\n      <option value=\"other\">Other</option>\r\n    </select>\r\n    <label for=\"maritalStatus\">Marital Status</label>\r\n    <select name=\"maritalStatus\" id=\"maritalStatus\">\r\n      <option value=\"single\">Single</option>\r\n      <option value=\"married\">Married</option>\r\n    </select>\r\n    <label for=\"occupation\">Occupation</label>\r\n    <input type=\"text\" id=\"occupation\" name=\"occupation\" />\r\n    <label for=\"address\">Address</label>\r\n    <input type=\"text\" id=\"address\" name=\"address\" />\r\n    <label for=\"idType\">Identity Type</label>\r\n    <select name=\"idType\" id=\"idType\">\r\n      <option value=\"pan\">PAN</option>\r\n      <option value=\"aadhaar\">Aadhaar</option>\r\n    </select>\r\n    <label for=\"idValue\">ID Number</label>\r\n    <input type=\"text\" id=\"idValue\" name=\"idValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: Choose a specific Mutual Fund product for investment.
+        api: select
+        details:
+          - description: >-
+              Select the Mutual Fund product that aligns with your investment
+              preferences and goals.
+        reference: if any
+        example:
+          value: &ref_36
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: select
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 1.1.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: '1'
+                    quantity:
+                      selected:
+                        count: 200
+                    xinput:
+                      form_response:
+                        submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+      - summary: >-
+          Receive detailed information and a consent request for the chosen
+          Mutual Fund product.
+        api: on_select
+        details:
+          - description: >-
+              Provider generates a consent request and provides additional
+              information specific to the selected Mutual Fund product, catering
+              to your investment decision.
+        reference: if any
+        example:
+          value: &ref_37
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              version: 1.1.0
+              action: on_select
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: '2'
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - Lumpsum
+                    price:
+                      value: '5000'
+                      currency: INR
+                    quantity:
+                      selected:
+                        count: 20
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Set up SIP
+                        index:
+                          min: 0
+                          cur: 0
+                          max: 0
+                        headings:
+                          - Know Your Customer
+                      form:
+                        mime_type: text/html
+                        url: >-
+                          https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
+                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                quote:
+                  price:
+                    currency: INR
+                    value: '100000'
+      - summary: Get the Kyc form
+        api: form
+        details:
+          description: Provider platform sends the form for Kyc.
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: >-
+          Submit additional information and initiate the Mutual Fund investment
+          request.
+        api: init
+        details:
+          - description: >-
+              Provide the required additional information as requested and
+              initiate the process for the chosen Mutual Fund investment.
+        reference: if any
+        example:
+          value: &ref_39
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: init
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 1.1.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: '1'
+                    quantity:
+                      selected:
+                        count: 200
+                    xinput:
+                      form_response:
+                        submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                payments:
+                  - params:
+                      source_bank_account_number: '32558994999'
+                      source_bank_code: SBIN0001234
+      - summary: >-
+          Receive the final investment offer and terms after submitting
+          additional information.
+        api: on_init
+        details:
+          - description: >-
+              Provider responds with the final draft of the investment offer,
+              including terms and conditions, based on the information provided
+              during the initiation.
+        reference: if any
+        example:
+          value: &ref_40
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              version: 1.1.0
+              action: on_init
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: '1'
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    price:
+                      value: '1'
+                      currency: INR
+                    quantity:
+                      minimum:
+                        count: 100
+                      selected:
+                        count: 200
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Begin SIP
+                        index:
+                          min: 0
+                          cur: 1
+                          max: 3
+                        headings:
+                          - Know Your Customer
+                          - Account Information
+                          - SIP Setup
+                          - Review and Submit
+                      form:
+                        mime_type: text/html
+                        url: >-
+                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/a23f2fdfbbb8ac402bfd54f
+                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    state:
+                      descriptor:
+                        name: Mutual Fund Order Initialized
+                    stops:
+                      - authorization:
+                          type: OTP
+                quote:
+                  price:
+                    currency: INR
+                    value: '200'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '80'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '2.5'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    url: https://emandate.abcmutalfunds.in
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      range:
+                        start: '2023-05-25T05:23:03.443Z'
+                        end: '2023-05-25T05:23:03.443Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+      - summary: Get the Mutual fund account info form
+        api: form
+        details:
+          description: Provider platform sends the form for Mutual fund account info form.
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: >-
+          Submit additional information and initiate the Mutual Fund investment
+          request.
+        api: init
+        details:
+          - description: >-
+              Provide the required additional information as requested and
+              initiate the process for the chosen Mutual Fund investment.
+        reference: if any
+        example:
+          value: &ref_38
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: init
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 1.1.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: '1'
+                    quantity:
+                      selected:
+                        count: 200
+                    xinput:
+                      form_response:
+                        submission_id: 5cd00c5c-892f-4a36-b092-3e4c6535fd49
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+      - summary: >-
+          Receive the final investment offer and terms after submitting
+          additional information.
+        api: on_init
+        details:
+          - description: >-
+              Provider responds with the final draft of the investment offer,
+              including terms and conditions, based on the information provided
+              during the initiation.
+        reference: if any
+        example:
+          value: &ref_41
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              version: 1.1.0
+              action: on_init
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: '1'
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    price:
+                      value: '1'
+                      currency: INR
+                    quantity:
+                      minimum:
+                        count: 100
+                      selected:
+                        count: 200
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Begin SIP
+                        index:
+                          min: 0
+                          cur: 3
+                          max: 3
+                        headings:
+                          - Know Your Customer
+                          - Account Information
+                          - SIP Setup
+                          - Review and Submit
+                      form:
+                        mime_type: text/html
+                        url: >-
+                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/a23f2fdfbbb8ac402bfd54f
+                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    state:
+                      descriptor:
+                        name: Mutual Fund Order Initialized
+                    stops:
+                      - authorization:
+                          type: OTP
+                quote:
+                  price:
+                    currency: INR
+                    value: '200'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '80'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '2.5'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    url: https://emandate.abcmutalfunds.in
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      range:
+                        start: '2023-05-25T05:23:03.443Z'
+                        end: '2023-05-25T05:23:03.443Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+      - summary: Get the Mutual fund agreement form
+        api: form
+        details:
+          description: Provider platform sends the form for Mutual fund agreement form.
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"tnc\">I have read the <a href=\"https://abcmf.co.in/mf/agreement.html\">MF Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: >-
+          Confirm the Mutual Fund investment and authorize the provider to
+          proceed.
+        api: confirm
+        details:
+          - description: >-
+              Confirm your investment decision and provide explicit
+              authorization for the provider to proceed with the chosen Mutual
+              Fund investment.
+        reference: if any
+        example:
+          value: &ref_42
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: confirm
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 1.1.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: '1'
+                    quantity:
+                      selected:
+                        count: 200
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    stops:
+                      - type: start
+                        authorization:
+                          type: OTP
+                          token: '535346'
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - collected_by: BPP
+                    type: ON-FULFILLMENT
+                    params:
+                      amount: '200'
+                      currency: INR
+                      source_virtual_payment_address: charles@oksbi
+      - summary: Validate and approve the Mutual Fund investment application.
+        api: on_confirm
+        details:
+          - description: >-
+              Provider validates and approves the submitted investment
+              application for the chosen Mutual Fund, proceeding with the
+              investment process.
+        reference: if any
+        example:
+          value: &ref_43
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              version: 1.1.0
+              action: on_confirm
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                id: 66B7AEDF45
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: '1'
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    price:
+                      value: '1'
+                      currency: INR
+                    quantity:
+                      minimum:
+                        count: 100
+                      selected:
+                        count: 200
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    state:
+                      descriptor:
+                        name: Order placed
+                        code: order-placed
+                    agent:
+                      person:
+                        name: John Williams
+                      organization:
+                        descriptor:
+                          name: HDFC Fund
+                      contact:
+                        phone: +91-9999999999
+                quote:
+                  price:
+                    currency: INR
+                    value: '200'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '80'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '2.5'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                  phone: +91-988777632
+                payments:
+                  - collected_by: BPP
+                    type: ON-FULFILLMENT
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: bh767iygx65u76iyg
+                      source_virtual_payment_address: charles@oksbi
+                      timestamp: 2023-05-25T05:23:03.443Z
+                    status: PAID
+                cancellation_terms:
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+      - summary: >-
+          Request real-time updates on the status of your Mutual Fund
+          investment.
+        api: status
+        details:
+          - description: >-
+              Request the most recent updates regarding the status of your
+              invested Mutual Fund, ensuring you stay informed about its
+              progress.
+        reference: if any
+        example:
+          value: &ref_44
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: status
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 1.1.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order_id: 66B7AEDF45
+      - summary: >-
+          Receive real-time updates on your Mutual Fund investment after each
+          milestone.
+        api: on_status
+        details:
+          - description: >-
+              Provider sends timely updates about your Mutual Fund investment
+              after significant milestones, ensuring you're informed throughout
+              the investment journey.
+        example:
+          value: &ref_45
+            context:
+              domain: financial-services:0.2.0
+              location:
+                country:
+                  code: IND
+              version: 1.1.0
+              action: on_status
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                id: 66B7AEDF45
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: '1'
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    price:
+                      value: '1'
+                      currency: INR
+                    quantity:
+                      minimum:
+                        count: 100
+                      selected:
+                        count: 200
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    state:
+                      descriptor:
+                        name: February SIP Amount Received
+                        code: installment-received
+                    agent:
+                      person:
+                        name: John Williams
+                      organization:
+                        descriptor:
+                          name: HDFC Fund
+                      contact:
+                        phone: +91-9999999999
+                quote:
+                  price:
+                    currency: INR
+                    value: '2400'
+                  breakup:
+                    - descriptor:
+                        name: Jan'23 SIP Installment
+                      price:
+                        value: '80'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '2.5'
+                            unit: units
+                    - descriptor:
+                        name: Feb'23 Investment
+                      price:
+                        value: '80'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '2.5'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                  phone: +91-988777632
+                payments:
+                  - collected_by: BPP
+                    type: ON-FULFILLMENT
+                    params:
+                      amount: '200'
+                      currency: INR
+                      transaction_id: bh767iygx65u76iyg
+                      source_virtual_payment_address: charles@oksbi
+                      timestamp: '2023-05-25T05:23:03.443Z'
+                    status: PAID
+                  - collected_by: BPP
+                    type: ON-FULFILLMENT
+                    params:
+                      amount: '200'
+                      currency: INR
+                      transaction_id: bh767iygx65u76iyg
+                      source_virtual_payment_address: charles@oksbi
+                      timestamp: 2023-05-25T05:23:03.443Z
+                    status: PAID
+                cancellation_terms:
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
 x-examples:
   personal-loan:
     summary: personal-loan
@@ -7707,6 +8566,841 @@ x-examples:
                   phone: 1800 1080
                   email: customer.care@icicibank.com
                   url: https://www.icicibank.com/helpdesk
+  mutual-funds:
+    summary: mutual-funds
+    description: mutual-funds
+    example_set:
+      search:
+        examples:
+          - summary: search for mutual funds
+            description: TBD
+            value: *ref_34
+          - summary: search for mutual funds
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: search
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+              message:
+                intent:
+                  category:
+                    descriptor:
+                      code: mutual-funds
+                  item:
+                    tags:
+                      - list:
+                          - value: Equity
+                          - value: Midcap
+      on_search:
+        examples:
+          - summary: mutual funds catalog
+            description: TBD
+            value: *ref_35
+      select:
+        examples:
+          - summary: select-request-lumpsum
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: select
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: '1'
+                  items:
+                    - id: '2'
+                      quantity:
+                        selected:
+                          count: 20
+                      xinput:
+                        form_response:
+                          submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+          - summary: select-request-sip
+            description: TBD
+            value: *ref_36
+      on_select:
+        examples:
+          - summary: on_select-request-lumpsum
+            description: TBD
+            value: *ref_37
+          - summary: on_select-request-sip
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                version: 1.1.0
+                action: on_select
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: '1'
+                      descriptor:
+                        name: HDFC Midcap Opportunities Fund - SIP
+                      price:
+                        value: '1'
+                        currency: INR
+                      quantity:
+                        minimum:
+                          count: 100
+                        selected:
+                          count: 200
+                  quote:
+                    price:
+                      currency: INR
+                      value: '200'
+                    breakup:
+                      - descriptor:
+                          name: Unit price
+                        price:
+                          value: '80'
+                          currency: INR
+                        quantity:
+                          allocated:
+                            measure:
+                              value: '2.5'
+                              unit: units
+      init:
+        examples:
+          - summary: init
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: init
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: '1'
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                  items:
+                    - id: '2'
+                      quantity:
+                        selected:
+                          count: 20
+                      xinput:
+                        form_response:
+                          submission_id: 5cd00c5c-892f-4a36-b092-3e4c6535fd49
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+          - summary: init-request-lumpsum
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: init
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: '1'
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                  items:
+                    - id: '2'
+                      quantity:
+                        selected:
+                          count: 20
+                      xinput:
+                        form_response:
+                          submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                  quote:
+                    price:
+                      currency: INR
+                      value: '5000'
+          - summary: init-request-sip-account-info
+            description: TBD
+            value: *ref_38
+          - summary: init-request-sip
+            description: TBD
+            value: *ref_39
+      on_init:
+        examples:
+          - summary: on_init-request-lumpsum-account-info
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                version: 1.1.0
+                action: on_init
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: MFLC001
+                      descriptor:
+                        name: ABC Large Cap Mutual Fund
+                      xinput:
+                        head:
+                          descriptor:
+                            name: Account Information
+                          index:
+                            min: 0
+                            cur: 0
+                            max: 1
+                          headings:
+                            - Account Information
+                            - Agreement
+                        form:
+                          mime_type: text/html
+                          url: >-
+                            https://6vs8xnx5i7.abcmf.co.in/mf-accountinfo/xinput/formid/a23f2fdfbbb8ac402bfd54f
+                          id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                          resubmit: false
+                          multiple_sumbissions: false
+                        required: true
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                      state:
+                        descriptor:
+                          name: Mutual Fund Order Initialized
+                  quote:
+                    price:
+                      currency: INR
+                      value: '100000'
+                    breakup:
+                      - descriptor:
+                          name: Unit price
+                        price:
+                          value: '80'
+                          currency: INR
+                        quantity:
+                          allocated:
+                            measure:
+                              value: '1250'
+                              unit: units
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                  payments:
+                    - type: ON-ORDER
+                      url: https://payment.abcmutalfunds.in
+                      params:
+                        amount: '5000'
+                        currency: INR
+                      status: NOT-PAID
+                      time:
+                        range:
+                          start: '2023-05-25T05:23:03.443Z'
+                          end: '2023-05-25T05:23:03.443Z'
+                  cancellation_terms:
+                    - fulfillment_state:
+                        descriptor:
+                          name: Terms
+                      external_ref:
+                        mimetype: text/html
+                        url: https://abcmutalfunds.com/mf/tnc.html
+          - summary: on_init-request-lumpsum-agreement
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                version: 1.1.0
+                action: on_init
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: MFLC001
+                      descriptor:
+                        name: ABC Large Cap Mutual Fund
+                      xinput:
+                        head:
+                          descriptor:
+                            name: Account Information
+                          index:
+                            min: 0
+                            cur: 1
+                            max: 1
+                          headings:
+                            - Account Information
+                            - Agreement
+                        form:
+                          mime_type: text/html
+                          url: >-
+                            https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/a23f2fdfbbb8ac402bfd54f
+                          id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                          resubmit: false
+                          multiple_sumbissions: false
+                        required: true
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                      state:
+                        descriptor:
+                          name: Mutual Fund Order Initialized
+                      stops:
+                        - authorization:
+                            type: OTP
+                  quote:
+                    price:
+                      currency: INR
+                      value: '100000'
+                    breakup:
+                      - descriptor:
+                          name: Unit price
+                        price:
+                          value: '80'
+                          currency: INR
+                        quantity:
+                          allocated:
+                            measure:
+                              value: '1250'
+                              unit: units
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                  payments:
+                    - type: ON-ORDER
+                      url: https://payment.abcmutalfunds.in
+                      params:
+                        amount: '5000'
+                        currency: INR
+                      status: NOT-PAID
+                      time:
+                        range:
+                          start: '2023-05-25T05:23:03.443Z'
+                          end: '2023-05-25T05:23:03.443Z'
+                  cancellation_terms:
+                    - fulfillment_state:
+                        descriptor:
+                          name: Terms
+                      external_ref:
+                        mimetype: text/html
+                        url: https://abcmutalfunds.com/mf/tnc.html
+          - summary: on_init-request-sip-account-info
+            description: TBD
+            value: *ref_40
+          - summary: on_init-request-sip-agreement
+            description: TBD
+            value: *ref_41
+      confirm:
+        examples:
+          - summary: confirm
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: confirm
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: MF001
+                  items:
+                    - id: '2'
+                      quantity:
+                        selected:
+                          count: 20
+                  fulfillments:
+                    - stops:
+                        - authorization:
+                            type: OTP
+                            token: '535346'
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                  payments:
+                    - collected_by: BPP
+                      type: ON-ORDER
+                      params:
+                        amount: '100000'
+                        currency: INR
+                        transaction_id: bh767iygx65u76iyg
+                        source_virtual_payment_address: charles@oksbi
+                        timestamp: '2023-05-25T05:23:03.443Z'
+                      status: PAID
+                  quote:
+                    price:
+                      currency: INR
+                      value: '5000'
+          - summary: confirm-request-sip
+            description: TBD
+            value: *ref_42
+      on_confirm:
+        examples:
+          - summary: on_confirm
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                version: 1.1.0
+                action: on_confirm
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  id: 66B7AEDF45
+                  provider:
+                    id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: '1'
+                      descriptor:
+                        name: HDFC Midcap Opportunities Fund - Lumpsum
+                      price:
+                        value: '5000'
+                        currency: INR
+                      quantity:
+                        minimum:
+                          count: 1
+                        selected:
+                          count: 20
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                      state:
+                        descriptor:
+                          name: Order placed
+                          code: order-placed
+                      agent:
+                        person:
+                          name: John Williams
+                        organization:
+                          descriptor:
+                            name: HDFC Fund
+                        contact:
+                          phone: +91-9999999999
+                  quote:
+                    price:
+                      currency: INR
+                      value: '100000'
+                    breakup:
+                      - descriptor:
+                          name: Unit price
+                        price:
+                          value: '80'
+                          currency: INR
+                        quantity:
+                          allocated:
+                            measure:
+                              value: '1250'
+                              unit: units
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                    phone: +91-988777632
+                  payments:
+                    - collected_by: BPP
+                      type: ON-ORDER
+                      params:
+                        amount: '100000'
+                        currency: INR
+                        transaction_id: bh767iygx65u76iyg
+                        source_virtual_payment_address: charles@oksbi
+                        timestamp: 2023-05-25T05:23:03.443Z
+                      status: PAID
+                  cancellation_terms:
+                    - external_ref:
+                        mimetype: text/html
+                        url: https://abcmutalfunds.com/mf/tnc.html
+          - summary: on_confirm
+            description: TBD
+            value: *ref_43
+      update:
+        examples:
+          - summary: update
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: update
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                update_target: order.quote
+                order:
+                  id: 66B7AEDF45
+                  payments:
+                    - tags:
+                        - descriptor:
+                            name: Investment Method
+                          list:
+                            - descriptor:
+                                name: Type
+                              value: SIP
+                            - descriptor:
+                                name: Amount
+                              value: '500'
+                            - descriptor:
+                                name: SIP Start Date
+                              value: '2023-01-07'
+                            - descriptor:
+                                name: SIP Frequency
+                              value: Monthly
+                            - descriptor:
+                                name: SIP End Date
+                              value: '2026-01-07'
+                  quote:
+                    price:
+                      currency: INR
+                      value: '1000'
+      on_update:
+        examples:
+          - summary: on_update
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                version: 1.1.0
+                action: on_update
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  id: 66B7AEDF45
+                  provider:
+                    id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: MFLC001
+                      descriptor:
+                        name: ABC Large Cap Mutual Fund
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: John Doe
+                        contact:
+                          phone: +91-9999999999
+                          email: john.doe@example.com
+                      state:
+                        descriptor:
+                          name: SIP amount modified
+                  quote:
+                    price:
+                      currency: INR
+                      value: '1000'
+                  payments:
+                    - type: ON-ORDER
+                      url: https://payment.abcmutalfunds.in
+                      params:
+                        amount: '1000'
+                        currency: INR
+                      status: NOT-PAID
+                      time:
+                        range:
+                          start: '2023-05-25T05:23:03.443Z'
+                          end: '2023-06-25T05:23:03.443Z'
+                  cancellation_terms:
+                    - fulfillment_state:
+                        descriptor:
+                          name: Terms
+                      external_ref:
+                        mimetype: text/html
+                        url: https://abcmutalfunds.com/mf/tnc.html
+      status:
+        examples:
+          - summary: status
+            description: TBD
+            value: *ref_44
+      on_status:
+        examples:
+          - summary: on_status
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                version: 1.1.0
+                action: on_status
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  id: 66B7AEDF45
+                  status: ACTIVE
+                  provider:
+                    id: '1'
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: MFLCLS001
+                      descriptor:
+                        name: ABC Large Cap Mutual Fund Lumpsum
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                      state:
+                        descriptor:
+                          name: Units being allocated
+                  quote:
+                    price:
+                      currency: INR
+                      value: '5000'
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                  payments:
+                    - type: ON-ORDER
+                      url: https://payment.abcmutalfunds.in
+                      params:
+                        amount: '5000'
+                        currency: INR
+                      status: PAID
+                      time:
+                        range:
+                          start: '2023-05-25T05:23:03.443Z'
+                          end: '2023-06-25T05:23:03.443Z'
+                  cancellation_terms:
+                    - fulfillment_state:
+                        descriptor:
+                          name: Terms
+                      external_ref:
+                        mimetype: text/html
+                        url: https://abcmutalfunds.com/mf/tnc.html
+          - summary: on_status-request-sip-installment-received
+            description: TBD
+            value: *ref_45
+      support:
+        examples:
+          - summary: support
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: support
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                support:
+                  order_id: 66b7b9bad166
+                  phone: '+919876543210'
+                  email: john.doe@gmail.com
+      on_support:
+        examples:
+          - summary: on_support
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: on_support
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                support:
+                  order_id: 66b7b9bad166
+                  phone: 1800 1080
+                  email: customer.care@abcmutualfunds.com
+                  url: https://www.abcmutualfunds.com/helpdesk
 x-attributes:
   public-loans:
     attribute_set:
@@ -7715,7 +9409,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_36
+                code: &ref_48
                   required: true
                   description: Physical description of code value for something
                   reference: if any
@@ -7724,19 +9418,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_34
+              name: &ref_46
                 required: true
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Personal loan
             providers:
-              id: &ref_35
+              id: &ref_47
                 required: true
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_37
-                name: *ref_34
+              descriptor: &ref_49
+                name: *ref_46
                 short_desc:
                   required: false
                   description: Short description of value for something.
@@ -7755,13 +9449,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
             categories:
-              id: *ref_35
-              descriptor: &ref_49
-                code: *ref_36
-                name: *ref_34
+              id: *ref_47
+              descriptor: &ref_61
+                code: *ref_48
+                name: *ref_46
             items:
-              id: *ref_35
-              descriptor: *ref_37
+              id: *ref_47
+              descriptor: *ref_49
               category_ids:
                 required: true
                 description: Categories this item can be listed under
@@ -7770,8 +9464,8 @@ x-attributes:
               xinput:
                 head:
                   descriptor:
-                    name: *ref_34
-                  index: &ref_38
+                    name: *ref_46
+                  index: &ref_50
                     min:
                       required: false
                       description: Minimum index value of form
@@ -7788,23 +9482,23 @@ x-attributes:
                       reference: if any
                       usage: 1
                   form:
-                    id: *ref_35
-                    url: &ref_39
+                    id: *ref_47
+                    url: &ref_51
                       required: true
                       description: Unique human readable ID.
                       reference: if any
                       usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-                    mime_type: &ref_40
+                    mime_type: &ref_52
                       required: true
                       description: Describes the mime of the document.
                       reference: if any
                       usage: text/html
-                    resubmit: &ref_41
+                    resubmit: &ref_53
                       required: true
                       description: Describes a form can be re-submited again or not.
                       reference: if any
                       usage: false
-                    multiple_sumbissions: &ref_42
+                    multiple_sumbissions: &ref_54
                       required: true
                       description: Describes a form supports multiple sumbissions or not.
                       reference: if any
@@ -7813,11 +9507,11 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_35
+              id: *ref_47
               items:
-                id: *ref_35
+                id: *ref_47
                 xinput:
-                  form_response: &ref_43
+                  form_response: &ref_55
                     status:
                       required: true
                       description: Describes the status of form
@@ -7832,40 +9526,40 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_35
-              descriptor: *ref_37
+              id: *ref_47
+              descriptor: *ref_49
             items:
-              id: *ref_35
-              descriptor: *ref_37
+              id: *ref_47
+              descriptor: *ref_49
               xinput:
                 head:
                   descriptor:
-                    name: *ref_34
-                index: *ref_38
+                    name: *ref_46
+                index: *ref_50
                 form:
-                  url: *ref_39
-                  mime_type: *ref_40
-                  resubmit: *ref_41
-                  multiple_sumbissions: *ref_42
+                  url: *ref_51
+                  mime_type: *ref_52
+                  resubmit: *ref_53
+                  multiple_sumbissions: *ref_54
       init:
         message:
           order:
             provider:
-              id: *ref_35
+              id: *ref_47
               items:
-                id: *ref_35
+                id: *ref_47
                 xinput:
-                  form_response: *ref_43
+                  form_response: *ref_55
       on_init:
         message:
           order:
             provider:
-              id: *ref_35
-              descriptor: *ref_37
+              id: *ref_47
+              descriptor: *ref_49
               items:
-                id: *ref_35
-                descriptor: *ref_37
-                price: &ref_44
+                id: *ref_47
+                descriptor: *ref_49
+                price: &ref_56
                   value:
                     required: false
                     description: Describes a numerical value in decimal form
@@ -7877,18 +9571,18 @@ x-attributes:
                     reference: if any
                     usage: IND
                 xinput:
-                  form_response: *ref_43
-              quote: &ref_45
-                id: *ref_35
-                price: *ref_44
+                  form_response: *ref_55
+              quote: &ref_57
+                id: *ref_47
+                price: *ref_56
                 breakup:
                   title:
                     required: true
                     description: the breakup title of the total quoted price
                     reference: if any
                     usage: Amount
-                  price: *ref_44
-              fullfilments: &ref_46
+                  price: *ref_56
+              fullfilments: &ref_58
                 customer:
                   contact:
                     phone:
@@ -7907,7 +9601,7 @@ x-attributes:
                       description: Describes a person name as any individual
                       reference: if any
                       usage: John
-              payments: &ref_47
+              payments: &ref_59
                 type:
                   required: true
                   description: type of the payment
@@ -7947,7 +9641,7 @@ x-attributes:
                       description: This indicates end of a range
                       reference: if any
                       usage: '2021-03-23T10:00:40.065Z'
-              cancellation_terms: &ref_48
+              cancellation_terms: &ref_60
                 cancellation_fee:
                   percentage:
                     required: true
@@ -7973,57 +9667,57 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_35
+              id: *ref_47
             items:
-              id: *ref_35
+              id: *ref_47
               xinput:
-                form_response: *ref_43
+                form_response: *ref_55
       on_confirm:
         message:
           order:
-            id: *ref_35
+            id: *ref_47
             provider:
-              id: *ref_35
-              descriptor: *ref_37
+              id: *ref_47
+              descriptor: *ref_49
               items:
-                id: *ref_35
-                descriptor: *ref_37
-                price: *ref_44
-              quote: *ref_45
-              fullfilments: *ref_46
-              payments: *ref_47
-              cancellation_terms: *ref_48
+                id: *ref_47
+                descriptor: *ref_49
+                price: *ref_56
+              quote: *ref_57
+              fullfilments: *ref_58
+              payments: *ref_59
+              cancellation_terms: *ref_60
       status:
         message:
           order:
-            id: *ref_35
+            id: *ref_47
       on_status:
         message:
           order:
-            id: *ref_35
+            id: *ref_47
             provider:
-              id: *ref_35
-              descriptor: *ref_37
+              id: *ref_47
+              descriptor: *ref_49
               items:
-                id: *ref_35
-                descriptor: *ref_49
-                price: *ref_44
-                quote: *ref_45
-                fullfilments: *ref_46
+                id: *ref_47
+                descriptor: *ref_61
+                price: *ref_56
+                quote: *ref_57
+                fullfilments: *ref_58
       support:
         message:
           support:
-            ref_id: &ref_50
+            ref_id: &ref_62
               required: true
               description: Describes ref_id for support
               reference: if any
               usage: 25d26510-e46e-4a3f-968e-85d1401077f2
-            phone: &ref_51
+            phone: &ref_63
               required: true
               description: Describes the phone information of an entity
               reference: if any
               usage: +91-9897867564
-            email: &ref_52
+            email: &ref_64
               required: true
               description: Email address of the contact
               reference: if any
@@ -8031,9 +9725,9 @@ x-attributes:
       on_support:
         message:
           support:
-            ref_id: *ref_50
-            phone: *ref_51
-            email: *ref_52
+            ref_id: *ref_62
+            phone: *ref_63
+            email: *ref_64
             url:
               required: true
               description: The URL of the file
