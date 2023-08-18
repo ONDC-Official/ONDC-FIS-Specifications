@@ -43,7 +43,7 @@ async function fetchRequest(url){
 async function loadContracts() {
   //fetch branches & tags from repo
   const BRANCHES_URL= "https://api.github.com/repos/ondc-official/ONDC-FIS-Specifications/branches";
-  const TAGS_URL= "https://api.github.com/repos/ondc-official/mobility-specification/tags";
+  const TAGS_URL= "https://api.github.com/repos/ondc-official/ONDC-FIS-Specifications/tags";
                   
   let response1, response2;
   response1 = await fetchRequest(BRANCHES_URL)
