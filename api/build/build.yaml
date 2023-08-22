@@ -6758,7 +6758,55 @@ x-flows:
                       url: https://icicibank.com/loan/tnc.html
   - summary: Mutual funds
     details:
-      - description: Mutual fund description
+      - description: Discovery of Funds
+        mermaid: |-
+          sequenceDiagram
+            title MF Discovery
+            Participant Investment Platform
+            Participant Gateway
+            Participant Fund Aggregator
+            Participant Direct Fund 1
+            Investment Platform ->> Gateway: search
+            Gateway ->> Fund Aggregator: search
+            Gateway ->> Direct Fund 1: search
+            Fund Aggregator ->>  Investment Platform : on_search
+            Direct Fund 1 ->>  Investment Platform : on_search
+            Fund Aggregator ->>  Investment Platform : form
+            Direct Fund 1 ->>  Investment Platform : form
+      - description: Ordering
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Selection
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: select
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
+      - description: Initializing the order
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Initializing Order
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info) 
+      - description: Order Confirmation
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Order Confirmation
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: confirm - BAP sends proof or payment, acceptance of T&Cs 
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm - BPP sends confirmed order with order ID and latest fulfillment state
+      - description: Fulfillment
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Order Fulfillment
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: status - BAP request for latest status   
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status - BPP sends order details with latest updated context
     references: if any
     steps:
       - summary: Explore available Mutual Fund options over the network.
@@ -6767,6 +6815,22 @@ x-flows:
           - description: >-
               Conduct searches over the network to discover a variety of Mutual
               Fund investment opportunities.
+            mermaid: |-
+              sequenceDiagram
+                title MF Discovery
+                Participant Investment Platform
+                Participant Gateway
+                Participant Fund Aggregator
+                Participant Direct Fund 1
+                rect rgb(191, 223, 255)
+                  Investment Platform ->> Gateway: search
+                  Gateway ->> Fund Aggregator: search
+                  Gateway ->> Direct Fund 1: search
+                end
+                Fund Aggregator ->>  Investment Platform : on_search
+                Direct Fund 1 ->>  Investment Platform : on_search
+                Fund Aggregator ->>  Investment Platform : form
+                Direct Fund 1 ->>  Investment Platform : form
         reference: if any
         example:
           value: &ref_39
@@ -6797,6 +6861,22 @@ x-flows:
               Platform provides a comprehensive catalog of various Mutual Fund
               products from different providers, tailored to your investment
               needs.
+            mermaid: |-
+              sequenceDiagram
+                title MF Discovery
+                Participant Investment Platform
+                Participant Gateway
+                Participant Fund Aggregator
+                Participant Direct Fund 1
+                Investment Platform ->> Gateway: search
+                Gateway ->> Fund Aggregator: search
+                Gateway ->> Direct Fund 1: search
+                rect rgb(191, 223, 255)
+                Fund Aggregator ->>  Investment Platform : on_search
+                Direct Fund 1 ->>  Investment Platform : on_search
+                end
+                Fund Aggregator ->>  Investment Platform : form
+                Direct Fund 1 ->>  Investment Platform : form
         reference: if any
         example:
           value: &ref_40
@@ -6994,7 +7074,23 @@ x-flows:
       - summary: Receive personal info form
         api: form
         details:
-          description: Provide platform sends the form for personal info
+          - description: Provide platform sends the form for personal info
+            mermaid: |-
+              sequenceDiagram
+                title MF Discovery
+                Participant Investment Platform
+                Participant Gateway
+                Participant Fund Aggregator
+                Participant Direct Fund 1
+                Investment Platform ->> Gateway: search
+                Gateway ->> Fund Aggregator: search
+                Gateway ->> Direct Fund 1: search
+                Fund Aggregator ->>  Investment Platform : on_search
+                Direct Fund 1 ->>  Investment Platform : on_search
+                rect rgb(191, 223, 255)
+                Fund Aggregator ->>  Investment Platform : form
+                Direct Fund 1 ->>  Investment Platform : form
+                end
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"firstName\">First Name</label>\r\n    <input type=\"text\" id=\"firstName\" name=\"firstName\" />\r\n    <label for=\"lastName\">Last Name</label>\r\n    <input type=\"text\" id=\"lastName\" name=\"lastName\" />\r\n    <label for=\"dob\">Date of Birth</label>\r\n    <input type=\"date\" id=\"dob\" name=\"dob\" />\r\n    <label for=\"sex\">Sex</label>\r\n    <select name=\"sex\" id=\"sex\">\r\n      <option value=\"male\">Male</option>\r\n      <option value=\"female\">Female</option>\r\n      <option value=\"other\">Other</option>\r\n    </select>\r\n    <label for=\"maritalStatus\">Marital Status</label>\r\n    <select name=\"maritalStatus\" id=\"maritalStatus\">\r\n      <option value=\"single\">Single</option>\r\n      <option value=\"married\">Married</option>\r\n    </select>\r\n    <label for=\"occupation\">Occupation</label>\r\n    <input type=\"text\" id=\"occupation\" name=\"occupation\" />\r\n    <label for=\"address\">Address</label>\r\n    <input type=\"text\" id=\"address\" name=\"address\" />\r\n    <label for=\"idType\">Identity Type</label>\r\n    <select name=\"idType\" id=\"idType\">\r\n      <option value=\"pan\">PAN</option>\r\n      <option value=\"aadhaar\">Aadhaar</option>\r\n    </select>\r\n    <label for=\"idValue\">ID Number</label>\r\n    <input type=\"text\" id=\"idValue\" name=\"idValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -7004,6 +7100,16 @@ x-flows:
           - description: >-
               Select the Mutual Fund product that aligns with your investment
               preferences and goals.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
         reference: if any
         example:
           value: &ref_42
@@ -7043,6 +7149,16 @@ x-flows:
               Provider generates a consent request and provides additional
               information specific to the selected Mutual Fund product, catering
               to your investment decision.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
         reference: if any
         example:
           value: &ref_44
@@ -7102,7 +7218,17 @@ x-flows:
       - summary: Get the Kyc form
         api: form
         details:
-          description: Provider platform sends the form for Kyc.
+          - description: Provider platform sends the form for Kyc.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
+                end
         reference: if any
         example:
           value: |
@@ -7136,6 +7262,16 @@ x-flows:
           - description: >-
               Provide the required additional information as requested and
               initiate the process for the chosen Mutual Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         reference: if any
         example:
           value: &ref_47
@@ -7182,6 +7318,16 @@ x-flows:
               Provider responds with the final draft of the investment offer,
               including terms and conditions, based on the information provided
               during the initiation.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         reference: if any
         example:
           value: &ref_51
@@ -7296,7 +7442,19 @@ x-flows:
       - summary: Get the Mutual fund account info form
         api: form
         details:
-          description: Provider platform sends the form for Mutual fund account info form.
+          - description: >-
+              Provider platform sends the form for Mutual fund account info
+              form.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+                end
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -7308,6 +7466,16 @@ x-flows:
           - description: >-
               Provide the required additional information as requested and
               initiate the process for the chosen Mutual Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
           value: &ref_48
@@ -7361,6 +7529,16 @@ x-flows:
               Provider responds with the final draft of the investment offer,
               including terms and conditions, based on the information provided
               during the initiation.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
           value: &ref_52
@@ -7475,7 +7653,17 @@ x-flows:
       - summary: Get the Mutual fund agreement form
         api: form
         details:
-          description: Provider platform sends the form for Mutual fund agreement form.
+          - description: Provider platform sends the form for Mutual fund agreement form.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
+                end
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"tnc\">I have read the <a href=\"https://abcmf.co.in/mf/agreement.html\">MF Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -7488,6 +7676,15 @@ x-flows:
               Confirm your investment decision and provide explicit
               authorization for the provider to proceed with the chosen Mutual
               Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Confirmation
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: confirm - BAP sends proof or payment, acceptance of T&Cs  
+                end  
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm - BPP sends confirmed order with order ID and latest fulfillment state
         reference: if any
         example:
           value: &ref_54
@@ -7544,6 +7741,15 @@ x-flows:
               Provider validates and approves the submitted investment
               application for the chosen Mutual Fund, proceeding with the
               investment process.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Confirmation
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: confirm - BAP sends proof or payment, acceptance of T&Cs   
+                rect rgb(191, 223, 255) 
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm - BPP sends confirmed order with order ID and latest fulfillment state
+                end
         reference: if any
         example:
           value: &ref_56
@@ -7647,6 +7853,15 @@ x-flows:
               Request the most recent updates regarding the status of your
               invested Mutual Fund, ensuring you stay informed about its
               progress.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: status - BAP request for latest status  
+                end  
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status - BPP sends order details with latest updated context
         reference: if any
         example:
           value: &ref_7
@@ -7676,6 +7891,15 @@ x-flows:
               Provider sends timely updates about your Mutual Fund investment
               after significant milestones, ensuring you're informed throughout
               the investment journey.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: status - BAP request for latest status  
+                rect rgb(191, 223, 255)  
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status - BPP sends order details with latest updated context
+                end
         example:
           value: &ref_58
             context:
@@ -7794,6 +8018,16 @@ x-flows:
           - description: >-
               Select the Mutual Fund product that aligns with your investment
               preferences and goals.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
         reference: if any
         example:
           value: &ref_41
@@ -7833,6 +8067,16 @@ x-flows:
               Provider generates a consent request and provides additional
               information specific to the selected Mutual Fund product, catering
               to your investment decision.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
         reference: if any
         example:
           value: &ref_43
@@ -7897,7 +8141,17 @@ x-flows:
       - summary: Get the Kyc form
         api: form
         details:
-          description: Provider platform sends the form for Kyc.
+          - description: Provider platform sends the form for Kyc.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
+                end
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -7909,6 +8163,16 @@ x-flows:
           - description: >-
               Provide the required additional information as requested and
               initiate the process for the chosen Mutual Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
           value: &ref_45
@@ -7958,6 +8222,16 @@ x-flows:
               Provider responds with the final draft of the investment offer,
               including terms and conditions, based on the information provided
               during the initiation.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
           value: &ref_49
@@ -8059,7 +8333,19 @@ x-flows:
       - summary: Get the Mutual fund account info form
         api: form
         details:
-          description: Provider platform sends the form for Mutual fund account info form.
+          - description: >-
+              Provider platform sends the form for Mutual fund account info
+              form.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
+                end
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -8071,6 +8357,16 @@ x-flows:
           - description: >-
               Provide the required additional information as requested and
               initiate the process for the chosen Mutual Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
           value: &ref_46
@@ -8124,6 +8420,16 @@ x-flows:
               Provider responds with the final draft of the investment offer,
               including terms and conditions, based on the information provided
               during the initiation.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
           value: &ref_50
@@ -8228,7 +8534,17 @@ x-flows:
       - summary: Get the Mutual fund agreement form
         api: form
         details:
-          description: Provider platform sends the form for Mutual fund agreement form.
+          - description: Provider platform sends the form for Mutual fund agreement form.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
+                end
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"tnc\">I have read the <a href=\"https://abcmf.co.in/mf/agreement.html\">MF Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -8241,6 +8557,15 @@ x-flows:
               Confirm your investment decision and provide explicit
               authorization for the provider to proceed with the chosen Mutual
               Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Confirmation
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: confirm - BAP sends proof or payment, acceptance of T&Cs  
+                end  
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm - BPP sends confirmed order with order ID and latest fulfillment state
         reference: if any
         example:
           value: &ref_53
@@ -8297,6 +8622,15 @@ x-flows:
               Provider validates and approves the submitted investment
               application for the chosen Mutual Fund, proceeding with the
               investment process.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Confirmation
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: confirm - BAP sends proof or payment, acceptance of T&Cs   
+                rect rgb(191, 223, 255) 
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm - BPP sends confirmed order with order ID and latest fulfillment state
+                end
         reference: if any
         example:
           value: &ref_55
@@ -8400,6 +8734,15 @@ x-flows:
               Request the most recent updates regarding the status of your
               invested Mutual Fund, ensuring you stay informed about its
               progress.
+          - mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: status - BAP request for latest status  
+                end  
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status - BPP sends order details with latest updated context
         reference: if any
         example:
           value: *ref_7
@@ -8412,6 +8755,15 @@ x-flows:
               Provider sends timely updates about your Mutual Fund investment
               after significant milestones, ensuring you're informed throughout
               the investment journey.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: status - BAP request for latest status  
+                rect rgb(191, 223, 255)  
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status - BPP sends order details with latest updated context
+                end
         example:
           value: &ref_57
             context:
@@ -9552,10 +9904,36 @@ x-examples:
                     descriptor:
                       code: mutual-funds
                   item:
+                    descriptor:
+                      code: sip
                     tags:
                       - list:
                           - value: Equity
                           - value: Midcap
+          - summary: search for mutual funds
+            description: TBD
+            value:
+              context:
+                domain: financial-services:0.2.0
+                location:
+                  country:
+                    code: IND
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: search
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 1.1.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+              message:
+                intent:
+                  category:
+                    descriptor:
+                      code: mutual-funds
+                  provider:
+                    descriptor:
+                      name: Mirae Asset
       on_search:
         examples:
           - summary: mutual funds catalog
