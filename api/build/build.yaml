@@ -2973,9 +2973,73 @@ x-tags:
 x-flows:
   - summary: Personal Loan
     details:
-      - description: >-
-          A detailed process for obtaining a personal loan from a provider,
-          including the necessary forms and status updates.
+      - description: Discovery of Funds
+        mermaid: |-
+          sequenceDiagram
+            title Personal Loan Discovery
+            Borrower Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Borrower Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+            Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+            Gateway (BG)->>Lender Platform(BPP): search
+            Lender Platform(BPP)->>Gateway (BG) : ACK
+            Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+            Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+      - description: Ordering
+        mermaid: |-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Form Service
+            Borrower Platform (BAP)->>Form Service: Get Form(Org Form)
+            Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Form Service: Form Submission
+            Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Initializing the order
+        mermaid: |-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Form Service
+            Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+            Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Form Service: Form Submission
+            Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Order Confirmation
+        mermaid: |-
+          sequenceDiagram
+            title Order Confirmation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Form Service
+            Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+            Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Form Service: Form Submission
+            Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Fulfillment
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     references: if any
     steps:
       - summary: Users search for available personal loan services.
@@ -2984,6 +3048,19 @@ x-flows:
           - description: >-
               Users explore loan options by searching for personal loan services
               over the network
+            mermaid: |-
+              sequenceDiagram
+                title Personal Loan Discovery
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform(BPP): search
+                Lender Platform(BPP)->>Gateway (BG) : ACK
+                end
+                Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
           value: &ref_8
@@ -3011,6 +3088,19 @@ x-flows:
           - description: >-
               The provider platform provides a comprehensive catalog of various
               loan types, and one of them is personal loans.
+            mermaid: |-
+              sequenceDiagram
+                title Personal Loan Discovery
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform(BPP): search
+                Lender Platform(BPP)->>Gateway (BG) : ACK
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_9
@@ -3114,9 +3204,25 @@ x-flows:
       - summary: The consumer receives the personal loan application form.
         api: form
         details:
-          description: >-
-            The provider platform sends the application form for the personal
-            loan to the consumer.
+          - description: >-
+              The provider platform sends the application form for the personal
+              loan to the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Form Service: Get Form(personal loan)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>User Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"firstName\">First Name</label>\r\n    <input type=\"text\" id=\"firstName\" name=\"firstName\" required />\r\n    <label for=\"lastName\">Last Name</label>\r\n    <input type=\"text\" id=\"lastName\" name=\"lastName\" required />\r\n    <label for=\"dob\">Date of Birth</label>\r\n    <input type=\"date\" id=\"dob\" name=\"dob\" required />\r\n    <label for=\"pan\">PAN</label>\r\n    <input type=\"text\" id=\"pan\" name=\"pan\" required />\r\n    <label for=\"contactNumber\">contact number</label>\r\n    <input type=\"text\" id=\"contactNumber\" name=\"contactNumber\" required />\r\n    <label for=\"employmentType\">Employment type</label>\r\n    <select name=\"employmentType\" id=\"employmentType\" required>\r\n      <option value=\"salaried\">Salaried</option>\r\n      <option value=\"selfEmployed\">Self Employment</option>\r\n    </select>\r\n    <label for=\"income\">Income</label>\r\n    <input type=\"number\" id=\"income\" name=\"income\" required />\r\n    <label for=\"companyName\">Company Name</label>\r\n    <input type=\"text\" id=\"companyName\" name=\"companyName\" required />\r\n    <label for=\"udyamNumber\">UDYAM Number</label>\r\n    <input type=\"text\" id=\"udyamNumber\" name=\"udyamNumber\" />\r\n    <label for=\"addressL1\">Address Line 1</label>\r\n    <input type=\"text\" id=\"addressL1\" name=\"addressL1\" />\r\n    <label for=\"addressL2\">Address Line 2</label>\r\n    <input type=\"text\" id=\"addressL2\" name=\"addressL2\" />\r\n    <label for=\"city\">City</label>\r\n    <input type=\"text\" id=\"city\" name=\"city\" />\r\n    <label for=\"state\">State</label>\r\n    <input type=\"text\" id=\"state\" name=\"state\" />\r\n    <label for=\"pincode\">Pin Code</label>\r\n    <input type=\"text\" id=\"pincode\" name=\"pincode\" />\r\n    <label for=\"aa_id\">Account Aggregator ID</label>\r\n    <input type=\"text\" id=\"aa_id\" name=\"aa_id\" required/>\r\n    <label for=\"bureauConsent\">Bureau Consent</label>\r\n    <input type=\"checkbox\" id=\"bureauConsent\" name=\"bureauConsent\" required/>\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -3126,6 +3232,22 @@ x-flows:
           - description: >-
               The consumer selects the specific personal loan service they are
               interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Org Form)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_10
@@ -3162,6 +3284,22 @@ x-flows:
           - description: >-
               The provider platform responds with detailed information and the
               necessary application form for the selected personal loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Org Form)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_12
@@ -3283,9 +3421,25 @@ x-flows:
       - summary: The consumer adjusts the loan amount in the form by the lender.
         api: form
         details:
-          description: >-
-            The provider platform sends the form for the consumer to adjusts the
-            loan amount.
+          - description: >-
+              The provider platform sends the form for the consumer to adjusts
+              the loan amount.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(loan amount)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -3295,6 +3449,22 @@ x-flows:
           - description: >-
               The consumer selects the specific personal loan service they are
               interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Org Form)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_11
@@ -3331,6 +3501,22 @@ x-flows:
           - description: >-
               The provider platform responds with detailed information and the
               necessary application form for the selected personal loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Org Form)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_13
@@ -3452,9 +3638,25 @@ x-flows:
       - summary: The consumer receives the KYC details form.
         api: form
         details:
-          description: >-
-            The provider platform sends the form to collect Know Your Customer
-            (KYC) details from the consumer.
+          - description: >-
+              The provider platform sends the form to collect Know Your Customer
+              (KYC) details from the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>eKYC</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -3464,6 +3666,22 @@ x-flows:
           - description: >-
               The consumer platform shares the request's terms and initializes
               the personal loan application.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_14
@@ -3498,6 +3716,22 @@ x-flows:
           - description: >-
               The provider platform accepts the consumer's request terms and may
               include additional terms if any.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -3694,9 +3928,25 @@ x-flows:
       - summary: The consumer receives the bank account mandate form details form.
         api: form
         details:
-          description: >-
-            The provider platform sends the form to get dispachment account
-            details from the consumer.
+          - description: >-
+              The provider platform sends the form to get dispachment account
+              details from the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(Account details)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Account Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"accHolderName\">Account Holder Name</label>\r\n    <input type=\"text\" id=\"accHolderName\" name=\"accHolderName\" />\r\n    <label for=\"acctype\">Account Type</label>\r\n    <select name=\"acctype\" id=\"acctype\" required>\r\n      <option value=\"current\">Current</option>\r\n      <option value=\"saving\">Saving</option>\r\n    </select>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <label for=\"aaMonitoringConsent\">Yes I have provided Account Monitoring Consent via Account Aggregator to Loan Provider</label>\r\n    <input type=\"checkbox\" id=\"aaMonitoringConsent\" name=\"aaMonitoringConsent\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -3706,6 +3956,22 @@ x-flows:
           - description: >-
               The consumer platform shares the request's terms and initializes
               the personal loan application.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Account details)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_15
@@ -3740,6 +4006,22 @@ x-flows:
           - description: >-
               The provider platform accepts the consumer's request terms and may
               include additional terms if needed.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Account details)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_16
@@ -3936,9 +4218,25 @@ x-flows:
       - summary: The consumer receives the Loan Agreement details form.
         api: form
         details:
-          description: >-
-            The provider platform sends the form to collect eSign on Loan
-            Agreement from the consumer.
+          - description: >-
+              The provider platform sends the form to collect eSign on Loan
+              Agreement from the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Loan Agreement</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"tnc\">I have read the <a href=\"https://icicibank.co.in/loans/agreement.html\">Loan Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -3948,6 +4246,22 @@ x-flows:
           - description: >-
               The consumer platform confirms the personal loan request and
               provides all the necessary information as per the terms.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_17
@@ -3982,6 +4296,22 @@ x-flows:
           - description: >-
               The provider platform confirms the personal loan order and
               provides the final confirmation details.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_18
@@ -4164,6 +4494,17 @@ x-flows:
           - description: >-
               The consumer platform requests the provider platform to provide
               the latest status of the personal loan application.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_19
@@ -4190,6 +4531,17 @@ x-flows:
           - description: >-
               The provider platform updates the consumer with the most recent
               status of the personal loan application.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_20
@@ -4368,7 +4720,73 @@ x-flows:
                       url: https://icicibank.com/loan/tnc.html
   - summary: Invoice based loans
     details:
-      - description: Invoice based loan description
+      - description: Discovery of Funds
+        mermaid: |-
+          sequenceDiagram
+            title Invoice Based Loan Discovery
+            Borrower Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Borrower Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+            Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+            Gateway (BG)->>Lender Platform (BPP): search
+            Lender Platform (BPP)->>Gateway (BG) : ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+            Borrower Platform (BAP)->>Lender Platform (BPP): ACK
+      - description: Ordering
+        mermaid: |-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Form Service
+            Borrower Platform (BAP)->>Form Service: Get Form(Loan amount)
+            Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Form Service: Form Submission
+            Form Service-->>Borrower Platform (BAP): Submission ID 
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Initializing the order
+        mermaid: |-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Form Service
+            Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+            Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Form Service: Form Submission
+            Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Order Confirmation
+        mermaid: |-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Form Service
+            Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+            Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Form Service: Form Submission
+            Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Fulfillment
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     references: if any
     steps:
       - summary: Find suitable Invoice Based Loan services over the network.
@@ -4377,6 +4795,19 @@ x-flows:
           - description: >-
               Explore available Invoice Based Loan options by conducting
               searches over the network.
+            mermaid: |-
+              sequenceDiagram
+                title Invoice Based Loan Discovery
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform (BPP): search
+                Lender Platform (BPP)->>Gateway (BG) : ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_21
@@ -4407,6 +4838,19 @@ x-flows:
               Platform sends a comprehensive catalog of various loan products
               specifically tailored for Invoice Based Loans, all of which are
               offered by a single lender.
+            mermaid: |-
+              sequenceDiagram
+                title Invoice Based Loan Discovery
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK) 
+                Gateway (BG)->>Lender Platform (BPP): search
+                Lender Platform (BPP)->>Gateway (BG) : ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_22
@@ -4510,7 +4954,23 @@ x-flows:
       - summary: Get the Invoice based Org form
         api: form
         details:
-          description: Provide platform sends the form for Invoice based Org form.
+          - description: Provide platform sends the form for Invoice based Org form.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Form Service: Get Form(Org Form)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Organizational/Entity Info</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"udyamNumber\">UDYAM Number</label>\r\n    <input type=\"text\" id=\"udyamNumber\" name=\"udyamNumber\" />\r\n    <label for=\"mobNo\">Contact Number</label>\r\n    <input type=\"date\" id=\"mobNo\" name=\"mobNo\" />\r\n    <label for=\"gstinProfile\">GSTIN Profile</label>\r\n    <input name=\"gstinProfile\" type=\"file\" />\r\n    <label for=\"gstr1\">GSTR1</label>\r\n    <input name=\"gstr1\" type=\"file\" />\r\n    <label for=\"gstr2A\">GSTR2A</label>\r\n    <input name=\"gstr2A\" type=\"file\" />\r\n    <label for=\"gstr3B\">GSTR3B</label>\r\n    <input name=\"gstr3B\" type=\"file\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -4520,6 +4980,22 @@ x-flows:
           - description: >-
               The BAP sends the loan product, the loan provider, and the
               customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_25
@@ -4558,6 +5034,22 @@ x-flows:
               form may expect other details pertaining to the borrower's
               business like Tax ID. Company registration address, Ownership
               Details etc, depending on the type of loan.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_27
@@ -4651,7 +5143,23 @@ x-flows:
       - summary: Get the Financial Info based loan form
         api: form
         details:
-          description: Provider platform sends the form for Financial Info based loan.
+          - description: Provider platform sends the form for Financial Info based loan.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Form Service: Get Form(Financial Info)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Bank Account Access</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"aa_id\">Account Aggregator ID</label>\r\n    <input type=\"text\" id=\"aa_id\" name=\"aa_id\" required/>\r\n    <label for=\"tnc\">I have read the <a href=\"https://icicibank.co.in/loans/tnc.html\">Terms and Conditions</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -4661,6 +5169,23 @@ x-flows:
           - description: >-
               The BAP sends the loan product, the loan provider, and the
               customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+               
+                Borrower Platform (BAP)->>Form Service: Get Form(Financial Info)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_23
@@ -4699,6 +5224,24 @@ x-flows:
               form may expect other details pertaining to the borrower's
               business like Tax ID. Company registration address, Ownership
               Details etc, depending on the type of loan.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+               
+                Borrower Platform (BAP)->>Form Service: Get Form(Financial Info)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_26
@@ -4821,7 +5364,25 @@ x-flows:
       - summary: Get the Loan amount form.
         api: form
         details:
-          description: Provider platform sends the form for Loan amount.
+          - description: Provider platform sends the form for Loan amount.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan amount)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+               
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -4831,6 +5392,22 @@ x-flows:
           - description: >-
               The BAP sends the loan product, the loan provider, and the
               customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan amount)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_24
@@ -4869,6 +5446,22 @@ x-flows:
               form may expect other details pertaining to the borrower's
               business like Tax ID. Company registration address, Ownership
               Details etc, depending on the type of loan.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan amount)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_28
@@ -4991,7 +5584,25 @@ x-flows:
       - summary: Get the Individual Kyc Info based loan form
         api: form
         details:
-          description: Provider platform sends the form for Individual Kyc Info based loan.
+          - description: >-
+              Provider platform sends the form for Individual Kyc Info based
+              loan.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Individual eKYC</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -5001,6 +5612,22 @@ x-flows:
           - description: >-
               BAP submits the additional information that was requested by the
               BPP in the XInput form.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -5035,6 +5662,22 @@ x-flows:
           - description: >-
               Provider platform accepts the terms of order and appends its own
               terms and responds with the final draft
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -5237,7 +5880,23 @@ x-flows:
       - summary: Get the Entity Kyc Info based loan form
         api: form
         details:
-          description: Provider platform sends the form for Entity Kyc Info based loan.
+          - description: Provider platform sends the form for Entity Kyc Info based loan.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Entity eKYC</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"udyamNumber\">UDYAM Number</label>\r\n    <input type=\"text\" id=\"udyamNumber\" name=\"udyamNumber\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my UDYAM</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -5249,6 +5908,22 @@ x-flows:
           - description: >-
               BAP submits the additional information that was requested by the
               BPP in the XInput form.
+            mermaid: |-
+              sequenceDiagram
+                title  Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_29
@@ -5283,6 +5958,22 @@ x-flows:
           - description: >-
               Provider platform accepts the terms of order and appends its own
               terms and responds with the final draft
+            mermaid: |-
+              sequenceDiagram
+                title  Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(KYC)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -5485,7 +6176,24 @@ x-flows:
       - summary: Get the Account details based loan form
         api: form
         details:
-          description: Provider platform sends the form for Account details based loan.
+          - description: Provider platform sends the form for Account details based loan.
+            mermaid: |-
+              sequenceDiagram
+                title  Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(Account Details)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Account Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"accHolderName\">Account Holder Name</label>\r\n    <input type=\"text\" id=\"accHolderName\" name=\"accHolderName\" />\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <label for=\"aaMonitoringConsent\">Yes I have provided Account Monitoring Consent via Account Aggregator to Loan Provider</label>\r\n    <input type=\"checkbox\" id=\"aaMonitoringConsent\" name=\"aaMonitoringConsent\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -5497,6 +6205,22 @@ x-flows:
           - description: >-
               BAP submits the additional information that was requested by the
               BPP in the XInput form.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Account Details)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_30
@@ -5531,6 +6255,22 @@ x-flows:
           - description: >-
               Provider platform accepts the terms of order and appends its own
               terms and responds with the final draft
+            mermaid: |-
+              sequenceDiagram
+                title  Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Account Details)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_31
@@ -5733,7 +6473,23 @@ x-flows:
       - summary: Get the Loan agreement based form
         api: form
         details:
-          description: Provider platform sends the form for Loan agreement based loan.
+          - description: Provider platform sends the form for Loan agreement based loan.
+            mermaid: |-
+              sequenceDiagram
+                title  Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Loan Agreement</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"tnc\">I have read the <a href=\"https://icicibank.co.in/loans/agreement.html\">Loan Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
@@ -5745,6 +6501,22 @@ x-flows:
               providing explicit consent to the lender to proceed with
               disbursing the Invoice Based Loan amount according to the
               agreed-upon terms and conditions.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_32
@@ -5782,6 +6554,22 @@ x-flows:
               Provider platform verifies the application and grants approval for
               the Invoice Based Loan. Upon successful validation, the lender
               proceeds with the loan disbursement process.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Form Service
+                Borrower Platform (BAP)->>Form Service: Get Form(Loan agreement)
+                Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Form Service: Form Submission
+                Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_33
@@ -5972,6 +6760,23 @@ x-flows:
               The consumer platform request the provider platform seeking the
               most recent information about the status of their Invoice Based
               Loan.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(1)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(2)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_34
@@ -6003,6 +6808,23 @@ x-flows:
               the borrower. These updates include the current status of the
               Invoice Based Loan, ensuring transparency and keeping the borrower
               informed throughout the loan repayment process.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(1)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(2)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
           value: &ref_35
             context:
@@ -6193,6 +7015,24 @@ x-flows:
               the borrower. These updates include the current status of the
               Invoice Based Loan, ensuring transparency and keeping the borrower
               informed throughout the loan repayment process.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(1)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(2)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
           value: &ref_36
             context:
@@ -6383,6 +7223,23 @@ x-flows:
               the borrower. These updates include the current status of the
               Invoice Based Loan, ensuring transparency and keeping the borrower
               informed throughout the loan repayment process.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(1)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(2)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
           value: &ref_38
             context:
@@ -6577,6 +7434,23 @@ x-flows:
               the borrower. These updates include the current status of the
               Invoice Based Loan, ensuring transparency and keeping the borrower
               informed throughout the loan repayment process.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(1)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(2)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         example:
           value: &ref_37
             context:
