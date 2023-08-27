@@ -23,8 +23,40 @@ async function readBuildFile(branchName) {
     onFirstLoad(build_spec);
   } catch (error) {
     console.log("Error fetching contract", error?.message || error);
-    alert('Something went wrong, Please try again later')
+    //alert('Something went wrong, Please try again later')
   }
+}
+
+async function fetchRequest(url){
+  try{
+    const response = await fetch(url, {
+      headers: {
+        Authorization: "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",
+      },
+    });
+    return await response?.json();
+  }catch{
+    console.log("Error fetching contract", error?.message || error);
+  }
+}
+
+async function loadContracts() {
+  //fetch branches & tags from repo
+  const BRANCHES_URL= "https://api.github.com/repos/ondc-official/ONDC-FIS-Specifications/branches";
+  const TAGS_URL= "https://api.github.com/repos/ondc-official/ONDC-FIS-Specifications/tags";
+                  
+  let response1, response2;
+  response1 = await fetchRequest(BRANCHES_URL)
+  response2 = await fetchRequest(TAGS_URL)
+  const response = [...response1,...response2]
+  const selectedOption = document.getElementById("contract-dropdown");
+  selectedOption.innerHTML = "";
+  response.forEach((flow) => {
+    var option = document.createElement("option");
+    option.text = flow.name;
+    selectedOption.add(option);
+  });
+  readBuildFile(response[0]?.name);
 }
 
 function upadteContract() {
@@ -33,5 +65,5 @@ function upadteContract() {
 }
 
 window.onload = function () {
-  upadteContract();
+  loadContracts()
 };
