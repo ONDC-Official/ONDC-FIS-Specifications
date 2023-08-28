@@ -2,26 +2,24 @@
 
 These specifications are to enable ONDC Network Participants to expose or consume financial services on ONDC.
 
-ONDC mobility specification is an adaptation of [beckn financial specifications](https://github.com/beckn/financial-services).
+ONDC FIS specification is an adaptation of [beckn financial specifications](https://github.com/beckn/financial-services).
 
 These specifications will be released in multiple phases enabling different use case and enhancements.
 
-ONDC Financial Services developer guide [link](https://ondc-official.github.io/mobility-specification/)
+ONDC Financial Services developer guide [link](https://ondc-official.github.io/ONDC-FIS-Specifications)
 
 ## Latest Version
 
-[v1.0.0](https://github.com/ONDC-Official/mobility-specification/releases/tag/v1.0.0)
 
 ## Earlier Versions
 
 | Version | Release Date    | beckn Version                               | Comments                                                            |
 | ------- | --------------- | ------------------------------------------- | ------------------------------------------------------------------- |
-| v1.0.0  | non-git release | core - 1.1.0                                | Gift Card use case enabled doc link                                 |
 | v2.0.0  | TBD             | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Credit use cases enabled |
 
 ## Introduction
 
-Open Network for Digital Commerce (ONDC) is a network based on beckn open protocol and will enable local commerce across segments, such as mobility, retail etc, to be discovered and engaged by any network-enabled application.
+Open Network for Digital Commerce (ONDC) is a network based on beckn open protocol and will enable local commerce across segments, such as financial services, mobility, retail etc, to be discovered and engaged by any network-enabled application.
 
 ONDC financial services aims to build a nationwide multi-modal network that provides seamless experiences, supports growth & innovation by,
 
@@ -35,7 +33,6 @@ This would be possible in the financial service domain by making sure all financ
 
 ## Enabled/Supported use cases on network
 
-* Purchase of Gift Card
 * Credit use case: Personal loan and Invoice based loan
 
 ## Working with Protocol
@@ -51,7 +48,7 @@ The evolution of ONDC FIS specification driven by 2 factors:
 
 To know more about how the specification evolves, visit the Network GOVERNANCE document.
 
-To follow discussions related to the financial services specification please visit the [Discussions Forum](https://github.com/ONDC-Official/mobility-specification/discussions) on GitHub
+To follow discussions related to the financial services specification please visit the [Discussions Forum](https://github.com/ONDC-Official/ONDC-FIS-Specifications/discussions) on GitHub
 
 Each major release of ONDC financial service specification will be approved by ONDC financial service working group members for which are listed [here](./Committee.md)
 
