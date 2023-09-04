@@ -1,20 +1,114 @@
 summary: Marine Insurance Application
 details:
-  - description: A detailed process for applying for marine insurance .
+  - description: Discovery of marine insurance .
+    mermaid: >-
+      sequenceDiagram
+        title Marine  insurance Discovery
+        Buyer Platform (BAP)->>Gateway (BG): search
+        Gateway (BG) ->> Buyer Platform (BAP): ACK
+        Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+        Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+        Gateway (BG)->>Insurer Platform (BPP): search
+        Insurer Platform (BPP)->>Gateway (BG) : ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
+  - description: Ordering
+    mermaid: >- 
+       title  Selection
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->> Insurer Form Service: Get Form
+        Insurer Form Service->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service->>Buyer Platform (BAP): Submission ID 
+        Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+        Insurer Form Service ->> Buyer Platform (BAP): Aadhar/kyc fornm
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Buyer Platform (BAP)->>Insurer Platform (BPP): ACK  
+
+  - description: Initializing the order 
+    mermaid: >-
+      sequenceDiagram
+        title Initializing Order
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Form Service: Get Form
+        Insurer Form Service->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service->>Buyer Platform (BAP): Submission ID
+        Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+        Insurer Platform (BPP)->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+        Buyer Platform (BAP)->>Insurer Platform (BPP): ACK
+  - description: Order Confirmation 
+    mermaid: >-
+      sequenceDiagram
+        title  Order Confirmation
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Form Service: Get Form
+        Insurer Form Service->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service->>Buyer Platform (BAP): Submission ID
+        Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+        Insurer Platform (BPP)->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+        Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
+  - description: Fulfillment  
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK            
 references: if any
 steps:
-  - summary: Users search for available health insurance providers.
+  - summary: Users search for available marine insurance providers.
     api: search
     details:
-      - description: Users explore health insurance options by searching for providers over the network.
+      - description: Users explore marine insurance options by searching for providers over the network.
+        mermaid: >-
+          sequenceDiagram
+            title Marine insurance Discovery
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Buyer Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+            Gateway (BG)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Gateway (BG) : ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
     reference: if any
     example:
       value:
         $ref: "../../examples/marine-insurance/search/search-request.yaml"
-  - summary: Provides a catalog of different loan products offered by a single lender for Health insurance
+  - summary: Provides a catalog of different insurance plans products offered by a single lender form marine insurance
     api: on_search
     details:
       - description: Platform sends a comprehensive catalog of various insurace products specifically tailored for marine INSURANCE, all of which are offered by a single lender.
+        mermaid: >-
+          sequenceDiagram
+            title marine insurance Discovery
+            Buyer Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Buyer Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+            Gateway (BG)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Gateway (BG) : ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK  
+            end 
     reference: if any
     example:
       value:
@@ -22,16 +116,115 @@ steps:
   - summary: Get the personal/individual information based form
     api: form
     details:
-      description: Provide platform to send customer's  personal/individual information
+     - description: Provide platform to send customer's  personal/individual information
+       mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            end
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
     reference: if any
     example:
       value: 
-        $ref: ../../examples/marine_insurance/forms/personal-info.html  
-  - summary: Select insurance of intreset and link personal info form
-    api: form
+        $ref: ../../examples/marine-insurance/forms/personal-info.html  
+  - summary: Select insurance of interest for more details
+    api: select
     details:
-      description: Provide platform to send customer's  personal/individual information
-    reference: if any
+      description: Consumer platform selects a specific marine insurance plan that suits their customer needs and links the personal info submission details with it.
+      mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any        
     example:
       value: 
-        $ref: ../../examples/marine_insurance/forms/personal-info.html  
+        $ref: ../../examples/marine-insurance/select/select-request.yaml
+  - summary: Provider platform returns the response to selected marine insurance plan.
+    api: on_select
+    details:
+      - description: The provider platform responds with detailed information for the selected marine insurace plan.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/marine-insurance/on_select/on_select-request.yaml"  
+  - summary: Get the aadhar-kyc  information based form
+    api: form
+    details:    
+     reference: if any
+    example:
+      value:
+        $ref: "../../examples/marine-insurance/on_select/on_select-request.yaml" 
+  - summary: The consumer initiates the marine insurace request.
+    api: init
+    details:
+      - description: The consumer platform shares the request's terms and initializes the Marine_INSURANCE application.
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/marine-insurance/init/init-request.yaml" 
+  - summary: The consumer initiates the marine insurace request.
+    api: on_init
+    details:
+      - description: The consumer platform shares the request's terms , shares the policy summary with the payment link provided
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/marine-insurance/on_init/on_init-request.yaml" 
+  - summary: The consumer confirms the marine insurance request.
+    api: confirm
+    details:
+      - description: The consumer platform confirms the marine insurance request and provides all the necessary information as per the terms.
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/marine-insurance/confirm/confirm-request.yaml"         
+  - summary: The provider confirms the marine INSURANCE order.
+    api: on_confirm
+    details:
+      - description: The provider platform confirms the marine  insurace and provides the final confirmation details.
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/marine-insurance/on_confirm/on_confirm-request.yaml"          
+
