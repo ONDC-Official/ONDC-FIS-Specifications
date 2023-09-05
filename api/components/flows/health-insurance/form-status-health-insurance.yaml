@@ -1,6 +1,30 @@
 summary: Form Status-Health Insurance Application
 details:
-  - description: A detailed process for applying for health insurance .
+  - description: Ordering
+    mermaid: >-
+      sequenceDiagram
+        title  Selection
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->> Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+        Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
+  - description: Fulfillment  
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK          
 references: if any
 steps:
   - summary: Provider platform returns the response to selected health insurance plan.
@@ -10,7 +34,7 @@ steps:
     reference: if any
     example:
       value: 
-        $ref: "../../examples/health-insurance/on_select/on_select-request-ped-info.yaml"
+        $ref: "../../examples/health-insurance/on_select/on_select-request-pan-dob-info.yaml"
   - summary: Consumer platform fetches the EKYC form
     api: form
     details:
@@ -22,7 +46,16 @@ steps:
   - summary: Consumer platform seeks the most recent health insurance status update(Form Status).
     api: status
     details:
-      description: Consumer platform fetches the EKYC Details form from the Provider platform using the link provided in the previous step
+      - description: Consumer platform fetches the EKYC Details form from the Provider platform using the link provided in the previous step
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK        
     reference: if any
     example:
       value: 
