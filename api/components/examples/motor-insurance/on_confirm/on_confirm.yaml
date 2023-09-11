@@ -1,5 +1,5 @@
 context:
-  action: on_select
+  action: on_confirm
   bap_id: fis.test.bap.io
   bap_uri: https://fis.test.bap.io/
   bpp_id: fis.test.bpp.io
@@ -8,31 +8,36 @@ context:
   location:
     country:
       code: IND
-  message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
-  timestamp: "2023-07-22T15:03:18.179Z"
-  transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
+  message_id: 953c3fdc-09e3-44b6-a391-67463c17d7d2
+  timestamp: "2023-07-24T05:41:32.487Z"
+  transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
   ttl: PT24H
   version: 2.0.0
 message:
   order:
     fulfillments:
-      - customer:
+      - state:
+          descriptor:
+            code: PROCESSING
+        customer:
           contact:
             email: joe.adam@abc.org
             phone: +91-9999999999
-          person:
-            name: Joe Adam
-        id: FULFILMENT_ID
     items:
+      - add_ons:
+        - id: A1
+          quantity:
+            selected:
+              count: 1
+          descriptor:
+              name: Cosumables Cover
+              code: CONSUMABLES_COVER
         descriptor:
-          code: BASE
-          name: 2-Wheeler 3rd Party Motor Insurance
-          short_desc: 2-Wheeler 3rd Party Motor Insurance by ABC Insurance Provider
-        fulfillment_ids:
-          - FULFILMENT_ID
-        id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
+          name: ABC Individaul Health Insurance Policy
+          short_desc: ABC Individaul Health Insurance Class A with custom addon
+        id: I1
         price:
-          value: "1000"
+          value: "12505"
         tags:
           - descriptor:
               code: Generic information
@@ -90,10 +95,17 @@ message:
         time:
           duration: P1Y
           label: TENURE
-        xinput:
-          form:
-            url: https://fis.test.bpp.io/form/ekyc
-          required: true
+    id: O1
+    payments:
+      - collected_by: BPP
+        url: https://www.abcinsurance.com/pg-gateway/payment?amount=1000&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
+        params:
+          amount: "1000"
+          bank_account_number: "1800002341"
+          bank_code: SBIN0001234
+          currency: INR
+        status: NOT-PAID
+        type: PRE-FULFILLMENT
     provider:
       descriptor:
         long_desc: ABC Insurance Ltd. Deals in multiple Insurance Services like Health,
@@ -102,18 +114,24 @@ message:
         short_desc: "ABC Insurance Ltd. India "
         images:
           - url: https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-      id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
+            size_type: xs
+      id: P1
     quote:
-      breakup:
-        - price:
-            value: "900"
-          title: Base Price
-        - price:
-            value: "50"
-          title: Tax
-        - price:
-            value: "50"
-          title: Processing Fee
+      id: Q1
       price:
         currency: INR
-        value: "1000"
+        value: "12505"
+      breakup:
+        - price:
+            value: "3,634"
+          title: Basic OD
+        - price:
+            value: "7897"
+          title: Basic TP
+        - price:
+            value: "500"
+          title: Roadside Assistance
+        - price:
+            value: "474"
+          title: Loss of Personal belongings 
+    status: ACTIVE
