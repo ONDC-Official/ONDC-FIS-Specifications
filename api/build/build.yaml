@@ -2960,1068 +2960,6 @@ x-tags:
   on_cancel: *ref_6
   on_update: *ref_6
 x-flows:
-  - summary: Marine Insurance Application
-    details:
-      - description: Discovery of marine insurance .
-        mermaid: |-
-          sequenceDiagram
-            title Marine  insurance Discovery
-            Buyer Platform (BAP)->>Gateway (BG): search
-            Gateway (BG) ->> Buyer Platform (BAP): ACK
-            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
-            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
-            Gateway (BG)->>Insurer Platform (BPP): search
-            Insurer Platform (BPP)->>Gateway (BG) : ACK
-            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
-      - description: Ordering
-        mermaid: |-
-          sequenceDiagram
-            title  Selection
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            participant Insurer Form Service
-            Buyer Platform (BAP)->> Insurer Form Service: Get Form
-            Insurer Form Service->>Buyer Platform (BAP): Form Received
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Insurer Form Service->>Buyer Platform (BAP): Submission ID 
-            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-            Insurer Form Service ->> Buyer Platform (BAP): Aadhar/kyc fornm
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK  
-      - description: Initializing the order
-        mermaid: |-
-          sequenceDiagram
-            title Initializing Order
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            participant Insurer Form Service
-            Buyer Platform (BAP)->>Insurer Form Service: Get Form
-            Insurer Form Service->>Buyer Platform (BAP): Form Received
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Insurer Form Service->>Buyer Platform (BAP): Submission ID
-            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
-            Insurer Platform (BPP)->>Buyer Platform (BAP):ACK
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
-            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK
-      - description: Order Confirmation
-        mermaid: |-
-          sequenceDiagram
-            title  Order Confirmation
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            participant Insurer Form Service
-            Buyer Platform (BAP)->>Insurer Form Service: Get Form
-            Insurer Form Service->>Buyer Platform (BAP): Form Received
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Insurer Form Service->>Buyer Platform (BAP): Submission ID
-            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
-            Insurer Platform (BPP)->>Buyer Platform (BAP):ACK
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
-            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
-      - description: Fulfillment
-        mermaid: |-
-          sequenceDiagram
-            title Order Fulfillment
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
-            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK            
-    references: if any
-    steps:
-      - summary: Users search for available marine insurance providers.
-        api: search
-        details:
-          - description: >-
-              Users explore marine insurance options by searching for providers
-              over the network.
-            mermaid: |-
-              sequenceDiagram
-                title Marine insurance Discovery
-                rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Gateway (BG): search
-                Gateway (BG) ->> Buyer Platform (BAP): ACK
-                Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
-                Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
-                Gateway (BG)->>Insurer Platform (BPP): search
-                Insurer Platform (BPP)->>Gateway (BG) : ACK
-                end
-                Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
-        reference: if any
-        example:
-          value: &ref_30
-            context:
-              action: search
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              domain: financial-services:0.2.0
-              location:
-                country:
-                  code: IND
-              message_id: 818bab0a-5599-4acc-9783-7b28dd5a5ae0
-              timestamp: '2023-07-22T15:01:07.785Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24H
-              version: 2.0.0
-            message:
-              intent:
-                category:
-                  descriptor:
-                    code: MARINE_INSURANCE
-      - summary: >-
-          Provides a catalog of different insurance plans products offered by a
-          single lender form marine insurance
-        api: on_search
-        details:
-          - description: >-
-              Platform sends a comprehensive catalog of various insurace
-              products specifically tailored for marine INSURANCE, all of which
-              are offered by a single lender.
-            mermaid: |-
-              sequenceDiagram
-                title marine insurance Discovery
-                Buyer Platform (BAP)->>Gateway (BG): search
-                Gateway (BG) ->> Buyer Platform (BAP): ACK
-                Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
-                Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
-                Gateway (BG)->>Insurer Platform (BPP): search
-                Insurer Platform (BPP)->>Gateway (BG) : ACK
-                rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): ACK  
-                end 
-        reference: if any
-        example:
-          value: &ref_31
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-              action: on_search
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-              timestamp: '2023-07-22T15:01:17.694Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24M
-              version: 2.0.0
-            message:
-              catalog:
-                descriptor:
-                  name: ABC Insurance Ltd
-                providers:
-                  - id: I1
-                    descriptor:
-                      images:
-                        - url: >-
-                            https://www.abcinsurance.com/content/dam/abcinsurance/india/assets/images/header/logo.png
-                          size_type: sm
-                      name: ABC Insurance Ltd
-                      short_desc: ABC Insurance Ltd
-                      long_desc: ABC Insurance Ltd
-                    categories:
-                      - id: '101123'
-                        descriptor:
-                          name: marine-insurance
-                          code: MARINE_INSURANCE
-                    items:
-                      - id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                        descriptor:
-                          name: marine-insurance
-                          code: MARINE_INSURANCE
-                        category_ids:
-                          - C1
-                        tags:
-                          - descriptor:
-                              name: General Information
-                              code: General-info
-                            list:
-                              - descriptor:
-                                  name: Co-payment
-                                  code: CO_PAYMENT
-                                value: 'Yes'
-                              - descriptor:
-                                  name: Liability Coverage
-                                  code: LIABILITY_COVERAGE
-                                value: '100000'
-                              - descriptor:
-                                  name: Protection and Indemnity
-                                  code: PROTECTION_AND_INDEMNITY
-                                value: '50000'
-                              - descriptor:
-                                  name: Extended Coverage
-                                  code: EXTENDED_COVERAGE
-                                value: '20000 '
-                              - descriptor:
-                                  name: Deductibles and Excess
-                                  code: DEDUCTIBLES_AND_EXCESS
-                                value: '2000'
-                              - descriptor:
-                                  name: Institute Cargo Clauses
-                                  code: INSTITUTE_CARGO_CLAUSE
-                                value: '200000 '
-                        time:
-                          duration: P1Y
-                        xinput:
-                          head:
-                            descriptor:
-                              name: Customer Information
-                            index:
-                              min: 0
-                              cur: 1
-                              max: 0
-                            headings:
-                              - Individaul Information
-                          form:
-                            id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                            mime_type: text/html
-                            url: https://fis.test.bpp.io/form/marine_dtls
-                            resubmit: false
-                            multiple_sumbissions: false
-                          required: true
-      - summary: Get the personal/individual information based form
-        api: form
-        details:
-          - description: >-
-              Provide platform to send customer's  personal/individual
-              information
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                rect rgb(191, 223, 255)
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                end
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
-        reference: if any
-        example:
-          value: |-
-            <!DOCTYPE html>
-            <html lang="en">
-
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Personal Details</title>
-            </head>
-
-            <body>
-              <form>
-                <label for="firstName">First Name</label>
-                <input type="text" id="firstName" name="firstName" />
-                <label for="lastName">Last Name</label>
-                <input type="text" id="lastName" name="lastName" />
-                <label for="email">Email</label>
-                <input type="text" id="email" name="email" />
-                <label for="phone">Phone</label>
-                <input type="text" id="phone" name="phone" />
-                <label for="relation">Relationship with proposer</label>
-                <select name="relation" id="relation">
-                  <option value="self">Self</option>
-                  <option value="spouce">Spouce</option>
-                  <option value="son">Son</option>
-                  <option value="daughter">Daughter</option>
-                  <option value="father">Father</option>
-                  <option value="mother">Mother</option>
-                </select>
-                <label for="PED">PED</label>
-                <select name="PED" id="PED">
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-                <label for="dob">Date of Birth</label>
-                <input type="date" id="dob" name="dob" />
-                <label for="amount">Coverage amount</label>
-                <input type="number" id="amount" name="amount" />
-                <label for="panIndia">Pan India Cover</label>
-                <input type="checkbox" id="panIndia" name="panIndia" />
-                <label for="pincode">Pincode</label>
-                <input type="text" id="pincode" name="pincode" />
-                <input type="hidden" id="transactionId" name="transactionId" value="c04a04ee-d892-400f-bbe6-479a43b4448a">
-                <input type="hidden" id="submissionId" name="submissionId" value="e9a3b4a5-10f8-42c7-b888-dbf0e2edd684">
-              </form>
-            </body>
-
-            </html>
-      - summary: Select insurance of interest for more details
-        api: select
-        details:
-          description: >-
-            Consumer platform selects a specific marine insurance plan that
-            suits their customer needs and links the personal info submission
-            details with it.
-          mermaid: |-
-            sequenceDiagram
-              title  Selection
-              participant Buyer Platform (BAP)
-              participant Insurer Platform (BPP)
-              
-              participant Insurer Form Service
-              Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
-              Insurer Form Service-->>Buyer Platform (BAP): Form Received
-              Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-              Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-              rect rgb(191, 223, 255)
-              Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-              Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-              end
-              Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-              Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value: &ref_32
-            context:
-              action: select
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: financial-services:0.2.0
-              location:
-                country:
-                  code: IND
-              message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
-              timestamp: '2023-07-22T15:03:18.179Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24H
-              version: 2.0.0
-            message:
-              order:
-                items:
-                  - add_ons:
-                      - id: A1
-                        quantity:
-                          selected:
-                            count: 1
-                    id: I1
-                    xinput:
-                      form_response:
-                        status: 'true'
-                        submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
-                provider:
-                  id: P1
-      - summary: >-
-          Provider platform returns the response to selected marine insurance
-          plan.
-        api: on_select
-        details:
-          - description: >-
-              The provider platform responds with detailed information for the
-              selected marine insurace plan.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end
-        reference: if any
-        example:
-          value: &ref_7
-            context:
-              action: on_select
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: financial-services:0.2.0
-              location:
-                country:
-                  code: IND
-              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-              timestamp: '2023-07-22T15:03:18.179Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24H
-              version: 1.1.0
-            message:
-              order:
-                items:
-                  - category_ids:
-                      - C1
-                    descriptor:
-                      name: ABC Marine Insurance Policy
-                      short_desc: ABC Marine Insurance Class A
-                    tags:
-                      - descriptor:
-                          name: Policy Details
-                        list:
-                          - descriptor:
-                              name: Commodity type
-                              code: COMMODITY_TYPE
-                            value: FOOD
-                          - descriptor:
-                              name: Sum insured
-                              code: SUM_INSURED
-                            value: '100000'
-                          - descriptor:
-                              name: Mode of conveyance
-                              code: MODE_OF_CONVEYANCE
-                            value: Cargo
-                          - descriptor:
-                              name: Basis of valuation
-                              code: BASIS_OF_VALUATION
-                            value: '5'
-                          - descriptor:
-                              name: Policy start date
-                              code: POLICY_START_DATE
-                            value: '2023-07-01'
-                          - descriptor:
-                              name: Invoice number
-                              code: INVOICE_NUMBER
-                            value: 08790dd7
-                          - descriptor:
-                              name: Invoice date
-                              code: INVOICE_DATE
-                            value: '2023-06-21'
-                      - descriptor:
-                          name: Cargo details
-                          code: CARGO_DETAILS
-                        list:
-                          - descriptor:
-                              name: Cargo Carrier Name
-                              code: CARGO_CARRIER_NAME
-                            value: MAARK
-                          - descriptor:
-                              name: Cargo Type
-                              code: CARGO_TYPE
-                            value: Full Container
-                      - descriptor:
-                          name: Packaging details
-                          code: PACKAGING_DETAILS
-                        list:
-                          - descriptor:
-                              name: Package Type
-                              code: PACKAGE_TYPE
-                            value: Box
-                          - descriptor:
-                              name: Package Dimension
-                              code: PACKAGE_DIMENSION
-                            value: 10x40x5
-                      - descriptor:
-                          name: Inclusion
-                          code: INCLUSION
-                        list:
-                          - descriptor:
-                              name: Delay Covered
-                              code: DELAY_COVERED
-                            value: Transport Damage Covered
-                      - descriptor:
-                          name: Cargo details
-                        list:
-                          - descriptor:
-                              name: Cargo Carrier Name
-                            value: MAARK
-                          - descriptor:
-                              name: Cargo Type
-                            value: Full Container
-                      - descriptor:
-                          name: Packaging details
-                        list:
-                          - descriptor:
-                              name: Package Type
-                            value: Box
-                          - descriptor:
-                              name: Package Dimension cm
-                            value: 10x40x5
-                      - descriptor:
-                          name: Inclusion
-                        list:
-                          - value: Delay Covered
-                          - value: Transport Damage Covered
-                    time:
-                      duration: P1Y
-                      label: TENURE
-                    id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                    xinput:
-                      head:
-                        descriptor:
-                          name: Aadhar kyc form
-                        index:
-                          min: 0
-                          cur: 1
-                          max: 2
-                        headings:
-                          - Aadhar kyc form
-                      form:
-                        mime_type: text/html
-                        url: https://fis.test.bpp.io/form/ekyc_dtls
-                        resubmit: true
-                        multiple_sumbissions: false
-                      required: true
-                provider:
-                  descriptor:
-                    long_desc: >-
-                      ABC Insurance Ltd. Deals in multiple Insurance Services
-                      like Health, Motor, Marine etc
-                    name: ABC Insurance Ltd.
-                    short_desc: 'ABC Insurance Ltd. India '
-                    images:
-                      - url: >-
-                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                  id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                quote:
-                  breakup:
-                    - price:
-                        value: '900'
-                      title: Base Price
-                    - price:
-                        value: '50'
-                      title: Tax
-                    - price:
-                        value: '50'
-                      title: Processing Fee
-                  price:
-                    currency: INR
-                    value: '1000'
-      - summary: Get the aadhar-kyc  information based form
-        api: form
-        details:
-          reference: if any
-        example:
-          value: *ref_7
-      - summary: The consumer initiates the marine insurace request.
-        api: init
-        details:
-          - description: >-
-              The consumer platform shares the request's terms and initializes
-              the Marine_INSURANCE application.
-        reference: if any
-        example:
-          value: &ref_33
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-              action: init
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-              timestamp: '2023-07-22T15:01:17.694Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24M
-              version: 2.0.0
-            message:
-              order:
-                fulfillments:
-                  - customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
-                      person:
-                        name: Joe Adam
-                    id: FULFILMENT_ID
-                items:
-                  - fulfillment_ids:
-                      - FULFILMENT_ID
-                    id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                    time:
-                      label: Coverage Time
-                      range:
-                        start: '2023-07-01T07:12:29.429Z'
-                        end: '2023-07-30T07:12:47.419Z'
-                    xinput:
-                      form:
-                        url: https://fis.test.bpp.io/form/ekyc
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                    status: NOT-PAID
-                    type: PRE-ORDER
-                provider:
-                  id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                quote:
-                  breakup:
-                    - price:
-                        value: '90000'
-                      title: Base Price
-                    - price:
-                        value: '5000'
-                      title: Tax
-                    - price:
-                        value: '5000'
-                      title: Processing Fee
-                  price:
-                    currency: INR
-                    value: '100000'
-      - summary: The consumer initiates the marine insurace request.
-        api: on_init
-        details:
-          - description: >-
-              The consumer platform shares the request's terms , shares the
-              policy summary with the payment link provided
-        reference: if any
-        example:
-          value: &ref_34
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-              action: on_init
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-              timestamp: '2023-07-22T15:01:17.694Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24M
-              version: 2.0.0
-            message:
-              order:
-                fulfillments:
-                  - customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
-                      person:
-                        dob: '1990-01-21'
-                        gender: male
-                        name: Joe Adam
-                        tags:
-                          - descriptor:
-                              code: PERSON_ADDITIONAL_DETAILS
-                            list:
-                              - descriptor:
-                                  name: Politically exposed person
-                                value: 'false'
-                              - descriptor:
-                                  name: GSTIN
-                                value: 20JDVIEHVJDSN
-                      organization:
-                        address: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                    id: FULFILMENT_ID
-                items:
-                  - category_ids:
-                      - CAT_MARINE_INSURANCE
-                    descriptor:
-                      name: ABC Marine Insurance Policy
-                      short_desc: ABC Marine Insurance Class A
-                    fulfillment_ids:
-                      - FULFILMENT_ID
-                    id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                    price:
-                      value: '1000'
-                    time:
-                      label: Coverage Time
-                      range:
-                        start: '2023-07-01T07:12:29.429Z'
-                        end: '2023-07-30T07:12:47.419Z'
-                    tags:
-                      - descriptor:
-                          name: Policy Details
-                        list:
-                          - descriptor:
-                              name: Commodity type
-                            value: FOOD
-                          - descriptor:
-                              name: Sum insured
-                            value: '100000'
-                          - descriptor:
-                              name: Mode of conveyance
-                            value: Cargo
-                          - descriptor:
-                              name: Basis of valuation %
-                            value: '5'
-                          - descriptor:
-                              name: Policy start date
-                            value: '2023-07-01'
-                          - descriptor:
-                              name: Invoice number
-                            value: 08790dd7
-                          - descriptor:
-                              name: Invoice date
-                            value: '2023-06-21'
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                    status: NOT-PAID
-                    time:
-                      range:
-                        end: '2023-07-30T15:44:19.166Z'
-                        start: '2023-07-01T15:44:19.166Z'
-                    type: PRE-ORDER
-                    url: https://payment.fis.test.bpp.io
-                provider:
-                  descriptor:
-                    long_desc: >-
-                      ABC Insurance Ltd. Deals in multiple Insurance Services
-                      like Health, Motor, Marine etc
-                    name: ABC Insurance Ltd.
-                    short_desc: 'ABC Insurance Ltd. India '
-                    images:
-                      - url: >-
-                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                  id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                quote:
-                  breakup:
-                    - price:
-                        value: '900'
-                      title: Base Price
-                    - price:
-                        value: '50'
-                      title: Tax
-                    - price:
-                        value: '50'
-                      title: Processing Fee
-                  price:
-                    currency: INR
-                    value: '1000'
-      - summary: The consumer confirms the marine insurance request.
-        api: confirm
-        details:
-          - description: >-
-              The consumer platform confirms the marine insurance request and
-              provides all the necessary information as per the terms.
-        reference: if any
-        example:
-          value: &ref_35
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-              action: confirm
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-              timestamp: '2023-07-22T15:01:17.694Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24M
-              version: 2.0.0
-            message:
-              order:
-                fulfillments:
-                  - customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
-                      person:
-                        dob: '1990-01-21'
-                        gender: male
-                        name: Joe Adam
-                        tags:
-                          - descriptor:
-                              code: PERSON_ADDITIONAL_DETAILS
-                              name: person additional setails
-                            list:
-                              - descriptor:
-                                  name: Politically exposed person
-                                  code: Politically_exposed_person
-                                value: 'false'
-                              - descriptor:
-                                  name: GSTIN
-                                  code: Gstin
-                                value: 20JDVIEHVJDSN
-                      organization:
-                        address: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                    id: FULFILMENT_ID
-                items:
-                  - fulfillment_ids:
-                      - FULFILMENT_ID
-                    id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                    price:
-                      value: '1000'
-                    time:
-                      label: Coverage Time
-                      range:
-                        start: '2023-07-01T07:12:29.429Z'
-                        end: '2023-07-30T07:12:47.419Z'
-                    tags:
-                      - descriptor:
-                          name: Policy Details
-                        list:
-                          - descriptor:
-                              name: Commodity type
-                              code: Commodity_Type
-                            value: FOOD
-                          - descriptor:
-                              name: Sum insured
-                              code: Sum_Insured
-                            value: '100000'
-                          - descriptor:
-                              name: Mode of conveyance
-                              code: Mode_Of_Conveyance
-                            value: Cargo
-                          - descriptor:
-                              name: Basis of valuation
-                              code: Basis_OF_Valuation
-                            value: '5'
-                          - descriptor:
-                              name: Policy start date
-                              code: Policy_Start_Date
-                            value: '2023-07-01'
-                          - descriptor:
-                              name: Invoice number
-                              code: Invoice_Number
-                            value: 08790dd7
-                          - descriptor:
-                              name: Invoice date
-                              code: Invoice_Date
-                            value: '2023-06-21'
-                      - descriptor:
-                          name: Cargo details
-                          code: Cargo_Details
-                        list:
-                          - descriptor:
-                              name: Cargo Carrier Name
-                              code: Cargo_Carrier_Name
-                            value: MAARK
-                          - descriptor:
-                              name: Cargo Type
-                              code: Cargo_Type
-                            value: Full Container
-                      - descriptor:
-                          name: Packaging details
-                        list:
-                          - descriptor:
-                              name: Package Type
-                              code: Package_Type
-                            value: Box
-                          - descriptor:
-                              name: Package Dimension
-                              code: Package_Dimension
-                            value: 10x40x5
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 079c071b-8972-4f0f-b553-12e894617860
-                    status: PAID
-                    type: PRE-ORDER
-                provider:
-                  id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                quote:
-                  breakup:
-                    - price:
-                        value: '900'
-                      title: Base Price
-                    - price:
-                        value: '50'
-                      title: Tax
-                    - price:
-                        value: '50'
-                      title: Processing Fee
-                  price:
-                    currency: INR
-                    value: '1000'
-      - summary: The provider confirms the marine INSURANCE order.
-        api: on_confirm
-        details:
-          - description: >-
-              The provider platform confirms the marine  insurace and provides
-              the final confirmation details.
-        reference: if any
-        example:
-          value: &ref_36
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-              action: on_confirm
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-              timestamp: '2023-07-22T15:01:17.694Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT24M
-              version: 2.0.0
-            message:
-              order:
-                id: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
-                status: ACTIVE
-                fulfillments:
-                  - customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
-                      person:
-                        dob: '1990-01-21'
-                        gender: male
-                        name: Joe Adam
-                        tags:
-                          - descriptor:
-                              code: PERSON_ADDITIONAL_DETAILS
-                            list:
-                              - descriptor:
-                                  name: Politically exposed person
-                                value: 'false'
-                              - descriptor:
-                                  name: GSTIN
-                                value: 20JDVIEHVJDSN
-                      organization:
-                        address: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                    id: FULFILMENT_ID
-                items:
-                  - category_ids:
-                      - '1'
-                    price:
-                      value: '100000'
-                    time:
-                      label: Coverage Time
-                      range:
-                        start: '2023-07-01T07:12:29.429Z'
-                        end: '2023-07-30T07:12:47.419Z'
-                    tags:
-                      - descriptor:
-                          name: Policy Details
-                        list:
-                          - descriptor:
-                              name: Commodity type
-                              code: Commodity_Type
-                            value: FOOD
-                          - descriptor:
-                              name: Sum insured
-                              code: Sum_Insured
-                            value: '100000'
-                          - descriptor:
-                              name: Mode of conveyance
-                              code: Mode_Of_Conveyance
-                            value: Cargo
-                          - descriptor:
-                              name: Basis of valuation
-                              code: Basis_OF_Valuation
-                            value: '5'
-                          - descriptor:
-                              name: Policy start date
-                              code: Policy_Start_Date
-                            value: '2023-07-01'
-                          - descriptor:
-                              name: Invoice number
-                              code: Invoice_Number
-                            value: 08790dd7
-                          - descriptor:
-                              name: Invoice date
-                              code: Invoice_Date
-                            value: '2023-06-21'
-                      - descriptor:
-                          name: Cargo details
-                          code: Cargo_Details
-                        list:
-                          - descriptor:
-                              name: Cargo Carrier Name
-                              code: Cargo_Carrier_Name
-                            value: MAARK
-                          - descriptor:
-                              name: Cargo Type
-                              code: Cargo_Type
-                            value: Full Container
-                      - descriptor:
-                          name: Packaging details
-                        list:
-                          - descriptor:
-                              name: Package Type
-                              code: Package_Type
-                            value: Box
-                          - descriptor:
-                              name: Package Dimension
-                              code: Package_Dimension
-                            value: 10x40x5
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '100000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 079c071b-8972-4f0f-b553-12e894617860
-                    status: PAID
-                    time:
-                      range:
-                        end: '2023-07-30T15:44:19.166Z'
-                        start: '2023-07-01T15:44:19.166Z'
-                    type: PRE-ORDER
-                    url: https://payment.fis.test.bpp.io
-                provider:
-                  descriptor:
-                    long_desc: >-
-                      ABC Insurance Ltd. Deals in multiple Insurance Services
-                      like Health, Motor, Marine etc
-                    name: ABC Insurance Ltd.
-                    short_desc: 'ABC Insurance Ltd. India '
-                    images:
-                      - url: >-
-                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                  id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                quote:
-                  breakup:
-                    - price:
-                        value: '90000'
-                      title: Base Price
-                    - price:
-                        value: '5000'
-                      title: Tax
-                    - price:
-                        value: '5000'
-                      title: Processing Fee
-                  price:
-                    currency: INR
-                    value: '10000'
-            cancellation_terms:
-              - fulfillment_state:
-                  descriptor:
-                    name: Insurance processing
-                    code: INSURANCE_PROCESSING
-                cancellation_fee:
-                  percentage: 3%
-                external_ref:
-                  mimetype: text/html
-                  url: https://icicibank.com/loan/tnc.html
-              - fulfillment_state:
-                  descriptor:
-                    name: Insurance_granted
-                    code: INSURANCE_GRANTED
-                cancellation_fee:
-                  percentage: 5%
-                external_ref:
-                  mimetype: text/html
-                  url: https://icicibank.com/loan/tnc.html
   - summary: Health Insurance Application
     details:
       - description: Discovery of health insurance .
@@ -4114,7 +3052,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_12
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -4164,7 +3102,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_13
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -4503,7 +3441,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_14
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -4562,7 +3500,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_8
+          value: &ref_7
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -4788,7 +3726,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_15
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -4855,7 +3793,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_16
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5084,7 +4022,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_8
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5141,7 +4079,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_9
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5366,7 +4304,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_10
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -5441,7 +4379,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_21
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -5712,7 +4650,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_17
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -5788,7 +4726,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_20
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6062,7 +5000,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_18
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6138,7 +5076,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_22
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6414,7 +5352,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_19
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6490,7 +5428,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_23
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6767,7 +5705,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_24
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -6857,7 +5795,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_25
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -7005,7 +5943,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_26
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -7182,7 +6120,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_27
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -7221,7 +6159,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_28
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -7428,7 +6366,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_7
       - summary: Consumer platform fetches the PED details
         api: form
         details:
@@ -7509,7 +6447,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init  
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_8
       - summary: >-
           Provider platform returns the response to selected health insurance
           plan.
@@ -7539,7 +6477,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init 
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_9
       - summary: Get PAN deatails form.
         api: form
         details:
@@ -7679,35 +6617,16 @@ x-flows:
               version: 2.0.0
             message:
               order:
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
                 items:
-                  - add_ons:
-                      - id: A1
-                        descriptor:
-                          code: NO_CLAIM_BONUS
-                          name: No Claim Bonus
-                        quantity:
-                          selected:
-                            count: 1
-                    xinput:
-                      form_response:
-                        status: FORM_COMPLETED
-                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                  - category_ids:
+                      - C1
+                      - C3
                     descriptor:
-                      name: ABC Individaul Health Insurance Policy
+                      name: Health Gain Plus Individual
                       short_desc: >-
                         ABC Individaul Health Insurance Class A with custom
                         addon
                     id: I1
-                    price:
-                      value: '1000'
                     tags:
                       - descriptor:
                           name: General Information
@@ -7746,32 +6665,46 @@ x-flows:
                     time:
                       duration: P1Y
                       label: TENURE
-                id: O1
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    status: PAID
-                    type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                    xinput:
+                      form_response:
+                        status: FORM_COMPLETED
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                    add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: No Claim Bonus
+                          code: NO_CLAIM_BONUS
+                      - id: A2
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daycare Cover
+                          code: DAYCARE_COVER
+                      - id: A3
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daily Cash Allowance
+                          code: DAILY_CASH_ALLOWANCE
+                      - id: A4
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Domicialiary Expenses
+                          code: DOMICILIARY_EXPENSES
+                      - id: A5
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Health Check-ups
+                          code: HEALTH_CHECK_UPS
                 provider:
                   descriptor:
                     long_desc: >-
@@ -7805,20 +6738,6 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-                status: ACTIVE
-                documents:
-                  - descriptor:
-                      code: policy-doc
-                      name: Insurance Policy Document
-                      short_desc: Download your digitally signed policy document here
-                      long_desc: >-
-                        Download you digitally signed policy document here. This
-                        document is password protected. To open this document,
-                        please type in your password in DDMMMYYYYXXXX format
-                        where DDMMMYYYY represents your date of birth, and XXXX
-                        represents the first four letters of your name
-                    mime_type: application/pdf
-                    url: https://abcinsurance.com/policies/O1.pdf
       - summary: The consumer platform initiates the health insurace request.
         api: init
         details:
@@ -7847,7 +6766,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_10
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -8117,35 +7036,16 @@ x-flows:
               version: 2.0.0
             message:
               order:
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
                 items:
-                  - add_ons:
-                      - id: A1
-                        descriptor:
-                          code: NO_CLAIM_BONUS
-                          name: No Claim Bonus
-                        quantity:
-                          selected:
-                            count: 1
-                    xinput:
-                      form_response:
-                        status: FORM_SUBMITTED
-                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                  - category_ids:
+                      - C1
+                      - C3
                     descriptor:
-                      name: ABC Individaul Health Insurance Policy
+                      name: Health Gain Plus Individual
                       short_desc: >-
                         ABC Individaul Health Insurance Class A with custom
                         addon
                     id: I1
-                    price:
-                      value: '1000'
                     tags:
                       - descriptor:
                           name: General Information
@@ -8184,32 +7084,46 @@ x-flows:
                     time:
                       duration: P1Y
                       label: TENURE
-                id: O1
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    status: PAID
-                    type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                    xinput:
+                      form_response:
+                        status: FORM_SUBMITTED
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                    add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: No Claim Bonus
+                          code: NO_CLAIM_BONUS
+                      - id: A2
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daycare Cover
+                          code: DAYCARE_COVER
+                      - id: A3
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daily Cash Allowance
+                          code: DAILY_CASH_ALLOWANCE
+                      - id: A4
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Domicialiary Expenses
+                          code: DOMICILIARY_EXPENSES
+                      - id: A5
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Health Check-ups
+                          code: HEALTH_CHECK_UPS
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8243,20 +7157,6 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-                status: ACTIVE
-                documents:
-                  - descriptor:
-                      code: policy-doc
-                      name: Insurance Policy Document
-                      short_desc: Download your digitally signed policy document here
-                      long_desc: >-
-                        Download you digitally signed policy document here. This
-                        document is password protected. To open this document,
-                        please type in your password in DDMMMYYYYXXXX format
-                        where DDMMMYYYY represents your date of birth, and XXXX
-                        represents the first four letters of your name
-                    mime_type: application/pdf
-                    url: https://abcinsurance.com/policies/O1.pdf
       - summary: Buyer platform request the latest form status updates.
         api: status
         details:
@@ -8281,7 +7181,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_11
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -8343,35 +7243,16 @@ x-flows:
               version: 2.0.0
             message:
               order:
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
                 items:
-                  - add_ons:
-                      - id: A1
-                        descriptor:
-                          code: NO_CLAIM_BONUS
-                          name: No Claim Bonus
-                        quantity:
-                          selected:
-                            count: 1
-                    xinput:
-                      form_response:
-                        status: FORM_PROCESSING
-                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                  - category_ids:
+                      - C1
+                      - C3
                     descriptor:
-                      name: ABC Individaul Health Insurance Policy
+                      name: Health Gain Plus Individual
                       short_desc: >-
                         ABC Individaul Health Insurance Class A with custom
                         addon
                     id: I1
-                    price:
-                      value: '1000'
                     tags:
                       - descriptor:
                           name: General Information
@@ -8410,32 +7291,46 @@ x-flows:
                     time:
                       duration: P1Y
                       label: TENURE
-                id: O1
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    status: PAID
-                    type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                    xinput:
+                      form_response:
+                        status: FORM_PROCESSING
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                    add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: No Claim Bonus
+                          code: NO_CLAIM_BONUS
+                      - id: A2
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daycare Cover
+                          code: DAYCARE_COVER
+                      - id: A3
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daily Cash Allowance
+                          code: DAILY_CASH_ALLOWANCE
+                      - id: A4
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Domicialiary Expenses
+                          code: DOMICILIARY_EXPENSES
+                      - id: A5
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Health Check-ups
+                          code: HEALTH_CHECK_UPS
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8469,20 +7364,6 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-                status: ACTIVE
-                documents:
-                  - descriptor:
-                      code: policy-doc
-                      name: Insurance Policy Document
-                      short_desc: Download your digitally signed policy document here
-                      long_desc: >-
-                        Download you digitally signed policy document here. This
-                        document is password protected. To open this document,
-                        please type in your password in DDMMMYYYYXXXX format
-                        where DDMMMYYYY represents your date of birth, and XXXX
-                        represents the first four letters of your name
-                    mime_type: application/pdf
-                    url: https://abcinsurance.com/policies/O1.pdf
       - summary: Buyer platform request the latest form status updates.
         api: status
         details:
@@ -8507,7 +7388,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init
         reference: if any
         example:
-          value: *ref_12
+          value: *ref_11
       - summary: >-
           Insurer provides the Buyer with latest update of form status(Form
           Completed) .
@@ -8552,35 +7433,16 @@ x-flows:
               version: 2.0.0
             message:
               order:
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
                 items:
-                  - add_ons:
-                      - id: A1
-                        descriptor:
-                          code: NO_CLAIM_BONUS
-                          name: No Claim Bonus
-                        quantity:
-                          selected:
-                            count: 1
-                    xinput:
-                      form_response:
-                        status: FORM_COMPLETED
-                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                  - category_ids:
+                      - C1
+                      - C3
                     descriptor:
-                      name: ABC Individaul Health Insurance Policy
+                      name: Health Gain Plus Individual
                       short_desc: >-
                         ABC Individaul Health Insurance Class A with custom
                         addon
                     id: I1
-                    price:
-                      value: '1000'
                     tags:
                       - descriptor:
                           name: General Information
@@ -8619,32 +7481,46 @@ x-flows:
                     time:
                       duration: P1Y
                       label: TENURE
-                id: O1
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1000'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    status: PAID
-                    type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                    xinput:
+                      form_response:
+                        status: FORM_COMPLETED
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                    add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: No Claim Bonus
+                          code: NO_CLAIM_BONUS
+                      - id: A2
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daycare Cover
+                          code: DAYCARE_COVER
+                      - id: A3
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daily Cash Allowance
+                          code: DAILY_CASH_ALLOWANCE
+                      - id: A4
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Domicialiary Expenses
+                          code: DOMICILIARY_EXPENSES
+                      - id: A5
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Health Check-ups
+                          code: HEALTH_CHECK_UPS
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8678,20 +7554,6 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-                status: ACTIVE
-                documents:
-                  - descriptor:
-                      code: policy-doc
-                      name: Insurance Policy Document
-                      short_desc: Download your digitally signed policy document here
-                      long_desc: >-
-                        Download you digitally signed policy document here. This
-                        document is password protected. To open this document,
-                        please type in your password in DDMMMYYYYXXXX format
-                        where DDMMMYYYY represents your date of birth, and XXXX
-                        represents the first four letters of your name
-                    mime_type: application/pdf
-                    url: https://abcinsurance.com/policies/O1.pdf
       - summary: The consumer platform initiates the health insurace request.
         api: init
         details:
@@ -8719,7 +7581,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_10
 x-examples:
   health-insurance:
     summary: health-insurance
@@ -8729,72 +7591,72 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_13
+            value: *ref_12
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_14
+            value: *ref_13
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_15
+            value: *ref_14
           - summary: select-request-pan-dob-info
             description: TBD
-            value: *ref_16
+            value: *ref_15
           - summary: select-request-ped-info
             description: TBD
-            value: *ref_9
+            value: *ref_8
       on_select:
         examples:
           - summary: on_select-request-pan-dob-info-details-form
             description: TBD
-            value: *ref_17
+            value: *ref_16
           - summary: on_select-request-ped-info-form
             description: TBD
-            value: *ref_10
+            value: *ref_9
           - summary: on_select-request-with-personal info
             description: TBD
-            value: *ref_8
+            value: *ref_7
       init:
         examples:
           - summary: init-request for buyer info
             description: TBD
-            value: *ref_18
+            value: *ref_17
           - summary: init-request-ekyc-info
             description: TBD
-            value: *ref_11
+            value: *ref_10
           - summary: init-insured info
             description: TBD
-            value: *ref_19
+            value: *ref_18
           - summary: init-request-medical-info
             description: TBD
-            value: *ref_20
+            value: *ref_19
       on_init:
         examples:
           - summary: on_init-request-buyer-info-form
             description: TBD
-            value: *ref_21
+            value: *ref_20
           - summary: on_init-request-ekyc-info-form
             description: TBD
-            value: *ref_22
+            value: *ref_21
           - summary: on_init-request-insured-info-form
             description: TBD
-            value: *ref_23
+            value: *ref_22
           - summary: on_init-request-medical-info-form
             description: TBD
-            value: *ref_24
+            value: *ref_23
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_25
+            value: *ref_24
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_26
+            value: *ref_25
       update:
         examples:
           - summary: update
@@ -8827,17 +7689,17 @@ x-examples:
         examples:
           - summary: on_update
             description: TBD
-            value: *ref_27
+            value: *ref_26
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_28
+            value: *ref_27
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_29
+            value: *ref_28
       cancel:
         examples:
           - summary: cancel
@@ -9003,419 +7865,6 @@ x-examples:
                           letters of your name
                       mime_type: application/pdf
                       url: https://abcinsurance.com/policies/O1.pdf
-  marine-insurance:
-    summary: marine-insurance
-    description: marine-insurance
-    example_set:
-      search:
-        examples:
-          - summary: search
-            description: TBD
-            value: *ref_30
-      on_search:
-        examples:
-          - summary: on_search
-            description: TBD
-            value: *ref_31
-      select:
-        examples:
-          - summary: select-request-aadhar-kyc info
-            description: TBD
-            value: *ref_32
-      on_select:
-        examples:
-          - summary: on_select-request-aadhar-kyc-info detail
-            description: TBD
-            value: *ref_7
-      init:
-        examples:
-          - summary: init-request info
-            description: TBD
-            value: *ref_33
-      on_init:
-        examples:
-          - summary: on_init-request-buyer-info-form
-            description: TBD
-            value: *ref_34
-      confirm:
-        examples:
-          - summary: confirm
-            description: TBD
-            value: *ref_35
-      on_confirm:
-        examples:
-          - summary: on_confirm
-            description: TBD
-            value: *ref_36
-      status:
-        examples:
-          - summary: status
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS12
-                location:
-                  country:
-                    code: IND
-                action: status
-                bap_id: fis.test.bap.io
-                bap_uri: https://fis.test.bap.io/
-                bpp_id: fis.test.bpp.io
-                bpp_uri: https://fis.test.bpp.io/
-                message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-                timestamp: '2023-07-22T15:01:17.694Z'
-                transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-                ttl: PT24M
-                version: 2.0.0
-              message:
-                order_id: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
-      on_status:
-        examples:
-          - summary: on_status
-            description: TBD
-            value:
-              context:
-                action: on_status
-                bap_id: fis.test.bap.io
-                bap_uri: https://fis.test.bap.io/
-                bpp_id: fis.test.bpp.io
-                bpp_uri: https://fis.test.bpp.io/
-                domain: financial-services:0.2.0
-                location:
-                  country:
-                    code: IND
-                message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
-                timestamp: '2023-07-22T15:03:18.179Z'
-                transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-                ttl: PT24H
-                version: 2.0.0
-              message:
-                order:
-                  id: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
-                  status: ACTIVE
-                  fulfillments:
-                    - customer:
-                        contact:
-                          email: joe.adam@abc.org
-                          phone: +91-9999999999
-                        person:
-                          dob: '1990-01-21'
-                          gender: male
-                          name: Joe Adam
-                          tags:
-                            - descriptor:
-                                code: PERSON_ADDITIONAL_DETAILS
-                              list:
-                                - descriptor:
-                                    name: Politically exposed person
-                                    code: POLITICALLY_EXPOSED_PERSON
-                                  value: 'false'
-                                - descriptor:
-                                    name: GSTIN
-                                    code: GSTIN
-                                  value: 20JDVIEHVJDSN
-                        organization:
-                          address: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                      id: FULFILMENT_ID
-                  items:
-                    - descriptor:
-                        name: ABC Marine Insurance Policy
-                        short_desc: ABC Marine Insurance Class A
-                      fulfillment_ids:
-                        - FULFILMENT_ID
-                      id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                      price:
-                        value: '1000'
-                      time:
-                        label: Coverage Time
-                        range:
-                          start: '2023-07-01T07:12:29.429Z'
-                          end: '2023-07-30T07:12:47.419Z'
-                      tags:
-                        - descriptor:
-                            name: Policy Details
-                          list:
-                            - descriptor:
-                                name: Commodity type
-                                code: Commodity_Type
-                              value: FOOD
-                            - descriptor:
-                                name: Sum insured
-                                code: Sum_Insured
-                              value: '100000'
-                            - descriptor:
-                                name: Mode of conveyance
-                                code: Mode_Of_Conveyance
-                              value: Cargo
-                            - descriptor:
-                                name: Basis of valuation
-                                code: Basis_OF_Valuation
-                              value: '5'
-                            - descriptor:
-                                name: Policy start date
-                                code: Policy_Start_Date
-                              value: '2023-07-01'
-                            - descriptor:
-                                name: Invoice number
-                                code: Invoice_Number
-                              value: 08790dd7
-                            - descriptor:
-                                name: Invoice date
-                                code: Invoice_Date
-                              value: '2023-06-21'
-                        - descriptor:
-                            name: Cargo details
-                            code: Cargo_Details
-                          list:
-                            - descriptor:
-                                name: Cargo Carrier Name
-                                code: Cargo_Carrier_Name
-                              value: MAARK
-                            - descriptor:
-                                name: Cargo Type
-                                code: Cargo_Type
-                              value: Full Container
-                        - descriptor:
-                            name: Packaging details
-                          list:
-                            - descriptor:
-                                name: Package Type
-                                code: Package_Type
-                              value: Box
-                            - descriptor:
-                                name: Package Dimension
-                                code: Package_Dimension
-                              value: 10x40x5
-                        - descriptor:
-                            name: Inclusion
-                          list:
-                            - descriptor:
-                                name: Delay Covered
-                                code: Delay_Covered
-                              value: Transport Damage Covered
-                  payments:
-                    - collected_by: BPP
-                      params:
-                        amount: '1000'
-                        bank_account_number: '1800002341'
-                        bank_code: SBIN0001234
-                        currency: INR
-                        transaction_id: 079c071b-8972-4f0f-b553-12e894617860
-                      status: PAID
-                      time:
-                        range:
-                          end: '2023-07-30T15:44:19.166Z'
-                          start: '2023-07-01T15:44:19.166Z'
-                      type: PRE-ORDER
-                      url: https://payment.fis.test.bpp.io
-                  provider:
-                    descriptor:
-                      long_desc: >-
-                        ABC Insurance Ltd. Deals in multiple Insurance Services
-                        like Health, Motor, Marine etc
-                      name: ABC Insurance Ltd.
-                      short_desc: 'ABC Insurance Ltd. India '
-                      images:
-                        - url: >-
-                            https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                  quote:
-                    breakup:
-                      - price:
-                          value: '900'
-                        title: Base Price
-                      - price:
-                          value: '50'
-                        title: Tax
-                      - price:
-                          value: '50'
-                        title: Processing Fee
-                    price:
-                      currency: INR
-                      value: '1000'
-      cancel:
-        examples:
-          - summary: cancel
-            description: TBD
-            value:
-              context:
-                action: cancel
-                bap_id: fis.test.bap.io
-                bap_uri: https://fis.test.bap.io/
-                bpp_id: fis.test.bpp.io
-                bpp_uri: https://fis.test.bpp.io/
-                domain: financial-services:0.2.0
-                location:
-                  country:
-                    code: IND
-                message_id: ff042cdc-c5f5-4cbb-9509-52d6fba1b405
-                timestamp: '2023-07-22T15:10:50.780Z'
-                transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-                ttl: PT2H
-                version: 2.0.0
-              message:
-                order_id: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
-                cancellation_reason_id: '5'
-                descriptor:
-                  short_desc: User bought other policy
-      on_cancel:
-        examples:
-          - summary: on_cancel
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS12
-                location:
-                  country:
-                    code: IND
-                action: on_cancel
-                bap_id: fis.test.bap.io
-                bap_uri: https://fis.test.bap.io/
-                bpp_id: fis.test.bpp.io
-                bpp_uri: https://fis.test.bpp.io/
-                message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
-                timestamp: '2023-07-22T15:01:17.694Z'
-                transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-                ttl: PT24M
-                version: 2.0.0
-              message:
-                order:
-                  id: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
-                  status: CANCELLED
-                  fulfillments:
-                    - customer:
-                        contact:
-                          email: joe.adam@abc.org
-                          phone: +91-9999999999
-                        person:
-                          dob: '1990-01-21'
-                          gender: male
-                          name: Joe Adam
-                          tags:
-                            - descriptor:
-                                code: PERSON_ADDITIONAL_DETAILS
-                              list:
-                                - descriptor:
-                                    name: Politically exposed person
-                                  value: 'false'
-                                - descriptor:
-                                    name: GSTIN
-                                  value: 20JDVIEHVJDSN
-                        organization:
-                          address: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                      id: FULFILMENT_ID
-                  items:
-                    - category_ids:
-                        - '1'
-                      descriptor:
-                        name: ABC Marine Insurance Policy
-                        short_desc: ABC Marine Insurance Class A
-                      fulfillment_ids:
-                        - FULFILMENT_ID
-                      id: 36db0d40-c7ca-47db-82d8-6cdadf671c3c
-                      price:
-                        value: '1000'
-                      time:
-                        label: Coverage Time
-                        range:
-                          start: '2023-07-01T07:12:29.429Z'
-                          end: '2023-07-30T07:12:47.419Z'
-                      tags:
-                        - descriptor:
-                            name: Policy Details
-                          list:
-                            - descriptor:
-                                name: Commodity type
-                                code: Commodity_Type
-                              value: FOOD
-                            - descriptor:
-                                name: Sum insured
-                                code: Sum_Insured
-                              value: '100000'
-                            - descriptor:
-                                name: Mode of conveyance
-                                code: Mode_Of_Conveyance
-                              value: Cargo
-                            - descriptor:
-                                name: Basis of valuation
-                                code: Basis_OF_Valuation
-                              value: '5'
-                            - descriptor:
-                                name: Policy start date
-                                code: Policy_Start_Date
-                              value: '2023-07-01'
-                            - descriptor:
-                                name: Invoice number
-                                code: Invoice_Number
-                              value: 08790dd7
-                            - descriptor:
-                                name: Invoice date
-                                code: Invoice_Date
-                              value: '2023-06-21'
-                        - descriptor:
-                            name: Cargo details
-                            code: Cargo_Details
-                          list:
-                            - descriptor:
-                                name: Cargo Carrier Name
-                                code: Cargo_Carrier_Name
-                              value: MAARK
-                            - descriptor:
-                                name: Cargo Type
-                                code: Cargo_Type
-                              value: Full Container
-                        - descriptor:
-                            name: Packaging details
-                          list:
-                            - descriptor:
-                                name: Package Type
-                                code: Package_Type
-                              value: Box
-                            - descriptor:
-                                name: Package Dimension
-                                code: Package_Dimension
-                              value: 10x40x5
-                        - descriptor:
-                            name: Inclusion
-                          list:
-                            - descriptor:
-                                name: Delay Covered
-                                code: Delay_Covered
-                              value: Transport Damage Covered
-                  payments:
-                    - collected_by: BPP
-                      params:
-                        amount: '1000'
-                        bank_account_number: '1800002341'
-                        bank_code: SBIN0001234
-                        currency: INR
-                        transaction_id: 079c071b-8972-4f0f-b553-12e894617860
-                      status: PAID
-                      time:
-                        range:
-                          end: '2023-07-30T15:44:19.166Z'
-                          start: '2023-07-01T15:44:19.166Z'
-                      type: PRE-ORDER
-                      url: https://payment.fis.test.bpp.io
-                  provider:
-                    descriptor:
-                      long_desc: >-
-                        ABC Insurance Ltd. Deals in multiple Insurance Services
-                        like Health, Motor, Marine etc
-                      name: ABC Insurance Ltd.
-                      short_desc: 'ABC Insurance Ltd. India '
-                      images:
-                        - url: >-
-                            https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    id: e5585415-bce5-46b5-aeba-9f6b83df5ffa
-                  quote:
-                    breakup:
-                      - price:
-                          value: '0'
-                        title: Refund Amount
-                      - price:
-                          value: '1000'
-                        title: Cancellation charges
 x-attributes:
   health_insurance:
     attribute_set:
