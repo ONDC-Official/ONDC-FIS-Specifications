@@ -1,0 +1,532 @@
+summary: Motor Insurance Application
+details:
+  - description: Discovery of motor insurance .
+    mermaid: >-
+      sequenceDiagram
+        title Motor insurance Discovery
+        Buyer Platform (BAP)->>Gateway (BG): search
+        Gateway (BG) ->> Buyer Platform (BAP): ACK
+        Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+        Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+        Gateway (BG)->>Insurer Platform (BPP): search
+        Insurer Platform (BPP)->>Gateway (BG) : ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
+  - description: Ordering
+    mermaid: >-
+      sequenceDiagram
+        title  Selection
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->> Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+        Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
+  - description: Initializing the order 
+    mermaid: >-
+      sequenceDiagram
+        title Initializing Order
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+        Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK      
+  - description: Order Confirmation 
+    mermaid: >-
+      sequenceDiagram
+        title  Order Confirmation
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+        Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+  - description: Fulfillment  
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK            
+references: if any
+steps:
+  - summary: Consumer platform search for available motor insurance providers.
+    api: search
+    details:
+      - description: Consumer platform explore motor insurance options by searching for providers over the network.
+        mermaid: >-
+          sequenceDiagram
+            title Motor insurance Discovery
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Buyer Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+            Gateway (BG)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Gateway (BG) : ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/search/search-request.yaml"
+  - summary: Provider platform provides a catalog of different insurance products.
+    api: on_search
+    details:
+      - description: Platform sends a comprehensive catalog of various insurace products specifically tailored for motor insurance, all of which are offered by a the platform with vehicle details form.
+        mermaid: >-
+          sequenceDiagram
+            title Motor insurance Discovery
+            Buyer Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Buyer Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+            Gateway (BG)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Gateway (BG) : ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK  
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_search/on_search-request.yaml"
+  - summary: Consumer platform fetches vehicle details form.
+    api: form
+    details:
+      - description: Consumer platform fetches vehicle details form.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/form/vehicle-details.html"
+  - summary: Consumer platform selects a vehicle insurance for more details.
+    api: select
+    details:
+      - description: Consumer platform selects a specific motor insurance plan that suits their customer needs and links the personal info submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/select/select-request-vehicle-info.yaml"
+  - summary: Provider platform returns the response to selected motor insurance plan.
+    api: on_select
+    details:
+      - description: The provider platform responds with detailed information and PAN and DOB request form for the selected motor insurace plan.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_select/on_select-request-pan-info.yaml"
+  - summary: Consumer platform fetches the PAN and DOB Details form
+    api: form
+    details:
+      - description: Consumer platform fetches the PAN and DOB Details form from the Provider platform using the link provided in the previous step
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            end
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/motor-insurance/form/pan.html
+  - summary: Consumer platform selects a motor insurance for more details.
+    api: select
+    details:
+      - description: Consumer platform selects a specific motor insurance plan that suits their customer needs and links the PAN and DOB Details submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/motor-insurance/select/select-request-pan-info.yaml"
+  - summary: Provider platform returns the response to selected motor insurance plan.
+    api: on_select
+    details:
+      - description: The provider platform sends the form to collect ekyc from the consumer.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            participant Insurer Form Service
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/motor-insurance/on_select/on_select-request-kyc.yaml"
+  - summary: Consumer platform fetches the ekyc form
+    api: form
+    details:
+      - description: Consumer platform fetches the ekyc details form from the Provider platform using the link provided in the previous step
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+            end
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/motor-insurance/form/kyc.html"
+  - summary: The consumer platform initiates the motor insurace request.
+    api: init
+    details:
+      - description: Consumer platform initiates purchase of a specific motor insurance plan that suits their customer needs and links the ekyc details submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form(EKYC)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/motor-insurance/init/init-request-vehicle-nominee.yaml"
+  - summary: Provider platform returns the response to initailized motor insurance plan.
+    api: on_init
+    details:
+      - description: The consumer platform shares the request's terms and initializes the motor insurance application along with link to vehicle info form.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form(EKYC)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/motor-insurance/on_init/on_init-request-vehicle-info.yaml"      
+  - summary: Consumer platform fetches the vehicle information form
+    api: form
+    details:
+      - description: Consumer platform fetches the vehicle information form from the Provider platform using the link provided in the previous step
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            end
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/motor-insurance/form/vehicle-nominee.html"
+  - summary: The consumer platform initiates the motor insurace request.
+    api: init
+    details:
+      - description: Consumer platform initiates purchase of a specific motor insurance plan that suits their customer needs and links the vehicle information submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/motor-insurance/init/init-request-vehicle-nominee.yaml"
+  - summary: Provider platform returns the response to initailized motor insurance plan.
+    api: on_init
+    details:
+      - description: The consumer platform shares the request's terms and initializes the motor insurance application along with link to personal info form.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/motor-insurance/on_init/on_init-request-personal-info.yaml"
+  - summary: Consumer platform fetches the insured personals details form
+    api: form
+    details:
+      description: Consumer platform fetches the insured personals details form from the Provider platform using the link provided in the previous step
+      mermaid: >-
+        sequenceDiagram
+          title Initializing Order
+          participant Buyer Platform (BAP)
+          participant Insurer Platform (BPP)
+          participant Insurer Form Service
+          rect rgb(191, 223, 255)
+          Buyer Platform (BAP)->>Insurer Form Service: Get Form
+          Insurer Form Service-->>Buyer Platform (BAP): Form Received
+          Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+          Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+          end
+          Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+          Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+          Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+          Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/motor-insurance/form/personal.html"
+  - summary: The consumer platform initiates the motor insurance request.
+    api: init
+    details:
+      - description: Consumer platform initiates purchase of a specific motor insurance plan that suits their customer needs and links the insured personals details submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/motor-insurance/init/init-request-persoanl-info.yaml"
+  - summary: Provider platform returns the response to initailized motor insurance plan.
+    api: on_init
+    details:
+      - description: The consumer platform shares the request's terms and initializes the motor insurance application.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/motor-insurance/on_init/on_init-request-personal-info.yaml"
+  - summary: The consumer platform confirms the motor insurance request.
+    api: confirm
+    details:
+      - description: The consumer platform confirms the motor insurance request and provides all the necessary information as per the terms.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/confirm/confirm-request.yaml"         
+  - summary: Provider platform confirms the motor insurance order.
+    api: on_confirm
+    details:
+      - description: Provider platform confirms the motor insurace and provides the confirmation details.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_confirm/on_confirm-request.yaml"  
+
+
+  
+  
+  
