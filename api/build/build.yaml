@@ -4518,12 +4518,12 @@ x-flows:
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK            
     references: if any
     steps:
-      - summary: Consumer platform search for available health insurance providers.
+      - summary: Buyer App search for available health insurance providers.
         api: search
         details:
           - description: >-
-              Consumer platform explore health insurance options by searching
-              for providers over the network.
+              Buyer App explore health insurance options by searching for
+              providers over the network.
             mermaid: |-
               sequenceDiagram
                 title Health insurance Discovery
@@ -4567,7 +4567,7 @@ x-flows:
                         - descriptor:
                             code: BUYER_FINDER_FEES_PERCENTAGE
                           value: '1'
-      - summary: Provider platform provides a catalog of different insurance products.
+      - summary: Insurer provides a catalog of different insurance products.
         api: on_search
         details:
           - description: >-
@@ -4691,7 +4691,7 @@ x-flows:
                               cur: 0
                               max: 0
                             headings:
-                              - Individaul Information
+                              - PED Details
                           form:
                             mime_type: text/html
                             url: https://fis.test.bpp.io/form/buyer_dtls
@@ -4831,21 +4831,20 @@ x-flows:
                             resubmit: true
                             multiple_sumbissions: false
                           required: true
-      - summary: Consumer platform fetches the personal/individual information form
+      - summary: Buyer app fetches the PED(Pre-Existing Diseases) form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the personal information details form
-              from the Provider platform using the link provided in the previous
-              step
+              Buyer app fetches the PED details form from the Insurer using the
+              link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title  Selection
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                rect rgb(191, 223, 255)
                 participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
                 Insurer Form Service-->>Buyer Platform (BAP): Form Received
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
@@ -4853,7 +4852,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
           value: |-
@@ -4863,52 +4862,31 @@ x-flows:
             <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Personal Details</title>
+              <title>PED Details</title>
             </head>
 
             <body>
-              <form>
-                <label for="firstName">First Name</label>
-                <input type="text" id="firstName" name="firstName" />
-                <label for="lastName">Last Name</label>
-                <input type="text" id="lastName" name="lastName" />
-                <label for="email">Email</label>
-                <input type="text" id="email" name="email" />
-                <label for="phone">Phone</label>
-                <input type="text" id="phone" name="phone" />
-                <label for="relation">Relationship with proposer</label>
-                <select name="relation" id="relation">
-                  <option value="self">Self</option>
-                  <option value="spouce">Spouce</option>
-                  <option value="son">Son</option>
-                  <option value="daughter">Daughter</option>
-                  <option value="father">Father</option>
-                  <option value="mother">Mother</option>
-                </select>
-                <label for="PED">PED</label>
-                <select name="PED" id="PED">
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-                <label for="dob">Date of Birth</label>
-                <input type="date" id="dob" name="dob" />
-                <label for="amount">Coverage amount</label>
-                <input type="number" id="amount" name="amount" />
-                <label for="panIndia">Pan India Cover</label>
-                <input type="checkbox" id="panIndia" name="panIndia" />
-                <label for="pincode">Pincode</label>
-                <input type="text" id="pincode" name="pincode" />
+              <form action="/form/submission/ped">
+                <label for="diabetes">Diabetes</label>
+                <input type="checkbox" id="diabetes" name="diabetes" />
+                <label for="bloodPressure">Blood Pressure / Hypertension</label>
+                <input type="checkbox" id="bloodPressure" name="bloodPressure" />
+                <label for="heartAilments">Heart Ailments</label>
+                <input type="checkbox" id="heartAilments" name="heartAilments" />
+                <label for="other">Other health issues</label>
+                <input type="checkbox" id="other" name="other" />
+                <input type="hidden" id="formId" name="formId" value=" FO1">
+                <input type="submit" value="Submit">
               </form>
             </body>
 
             </html>
-      - summary: Consumer platform selects a health insurance for more details.
+      - summary: Buyer app selects a health insurance for more details.
         api: select
         details:
           - description: >-
-              Consumer platform selects a specific health insurance plan that
-              suits their customer needs and links the personal info submission
-              details with it.
+              Buyer app selects a specific health insurance plan that suits
+              their customer needs and links the PED submission details with it.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -4916,7 +4894,7 @@ x-flows:
                 participant Insurer Platform (BPP)
                 
                 participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
                 Insurer Form Service-->>Buyer Platform (BAP): Form Received
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
@@ -4959,14 +4937,12 @@ x-flows:
                         submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
                 provider:
                   id: P1
-      - summary: >-
-          Provider platform returns the response to selected health insurance
-          plan.
+      - summary: Insurer returns the response to selected health insurance plan.
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information and PAN
-              and DOB request form for the selected health insurace plan.
+              Buyer app fetches the personal information details form from the
+              Insurer using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -4974,7 +4950,7 @@ x-flows:
                 participant Insurer Platform (BPP)
                 
                 participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
+                Buyer Platform (BAP)->> Insurer Form Service:  Get Form(PED)
                 Insurer Form Service-->>Buyer Platform (BAP): Form Received
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
@@ -5062,7 +5038,7 @@ x-flows:
                           cur: 0
                           max: 2
                         headings:
-                          - PED Details
+                          - Individaul Information
                           - PAN & DOB Details
                           - EKYC
                       form:
@@ -5141,20 +5117,20 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the PAN and DOB Details form
+      - summary: Buyer app fetches the personal/individual information form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the PAN and DOB Details form from the
-              Provider platform using the link provided in the previous step
+              Buyer app fetches the personal information details form from the
+              Insurer using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title  Selection
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                participant Insurer Form Service
                 rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+                participant Insurer Form Service
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
                 Insurer Form Service-->>Buyer Platform (BAP): Form Received
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
@@ -5162,7 +5138,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
         reference: if any
         example:
           value: |-
@@ -5172,27 +5148,51 @@ x-flows:
             <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>PAN & Dato Of Birth as per PAN</title>
+              <title>Personal Details</title>
             </head>
 
             <body>
-              <form action="/form/submission/pan">
+              <form>
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" />
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" />
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" />
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" />
+                <label for="relation">Relationship with proposer</label>
+                <select name="relation" id="relation">
+                  <option value="self">Self</option>
+                  <option value="spouce">Spouce</option>
+                  <option value="son">Son</option>
+                  <option value="daughter">Daughter</option>
+                  <option value="father">Father</option>
+                  <option value="mother">Mother</option>
+                </select>
+                <label for="PED">PED</label>
+                <select name="PED" id="PED">
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
                 <label for="dob">Date of Birth</label>
                 <input type="date" id="dob" name="dob" />
-                <label for="panValue">PAN Number</label>
-                <input type="text" id="panValue" name="panValue" />
-                <input type="hidden" id="formId" name="formId" value=" FO2">
-                <input type="submit" value="Submit">
+                <label for="amount">Coverage amount</label>
+                <input type="number" id="amount" name="amount" />
+                <label for="panIndia">Pan India Cover</label>
+                <input type="checkbox" id="panIndia" name="panIndia" />
+                <label for="pincode">Pincode</label>
+                <input type="text" id="pincode" name="pincode" />
               </form>
             </body>
 
             </html>
-      - summary: Consumer platform selects a health insurance for more details.
+      - summary: Buyer app selects a health insurance for more details.
         api: select
         details:
           - description: >-
-              Consumer platform selects a specific health insurance plan that
-              suits their customer needs and links the PAN and DOB Details
+              Buyer app selects a specific health insurance plan that suits
+              their customer needs and links the personal information Details
               submission details with it.
             mermaid: |-
               sequenceDiagram
@@ -5201,7 +5201,7 @@ x-flows:
                 participant Insurer Platform (BPP)
                 
                 participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
                 Insurer Form Service-->>Buyer Platform (BAP): Form Received
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
@@ -5252,14 +5252,12 @@ x-flows:
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
                 provider:
                   id: P1
-      - summary: >-
-          Provider platform returns the response to selected health insurance
-          plan.
+      - summary: Insurer returns the response to selected health insurance plan.
         api: on_select
         details:
           - description: >-
-              The provider platform sends the form to collect (PED)
-              Performance-enhancing substances details from the consumer.
+              The Insurer sends the form to collect PAN & DOB substances details
+              from the consumer.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -5267,297 +5265,11 @@ x-flows:
                 participant Insurer Platform (BPP)
                 
                 participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
                 Insurer Form Service-->>Buyer Platform (BAP): Form Received
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
                 
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end
-        reference: if any
-        example:
-          value: &ref_17
-            context:
-              action: on_select
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: ONDC:FIS13
-              location:
-                country:
-                  code: IND
-              message_id: 519da438-68dc-4f2c-bd10-79c0f88c3924
-              timestamp: '2023-07-24T05:40:26.618Z'
-              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
-              ttl: PT24H
-              version: 2.0.0
-            message:
-              order:
-                items:
-                  - category_ids:
-                      - C1
-                      - C3
-                    descriptor:
-                      name: Health Gain Plus Individual
-                      short_desc: >-
-                        ABC Individaul Health Insurance Class A with custom
-                        addon
-                    id: I1
-                    tags:
-                      - descriptor:
-                          name: General Information
-                          code: general-info
-                        list:
-                          - descriptor:
-                              code: COVERAGE_AMOUNT
-                            value: '10000000'
-                          - descriptor:
-                              code: CO_PAYMENT
-                            value: 'Yes'
-                          - descriptor:
-                              code: ROOM_RENT_CAP
-                            value: '25000'
-                          - descriptor:
-                              code: RESTORATION_BENEFIT
-                            value: 'No'
-                          - descriptor:
-                              code: CLAIM_SETTLEMENT_RATIO
-                            value: '0.8'
-                          - descriptor:
-                              code: PRE_HOSPITALIZATION_COVERAGE_DAYS
-                            value: '2'
-                          - descriptor:
-                              code: POST_HOSPITALIZATION_COVERAGE_DAYS
-                            value: '5'
-                          - descriptor:
-                              code: MATERNITY_COVERAGE
-                            value: 'Yes'
-                          - descriptor:
-                              code: INITIAL_WAITING_PERIOD
-                            value: 'No'
-                          - descriptor:
-                              name: Cashless hospitals
-                            value: '50'
-                    time:
-                      duration: P1Y
-                      label: TENURE
-                    xinput:
-                      head:
-                        descriptor:
-                          name: Customer Information
-                        index:
-                          min: 0
-                          cur: 2
-                          max: 2
-                        headings:
-                          - PED Details
-                          - PAN & DOB Details
-                          - EKYC
-                      form:
-                        id: FO4
-                        mime_type: text/html
-                        url: https://fis.test.bpp.io/form/ekyc_dtls?formid=FO4
-                        resubmit: true
-                        multiple_sumbissions: false
-                      required: true
-                    add_ons:
-                      - id: A1
-                        quantity:
-                          selected:
-                            count: 1
-                        descriptor:
-                          name: No Claim Bonus
-                          code: NO_CLAIM_BONUS
-                      - id: A2
-                        quantity:
-                          available:
-                            count: 1
-                        descriptor:
-                          name: Daycare Cover
-                          code: DAYCARE_COVER
-                      - id: A3
-                        quantity:
-                          available:
-                            count: 1
-                        descriptor:
-                          name: Daily Cash Allowance
-                          code: DAILY_CASH_ALLOWANCE
-                      - id: A4
-                        quantity:
-                          available:
-                            count: 1
-                        descriptor:
-                          name: Domicialiary Expenses
-                          code: DOMICILIARY_EXPENSES
-                      - id: A5
-                        quantity:
-                          available:
-                            count: 1
-                        descriptor:
-                          name: Health Check-ups
-                          code: HEALTH_CHECK_UPS
-                provider:
-                  descriptor:
-                    long_desc: >-
-                      ABC Insurance Ltd. Deals in multiple Insurance Services
-                      like Health, Motor, Marine etc
-                    name: ABC Insurance Ltd.
-                    short_desc: 'ABC Insurance Ltd. India '
-                    images:
-                      - url: >-
-                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                        size_type: xs
-                  id: P1
-                quote:
-                  id: Q1
-                  breakup:
-                    - price:
-                        value: '900'
-                        currency: INR
-                      title: Base Price
-                    - price:
-                        value: '50'
-                        currency: INR
-                    - price:
-                        value: '40'
-                        currency: INR
-                      title: Tax
-                    - price:
-                        value: '10'
-                        currency: INR
-                      title: Processing Fee
-                  price:
-                    currency: INR
-                    value: '1000'
-      - summary: Consumer platform fetches the PED form
-        api: form
-        details:
-          - description: >-
-              Consumer platform fetches the PED details form from the Provider
-              platform using the link provided in the previous step
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                participant Insurer Form Service
-                rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                end
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value: |-
-            <!DOCTYPE html>
-            <html lang="en">
-
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>PED Details</title>
-            </head>
-
-            <body>
-              <form action="/form/submission/ped">
-                <label for="diabetes">Diabetes</label>
-                <input type="checkbox" id="diabetes" name="diabetes" />
-                <label for="bloodPressure">Blood Pressure / Hypertension</label>
-                <input type="checkbox" id="bloodPressure" name="bloodPressure" />
-                <label for="heartAilments">Heart Ailments</label>
-                <input type="checkbox" id="heartAilments" name="heartAilments" />
-                <label for="other">Other health issues</label>
-                <input type="checkbox" id="other" name="other" />
-                <input type="hidden" id="formId" name="formId" value=" FO1">
-                <input type="submit" value="Submit">
-              </form>
-            </body>
-
-            </html>
-      - summary: Consumer platform selects a health insurance for more details.
-        api: select
-        details:
-          - description: >-
-              Consumer platform selects a specific health insurance plan that
-              suits their customer needs and links the PED submission details
-              with it.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                end
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value: &ref_8
-            context:
-              action: select
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: ONDC:FIS13
-              location:
-                country:
-                  code: IND
-              message_id: 1425f3a1-420d-4c38-9b47-234c7bfa68ea
-              timestamp: '2023-07-24T05:40:18.651Z'
-              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
-              ttl: PT24H
-              version: 2.0.0
-            message:
-              order:
-                items:
-                  - add_ons:
-                      - id: A1
-                        quantity:
-                          selected:
-                            count: 1
-                    id: I1
-                    xinput:
-                      form_response:
-                        status: SUCCESS
-                        submission_id: ebff9b95-e452-4fd2-b58a-73db1502522c
-                provider:
-                  id: P1
-      - summary: >-
-          Provider platform returns the response to selected health insurance
-          plan.
-        api: on_select
-        details:
-          - description: >-
-              The provider platform responds with detailed information and the
-              EKYC form for the selected health insurance service.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
                 Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
                 rect rgb(191, 223, 255)
@@ -5641,7 +5353,7 @@ x-flows:
                           cur: 1
                           max: 2
                         headings:
-                          - PED Details
+                          - Individaul Information
                           - PAN & DOB Details
                           - EKYC
                       form:
@@ -5720,12 +5432,292 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the EKYC form
+      - summary: Buyer app fetches the PAN and DOB Details form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the EKYC Details form from the Provider
-              platform using the link provided in the previous step
+              Buyer app fetches the PAN and DOB Details form from the Insurer
+              using the link provided in the previous step
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                participant Insurer Form Service
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PAN)
+                Insurer Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+                end
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+        reference: if any
+        example:
+          value: |-
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>PAN & Dato Of Birth as per PAN</title>
+            </head>
+
+            <body>
+              <form action="/form/submission/pan">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" />
+                <label for="panValue">PAN Number</label>
+                <input type="text" id="panValue" name="panValue" />
+                <input type="hidden" id="formId" name="formId" value=" FO2">
+                <input type="submit" value="Submit">
+              </form>
+            </body>
+
+            </html>
+      - summary: Buyer app selects a health insurance for more details.
+        api: select
+        details:
+          - description: >-
+              Buyer app selects a specific health insurance plan that suits
+              their customer needs and links the PAN & DOB submission details
+              with it.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                participant Insurer Form Service
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
+                Insurer Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_8
+            context:
+              action: select
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+              message_id: 1425f3a1-420d-4c38-9b47-234c7bfa68ea
+              timestamp: '2023-07-24T05:40:18.651Z'
+              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                items:
+                  - add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                    id: I1
+                    xinput:
+                      form_response:
+                        status: SUCCESS
+                        submission_id: ebff9b95-e452-4fd2-b58a-73db1502522c
+                provider:
+                  id: P1
+      - summary: Insurer returns the response to selected health insurance plan.
+        api: on_select
+        details:
+          - description: >-
+              The Insurer responds with detailed information and the EKYC form
+              for the selected health insurance service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                participant Insurer Form Service
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(PED)
+                Insurer Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_17
+            context:
+              action: on_select
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+              message_id: 519da438-68dc-4f2c-bd10-79c0f88c3924
+              timestamp: '2023-07-24T05:40:26.618Z'
+              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                items:
+                  - category_ids:
+                      - C1
+                      - C3
+                    descriptor:
+                      name: Health Gain Plus Individual
+                      short_desc: >-
+                        ABC Individaul Health Insurance Class A with custom
+                        addon
+                    id: I1
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: general-info
+                        list:
+                          - descriptor:
+                              code: COVERAGE_AMOUNT
+                            value: '10000000'
+                          - descriptor:
+                              code: CO_PAYMENT
+                            value: 'Yes'
+                          - descriptor:
+                              code: ROOM_RENT_CAP
+                            value: '25000'
+                          - descriptor:
+                              code: RESTORATION_BENEFIT
+                            value: 'No'
+                          - descriptor:
+                              code: CLAIM_SETTLEMENT_RATIO
+                            value: '0.8'
+                          - descriptor:
+                              code: PRE_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '2'
+                          - descriptor:
+                              code: POST_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '5'
+                          - descriptor:
+                              code: MATERNITY_COVERAGE
+                            value: 'Yes'
+                          - descriptor:
+                              code: INITIAL_WAITING_PERIOD
+                            value: 'No'
+                          - descriptor:
+                              name: Cashless hospitals
+                            value: '50'
+                    time:
+                      duration: P1Y
+                      label: TENURE
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Customer Information
+                        index:
+                          min: 0
+                          cur: 2
+                          max: 2
+                        headings:
+                          - Individaul Information
+                          - PAN & DOB Details
+                          - EKYC
+                      form:
+                        id: FO4
+                        mime_type: text/html
+                        url: https://fis.test.bpp.io/form/ekyc_dtls?formid=FO4
+                        resubmit: true
+                        multiple_sumbissions: false
+                      required: true
+                    add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: No Claim Bonus
+                          code: NO_CLAIM_BONUS
+                      - id: A2
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daycare Cover
+                          code: DAYCARE_COVER
+                      - id: A3
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Daily Cash Allowance
+                          code: DAILY_CASH_ALLOWANCE
+                      - id: A4
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Domicialiary Expenses
+                          code: DOMICILIARY_EXPENSES
+                      - id: A5
+                        quantity:
+                          available:
+                            count: 1
+                        descriptor:
+                          name: Health Check-ups
+                          code: HEALTH_CHECK_UPS
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: xs
+                  id: P1
+                quote:
+                  id: Q1
+                  breakup:
+                    - price:
+                        value: '900'
+                        currency: INR
+                      title: Base Price
+                    - price:
+                        value: '50'
+                        currency: INR
+                    - price:
+                        value: '40'
+                        currency: INR
+                      title: Tax
+                    - price:
+                        value: '10'
+                        currency: INR
+                      title: Processing Fee
+                  price:
+                    currency: INR
+                    value: '1000'
+      - summary: Buyer app fetches the EKYC form
+        api: form
+        details:
+          - description: >-
+              Buyer app fetches the EKYC Details form from the Insurer using the
+              link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -5766,13 +5758,13 @@ x-flows:
             </body>
 
             </html>
-      - summary: The consumer platform initiates the health insurace request.
+      - summary: The Buyer app initiates the health insurace request.
         api: init
         details:
           - description: >-
-              Consumer platform initiates purchase of a specific health
-              insurance plan that suits their customer needs and links the EKYC
-              submission details with it.
+              Buyer app initiates purchase of a specific health insurance plan
+              that suits their customer needs and links the EKYC submission
+              details with it.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -5840,14 +5832,12 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
-      - summary: >-
-          Provider platform returns the response to initailized health insurance
-          plan.
+      - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
-              the health insurance application.
+              The Buyer app shares the request's terms and initializes the
+              health insurance application.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6050,12 +6040,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the buyer information form
+      - summary: Buyer app fetches the buyer information form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the buyer information form from the
-              Provider platform using the link provided in the previous step
+              Buyer app fetches the buyer information form from the Insurer
+              using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6112,13 +6102,13 @@ x-flows:
             </body>
 
             </html>
-      - summary: The consumer platform initiates the health insurace request.
+      - summary: The Buyer app initiates the health insurace request.
         api: init
         details:
           - description: >-
-              Consumer platform initiates purchase of a specific health
-              insurance plan that suits their customer needs and links the buyer
-              information submission details with it.
+              Buyer app initiates purchase of a specific health insurance plan
+              that suits their customer needs and links the buyer information
+              submission details with it.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6187,14 +6177,12 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
-      - summary: >-
-          Provider platform returns the response to initailized health insurance
-          plan.
+      - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
-              the health insurance application.
+              The Buyer app shares the request's terms and initializes the
+              health insurance application.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6397,12 +6385,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the insured personals details form
+      - summary: Buyer app fetches the insured personals details form
         api: form
         details:
           description: >-
-            Consumer platform fetches the insured personals details form from
-            the Provider platform using the link provided in the previous step
+            Buyer app fetches the insured personals details form from the
+            Insurer using the link provided in the previous step
           mermaid: |-
             sequenceDiagram
               title Initializing Order
@@ -6462,13 +6450,13 @@ x-flows:
             </body>
 
             </html>
-      - summary: The consumer platform initiates the health insurance request.
+      - summary: The Buyer app initiates the health insurance request.
         api: init
         details:
           - description: >-
-              Consumer platform initiates purchase of a specific health
-              insurance plan that suits their customer needs and links the
-              insured personals details submission details with it.
+              Buyer app initiates purchase of a specific health insurance plan
+              that suits their customer needs and links the insured personals
+              details submission details with it.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6537,14 +6525,12 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
-      - summary: >-
-          Provider platform returns the response to initailized health insurance
-          plan.
+      - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
-              the health insurance application.
+              The Buyer app shares the request's terms and initializes the
+              health insurance application.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6747,12 +6733,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the medical information form
+      - summary: Buyer app fetches the medical information form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the medical information form from the
-              Provider platform using the link provided in the previous step
+              Buyer app fetches the medical information form from the Insurer
+              using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6814,13 +6800,13 @@ x-flows:
             </body>
 
             </html>
-      - summary: The consumer platform initiates the health insurance request.
+      - summary: The Buyer app initiates the health insurance request.
         api: init
         details:
           - description: >-
-              Consumer platform initiates purchase of a specific health
-              insurance plan that suits their customer needs and links the
-              medical information submission details with it.
+              Buyer app initiates purchase of a specific health insurance plan
+              that suits their customer needs and links the medical information
+              submission details with it.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6889,14 +6875,12 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
-      - summary: >-
-          Provider platform returns the response to initailized health insurance
-          plan.
+      - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
-              the health insurance application.
+              The Buyer app shares the request's terms and initializes the
+              health insurance application.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -7099,12 +7083,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the nominee details form
+      - summary: Buyer app fetches the nominee details form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the nominee details form from the
-              Provider platform using the link provided in the previous step
+              Buyer app fetches the nominee details form from the Insurer using
+              the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 title  Order Confirmation
@@ -7168,12 +7152,12 @@ x-flows:
           </body>
 
           </html>
-      - summary: The consumer platform confirms the health insurance request.
+      - summary: The Buyer app confirms the health insurance request.
         api: confirm
         details:
           - description: >-
-              The consumer platform confirms the health insurance request and
-              provides all the necessary information as per the terms.
+              The Buyer app confirms the health insurance request and provides
+              all the necessary information as per the terms.
             mermaid: |-
               sequenceDiagram
                 title  Order Confirmation
@@ -7258,12 +7242,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Provider platform confirms the health insurance order.
+      - summary: Insurer confirms the health insurance order.
         api: on_confirm
         details:
           - description: >-
-              Provider platform confirms the health insurace and provides the
-              confirmation details.
+              Insurer confirms the health insurace and provides the confirmation
+              details.
             mermaid: |-
               sequenceDiagram
                 title  Order Confirmation
@@ -7409,12 +7393,12 @@ x-flows:
                     currency: INR
                     value: '1000'
                 status: ACTIVE
-      - summary: Provider platform sends an updated order confirmation
+      - summary: Insurer sends an updated order confirmation
         api: on_update
         details:
           - description: >-
-              The provider platform sends the updated order with final
-              confirmation deatils and health insurance policy documents
+              The Insurer sends the updated order with final confirmation
+              deatils and health insurance policy documents
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -7584,14 +7568,12 @@ x-flows:
                         represents the first four letters of your name
                     mime_type: application/pdf
                     url: https://abcinsurance.com/policies/O1.pdf
-      - summary: >-
-          Consumer platform seeks the most recent health insurance status
-          update.
+      - summary: Buyer app seeks the most recent health insurance status update.
         api: status
         details:
           - description: >-
-              Consumer platform requests the provider platform to provide the
-              latest status of the health insurance application.
+              Buyer app requests the Insurer to provide the latest status of the
+              health insurance application.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -7629,8 +7611,8 @@ x-flows:
         api: on_status
         details:
           - description: >-
-              Provider platform provides the consumer platform with the most
-              recent status of the health  insurance application.
+              Insurer provides the Buyer app with the most recent status of the
+              health  insurance application.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -7852,12 +7834,12 @@ x-flows:
         reference: if any
         example:
           value: *ref_7
-      - summary: Consumer platform fetches the PED details
+      - summary: Buyer App fetches the PED details
         api: form
         details:
           - description: >-
-              Consumer platform fetches the PED Details form from the Provider
-              platform using the link provided in the previous step
+              Buyer App fetches the PED Details form from the Provider platform
+              using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 participant Buyer Platform (BAP)
@@ -7901,12 +7883,12 @@ x-flows:
             </body>
 
             </html>
-      - summary: Consumer platform selects a health insurance for more details.
+      - summary: Buyer App selects a health insurance for more details.
         api: select
         details:
           - description: >-
-              Consumer platform selects a specific health insurance plan that
-              suits their customer needs and links the PED details with it.
+              Buyer App selects a specific health insurance plan that suits
+              their customer needs and links the PED details with it.
             mermaid: |-
               sequenceDiagram
                 participant Buyer Platform (BAP)
@@ -7953,8 +7935,8 @@ x-flows:
         api: form
         details:
           - description: >-
-              Consumer platform fetches the PAN Details form from the Provider
-              platform using the link provided in the previous step
+              Buyer App fetches the PAN Details form from the Provider platform
+              using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 participant Buyer Platform (BAP)
@@ -7993,13 +7975,11 @@ x-flows:
 
             </html>
       - summary: >-
-          Consumer platform seeks the most recent health insurance status
-          update(Form Status).
+          Buyer App seeks the most recent health insurance status update(Form
+          Status).
         api: status
         details:
-          - description: >-
-              Consumer platform fetches the status of PED form by sending the
-              form id.
+          - description: Buyer App fetches the status of PED form by sending the form id.
             mermaid: |-
               sequenceDiagram
                 participant Buyer Platform (BAP)
@@ -8214,12 +8194,12 @@ x-flows:
     references: if any
     steps:
       - summary: >-
-          Provider platform returns the response to selected health insurance
+          Insurer Platform returns the response to selected health insurance
           plan.
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information  for the
+              The Insurer Platform responds with detailed information  for the
               selected health insurance service.
             mermaid: |-
               sequenceDiagram
@@ -8313,7 +8293,7 @@ x-flows:
                           cur: 2
                           max: 2
                         headings:
-                          - PED Details
+                          - Individaul Information
                           - PAN & DOB Details
                           - EKYC
                       form:
@@ -8392,12 +8372,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Consumer platform fetches the EKYC form
+      - summary: Buyer App fetches the EKYC form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the EKYC Details form from the Provider
-              platform using the link provided in the previous step
+              Buyer App fetches the EKYC Details form from the Insurer
+              Platformusing the link provided in the previous step
             mermaid: |-
               sequenceDiagram
                 participant Buyer Platform (BAP)
@@ -8953,13 +8933,13 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: The consumer platform initiates the health insurace request.
+      - summary: The Buyer App initiates the health insurace request.
         api: init
         details:
           - description: >-
-              Consumer platform initiates purchase of a specific health
-              insurance plan that suits their customer needs and links the EKYC
-              submission details with it.
+              Buyer App initiates purchase of a specific health insurance plan
+              that suits their customer needs and links the EKYC submission
+              details with it.
             mermaid: |-
               sequenceDiagram
                 participant Buyer Platform (BAP)
@@ -10738,14 +10718,14 @@ x-flows:
                 <input type="text" id="dob" name="dob" />
                 <label for="gender">Gender</label>
                 <input type="text" id="gender" name="gender" />
-                <label for="politicallyExposedPerson">Politically exposed person</label>
-                <input type="text" id="politicallyExposedPerson" name="politicallyExposedPerson" />
+                <!-- <label for="politicallyExposedPerson">Politically exposed person</label>
+                <input type="text" id="politicallyExposedPerson" name="politicallyExposedPerson" /> -->
                 <label for="email">Email</label>
                 <input type="text" id="email" name="email" /> 
                 <label for="phone"> Phone</label>
                 <input type="checkbox" id="phone" name="phone" />
-                <label for="gstin">GSTIN</label>
-                <input type="text" id="gstin" name="gstin" />
+                <!-- <label for="gstin">GSTIN</label>
+                <input type="text" id="gstin" name="gstin" /> -->
                
                 <input type="hidden" id="formId" name="formId" value="FO5">
                 <input type="submit" value="Submit">
