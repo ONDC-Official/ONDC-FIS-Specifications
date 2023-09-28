@@ -1,5 +1,5 @@
 context:
-  action: on_status
+  action: on_update
   bap_id: fis.test.bap.io
   bap_uri: https://fis.test.bap.io/
   bpp_id: fis.test.bpp.io
@@ -8,14 +8,13 @@ context:
   location:
     country:
       code: IND
-  message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
-  timestamp: "2023-07-24T05:42:00.067Z"
+  message_id: 6c7121e2-e137-473f-ba96-809b62019f43
+  timestamp: "2023-07-24T05:43:08.910Z"
   transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
   ttl: PT24H
   version: 2.0.0
 message:
   order:
-    id: O1
     fulfillments:
       - state:
           descriptor:
@@ -27,10 +26,10 @@ message:
         id: 'F1'
       - state:
           descriptor:
-            code: CLAIM_PROCESSED
-        type: CLAIM 
+            code: RENEWAL_PROCESSED
+        type: RENEWAL 
         # stops:
-        #   - time:
+        #   - time: 
         #       range: 
         #         start: '2023-09-23T10:00:40.065Z'
         #         end: '2023-09-25T10:00:40.065Z'    
@@ -40,16 +39,23 @@ message:
             phone: +91-9667788867
         id: 'F2'    
     items:
-      - category_ids:
-          - C1
-          - C3
+      - add_ons:
+          - id: A1
+            descriptor:
+              code: NO_CLAIM_BONUS
+              name: No Claim Bonus
+            quantity:
+              selected:
+                count: 1
         descriptor:
-          name: Health Gain Plus Individual
+          name: ABC Individaul Health Insurance Policy
           short_desc: ABC Individaul Health Insurance Class A with custom addon
         id: I1
         fulfillment_ids:
           - F1
-          - F2
+          - F2  
+        price:
+          value: "1000"
         tags:
           - descriptor:
               name: General Information
@@ -60,13 +66,13 @@ message:
                 value: "10000000"
               - descriptor:
                   code: CO_PAYMENT
-                value: "Yes"
+                value: Yes
               - descriptor:
                   code: ROOM_RENT_CAP
                 value: "25000"
               - descriptor:
                   code: RESTORATION_BENEFIT
-                value: "No"
+                value: No
               - descriptor:
                   code: CLAIM_SETTLEMENT_RATIO
                 value: "0.8"
@@ -78,52 +84,51 @@ message:
                 value: "5"
               - descriptor:
                   code: MATERNITY_COVERAGE
-                value: "Yes"
+                value: Yes
               - descriptor:
                   code: INITIAL_WAITING_PERIOD
-                value: "No"
+                value: No
               - descriptor:
                   name: Cashless hospitals
                 value: "50"
         time:
           duration: P1Y
           label: TENURE
-        add_ons:
-          - id: A1
-            quantity:
-              selected:
-                count: 1
-            descriptor:
-              name: No Claim Bonus
-              code: NO_CLAIM_BONUS
-          - id: A2
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Daycare Cover
-              code: DAYCARE_COVER
-          - id:  A3
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Daily Cash Allowance
-              code: DAILY_CASH_ALLOWANCE
-          - id: A4
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Domicialiary Expenses
-              code: DOMICILIARY_EXPENSES
-          - id: A5
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Health Check-ups
-              code: HEALTH_CHECK_UPS
+    id: O1
+    payments:
+      - collected_by: BPP
+        params:
+          amount: "1000"
+          bank_account_number: "1800002341"
+          bank_code: SBIN0001234
+          currency: INR
+          transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+        status: PAID
+        type: PRE-ORDER
+      - collected_by: BPP
+        params:
+          amount: "1000"
+          bank_account_number: "1800002341"
+          bank_code: SBIN0001234
+          currency: INR
+          transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+        status: PAID
+        type: PRE-FULFILLMENT  
+        tags:
+          - descriptor:
+              code: SETTLEMENT_DETAILS
+            display: false
+            list:
+              - descriptor:
+                  code: SETTLEMENT_TYPE
+                value: UPI
+          - descriptor:
+              code: BUYER_FINDER_FEES
+            display: false
+            list:
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_PERCENTAGE
+                value: "1"
     provider:
       descriptor:
         long_desc: ABC Insurance Ltd. Deals in multiple Insurance Services like Health,
@@ -155,16 +160,6 @@ message:
       price:
         currency: INR
         value: "1000"
-    payments:
-      - collected_by: BPP
-        params:
-          amount: "1000"
-          bank_account_number: "1800002341"
-          bank_code: SBIN0001234
-          currency: INR
-          transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-        status: PAID
-        type: PRE-ORDER
     status: ACTIVE
     documents:
       - descriptor:
@@ -191,4 +186,4 @@ message:
           short_desc: Buyer can renew their insurance by visiting the below url
           long_desc: Buyer can easily renew their insurance policies by visiting the following URL
         mime_type: application/html
-        url: https://abcinsurance.com/renew-policy/O1.pdf    
+        url: https://abcinsurance.com/renew-policy/O1.pdf
