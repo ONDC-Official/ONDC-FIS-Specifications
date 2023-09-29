@@ -1,5 +1,5 @@
 context:
-  action: on_init
+  action: on_status
   bap_id: fis.test.bap.io
   bap_uri: https://fis.test.bap.io/
   bpp_id: fis.test.bpp.io
@@ -8,19 +8,13 @@ context:
   location:
     country:
       code: IND
-  message_id: 1015e8ce-a8c9-4533-9051-81725d3140f0
-  timestamp: "2023-07-24T05:41:01.775Z"
+  message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
+  timestamp: "2023-07-24T05:42:00.067Z"
   transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
   ttl: PT24H
   version: 2.0.0
 message:
   order:
-    fulfillments:
-      - customer:
-          contact:
-            email: joe.adam@abc.org
-            phone: +91-9999999999
-        id: F1
     items:
       - category_ids:
           - C1
@@ -68,26 +62,9 @@ message:
           duration: P1Y
           label: TENURE
         xinput:
-          head:
-            descriptor:
-              name: Customer Information
-            index:
-              min: 0
-              cur: 2
-              max: 4
-            headings:
-              - Buyer Details
-              - Insured Details
-              - Medical Details
-              - Manual Review
-              - Nominee Details
-          form:
-            id: FO7
-            mime_type: text/html
-            url: https://fis.test.bpp.io/form/medical_dtls?formid=FO7
-            resubmit: true
-            multiple_sumbissions: false
-          required: true
+          form_response:
+            status: RENEW_PROCESSED
+            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226 
         add_ons:
           - id: A1
             quantity:
@@ -103,7 +80,7 @@ message:
             descriptor:
               name: Daycare Cover
               code: DAYCARE_COVER
-          - id: A3
+          - id:  A3
             quantity:
               available:
                 count: 1
@@ -124,26 +101,14 @@ message:
             descriptor:
               name: Health Check-ups
               code: HEALTH_CHECK_UPS
-    payments:
-      - collected_by: BPP
-        url: https://www.abcinsurance.com/pg-gateway/payment?amount=1000&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
-        status: NOT-PAID
-        type: PRE-ORDER
-        tags:
-          - descriptor:
-              code: SETTLEMENT_DETAILS
-            display: false
-            list:
-              - descriptor:
-                  code: SETTLEMENT_TYPE
-                value: UPI
-          - descriptor:
-              code: BUYER_FINDER_FEES
-            display: false
-            list:
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_PERCENTAGE
-                value: "1"
+    fulfillments:
+      - state:
+          descriptor:
+            code: ONLINE_RENEW
+        customer:
+          contact:
+            email: joe.adam@abc.org
+            phone: +91-9667788867
     provider:
       descriptor:
         long_desc: ABC Insurance Ltd. Deals in multiple Insurance Services like Health,
@@ -175,3 +140,36 @@ message:
       price:
         currency: INR
         value: "1000"
+    payments:
+      - collected_by: BPP
+        params:
+          amount: "1000"
+          bank_account_number: "1800002341"
+          bank_code: SBIN0001234
+          currency: INR
+        status: PAID
+        type: PRE-ORDER
+        time:
+          label: Renewal-Payment
+          range: 
+            start: "2023-06-01T00:00:00.000Z"
+            end: "2024-06-01T00:00:00.000Z"
+        tags:
+          - descriptor:
+              code: SETTLEMENT_DETAILS
+            display: false
+            list:
+              - descriptor:
+                  code: SETTLEMENT_TYPE
+                value: UPI
+          - descriptor:
+              code: BUYER_FINDER_FEES
+            display: false
+            list:
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_PERCENTAGE
+                value: "1"
+    xinput:
+          form_response:
+            status: RENEW_PROCESSED
+            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226

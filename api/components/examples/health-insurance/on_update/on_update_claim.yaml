@@ -1,5 +1,5 @@
 context:
-  action: on_init
+  action: on_update
   bap_id: fis.test.bap.io
   bap_uri: https://fis.test.bap.io/
   bpp_id: fis.test.bpp.io
@@ -8,27 +8,54 @@ context:
   location:
     country:
       code: IND
-  message_id: 1015e8ce-a8c9-4533-9051-81725d3140f0
-  timestamp: "2023-07-24T05:41:01.775Z"
+  message_id: 6c7121e2-e137-473f-ba96-809b62019f43
+  timestamp: "2023-07-24T05:43:08.910Z"
   transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
   ttl: PT24H
   version: 2.0.0
 message:
   order:
     fulfillments:
-      - customer:
+      - state:
+          descriptor:
+            code: GRANTED
+        customer:
           contact:
             email: joe.adam@abc.org
             phone: +91-9999999999
-        id: F1
+        id: 'F1'
+      - state:
+          descriptor:
+            code: CLAIM_INITIATED
+        type: CLAIM 
+        # stops:
+        #   - time: 
+        #       range: 
+        #         start: '2023-09-23T10:00:40.065Z'
+        #         end: '2023-09-25T10:00:40.065Z'    
+        customer:
+          contact:
+            email: joe.adam@abc.org
+            phone: +91-9667788867
+        id: 'F2'    
     items:
-      - category_ids:
-          - C1
-          - C3
+      - add_ons:
+          - id: A1
+            descriptor:
+              code: NO_CLAIM_BONUS
+              name: No Claim Bonus
+            quantity:
+              selected:
+                count: 1
         descriptor:
-          name: Health Gain Plus Individual
+          name: ABC Individaul Health Insurance Policy
           short_desc: ABC Individaul Health Insurance Class A with custom addon
         id: I1
+        fulfillment_ids:
+          - F1
+          - F2  
+        price:
+          value: "1000"
         tags:
           - descriptor:
               name: General Information
@@ -39,13 +66,13 @@ message:
                 value: "10000000"
               - descriptor:
                   code: CO_PAYMENT
-                value: "Yes"
+                value: Yes
               - descriptor:
                   code: ROOM_RENT_CAP
                 value: "25000"
               - descriptor:
                   code: RESTORATION_BENEFIT
-                value: "No"
+                value: No
               - descriptor:
                   code: CLAIM_SETTLEMENT_RATIO
                 value: "0.8"
@@ -57,77 +84,26 @@ message:
                 value: "5"
               - descriptor:
                   code: MATERNITY_COVERAGE
-                value: "Yes"
+                value: Yes
               - descriptor:
                   code: INITIAL_WAITING_PERIOD
-                value: "No"
+                value: No
               - descriptor:
                   name: Cashless hospitals
                 value: "50"
         time:
           duration: P1Y
           label: TENURE
-        xinput:
-          head:
-            descriptor:
-              name: Customer Information
-            index:
-              min: 0
-              cur: 2
-              max: 4
-            headings:
-              - Buyer Details
-              - Insured Details
-              - Medical Details
-              - Manual Review
-              - Nominee Details
-          form:
-            id: FO7
-            mime_type: text/html
-            url: https://fis.test.bpp.io/form/medical_dtls?formid=FO7
-            resubmit: true
-            multiple_sumbissions: false
-          required: true
-        add_ons:
-          - id: A1
-            quantity:
-              selected:
-                count: 1
-            descriptor:
-              name: No Claim Bonus
-              code: NO_CLAIM_BONUS
-          - id: A2
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Daycare Cover
-              code: DAYCARE_COVER
-          - id: A3
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Daily Cash Allowance
-              code: DAILY_CASH_ALLOWANCE
-          - id: A4
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Domicialiary Expenses
-              code: DOMICILIARY_EXPENSES
-          - id: A5
-            quantity:
-              available:
-                count: 1
-            descriptor:
-              name: Health Check-ups
-              code: HEALTH_CHECK_UPS
+    id: O1
     payments:
       - collected_by: BPP
-        url: https://www.abcinsurance.com/pg-gateway/payment?amount=1000&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
-        status: NOT-PAID
+        params:
+          amount: "1000"
+          bank_account_number: "1800002341"
+          bank_code: SBIN0001234
+          currency: INR
+          transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+        status: PAID
         type: PRE-ORDER
         tags:
           - descriptor:
@@ -175,3 +151,30 @@ message:
       price:
         currency: INR
         value: "1000"
+    status: ACTIVE
+    documents:
+      - descriptor:
+          code: POLICY_DOC
+          name: Insurance Policy Document
+          short_desc: Download your digitally signed policy document here
+          long_desc: Download you digitally signed policy document here. This document is
+            password protected. To open this document, please type in your
+            password in DDMMMYYYYXXXX format where DDMMMYYYY represents your
+            date of birth, and XXXX represents the first four letters of your
+            name
+        mime_type: application/pdf
+        url: https://abcinsurance.com/policies/O1.pdf
+      - descriptor:
+          code: CLAIM_DOC
+          name: Claim Insurance Policy
+          short_desc: Buyer can claim their insurance by visiting the below url
+          long_desc: Buyer can claim their insurance by visiting the below url
+        mime_type: application/html
+        url: https://abcinsurance.com/claim-policy/
+      - descriptor:
+          code: RENEW_DOC
+          name: Renew Insurance Policy
+          short_desc: Buyer can renew their insurance by visiting the below url
+          long_desc: Buyer can easily renew their insurance policies by visiting the following URL
+        mime_type: application/html
+        url: https://abcinsurance.com/renew-policy/
