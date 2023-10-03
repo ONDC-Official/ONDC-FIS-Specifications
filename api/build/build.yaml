@@ -2905,6 +2905,54 @@ x-enum:
     message:
       order: *ref_4
 x-tags:
+  search:
+    message:
+      intent:
+        payment:
+          tags:
+            - code: BUYER_FINDER_FEES
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: &ref_6
+                - code: BUYER_FINDER_FEES_TYPE
+                  description: Buyer finder fee type.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_PERCENTAGE
+                  description: Buyer finder fee in percentage
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_AMOUNT
+                  description: Buyer finder fee in amount
+                  reference: <PR/Issue/Discussion Links md format text>
+            - code: SETTLEMENT_TERMS
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: &ref_7
+                - code: SETTLEMENT_WINDOW
+                  description: Time window to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_BASIS
+                  description: basis required to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_TYPE
+                  description: payment method to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: MANDATORY_ARBITRATION
+                  description: >-
+                    flag to denote if dispute can be resolved through
+                    arbitration
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: COURT_JURISDICTION
+                  description: denotes court that will have jurisdiction for the case
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: DELAY_INTEREST
+                  description: denotes interest to be paid as a delay charge
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: STATIC_TERMS
+                  description: terms for settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_AMOUNT
+                  description: denotes settlement amount
+                  reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
@@ -2933,7 +2981,7 @@ x-tags:
                   - code: MAX_LOAN_AMOUNT
                     description: Maximum Amount for the loan
                     reference: <PR/Issue/Discussion Links md format text>
-  select: &ref_6
+  select: &ref_8
     message:
       order:
         items:
@@ -2970,13 +3018,23 @@ x-tags:
                 - code: TNC_LINK
                   description: Terms and Condition link
                   reference: <PR/Issue/Discussion Links md format text>
-  on_select: *ref_6
-  init: *ref_6
-  on_init: *ref_6
-  confirm: *ref_6
-  on_confirm: *ref_6
-  on_status: *ref_6
-  on_update: *ref_6
+        payments:
+          tags:
+            - code: BUYER_FINDER_FEES
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: *ref_6
+            - code: SETTLEMENT_TERMS
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: *ref_7
+  on_select: *ref_8
+  init: *ref_8
+  on_init: *ref_8
+  confirm: *ref_8
+  on_confirm: *ref_8
+  on_status: *ref_8
+  on_update: *ref_8
 x-flows:
   - summary: Personal Loan
     details:
@@ -3070,7 +3128,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_18
             context:
               domain: ONDC:FIS12
               location:
@@ -3089,6 +3147,44 @@ x-flows:
                 category:
                   descriptor:
                     code: PERSONAL_LOAN
+                payment:
+                  tags:
+                    - descriptor:
+                        code: BUYER_FINDER_FEES
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: percent-annualized
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: PT60M
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: upi
+                        - descriptor:
+                            code: MANDATORY_ARBITRATION
+                          value: 'true'
+                        - descriptor:
+                            code: COURT_JURISDICTION
+                          value: New Delhi
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: The provider offers a catalog of loan types, including personal loans.
         api: on_search
         details:
@@ -3110,7 +3206,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_19
             context:
               domain: ONDC:FIS12
               location:
@@ -3257,7 +3353,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_20
             context:
               domain: ONDC:FIS12
               location:
@@ -3309,7 +3405,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_13
             context:
               domain: ONDC:FIS12
               location:
@@ -3475,7 +3571,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_14
             context:
               domain: ONDC:FIS12
               location:
@@ -3527,7 +3623,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_15
             context:
               domain: ONDC:FIS12
               location:
@@ -3693,7 +3789,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_17
             context:
               domain: ONDC:FIS12
               location:
@@ -3719,6 +3815,55 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 73ef9742-c17d-4c4e-92e3-b057960863af
+                payments:
+                  - collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: The provider accepts and requests for loan dispach account details.
         api: on_init
         details:
@@ -3881,6 +4026,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -3890,6 +4083,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -3899,6 +4140,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -3908,6 +4197,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -3917,6 +4254,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -3983,7 +4368,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_21
             context:
               domain: ONDC:FIS12
               location:
@@ -4009,6 +4394,55 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 73ef9742-c17d-4c4e-92e3-b057960863af
+                payments:
+                  - collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: The provider accepts and adds terms to the request.
         api: on_init
         details:
@@ -4033,7 +4467,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_22
             context:
               domain: ONDC:FIS12
               location:
@@ -4273,7 +4707,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -4323,7 +4757,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_7
+          value: &ref_9
             context:
               domain: ONDC:FIS12
               location:
@@ -4516,7 +4950,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_8
+          value: &ref_10
             context:
               domain: ONDC:FIS12
               location:
@@ -4553,7 +4987,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_16
             context:
               domain: ONDC:FIS12
               location:
@@ -4823,7 +5257,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -4842,6 +5276,44 @@ x-flows:
                 category:
                   descriptor:
                     code: INVOICE_BASED_LOAN
+                payment:
+                  tags:
+                    - descriptor:
+                        code: BUYER_FINDER_FEES
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: percent-annualized
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: PT60M
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: upi
+                        - descriptor:
+                            code: MANDATORY_ARBITRATION
+                          value: 'true'
+                        - descriptor:
+                            code: COURT_JURISDICTION
+                          value: New Delhi
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: >-
           Provides a catalog of different loan products offered by a single
           lender for Invoice Based Loans.
@@ -4866,7 +5338,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -5012,7 +5484,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -5068,7 +5540,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -5234,7 +5706,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -5288,7 +5760,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -5480,6 +5952,55 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 73ef9742-c17d-4c4e-92e3-b057960863af
+                payments:
+                  - collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Lender makes an offer with repayment terms
         api: on_init
         details:
@@ -5649,6 +6170,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -5658,6 +6227,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -5667,6 +6284,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -5676,6 +6341,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -5685,6 +6398,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -5751,7 +6512,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -5777,6 +6538,55 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 6a7fcff4-76b0-4dd8-923e-04269d107c1c
+                payments:
+                  - collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Lender makes an offer with repayment terms
         api: on_init
         details:
@@ -5946,6 +6756,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -5955,6 +6813,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -5982,6 +6888,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -6049,7 +7003,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -6075,6 +7029,55 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 73ef9742-c17d-4c4e-92e3-b057960863af
+                payments:
+                  - collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Lender makes an offer with repayment terms
         api: on_init
         details:
@@ -6099,7 +7102,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -6244,6 +7247,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6253,6 +7304,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6262,6 +7361,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6271,6 +7418,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6280,6 +7475,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -6346,7 +7589,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -6399,7 +7642,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_11
             context:
               domain: ONDC:FIS12
               location:
@@ -6606,7 +7849,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_12
             context:
               domain: ONDC:FIS12
               location:
@@ -6653,7 +7896,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_32
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -6778,6 +8021,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6787,6 +8078,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6796,6 +8135,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6805,6 +8192,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6814,6 +8249,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -6861,7 +8344,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_33
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -6986,6 +8469,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -6995,6 +8526,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7004,6 +8583,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7013,6 +8640,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7022,6 +8697,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -7068,7 +8791,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_35
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -7279,7 +9002,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
         example:
-          value: &ref_34
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -7404,6 +9127,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7413,6 +9184,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7422,6 +9241,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T00:23:59.999'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7431,6 +9298,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T00:23:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -7440,6 +9355,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -7508,7 +9471,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_7
+          value: *ref_9
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -8003,7 +9966,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_10
       - summary: The provider shares the latest loan status with the consumer.
         api: on_status
         details:
@@ -8254,7 +10217,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_11
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -8306,6 +10269,54 @@ x-flows:
                     status: NOT-PAID
                     time:
                       label: Pre-Payment
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: on_update
         details:
@@ -8460,6 +10471,54 @@ x-flows:
                       range:
                         start: '2023-09-05T00:00:00.000Z'
                         end: '2023-09-05T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '20000'
                   - type: ON-ORDER
                     url: https://emandate.icicibank.in
                     params:
@@ -8471,6 +10530,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8480,6 +10587,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                   - params:
                       amount: '50996'
                       currency: INR
@@ -8489,6 +10644,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '50996'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8498,6 +10701,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8507,6 +10758,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -8678,6 +10977,54 @@ x-flows:
                       range:
                         start: '2023-09-05T00:00:00.000Z'
                         end: '2023-09-05T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '20000'
                   - type: ON-ORDER
                     url: https://emandate.icicibank.in
                     params:
@@ -8689,6 +11036,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8698,6 +11093,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                   - params:
                       amount: '50996'
                       currency: INR
@@ -8707,6 +11150,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '50996'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8716,6 +11207,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8725,6 +11264,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '46360'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -8764,7 +11351,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_12
       - summary: >-
           Lender provides the borrower with real-time updates on their Invoice
           Based Loan after receiving the prepayment.
@@ -8917,6 +11504,54 @@ x-flows:
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8926,6 +11561,54 @@ x-flows:
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8935,6 +11618,54 @@ x-flows:
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8944,6 +11675,54 @@ x-flows:
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                   - params:
                       amount: '46360'
                       currency: INR
@@ -8953,6 +11732,54 @@ x-flows:
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: PAYMENT_COLLECTOR
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: BPP
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -9021,7 +11848,7 @@ x-flows:
                 Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_13
       - summary: Consumer platform fetches the Loan amount form
         api: form
         details:
@@ -9069,7 +11896,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: *ref_12
+          value: *ref_14
       - summary: >-
           The provider offers the required form for the chosen personal loan
           service.
@@ -9093,7 +11920,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_15
       - summary: Get PAN deatails form.
         api: form
         details:
@@ -9137,7 +11964,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK         
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_10
       - summary: >-
           Provider platform returns the health insurance status update(for Form
           Status).
@@ -9157,7 +11984,7 @@ x-flows:
                 end     
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_16
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -9494,7 +12321,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_10
       - summary: >-
           Insurer provides the Buyer with latest update of form status(Form
           Processing).
@@ -9639,7 +12466,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_10
       - summary: >-
           Insurer provides the Buyer with latest update of form status(Form
           Completed) .
@@ -9785,7 +12612,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_17
 x-examples:
   personal-loan:
     summary: personal-loan
@@ -9795,54 +12622,54 @@ x-examples:
         examples:
           - summary: search for personal loan
             description: TBD
-            value: *ref_16
+            value: *ref_18
       on_search:
         examples:
           - summary: personal loan catalog
             description: TBD
-            value: *ref_17
+            value: *ref_19
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_18
+            value: *ref_20
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_12
+            value: *ref_14
       on_select:
         examples:
           - summary: on_select-request-financial-info-form
             description: TBD
-            value: *ref_11
+            value: *ref_13
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_13
+            value: *ref_15
       init:
         examples:
           - summary: init
             description: TBD
-            value: *ref_15
+            value: *ref_17
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_19
+            value: *ref_21
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_20
+            value: *ref_22
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_20
+            value: *ref_22
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_21
+            value: *ref_23
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_7
+            value: *ref_9
       update:
         examples:
           - summary: update
@@ -10063,12 +12890,12 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_8
+            value: *ref_10
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_14
+            value: *ref_16
           - summary: on_status-request-full-repayment
             description: TBD
             value:
@@ -10498,20 +13325,20 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_22
+            value: *ref_24
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_23
+            value: *ref_25
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_24
+            value: *ref_26
           - summary: select-request-employment-info
             description: TBD
-            value: *ref_25
+            value: *ref_27
           - summary: select-request-financial-info
             description: TBD
             value:
@@ -10544,7 +13371,7 @@ x-examples:
         examples:
           - summary: on_select-request-employment-details-form
             description: TBD
-            value: *ref_26
+            value: *ref_28
           - summary: on_select-request-financial-info-form
             description: TBD
             value:
@@ -10637,33 +13464,33 @@ x-examples:
                         required: true
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_27
+            value: *ref_29
       init:
         examples:
           - summary: init
             description: TBD
-            value: *ref_28
+            value: *ref_30
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_29
+            value: *ref_31
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_30
+            value: *ref_32
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_30
+            value: *ref_32
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_31
+            value: *ref_33
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_9
+            value: *ref_11
       update:
         examples:
           - summary: update
@@ -10830,6 +13657,54 @@ x-examples:
                         range:
                           start: '2023-06-01T00:00:00.000Z'
                           end: '2023-06-30T00:23:59.999Z'
+                      collected_by: BPP
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: PAYMENT_COLLECTOR
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: BPP
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '46360'
                     - params:
                         amount: '46360'
                         currency: INR
@@ -10838,6 +13713,54 @@ x-examples:
                         range:
                           start: '2023-07-01T00:00:00.000Z'
                           end: '2023-07-31T00:23:59.999'
+                      collected_by: BPP
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: PAYMENT_COLLECTOR
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: BPP
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '46360'
                     - params:
                         amount: '46360'
                         currency: INR
@@ -10846,6 +13769,54 @@ x-examples:
                         range:
                           start: '2023-08-01T00:00:00.000Z'
                           end: '2023-08-31T00:23:59.999'
+                      collected_by: BPP
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: PAYMENT_COLLECTOR
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: BPP
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '46360'
                     - params:
                         amount: '46360'
                         currency: INR
@@ -10854,6 +13825,54 @@ x-examples:
                         range:
                           start: '2023-09-01T00:00:00.000Z'
                           end: '2023-09-30T00:23:59.999Z'
+                      collected_by: BPP
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: PAYMENT_COLLECTOR
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: BPP
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '46360'
                     - params:
                         amount: '46360'
                         currency: INR
@@ -10862,6 +13881,54 @@ x-examples:
                         range:
                           start: '2023-10-01T00:00:00.000Z'
                           end: '2023-10-31T00:23:59.999'
+                      collected_by: BPP
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: PAYMENT_COLLECTOR
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: BPP
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '46360'
                   cancellation_terms:
                     - fulfillment_state:
                         descriptor:
@@ -10883,21 +13950,21 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_10
+            value: *ref_12
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_32
+            value: *ref_34
           - summary: on_status-request-after-installment
             description: TBD
-            value: *ref_33
+            value: *ref_35
           - summary: on_status-request-full-repayment
             description: TBD
-            value: *ref_34
+            value: *ref_36
           - summary: on_status-request-late-repayment-installment
             description: TBD
-            value: *ref_35
+            value: *ref_37
       support:
         examples:
           - summary: support
@@ -10957,7 +14024,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_38
+                code: &ref_40
                   required: mandatory
                   description: Physical description of code value for something
                   reference: if any
@@ -10966,19 +14033,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_36
+              name: &ref_38
                 required: mandatory
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Personal loan
             providers:
-              id: &ref_37
+              id: &ref_39
                 required: mandatory
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_39
-                name: *ref_36
+              descriptor: &ref_41
+                name: *ref_38
                 short_desc:
                   required: optional
                   description: Short description of value for something.
@@ -10997,13 +14064,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
               categories:
-                id: *ref_37
-                descriptor: &ref_51
-                  code: *ref_38
-                  name: *ref_36
+                id: *ref_39
+                descriptor: &ref_53
+                  code: *ref_40
+                  name: *ref_38
               items:
-                id: *ref_37
-                descriptor: *ref_39
+                id: *ref_39
+                descriptor: *ref_41
                 category_ids:
                   required: mandatory
                   description: Categories this item can be listed under
@@ -11012,8 +14079,8 @@ x-attributes:
                 xinput:
                   head:
                     descriptor:
-                      name: *ref_36
-                    index: &ref_40
+                      name: *ref_38
+                    index: &ref_42
                       min:
                         required: optional
                         description: Minimum index value of form
@@ -11030,23 +14097,23 @@ x-attributes:
                         reference: if any
                         usage: 1
                   form:
-                    id: *ref_37
-                    url: &ref_41
+                    id: *ref_39
+                    url: &ref_43
                       required: mandatory
                       description: Unique human readable ID.
                       reference: if any
                       usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-                    mime_type: &ref_42
+                    mime_type: &ref_44
                       required: mandatory
                       description: Describes the mime of the document.
                       reference: if any
                       usage: text/html
-                    resubmit: &ref_43
+                    resubmit: &ref_45
                       required: mandatory
                       description: Describes a form can be re-submited again or not.
                       reference: if any
                       usage: false
-                    multiple_sumbissions: &ref_44
+                    multiple_sumbissions: &ref_46
                       required: mandatory
                       description: Describes a form supports multiple sumbissions or not.
                       reference: if any
@@ -11055,11 +14122,11 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_37
+              id: *ref_39
               items:
-                id: *ref_37
+                id: *ref_39
                 xinput:
-                  form_response: &ref_45
+                  form_response: &ref_47
                     status:
                       required: mandatory
                       description: Describes the status of form
@@ -11074,40 +14141,40 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_37
-              descriptor: *ref_39
+              id: *ref_39
+              descriptor: *ref_41
             items:
-              id: *ref_37
-              descriptor: *ref_39
+              id: *ref_39
+              descriptor: *ref_41
               xinput:
                 head:
                   descriptor:
-                    name: *ref_36
-                  index: *ref_40
-                form: &ref_60
-                  url: *ref_41
-                  mime_type: *ref_42
-                  resubmit: *ref_43
-                  multiple_sumbissions: *ref_44
+                    name: *ref_38
+                  index: *ref_42
+                form: &ref_62
+                  url: *ref_43
+                  mime_type: *ref_44
+                  resubmit: *ref_45
+                  multiple_sumbissions: *ref_46
       init:
         message:
           order:
             provider:
-              id: *ref_37
+              id: *ref_39
               items:
-                id: *ref_37
+                id: *ref_39
                 xinput:
-                  form_response: *ref_45
+                  form_response: *ref_47
       on_init:
         message:
           order:
             provider:
-              id: *ref_37
-              descriptor: *ref_39
+              id: *ref_39
+              descriptor: *ref_41
             items:
-              id: *ref_37
-              descriptor: *ref_39
-              price: &ref_46
+              id: *ref_39
+              descriptor: *ref_41
+              price: &ref_48
                 value:
                   required: optional
                   description: Describes a numerical value in decimal form111
@@ -11119,16 +14186,16 @@ x-attributes:
                   reference: if any
                   usage: IND
               xinput:
-                form_response: *ref_45
-            quote: &ref_47
-              id: *ref_37
+                form_response: *ref_47
+            quote: &ref_49
+              id: *ref_39
               breakup:
                 title:
                   required: mandatory
                   description: the breakup title of the total quoted price
                   reference: if any
                   usage: Amount
-            fulfillments: &ref_48
+            fulfillments: &ref_50
               customer:
                 contact:
                   phone:
@@ -11147,7 +14214,7 @@ x-attributes:
                     description: Describes a person name as any individual
                     reference: if any
                     usage: John
-            payments: &ref_49
+            payments: &ref_51
               type:
                 required: mandatory
                 description: type of the payment
@@ -11186,7 +14253,7 @@ x-attributes:
                     description: This indicates end of a range
                     reference: if any
                     usage: '2021-03-23T10:00:40.065Z'
-            cancellation_terms: &ref_50
+            cancellation_terms: &ref_52
               cancellation_fee:
                 percentage:
                   required: mandatory
@@ -11212,66 +14279,66 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_37
+              id: *ref_39
             items:
-              id: *ref_37
+              id: *ref_39
               xinput:
-                form_response: *ref_45
+                form_response: *ref_47
       on_confirm:
         message:
           order:
-            id: *ref_37
+            id: *ref_39
             provider:
-              id: *ref_37
-              descriptor: *ref_39
+              id: *ref_39
+              descriptor: *ref_41
             items:
-              id: *ref_37
-              descriptor: *ref_39
-              price: *ref_46
-            quote: *ref_47
-            fulfillments: *ref_48
-            payments: *ref_49
-            cancellation_terms: *ref_50
+              id: *ref_39
+              descriptor: *ref_41
+              price: *ref_48
+            quote: *ref_49
+            fulfillments: *ref_50
+            payments: *ref_51
+            cancellation_terms: *ref_52
       status:
         message:
-          order_id: *ref_37
+          order_id: *ref_39
       on_status:
         message:
           order:
-            id: *ref_37
+            id: *ref_39
             provider:
-              id: *ref_37
-              descriptor: *ref_39
+              id: *ref_39
+              descriptor: *ref_41
               items:
-                id: *ref_37
-                descriptor: *ref_51
-                price: *ref_46
-            quote: *ref_47
-            fulfillments: *ref_48
+                id: *ref_39
+                descriptor: *ref_53
+                price: *ref_48
+            quote: *ref_49
+            fulfillments: *ref_50
       support:
         message:
           support:
-            ref_id: &ref_52
+            ref_id: &ref_54
               required: mandatory
               description: Describes ref_id for support
               reference: if any
               usage: 25d26510-e46e-4a3f-968e-85d1401077f2
-            phone: &ref_53
+            phone: &ref_55
               required: mandatory
               description: Describes the phone information of an entity
               reference: if any
               usage: +91-9897867564
-            email: &ref_54
+            email: &ref_56
               required: mandatory
               description: Email address of the contact
               reference: if any
               usage: john.doe@example.com
       on_support:
         message:
-          support: &ref_63
-            ref_id: *ref_52
-            phone: *ref_53
-            email: *ref_54
+          support: &ref_65
+            ref_id: *ref_54
+            phone: *ref_55
+            email: *ref_56
             url:
               required: mandatory
               description: The URL of the file
@@ -11285,7 +14352,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_57
+                code: &ref_59
                   required: mandatory
                   description: Physical description of code value for something
                   reference: if any
@@ -11294,19 +14361,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_55
+              name: &ref_57
                 required: mandatory
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Invoice based loan
             providers:
-              id: &ref_56
+              id: &ref_58
                 required: mandatory
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_59
-                name: *ref_55
+              descriptor: &ref_61
+                name: *ref_57
                 short_desc:
                   required: optional
                   description: Short description of value for something.
@@ -11325,13 +14392,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
               categories:
-                id: *ref_56
-                descriptor: &ref_58
-                  code: *ref_57
-                  name: *ref_55
+                id: *ref_58
+                descriptor: &ref_60
+                  code: *ref_59
+                  name: *ref_57
               items:
-                id: *ref_56
-                descriptor: *ref_58
+                id: *ref_58
+                descriptor: *ref_60
                 category_ids:
                   required: mandatory
                   description: Categories this item can be listed under
@@ -11340,74 +14407,74 @@ x-attributes:
                 xinput:
                   head:
                     descriptor:
-                      name: *ref_55
-                    index: *ref_40
+                      name: *ref_57
+                    index: *ref_42
                   form:
-                    url: *ref_41
-                    mime_type: *ref_42
-                    resubmit: *ref_43
-                    multiple_sumbissions: *ref_44
-                    id: *ref_56
+                    url: *ref_43
+                    mime_type: *ref_44
+                    resubmit: *ref_45
+                    multiple_sumbissions: *ref_46
+                    id: *ref_58
       select:
         message:
           order:
             provider:
-              id: *ref_56
+              id: *ref_58
               items:
-                id: *ref_56
+                id: *ref_58
                 xinput:
-                  form_response: *ref_45
+                  form_response: *ref_47
       on_select:
         message:
           order:
             provider:
-              id: *ref_56
-              descriptor: *ref_59
+              id: *ref_58
+              descriptor: *ref_61
             items:
-              id: *ref_56
-              descriptor: *ref_58
+              id: *ref_58
+              descriptor: *ref_60
               xinput:
                 head:
                   descriptor:
-                    name: *ref_55
-                  index: *ref_40
-                form: *ref_60
+                    name: *ref_57
+                  index: *ref_42
+                form: *ref_62
       init:
         message:
           order:
             provider:
-              id: *ref_56
+              id: *ref_58
               items:
-                id: *ref_56
+                id: *ref_58
                 xinput:
-                  form_response: *ref_45
+                  form_response: *ref_47
       on_init:
         message:
           order:
             provider:
-              id: *ref_56
-              descriptor: *ref_59
+              id: *ref_58
+              descriptor: *ref_61
             items:
-              id: *ref_56
-              descriptor: *ref_58
-              price: *ref_46
+              id: *ref_58
+              descriptor: *ref_60
+              price: *ref_48
               xinput:
                 head:
                   descriptor:
-                    name: *ref_55
-                  index: *ref_40
-                form: *ref_60
-            quote: &ref_61
-              id: *ref_56
-              price: *ref_46
+                    name: *ref_57
+                  index: *ref_42
+                form: *ref_62
+            quote: &ref_63
+              id: *ref_58
+              price: *ref_48
               breakup:
                 title:
                   required: mandatory
                   description: the breakup title of the total quoted price
                   reference: if any
                   usage: Amount
-                price: *ref_46
-            fulfillments: &ref_62
+                price: *ref_48
+            fulfillments: &ref_64
               customer:
                 organization:
                   address:
@@ -11443,56 +14510,56 @@ x-attributes:
                       description: Email address of the contact
                       reference: if any
                       usage: alpha.manufacturing@gmail.com
-            payments: *ref_49
-            cancellation_terms: *ref_50
+            payments: *ref_51
+            cancellation_terms: *ref_52
       confirm:
         message:
           order:
             provider:
-              id: *ref_56
+              id: *ref_58
             items:
-              id: *ref_56
+              id: *ref_58
               xinput:
-                form_response: *ref_45
+                form_response: *ref_47
       on_confirm:
         message:
           order:
-            id: *ref_56
+            id: *ref_58
             provider:
-              id: *ref_56
-              descriptor: *ref_59
+              id: *ref_58
+              descriptor: *ref_61
             items:
-              id: *ref_56
-              descriptor: *ref_58
-              price: *ref_46
-            quote: *ref_61
-            fulfillments: *ref_62
-            payments: *ref_49
-            cancellation_terms: *ref_50
+              id: *ref_58
+              descriptor: *ref_60
+              price: *ref_48
+            quote: *ref_63
+            fulfillments: *ref_64
+            payments: *ref_51
+            cancellation_terms: *ref_52
       status:
         message:
-          order_id: *ref_56
+          order_id: *ref_58
       on_status:
         message:
           order:
-            id: *ref_56
+            id: *ref_58
             provider:
-              id: *ref_56
-              descriptor: *ref_59
+              id: *ref_58
+              descriptor: *ref_61
             items:
-              id: *ref_56
-              descriptor: *ref_58
-              price: *ref_46
-            quote: *ref_61
-            fulfillments: *ref_62
-            payments: *ref_49
-            cancellation_terms: *ref_50
+              id: *ref_58
+              descriptor: *ref_60
+              price: *ref_48
+            quote: *ref_63
+            fulfillments: *ref_64
+            payments: *ref_51
+            cancellation_terms: *ref_52
       support:
         message:
           support:
-            ref_id: *ref_52
-            phone: *ref_53
-            email: *ref_54
+            ref_id: *ref_54
+            phone: *ref_55
+            email: *ref_56
       on_support:
         message:
-          support: *ref_63
+          support: *ref_65
