@@ -3022,6 +3022,54 @@ x-enum:
     message:
       order: *ref_6
 x-tags:
+  search:
+    message:
+      intent:
+        payment:
+          tags:
+            - code: BUYER_FINDER_FEES
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: &ref_10
+                - code: BUYER_FINDER_FEES_TYPE
+                  description: Buyer finder fee type.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_PERCENTAGE
+                  description: Buyer finder fee in percentage
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_AMOUNT
+                  description: Buyer finder fee in amount
+                  reference: <PR/Issue/Discussion Links md format text>
+            - code: SETTLEMENT_TERMS
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: &ref_11
+                - code: SETTLEMENT_WINDOW
+                  description: Time window to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_BASIS
+                  description: basis required to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_TYPE
+                  description: payment method to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: MANDATORY_ARBITRATION
+                  description: >-
+                    flag to denote if dispute can be resolved through
+                    arbitration
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: COURT_JURISDICTION
+                  description: denotes court that will have jurisdiction for the case
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: DELAY_INTEREST
+                  description: denotes interest to be paid as a delay charge
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: STATIC_TERMS
+                  description: terms for settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_AMOUNT
+                  description: denotes settlement amount
+                  reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
@@ -3286,7 +3334,7 @@ x-tags:
                       to businesses and individuals registered under the Goods
                       and Services Tax (GST) system in India.
                     reference: <PR/Issue/Discussion Links md format text>
-  select: &ref_10
+  select: &ref_12
     message:
       order:
         items:
@@ -3303,14 +3351,24 @@ x-tags:
               description: describes the general Information for motor based insurance
               reference: <PR/Issue/Discussion Links md format text>
               list: *ref_9
-  on_select: *ref_10
-  init: *ref_10
-  on_init: *ref_10
-  confirm: *ref_10
-  on_confirm: *ref_10
-  on_status: *ref_10
-  on_cancel: *ref_10
-  on_update: *ref_10
+        payments:
+          tags:
+            - code: BUYER_FINDER_FEES
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: *ref_10
+            - code: SETTLEMENT_TERMS
+              description: describes the general Information of the loan
+              reference: <PR/Issue/Discussion Links md format text>
+              list: *ref_11
+  on_select: *ref_12
+  init: *ref_12
+  on_init: *ref_12
+  confirm: *ref_12
+  on_confirm: *ref_12
+  on_status: *ref_12
+  on_cancel: *ref_12
+  on_update: *ref_12
 x-flows:
   - summary: Marine Insurance Application
     details:
@@ -3406,7 +3464,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_43
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3415,6 +3473,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 818bab0a-5599-4acc-9783-7b28dd5a5ae0
               timestamp: '2023-07-22T15:01:07.785Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -3434,6 +3494,46 @@ x-flows:
                         - descriptor:
                             code: BUYER_FINDER_FEES_PERCENTAGE
                           value: '1'
+                    - descriptor:
+                        code: SETTLEMENT_DETAILS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: UPI
+                    - descriptor:
+                        code: PAYMENT_COLLECTOR
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: BPP
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: PT60M
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: upi
+                        - descriptor:
+                            code: MANDATORY_ARBITRATION
+                          value: 'true'
+                        - descriptor:
+                            code: COURT_JURISDICTION
+                          value: New Delhi
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: >-
           Provides a catalog of different insurance plans products offered by a
           single lender form marine insurance
@@ -3458,12 +3558,14 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_44
             context:
               domain: ONDC:FIS13
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               action: on_search
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
@@ -3594,7 +3696,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_45
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -3605,6 +3707,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
               timestamp: '2023-07-22T15:03:18.179Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -3667,6 +3771,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
               timestamp: '2023-07-22T15:03:18.179Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -3816,6 +3922,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
               timestamp: '2023-07-22T15:03:18.179Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -3865,7 +3973,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_46
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -3876,6 +3984,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
               timestamp: '2023-07-22T15:03:18.179Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -4013,12 +4123,14 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_47
             context:
               domain: ONDC:FIS13
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               action: init
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
@@ -4066,6 +4178,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   id: P1
                 quote:
@@ -4106,12 +4247,14 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_48
             context:
               domain: ONDC:FIS13
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               action: on_init
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
@@ -4203,6 +4346,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -4248,12 +4420,14 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_49
             context:
               domain: ONDC:FIS13
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               action: confirm
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
@@ -4344,6 +4518,43 @@ x-flows:
                       transaction_id: 079c071b-8972-4f0f-b553-12e894617860
                     status: PAID
                     type: PRE-ORDER
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   id: P1
                 quote:
@@ -4380,12 +4591,14 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_50
             context:
               domain: ONDC:FIS13
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               action: on_confirm
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
@@ -4491,6 +4704,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '100000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -4627,7 +4869,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_23
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -4636,6 +4878,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 385e3fb7-61e6-49a7-acbc-8ac05f934d4d
               timestamp: '2023-07-24T05:39:31.700Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -4655,6 +4899,39 @@ x-flows:
                         - descriptor:
                             code: BUYER_FINDER_FEES_PERCENTAGE
                           value: '1'
+                    - descriptor:
+                        code: PAYMENT_COLLECTOR
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: BPP
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: PT60M
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: upi
+                        - descriptor:
+                            code: MANDATORY_ARBITRATION
+                          value: 'true'
+                        - descriptor:
+                            code: COURT_JURISDICTION
+                          value: New Delhi
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Insurer provides a catalog of different insurance products.
         api: on_search
         details:
@@ -4677,7 +4954,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_24
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -4688,6 +4965,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 385e3fb7-61e6-49a7-acbc-8ac05f934d4d
               timestamp: '2023-07-24T05:39:40.104Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5082,7 +5361,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_25
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5093,6 +5372,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 4e0dfc15-4f11-49b8-8581-ca85ae7a8ba1
               timestamp: '2023-07-24T05:40:18.651Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5139,7 +5420,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_13
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5150,6 +5431,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 4e0dfc15-4f11-49b8-8581-ca85ae7a8ba1
               timestamp: '2023-07-24T05:40:26.618Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5369,7 +5652,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_26
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5380,6 +5663,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 519da438-68dc-4f2c-bd10-79c0f88c3924
               timestamp: '2023-07-24T05:40:18.651Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5434,7 +5719,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_15
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5445,6 +5730,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 1425f3a1-420d-4c38-9b47-234c7bfa68ea
               timestamp: '2023-07-24T05:40:26.618Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5659,7 +5946,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_14
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5670,6 +5957,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 1425f3a1-420d-4c38-9b47-234c7bfa68ea
               timestamp: '2023-07-24T05:40:18.651Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5714,7 +6003,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_27
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5725,6 +6014,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 519da438-68dc-4f2c-bd10-79c0f88c3924
               timestamp: '2023-07-24T05:40:26.618Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5939,7 +6230,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_17
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -5950,6 +6241,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: b4977ec9-ca8a-41c4-90eb-f73f36160c84
               timestamp: '2023-07-24T05:40:48.432Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -5993,6 +6286,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
@@ -6017,7 +6339,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_33
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6028,6 +6350,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: b4977ec9-ca8a-41c4-90eb-f73f36160c84
               timestamp: '2023-07-24T05:41:01.775Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -6167,6 +6491,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6289,7 +6642,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_28
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6300,6 +6653,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 0a73dfe8-84c7-4f01-99ea-5137f3a7ea3d
               timestamp: '2023-07-24T05:40:48.432Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -6344,6 +6699,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
@@ -6368,7 +6752,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_32
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6379,6 +6763,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 0a73dfe8-84c7-4f01-99ea-5137f3a7ea3d
               timestamp: '2023-07-24T05:41:01.775Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -6518,6 +6904,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6643,7 +7058,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_30
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6654,6 +7069,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 1015e8ce-a8c9-4533-9051-81725d3140f0
               timestamp: '2023-07-24T05:40:48.432Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -6698,6 +7115,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
@@ -6722,7 +7168,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_35
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6733,6 +7179,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 1015e8ce-a8c9-4533-9051-81725d3140f0
               timestamp: '2023-07-24T05:41:01.775Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -6872,6 +7320,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6999,7 +7476,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_29
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -7077,7 +7554,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_34
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -7336,7 +7813,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_39
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -7377,7 +7854,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_40
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -7550,7 +8027,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_31
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -7561,6 +8038,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: a214954f-fa49-4e10-baf4-c51b3dd22fd7
               timestamp: '2023-07-24T05:40:48.432Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -7605,6 +8084,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
       - summary: Insurer returns the response to initailized health insurance plan.
         api: on_init
         details:
@@ -7629,7 +8137,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_36
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -7640,6 +8148,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: a214954f-fa49-4e10-baf4-c51b3dd22fd7
               timestamp: '2023-07-24T05:41:01.775Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -7779,6 +8289,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -7908,7 +8447,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_37
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -7919,6 +8458,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 953c3fdc-09e3-44b6-a391-67463c17d7d2
               timestamp: '2023-07-24T05:41:20.401Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -7951,6 +8492,43 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
                 provider:
                   id: P1
                 quote:
@@ -7998,7 +8576,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_18
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -8179,7 +8757,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_41
             context:
               action: cancel
               bap_id: fis.test.bap.io
@@ -8190,6 +8768,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: ff042cdc-c5f5-4cbb-9509-52d6fba1b405
               timestamp: '2023-07-24T05:43:29.513Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -8219,7 +8799,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_42
             context:
               action: on_cancel
               bap_id: fis.test.bap.io
@@ -8230,6 +8810,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: ff042cdc-c5f5-4cbb-9509-52d6fba1b405
               timestamp: '2023-07-24T05:43:43.182Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -8307,6 +8889,46 @@ x-flows:
                       currency: INR
                     status: PAID
                     type: PRE-FULFILLMENT
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8405,7 +9027,7 @@ x-flows:
                 Insurer Platform (BPP)-->>Buyer Platform (BAP): ACK
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_13
       - summary: Buyer App fetches the PED details
         api: form
         details:
@@ -8478,7 +9100,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_12
+          value: *ref_14
       - summary: >-
           Provider platform returns the response to selected health insurance
           plan.
@@ -8502,7 +9124,7 @@ x-flows:
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_15
       - summary: Get PAN deatails form.
         api: form
         details:
@@ -8565,7 +9187,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK       
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_19
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -8576,6 +9198,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:41:47.097Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -8613,6 +9237,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:42:00.067Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -8801,6 +9427,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 519da438-68dc-4f2c-bd10-79c0f88c3924
               timestamp: '2023-07-24T05:40:26.618Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -9002,6 +9630,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:42:00.067Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -9149,7 +9779,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_16
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -9160,6 +9790,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:41:47.097Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -9197,6 +9829,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:42:00.067Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -9345,7 +9979,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_16
       - summary: >-
           Insurer provides the Buyer with latest update of form status(Form
           Completed) .
@@ -9377,6 +10011,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:42:00.067Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -9526,7 +10162,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_17
   - summary: Claim Health Insurance
     details:
       - description: Detailed process of claiming a Health Insurance
@@ -9566,7 +10202,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_18
       - summary: Buyer app redirected to claim url page.
         api: redirect
         details:
@@ -9803,7 +10439,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_38
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -9814,6 +10450,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
               timestamp: '2023-07-24T05:41:47.097Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -10062,7 +10700,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_19
       - summary: >-
           Insurer provides the Buyer with latest update of form status(Form
           Completed) .
@@ -10322,7 +10960,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_18
       - summary: Buyer app redirected to renew url page.
         api: redirect
         details:
@@ -10349,7 +10987,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_20
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -10578,7 +11216,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_20
   - summary: Motor Insurance Application
     details:
       - description: Discovery of motor insurance .
@@ -10671,7 +11309,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_51
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -10680,6 +11318,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 385e3fb7-61e6-49a7-acbc-8ac05f934d4d
               timestamp: '2023-07-24T05:39:31.700Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -10690,6 +11330,48 @@ x-flows:
                 category:
                   descriptor:
                     code: MOTOR_INSURANCE
+                payment:
+                  tags:
+                    - descriptor:
+                        code: BUYER_FINDER_FEES
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                    - descriptor:
+                        code: SETTLEMENT_DETAILS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: UPI
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: PT60M
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_TYPE
+                          value: upi
+                        - descriptor:
+                            code: MANDATORY_ARBITRATION
+                          value: 'true'
+                        - descriptor:
+                            code: COURT_JURISDICTION
+                          value: New Delhi
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Provider platform provides a catalog of different insurance products.
         api: on_search
         details:
@@ -10712,7 +11394,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_52
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -10723,6 +11405,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 818bab0a-5599-4acc-9783-7b28dd5a5ae0
               timestamp: '2023-07-22T15:01:17.694Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -11297,7 +11981,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_21
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -11308,6 +11992,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
               timestamp: '2023-07-22T15:03:03.335Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -11763,7 +12449,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_21
       - summary: >-
           Provider platform returns the response to selected motor insurance
           plan.
@@ -11792,7 +12478,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_54
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -11803,6 +12489,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
               timestamp: '2023-07-22T15:03:18.179Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12016,7 +12704,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_53
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -12027,6 +12715,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
               timestamp: '2023-07-22T15:03:03.335Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12081,7 +12771,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_55
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -12092,6 +12782,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
               timestamp: '2023-07-22T15:03:18.179Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12305,7 +12997,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_22
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -12316,6 +13008,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: ab63f0dc-664d-4a5d-810d-2025085a9581
               timestamp: '2023-07-22T15:04:48.024Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12368,6 +13062,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '12505'
       - summary: >-
           Provider platform returns the response to initailized motor insurance
           plan.
@@ -12395,7 +13118,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_57
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -12406,6 +13129,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: ab63f0dc-664d-4a5d-810d-2025085a9581
               timestamp: '2023-07-22T15:04:48.024Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12545,6 +13270,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   id: P1
                 quote:
@@ -12657,7 +13411,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_22
       - summary: >-
           Provider platform returns the response to initailized motor insurance
           plan.
@@ -12685,7 +13439,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_56
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -12696,6 +13450,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: ab63f0dc-664d-4a5d-810d-2025085a9581
               timestamp: '2023-07-22T15:04:48.024Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12835,6 +13591,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   id: P1
                 quote:
@@ -12938,7 +13723,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_58
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -12949,6 +13734,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: ab63f0dc-664d-4a5d-810d-2025085a9581
               timestamp: '2023-07-22T15:04:48.024Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12998,6 +13785,42 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_DETAILS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: UPI
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '12505'
       - summary: Provider platform confirms the motor insurance order.
         api: on_confirm
         details:
@@ -13022,7 +13845,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_59
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -13033,6 +13856,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 953c3fdc-09e3-44b6-a391-67463c17d7d2
               timestamp: '2023-07-24T05:41:32.487Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -13181,6 +14006,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -13276,6 +14130,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 6c7121e2-e137-473f-ba96-809b62019f43
               timestamp: '2023-07-24T07:42:54.121Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -13319,6 +14175,8 @@ x-flows:
               location:
                 country:
                   code: IND
+                city:
+                  code: '*'
               message_id: 953c3fdc-09e3-44b6-a391-67463c17d7d2
               timestamp: '2023-07-24T05:41:32.487Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -13465,6 +14323,35 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '12505'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -13539,73 +14426,73 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_21
+            value: *ref_23
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_22
+            value: *ref_24
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_23
+            value: *ref_25
           - summary: select-request-pan-dob-info
             description: TBD
-            value: *ref_24
+            value: *ref_26
           - summary: select-request-ped-info
             description: TBD
-            value: *ref_12
+            value: *ref_14
       on_select:
         examples:
           - summary: on_select-request-pan-dob-info-details-form
             description: TBD
-            value: *ref_25
+            value: *ref_27
           - summary: on_select-request-ped-info-form
             description: TBD
-            value: *ref_13
+            value: *ref_15
           - summary: on_select-request-with-personal info
             description: TBD
-            value: *ref_11
+            value: *ref_13
       init:
         examples:
           - summary: init-request for buyer info
             description: TBD
-            value: *ref_26
+            value: *ref_28
           - summary: init-request-ekyc-info
             description: TBD
-            value: *ref_15
+            value: *ref_17
           - summary: init-request-review-info
             description: TBD
-            value: *ref_27
+            value: *ref_29
           - summary: init-insured info
             description: TBD
-            value: *ref_28
+            value: *ref_30
           - summary: init-request-medical-info
             description: TBD
-            value: *ref_29
+            value: *ref_31
       on_init:
         examples:
           - summary: on_init-request-buyer-info-form
             description: TBD
-            value: *ref_30
+            value: *ref_32
           - summary: on_init-request-ekyc-info-form
             description: TBD
-            value: *ref_31
+            value: *ref_33
           - summary: on_init-request-review-info
             description: TBD
-            value: *ref_32
+            value: *ref_34
           - summary: on_init-request-insured-info-form
             description: TBD
-            value: *ref_33
+            value: *ref_35
           - summary: on_init-request-medical-info-form
             description: TBD
-            value: *ref_34
+            value: *ref_36
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_35
+            value: *ref_37
       on_confirm:
         examples:
           - summary: on_confirm
@@ -13621,6 +14508,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: 953c3fdc-09e3-44b6-a391-67463c17d7d2
                 timestamp: '2023-07-24T05:41:32.487Z'
                 transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -13702,7 +14591,46 @@ x-examples:
                         bank_code: SBIN0001234
                         currency: INR
                       status: NOT-PAID
-                      type: PRE-ORDER
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '1000'
                   provider:
                     descriptor:
                       long_desc: >-
@@ -13752,6 +14680,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: 6c7121e2-e137-473f-ba96-809b62019f43
                 timestamp: '2023-07-24T05:42:54.121Z'
                 transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -13780,6 +14710,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: 6c7121e2-e137-473f-ba96-809b62019f43
                 timestamp: '2023-07-24T05:43:08.910Z'
                 transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -13876,6 +14808,35 @@ x-examples:
                             - descriptor:
                                 code: BUYER_FINDER_FEES_PERCENTAGE
                               value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '1000'
                   provider:
                     descriptor:
                       long_desc: >-
@@ -13928,10 +14889,10 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_36
+            value: *ref_38
           - summary: review-form-status-request
             description: TBD
-            value: *ref_37
+            value: *ref_39
       on_status:
         examples:
           - summary: on_status
@@ -13947,6 +14908,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
                 timestamp: '2023-07-24T05:42:00.067Z'
                 transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -14043,6 +15006,35 @@ x-examples:
                             - descriptor:
                                 code: BUYER_FINDER_FEES_PERCENTAGE
                               value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '1000'
                   provider:
                     descriptor:
                       long_desc: >-
@@ -14093,17 +15085,17 @@ x-examples:
                       url: https://abcinsurance.com/policies/O1.pdf
           - summary: on_status-review-form-processed
             description: TBD
-            value: *ref_38
+            value: *ref_40
       cancel:
         examples:
           - summary: cancel
             description: TBD
-            value: *ref_39
+            value: *ref_41
       on_cancel:
         examples:
           - summary: on_cancel
             description: TBD
-            value: *ref_40
+            value: *ref_42
   marine-insurance:
     summary: marine-insurance
     description: marine-insurance
@@ -14112,42 +15104,42 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_41
+            value: *ref_43
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_42
+            value: *ref_44
       select:
         examples:
           - summary: select-request-aadhar-kyc info
             description: TBD
-            value: *ref_43
+            value: *ref_45
       on_select:
         examples:
           - summary: on_select-request-aadhar-kyc-info detail
             description: TBD
-            value: *ref_44
+            value: *ref_46
       init:
         examples:
           - summary: init-request info
             description: TBD
-            value: *ref_45
+            value: *ref_47
       on_init:
         examples:
           - summary: on_init-request-buyer-info-form
             description: TBD
-            value: *ref_46
+            value: *ref_48
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_47
+            value: *ref_49
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_48
+            value: *ref_50
       status:
         examples:
           - summary: status
@@ -14158,6 +15150,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 action: status
                 bap_id: fis.test.bap.io
                 bap_uri: https://fis.test.bap.io/
@@ -14185,6 +15179,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
                 timestamp: '2023-07-22T15:03:18.179Z'
                 transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -14282,6 +15278,50 @@ x-examples:
                           start: '2023-07-01T15:44:19.166Z'
                       type: PRE-ORDER
                       url: https://payment.fis.test.bpp.io
+                      tags:
+                        - descriptor:
+                            code: SETTLEMENT_DETAILS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: UPI
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '1000'
                   provider:
                     descriptor:
                       long_desc: >-
@@ -14322,6 +15362,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: ff042cdc-c5f5-4cbb-9509-52d6fba1b405
                 timestamp: '2023-07-22T15:10:50.780Z'
                 transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -14342,6 +15384,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 action: on_cancel
                 bap_id: fis.test.bap.io
                 bap_uri: https://fis.test.bap.io/
@@ -14453,6 +15497,35 @@ x-examples:
                             - descriptor:
                                 code: BUYER_FINDER_FEES_PERCENTAGE
                               value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '1000'
                   provider:
                     descriptor:
                       long_desc: >-
@@ -14480,28 +15553,28 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_49
+            value: *ref_51
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_50
+            value: *ref_52
       select:
         examples:
           - summary: select-request-vehicle-info
             description: TBD
-            value: *ref_19
+            value: *ref_21
           - summary: select-request-pan-info
             description: TBD
-            value: *ref_51
+            value: *ref_53
       on_select:
         examples:
           - summary: on_select-request-pan
             description: TBD
-            value: *ref_52
+            value: *ref_54
           - summary: on_select-request-personal-info
             description: TBD
-            value: *ref_53
+            value: *ref_55
       init:
         examples:
           - summary: init-request-persoanl-info
@@ -14517,6 +15590,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: ab63f0dc-664d-4a5d-810d-2025085a9581
                 timestamp: '2023-07-22T15:04:48.024Z'
                 transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -14569,27 +15644,56 @@ x-examples:
                             - descriptor:
                                 code: BUYER_FINDER_FEES_PERCENTAGE
                               value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '1000'
           - summary: init-request-vehicle-nominee
             description: TBD
-            value: *ref_20
+            value: *ref_22
       on_init:
         examples:
           - summary: on_init-request-personal-info
             description: TBD
-            value: *ref_54
+            value: *ref_56
           - summary: on_init-request-vehicle-info
             description: TBD
-            value: *ref_55
+            value: *ref_57
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_56
+            value: *ref_58
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_57
+            value: *ref_59
       on_update:
         examples:
           - summary: on_update
@@ -14605,6 +15709,8 @@ x-examples:
                 location:
                   country:
                     code: IND
+                  city:
+                    code: '*'
                 message_id: 953c3fdc-09e3-44b6-a391-67463c17d7d2
                 timestamp: '2023-07-24T05:41:32.487Z'
                 transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
@@ -14752,6 +15858,35 @@ x-examples:
                             - descriptor:
                                 code: BUYER_FINDER_FEES_PERCENTAGE
                               value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: MANDATORY_ARBITRATION
+                              value: 'true'
+                            - descriptor:
+                                code: COURT_JURISDICTION
+                              value: New Delhi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '12505'
                   provider:
                     descriptor:
                       long_desc: >-
