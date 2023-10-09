@@ -22,7 +22,6 @@ function loadAttributes(data) {
     elements[0].parentNode.removeChild(elements[0]);
   }
   attributes = data;
-  console.log('data', data)
   var attributesDropDown = document.getElementById("attribute-dropdown");
   attributesDropDown.innerHTML = "";
 
