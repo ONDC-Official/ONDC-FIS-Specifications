@@ -12,7 +12,6 @@ function loadErrors(data) {
 
 function addErrorSets(option) {
   const object = errors[option]
-  console.log('object', object)
   object.forEach(function (key) {
     var table = document.getElementById("errorset");
     const newRow = document.createElement("tr");
@@ -31,6 +30,7 @@ function addErrorSets(option) {
     newRow.appendChild(cell1);
     newRow.appendChild(cell2);
     newRow.appendChild(cell3);
+    newRow.appendChild(cell4);
     table.appendChild(newRow);
   });
 }
