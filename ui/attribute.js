@@ -17,11 +17,12 @@ function updateSetsAttribute() {
 
 function loadAttributes(data) {
   // To fix: attributes are getting appended to list on branch change.
-  var elements = document.getElementsByClassName("test");
+  var elements = document.getElementsByClassName("attribute-wrapper");
   while (elements.length > 0) {
     elements[0].parentNode.removeChild(elements[0]);
   }
   attributes = data;
+  console.log('data', data)
   var attributesDropDown = document.getElementById("attribute-dropdown");
   attributesDropDown.innerHTML = "";
 
