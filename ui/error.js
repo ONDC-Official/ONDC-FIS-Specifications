@@ -6,14 +6,12 @@ function loadErrors(data) {
     elements[0].parentNode.removeChild(elements[0]);
   }
   errors = data;
-  console.log('data', data)
   const indexKey = Object.keys(errors);
   addErrorSets(indexKey[0]);
 }
 
 function addErrorSets(option) {
   const object = errors[option]
-  console.log('object', object)
   object.forEach(function (key) {
     var table = document.getElementById("errorset");
     const newRow = document.createElement("tr");
@@ -24,12 +22,11 @@ function addErrorSets(option) {
     const cell3 = document.createElement("td");
     const cell4 = document.createElement("td");
 
-    console.log('key', key)
-
-    cell1.textContent = key["Event"];
-    cell2.textContent = key["Description"];
-    cell3.textContent = key["From"];
-    cell4.textContent = key["code"];
+    cell1.style.minWidth = "65px";
+    cell1.textContent = key["code"];
+    cell2.textContent = key["From"];
+    cell3.textContent = key["Event"];
+    cell4.textContent = key["Description"];
 
     newRow.appendChild(cell1);
     newRow.appendChild(cell2);
