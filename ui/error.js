@@ -23,7 +23,7 @@ function addErrorSets(option) {
     const cell4 = document.createElement("td");
 
     cell1.style.minWidth = "65px";
-    cell1.textContent = key["Code"];
+    cell1.textContent = key["code"];
     cell2.textContent = key["From"];
     cell3.textContent = key["Event"];
     cell4.textContent = key["Description"];
