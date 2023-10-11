@@ -22,10 +22,11 @@ function addErrorSets(option) {
     const cell3 = document.createElement("td");
     const cell4 = document.createElement("td");
 
-    cell1.textContent = key["Event"];
-    cell2.textContent = key["Description"];
-    cell3.textContent = key["From"];
-    cell4.textContent = key["code"];
+    cell1.style.minWidth = "65px";
+    cell1.textContent = key["Code"];
+    cell2.textContent = key["From"];
+    cell3.textContent = key["Event"];
+    cell4.textContent = key["Description"];
 
     newRow.appendChild(cell1);
     newRow.appendChild(cell2);
