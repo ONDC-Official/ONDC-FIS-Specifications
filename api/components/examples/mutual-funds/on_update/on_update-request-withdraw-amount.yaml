@@ -4,7 +4,7 @@ context:
     country:
       code: IND
   version: 2.0.0
-  action: on_init
+  action: on_update
   bap_id: mutual-fund-protocol.becknprotocol.io
   bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
   transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
@@ -15,6 +15,7 @@ context:
   bpp_uri: https://stockwiz.com
 message:
   order:
+    id: O1
     provider:
       id: "P1"
       descriptor:
@@ -28,10 +29,10 @@ message:
         descriptor:
           name: HDFC Midcap Opportunities Fund - SIP
         category_ids:
-          - "C1"
-          - C4
+          - C1
         fulfillment_ids:
-          - "F1"  
+          - "F1"
+          - "F2"   
         # price:
         #   value: "1"
         #   currency: INR
@@ -43,21 +44,20 @@ message:
         xinput:
           head:
             descriptor:
-              name: Begin SIP
+              name: Bank Account Info
             index:
               min: 0
               cur: 0
               max: 1
             headings:
               - Account Information
-              - Agreement
           form:
-            id: FO3
+            id: FO4
             mime_type: text/html
-            url: https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO3
+            url: https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO4
             resubmit: false
             multiple_sumbissions: false
-          required: true
+          required: true    
         tags:
           - descriptor:
               name: Fund Information
@@ -105,6 +105,9 @@ message:
               - descriptor:
                   name: Max Withdrawal Percentage
                 value: 100%
+              - descriptor:
+                  name: Lock-in end Date
+                value: '2023-05-01T23:59:59.999Z' 
             display: true
           - descriptor:
               name: Sectors
@@ -132,7 +135,7 @@ message:
               - descriptor:
                   name: Mankind Pharma Ltd
                 value: < 1%
-  
+    
     fulfillments:
       - customer:
           #id: pan:ABCDE9999Z
@@ -144,29 +147,52 @@ message:
         id: F1    
         state:
           descriptor:
-            name: Mutual Fund Order Initialized
+            name: Order placed
+            code: ORDER_PLACED
+        agent:
+          person:
+            name: John Williams
+          organization:
+            descriptor:
+              name: HDFC Fund
+          contact:
+            phone: +91-9999999999
         stops:
           - type: SIP_INVESTMENT_PERIOD
             time:
               range:
                 start: '2023-01-01T00:00:00.000Z'
                 end: '2023-04-30T23:59:59.999Z'    
-        # stops:
-        #   - authorization:
-        #       type: OTP
+      - id: F2
+        type: WITHDRAWAL
+        state:
+          descriptor:
+            name: withdrawal
+            code: WITHDRAWAL_INITIATED
+        tags:
+          - descriptor:
+              name: Withdrawal Amount
+              code: WITHDRWAL_AMOUNT
+            list:
+              - descriptor:
+                  name: Amount
+                value: '2000'
     quote:
       price:
         currency: INR
         value: "500"
       breakup:
-        - descriptor:
-            name: Unit price
+        - title: First SIP Investment
           item: 
-            time:
-              label: SIP 1
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
               range:
                 start: '2023-01-01T00:00:00.000Z'
-                end: '2023-01-31T23:59:59.999Z'   
+                end: '2023-01-31T23:59:59.999Z'
+          descriptor:
+              name: Unit price
           price:
             value: "100"
             currency: INR
@@ -174,19 +200,76 @@ message:
             allocated:
               measure:
                 value: "5"
-                unit: units       
+                unit: units
+        - title: Second SIP Investment
+          item: 
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
+              range:
+                start: '2023-02-01T00:00:00.000Z'
+                end: '2023-02-28T23:59:59.999Z'
+          descriptor:
+              name: Unit price
+          price:
+            value: "50"
+            currency: INR
+          quantity:
+            allocated:
+              measure:
+                value: "10"
+                unit: units
+        - title: Third SIP Investment
+          item: 
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
+              range:
+                start: '2023-03-01T00:00:00.000Z'
+                end: '2023-03-31T23:59:59.999Z'
+          descriptor:
+              name: Unit price
+          price:
+            value: "100"
+            currency: INR
+          quantity:
+            allocated:
+              measure:
+                value: "5"
+                unit: units
+        - title: Fourth SIP Investment
+          item: 
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
+              range:
+                start: '2023-04-01T00:00:00.000Z'
+                end: '2023-04-30T23:59:59.999Z'
+          descriptor:
+              name: Unit price
+          price:
+            value: "50"
+            currency: INR
+          quantity:
+            allocated:
+              measure:
+                value: "10"
+                unit: units                        
     billing:
       name: Charles D'Souza
       email: charles@equitygrow.in
     payments:
       - type: ON-ORDER
-        url: https://emandate.abcmutalfunds.in
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
+        status: PAID
         time:
-          label: SIP 1
+          label: Installment 1
           range:
             start: '2023-01-01T00:00:00.000Z'
             end: '2023-01-31T23:59:59.999Z'
@@ -195,9 +278,10 @@ message:
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
+        status: PAID
         time:
-          label: SIP 2
+          label: Installment 2
           range:
             start: '2023-02-01T00:00:00.000Z'
             end: '2023-02-28T23:59:59.999Z'
@@ -206,9 +290,10 @@ message:
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
+        status: PAID
         time:
-          label: SIP 3
+          label: Installment 3
           range:
             start: '2023-03-01T00:00:00.000Z'
             end: '2023-03-31T23:59:59.999Z' 
@@ -216,9 +301,10 @@ message:
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61 
+        status: PAID
         time:
-          label: SIP 4
+          label: Installment 4
           range:
             start: '2023-04-01T00:00:00.000Z'
             end: '2023-04-30T23:59:59.999Z'                 
@@ -229,3 +315,20 @@ message:
         external_ref:
           mimetype: text/html
           url: https://abcmutalfunds.com/mf/tnc.html
+    documents:
+      - descriptor:
+          code: WITHDRAWAL_DOC
+          name: Withdraw Funds
+          short_desc: Buyer can withdraw their funds by visiting the below url
+          long_desc: Buyer can withdraw their funds by visiting the below url
+        mime_type: application/html
+        url: https://abcinsurance.com/withdraw-funds/
+      - descriptor:
+          code: ADDITIONAL_INVESTMENT_DOC
+          name: Additional Investment
+          short_desc: Buyer can invest more by visiting the below url
+          long_desc: Buyer can invest more by visiting the below url
+        mime_type: application/html
+        url: https://abcinsurance.com/additional-investment/
+
+  
