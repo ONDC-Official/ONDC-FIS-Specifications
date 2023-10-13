@@ -29,7 +29,7 @@ function onFirstLoad(build_spec) {
               loadTlc(data[xProperty]);
               break;
             default:
-              break;
+              break; 
           }
         } else {
           console.log(`${xProperty} is not present in the build_spec.`);
