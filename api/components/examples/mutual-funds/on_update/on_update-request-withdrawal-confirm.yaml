@@ -4,7 +4,7 @@ context:
     country:
       code: IND
   version: 2.0.0
-  action: on_confirm
+  action: on_update
   bap_id: mutual-fund-protocol.becknprotocol.io
   bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
   transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
@@ -31,47 +31,33 @@ message:
         category_ids:
           - C1
         fulfillment_ids:
-          - "F1" 
-        # price:
-        #   value: "1"
-        #   currency: INR
-        # quantity:
-        #   minimum:
-        #     count: 100
-        #   selected:
-        #     count: 200
+          - "F1"
+          - "F2"   
         tags:
           - descriptor:
               name: Fund Information
-              code: FUND_INFO
+              code: fund-info
             list:
               - descriptor:
                   name: Type
-                  code: TYPE
                 value: Equity
               - descriptor:
                   name: Fund Manager
-                  code: FUND_MANAGER
                 value: HDFC Asset Management Company
               - descriptor:
                   name: Fund Rating
-                  code: FUND_RATING
                 value: "4.5"
               - descriptor:
                   name: Inception Date
-                  code: INCEPTION_DATE
                 value: ' 2020-01-15'
               - descriptor:
                   name: AUM
-                  code: AUM
                 value: 250,000,000
               - descriptor:
                   name: Expense Ratio
-                  code: EXPENSE_RATIO
                 value: 1.25%
               - descriptor:
                   name: 1 month returns
-                  code: ONE_MONTH_RETURNS
                 value: 2.25%
               - descriptor:
                   name: 3 month returns
@@ -90,36 +76,29 @@ message:
                 value: 60%
               - descriptor:
                   name: Lock-in Period
-                  code: LOCK_IN_PERIOD
                 value: P4M
               - descriptor:
                   name: Max Withdrawal Percentage
-                  code: MAX_WITHDRAWAL_PERCENTAGE
                 value: 100%
               - descriptor:
                   name: Net Asset Value
-                  code: NET_ASSET_VALUE
-                value: '100.50' 
+                value: '100.50'  
               - descriptor:
                   name: Lock-in end Date
-                  code: LOCK_IN_END_DATE
-                value: '2023-05-01T23:59:59.999Z'  
+                value: '2023-05-01T23:59:59.999Z' 
             display: true
           - descriptor:
               name: Sectors
-              code: SECTOR-ALLOCATION
+              code: sector-allocation
             list:
               - descriptor:
                   name: Financials
-                  code: FINANCIALS
                 value: 18.54%
               - descriptor:
                   name: IT
-                  code: IT
                 value: 10.18%
               - descriptor:
                   name: Pharmaceuticals
-                  code: PHARMACEUTICALS
                 value: 2.32%
           - descriptor:
               name: Fund Holdings
@@ -134,7 +113,7 @@ message:
               - descriptor:
                   name: Mankind Pharma Ltd
                 value: < 1%
-          
+    
     fulfillments:
       - customer:
           #id: pan:ABCDE9999Z
@@ -163,13 +142,29 @@ message:
               range:
                 start: '2023-01-01T00:00:00.000Z'
                 end: '2023-04-30T23:59:59.999Z'    
+      - id: F2
+        type: WITHDRAWAL
+        state:
+          descriptor:
+            name: withdrawal
+            code: WITHDRAWAL_PROCESSING
+        tags:
+          - descriptor:
+              name: Withdrawal Amount
+              code: WITHDRWAL_AMOUNT
+            list:
+              - descriptor:
+                  name: Amount
+                value: '2000'
+              - descriptor:
+                  name: Units
+                value: '30'  
     quote:
       price:
         currency: INR
         value: "500"
       breakup:
-        - descriptor:
-            name: Unit price
+        - title: First SIP Investment
           item: 
             id: I1
             time: 
@@ -177,7 +172,9 @@ message:
                 frequency: "P1M"
               range:
                 start: '2023-01-01T00:00:00.000Z'
-                end: '2023-01-31T23:59:59.999Z'  
+                end: '2023-01-31T23:59:59.999Z'
+          descriptor:
+              name: Unit price
           price:
             value: "100"
             currency: INR
@@ -186,6 +183,63 @@ message:
               measure:
                 value: "5"
                 unit: units
+        - title: Second SIP Investment
+          item: 
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
+              range:
+                start: '2023-02-01T00:00:00.000Z'
+                end: '2023-02-28T23:59:59.999Z'
+          descriptor:
+              name: Unit price
+          price:
+            value: "50"
+            currency: INR
+          quantity:
+            allocated:
+              measure:
+                value: "10"
+                unit: units
+        - title: Third SIP Investment
+          item: 
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
+              range:
+                start: '2023-03-01T00:00:00.000Z'
+                end: '2023-03-31T23:59:59.999Z'
+          descriptor:
+              name: Unit price
+          price:
+            value: "100"
+            currency: INR
+          quantity:
+            allocated:
+              measure:
+                value: "5"
+                unit: units
+        - title: Fourth SIP Investment
+          item: 
+            id: I1
+            time: 
+              schedule:
+                frequency: "P1M"
+              range:
+                start: '2023-04-01T00:00:00.000Z'
+                end: '2023-04-30T23:59:59.999Z'
+          descriptor:
+              name: Unit price
+          price:
+            value: "50"
+            currency: INR
+          quantity:
+            allocated:
+              measure:
+                value: "10"
+                unit: units                        
     billing:
       name: Charles D'Souza
       email: charles@equitygrow.in
@@ -206,7 +260,8 @@ message:
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
+        status: PAID
         time:
           label: SIP 2
           range:
@@ -217,7 +272,8 @@ message:
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
+        status: PAID
         time:
           label: SIP 3
           range:
@@ -227,7 +283,8 @@ message:
         params:
           amount: "500"
           currency: INR
-        status: NOT-PAID
+          transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61 
+        status: PAID
         time:
           label: SIP 4
           range:
@@ -248,3 +305,5 @@ message:
           long_desc: Buyer can withdraw their funds by visiting the below url
         mime_type: application/html
         url: https://abcinsurance.com/withdraw-funds/
+
+  

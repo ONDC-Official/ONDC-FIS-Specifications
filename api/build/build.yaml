@@ -2859,6 +2859,15 @@ x-enum:
                   - code: ORDER_PLACED
                     description: represents order state
                     reference: <PR/Issue/Discussion Links md format text
+                  - code: WITHDRAWAL_PROCESSING
+                    description: represents order state for withdrawal
+                    reference: <PR/Issue/Discussion Links md format text
+                  - code: WITHDRAWAL_INITIATED
+                    description: represents order state for withdrawal
+                    reference: <PR/Issue/Discussion Links md format text
+                  - code: WITHDRAWAL_PROCESSED
+                    description: represents order state for withdrawal
+                    reference: <PR/Issue/Discussion Links md format text
           payments: &ref_3
             type:
               - code: ON-ORDER
@@ -2910,7 +2919,16 @@ x-enum:
   on_confirm:
     context: *ref_0
     message:
-      order: *ref_4
+      order: &ref_5
+        items: *ref_1
+        fulfillments: *ref_2
+        payments: *ref_3
+        documents:
+          descriptor:
+            code:
+              - code: WITHDRAWAL_DOC
+                description: Describes url for withdrawal process
+                reference: <PR/Issue/Discussion Links md format text
   status:
     context: *ref_0
   on_status:
@@ -2922,7 +2940,7 @@ x-enum:
   on_cancel:
     context: *ref_0
     message:
-      order: *ref_4
+      order: *ref_5
 x-tags:
   on_search:
     message:
@@ -2930,72 +2948,75 @@ x-tags:
         providers:
           items:
             tags:
-              - code: general-info
-                description: describes the general Information of the loan
+              - code: FUND_INFO
+                description: describes the general fund Information
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_5
-                  - code: MIN_INTEREST_RATE
-                    description: Minimum Rate of Interest for the loan
+                list: &ref_6
+                  - code: TYPE
+                    description: Mutual funds type
                     reference: <PR/Issue/Discussion Links md format text>
-                  - code: MAX_INTEREST_RATE
-                    description: Maximum Rate of Interest for the loan
+                  - code: FUND_MANAGER
+                    description: fund manager
                     reference: <PR/Issue/Discussion Links md format text>
-                  - code: MIN_TENURE
-                    description: Minimum Tenure for the loan
+                  - code: FUND_RATING
+                    description: fund rating
                     reference: <PR/Issue/Discussion Links md format text>
-                  - code: MAX_TENURE
-                    description: Maximum Tenure for the loan
+                  - code: INCEPTION_DATE
+                    description: Inception Date
                     reference: <PR/Issue/Discussion Links md format text>
-                  - code: MIN_LOAN_AMOUNT
-                    description: Minimum Amount for the loan
+                  - code: AUM
+                    description: Aum
                     reference: <PR/Issue/Discussion Links md format text>
-                  - code: MAX_LOAN_AMOUNT
-                    description: Maximum Amount for the loan
+                  - code: EXPENSE_RATIO
+                    description: Expense Ratio
                     reference: <PR/Issue/Discussion Links md format text>
-  select: &ref_6
+                  - code: ONE_MONTH_RETURNS
+                    description: 1 month returns
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: LOCK_IN_PERIOD
+                    description: Lock-in Period
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: MAX_WITHDRAWAL_PERCENTAGE
+                    description: Lock-in Period
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: NET_ASSET_VALUE
+                    description: Net Asset Value
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: LOCK_IN_END_DATE
+                    description: Lock-in end Date
+                    reference: <PR/Issue/Discussion Links md format text>
+              - code: SECTOR_ALLOCATION
+                description: describes the general fund Information
+                reference: <PR/Issue/Discussion Links md format text>
+                list:
+                  - code: FINANCIALS
+                    description: Financials
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: IT
+                    description: IT
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: FINANCIALS
+                    description: Financials
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: PHARMACEUTICALS
+                    description: Pharmaceuticals
+                    reference: <PR/Issue/Discussion Links md format text>
+  select: &ref_7
     message:
       order:
         items:
           tags:
-            - code: general-info
+            - code: FUND_INFO
               description: describes the general Information of the loan
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_5
-            - code: loan-info
-              description: describes the loan Information
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: INTEREST_RATE
-                  description: Interest Rate
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: TERM
-                  description: Loan Term
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: INTEREST_RATE_TYPE
-                  description: Interest rate type
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: APPLICATION_FEE
-                  description: Loan Application Fees
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: FORECLOSURE_FEE
-                  description: Loan Foreclosure Fee
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: INTEREST_RATE_CONVERSION_CHARGE
-                  description: interest rate conversion charges
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_PENALTY_FEE
-                  description: Penalty delay fee
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: TNC_LINK
-                  description: Terms and Condition link
-                  reference: <PR/Issue/Discussion Links md format text>
-  on_select: *ref_6
-  init: *ref_6
-  on_init: *ref_6
-  confirm: *ref_6
-  on_confirm: *ref_6
-  on_status: *ref_6
-  on_update: *ref_6
+              list: *ref_6
+  on_select: *ref_7
+  init: *ref_7
+  on_init: *ref_7
+  confirm: *ref_7
+  on_confirm: *ref_7
+  on_status: *ref_7
+  on_update: *ref_7
 x-flows:
   - summary: Mutual funds
     details:
@@ -3072,7 +3093,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: &ref_7
+          value: &ref_10
             context:
               domain: ONDC:FIS14
               location:
@@ -3116,7 +3137,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_8
+          value: &ref_11
             context:
               domain: ONDC:FIS14
               location:
@@ -3170,17 +3191,101 @@ x-flows:
                         descriptor:
                           name: ABC Large Cap Mutual Fund - SIP
                           code: sip
-                        price:
-                          value: '1'
-                          currency: INR
-                        quantity:
-                          minimum:
-                            count: 100
                         category_ids:
                           - C1
                         fulfillment_ids:
                           - F1
                         matched: true
+                        tags:
+                          - descriptor:
+                              name: Fund Information
+                              code: FUND_INFO
+                            list:
+                              - descriptor:
+                                  name: Type
+                                  code: TYPE
+                                value: Equity
+                              - descriptor:
+                                  name: Fund Manager
+                                  code: FUND_MANAGER
+                                value: HDFC Asset Management Company
+                              - descriptor:
+                                  name: Fund Rating
+                                  code: FUND_RATING
+                                value: '4.5'
+                              - descriptor:
+                                  name: Inception Date
+                                  code: INCEPTION_DATE
+                                value: ' 2020-01-15'
+                              - descriptor:
+                                  name: AUM
+                                  code: AUM
+                                value: 250,000,000
+                              - descriptor:
+                                  name: Expense Ratio
+                                  code: EXPENSE_RATIO
+                                value: 1.25%
+                              - descriptor:
+                                  name: 1 month returns
+                                  code: ONE_MONTH_RETURNS
+                                value: 2.25%
+                              - descriptor:
+                                  name: 3 month returns
+                                value: 6%
+                              - descriptor:
+                                  name: 6 month returns
+                                value: 7%
+                              - descriptor:
+                                  name: 1 year returns
+                                value: 15.25%
+                              - descriptor:
+                                  name: 3 year returns
+                                value: 45%
+                              - descriptor:
+                                  name: 5 year returns
+                                value: 60%
+                              - descriptor:
+                                  name: Lock-in Period
+                                  code: LOCK_IN_PERIOD
+                                value: P4M
+                              - descriptor:
+                                  name: Max Withdrawal Percentage
+                                  code: MAX_WITHDRAWAL_PERCENTAGE
+                                value: 100%
+                              - descriptor:
+                                  name: Net Asset Value
+                                  code: NET_ASSET_VALUE
+                                value: '100.50'
+                            display: true
+                          - descriptor:
+                              name: Sectors
+                              code: SECTOR-ALLOCATION
+                            list:
+                              - descriptor:
+                                  name: Financials
+                                  code: FINANCIALS
+                                value: 18.54%
+                              - descriptor:
+                                  name: IT
+                                  code: IT
+                                value: 10.18%
+                              - descriptor:
+                                  name: Pharmaceuticals
+                                  code: PHARMACEUTICALS
+                                value: 2.32%
+                          - descriptor:
+                              name: Fund Holdings
+                              code: fund-holdings
+                            list:
+                              - descriptor:
+                                  name: Max Financial Services Ltd
+                                value: 2.30%
+                              - descriptor:
+                                  name: Dixon Technologies (India) Ltd
+                                value: 1.00%
+                              - descriptor:
+                                  name: Mankind Pharma Ltd
+                                value: < 1%
                       - id: I2
                         descriptor:
                           name: ABC Large Cap Mutual Fund - Lumpsum
@@ -3191,7 +3296,7 @@ x-flows:
                         category_ids:
                           - C1
                         fulfillment_ids:
-                          - F1
+                          - F2
                         matched: true
                     fulfillments:
                       - id: F1
@@ -3204,74 +3309,6 @@ x-flows:
                         agent:
                           person:
                             name: John Doe
-                    tags:
-                      - descriptor:
-                          name: Fund Information
-                          code: fund-info
-                        list:
-                          - descriptor:
-                              name: Type
-                            value: Equity
-                          - descriptor:
-                              name: Fund Manager
-                            value: HDFC Asset Management Company
-                          - descriptor:
-                              name: Fund Rating
-                            value: '4.5'
-                          - descriptor:
-                              name: Inception Date
-                            value: ' 2020-01-15'
-                          - descriptor:
-                              name: AUM
-                            value: 250,000,000
-                          - descriptor:
-                              name: Expense Ratio
-                            value: 1.25%
-                          - descriptor:
-                              name: 1 month returns
-                            value: 2.25%
-                          - descriptor:
-                              name: 3 month returns
-                            value: 6%
-                          - descriptor:
-                              name: 6 month returns
-                            value: 7%
-                          - descriptor:
-                              name: 1 year returns
-                            value: 15.25%
-                          - descriptor:
-                              name: 3 year returns
-                            value: 45%
-                          - descriptor:
-                              name: 5 year returns
-                            value: 60%
-                        display: true
-                      - descriptor:
-                          name: Sectors
-                          code: sector-allocation
-                        list:
-                          - descriptor:
-                              name: Financials
-                            value: 18.54%
-                          - descriptor:
-                              name: IT
-                            value: 10.18%
-                          - descriptor:
-                              name: Pharmaceuticals
-                            value: 2.32%
-                      - descriptor:
-                          name: Fund Holdings
-                          code: fund-holdings
-                        list:
-                          - descriptor:
-                              name: Max Financial Services Ltd
-                            value: 2.30%
-                          - descriptor:
-                              name: Dixon Technologies (India) Ltd
-                            value: 1.00%
-                          - descriptor:
-                              name: Mankind Pharma Ltd
-                            value: < 1%
       - summary: Choose a specific Mutual Fund product for investment.
         api: select
         details:
@@ -3290,7 +3327,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_12
             context:
               domain: ONDC:FIS14
               location:
@@ -3312,12 +3349,19 @@ x-flows:
                   id: P1
                 items:
                   - id: I1
-                    quantity:
-                      selected:
-                        count: 200
-                    xinput:
-                      form_response:
-                        submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                fulfillments:
+                  - id: F1
+                    type: SIP
+                    agent:
+                      person:
+                        name: John Doe
+                    customer:
+                      person:
+                        id: ecan_d51aef81
       - summary: >-
           Receive detailed information and a consent request for the chosen
           Mutual Fund product.
@@ -3339,7 +3383,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_13
             context:
               domain: ONDC:FIS14
               location:
@@ -3370,14 +3414,10 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
-                    price:
-                      value: '1'
-                      currency: INR
-                    quantity:
-                      minimum:
-                        count: 100
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       head:
                         descriptor:
@@ -3390,28 +3430,103 @@ x-flows:
                           - Sip Setup
                           - Know Your Customer
                       form:
+                        id: FO1
                         mime_type: text/html
                         url: >-
-                          https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
-                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                          https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/FO1
                         resubmit: false
                         multiple_sumbissions: false
                       required: true
-                quote:
-                  price:
-                    currency: INR
-                    value: '200'
-                  breakup:
-                    - descriptor:
-                        name: Unit price
-                      price:
-                        value: '80'
-                        currency: INR
-                      quantity:
-                        allocated:
-                          measure:
-                            value: '2.5'
-                            unit: units
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                              code: FUND_RATING
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                              code: INCEPTION_DATE
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                              code: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                              code: EXPENSE_RATIO
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                              code: ONE_MONTH_RETURNS
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                              code: LOCK_IN_PERIOD
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                              code: NET_ASSET_VALUE
+                            value: '100.50'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: SECTOR-ALLOCATION
+                        list:
+                          - descriptor:
+                              name: Financials
+                              code: FINANCIALS
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                              code: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                              code: PHARMACEUTICALS
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
       - summary: Get the SIP setup form
         api: form
         details:
@@ -3438,7 +3553,7 @@ x-flows:
               </head>
 
               <body>
-                <form ondc-template="financial-services:sip-set-up">
+                <form action="/form/submission/sip-setup" ondc-template="financial-services:sip-set-up">
                   <label for="sip-start-date">SIP Start Date: </label>
                   <input type="date" name="sip-start-date" />
                   <label for="sip-end-date">SIP End Date: </label>
@@ -3448,6 +3563,11 @@ x-flows:
                     <option value="monthly">Monthly</option>
                     <option value="weekly">Weekly</option>
                   </select>
+                  <label for="sip-amount">SIP Amount</label>
+                  <input type="text" name="sip-amount" />
+                  
+                  <input type="hidden" id="formId" name="formId" value="FO1">
+                  <input type="submit" value="Submit">
                 </form>
               </body>
             </html>
@@ -3491,12 +3611,22 @@ x-flows:
                   id: P1
                 items:
                   - id: I1
-                    quantity:
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       form_response:
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+                fulfillments:
+                  - id: F1
+                    type: SIP
+                    agent:
+                      person:
+                        name: John Doe
+                    customer:
+                      person:
+                        id: ecan_d51aef81
       - summary: >-
           Receive detailed information and a consent request for the chosen
           Mutual Fund product.
@@ -3549,14 +3679,10 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
-                    price:
-                      value: '1'
-                      currency: INR
-                    quantity:
-                      minimum:
-                        count: 100
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       head:
                         descriptor:
@@ -3569,27 +3695,132 @@ x-flows:
                           - Sip Setup
                           - Know Your Customer
                       form:
+                        id: FO2
                         mime_type: text/html
                         url: >-
-                          https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
-                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                          https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/FO2
                         resubmit: false
                         multiple_sumbissions: false
                       required: true
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                              code: FUND_RATING
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                              code: INCEPTION_DATE
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                              code: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                              code: EXPENSE_RATIO
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                              code: ONE_MONTH_RETURNS
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                              code: LOCK_IN_PERIOD
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                              code: NET_ASSET_VALUE
+                            value: '100.50'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: SECTOR-ALLOCATION
+                        list:
+                          - descriptor:
+                              name: Financials
+                              code: FINANCIALS
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                              code: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                              code: PHARMACEUTICALS
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+                fulfillments:
+                  - id: F1
+                    type: SIP
+                    agent:
+                      person:
+                        name: John Doe
+                    customer:
+                      person:
+                        id: ecan_d51aef81
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
                 quote:
                   price:
                     currency: INR
-                    value: '200'
+                    value: '500'
                   breakup:
                     - descriptor:
                         name: Unit price
                       price:
-                        value: '80'
+                        value: '100'
                         currency: INR
                       quantity:
                         allocated:
                           measure:
-                            value: '2.5'
+                            value: '5'
                             unit: units
       - summary: Get the Kyc form
         api: form
@@ -3607,7 +3838,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/sip-kyc\">\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: >-
           Submit additional information and initiate the Mutual Fund investment
           request.
@@ -3628,7 +3859,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_14
             context:
               domain: ONDC:FIS14
               location:
@@ -3650,12 +3881,22 @@ x-flows:
                   id: P1
                 items:
                   - id: I1
-                    quantity:
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       form_response:
                         submission_id: 5cd00c5c-892f-4a36-b092-3e4c6535fd49
+                fulfillments:
+                  - id: F1
+                    type: SIP
+                    agent:
+                      person:
+                        name: John Doe
+                    customer:
+                      person:
+                        id: ecan_d51aef81_d51aef81
                 billing:
                   name: Charles D'Souza
                   email: charles@equitygrow.in
@@ -3663,6 +3904,17 @@ x-flows:
                   price:
                     currency: INR
                     value: '500'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
                 payments:
                   - params:
                       source_bank_account_number: '32558994999'
@@ -3688,7 +3940,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_16
             context:
               domain: ONDC:FIS14
               location:
@@ -3719,14 +3971,10 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
-                    price:
-                      value: '1'
-                      currency: INR
-                    quantity:
-                      minimum:
-                        count: 100
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       head:
                         descriptor:
@@ -3739,40 +3987,141 @@ x-flows:
                           - Account Information
                           - Agreement
                       form:
+                        id: FO3
                         mime_type: text/html
                         url: >-
-                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/a23f2fdfbbb8ac402bfd54f
-                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO3
                         resubmit: false
                         multiple_sumbissions: false
                       required: true
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                              code: FUND_RATING
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                              code: INCEPTION_DATE
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                              code: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                              code: EXPENSE_RATIO
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                              code: ONE_MONTH_RETURNS
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                              code: LOCK_IN_PERIOD
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                              code: NET_ASSET_VALUE
+                            value: '100.50'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: SECTOR-ALLOCATION
+                        list:
+                          - descriptor:
+                              name: Financials
+                              code: FINANCIALS
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                              code: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                              code: PHARMACEUTICALS
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
                 fulfillments:
                   - customer:
                       person:
                         name: Alice
+                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
+                    id: F1
                     state:
                       descriptor:
                         name: Mutual Fund Order Initialized
                     stops:
-                      - authorization:
-                          type: OTP
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
                 quote:
                   price:
                     currency: INR
-                    value: '200'
+                    value: '500'
                   breakup:
                     - descriptor:
                         name: Unit price
+                      item:
+                        time:
+                          label: SIP 1
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
                       price:
-                        value: '80'
+                        value: '100'
                         currency: INR
                       quantity:
                         allocated:
                           measure:
-                            value: '2.5'
+                            value: '5'
                             unit: units
                 billing:
                   name: Charles D'Souza
@@ -3785,9 +4134,42 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
+                      label: SIP 1
                       range:
-                        start: '2023-05-25T05:23:03.443Z'
-                        end: '2023-05-25T05:23:03.443Z'
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -3813,7 +4195,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/account-info\">\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: >-
           Submit additional information and initiate the Mutual Fund investment
           request.
@@ -3834,7 +4216,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_15
             context:
               domain: ONDC:FIS14
               location:
@@ -3856,9 +4238,10 @@ x-flows:
                   id: P1
                 items:
                   - id: I1
-                    quantity:
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       form_response:
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
@@ -3869,9 +4252,26 @@ x-flows:
                   - customer:
                       person:
                         name: Alice
+                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
+                    id: F1
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
                 payments:
                   - params:
                       source_bank_account_number: '32558994999'
@@ -3897,7 +4297,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_17
             context:
               domain: ONDC:FIS14
               location:
@@ -3928,14 +4328,10 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
-                    price:
-                      value: '1'
-                      currency: INR
-                    quantity:
-                      minimum:
-                        count: 100
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
                     xinput:
                       head:
                         descriptor:
@@ -3948,40 +4344,135 @@ x-flows:
                           - Account Information
                           - Agreement
                       form:
+                        id: FO4
                         mime_type: text/html
                         url: >-
-                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/a23f2fdfbbb8ac402bfd54f
-                        id: 1c46b168-83ae-46ad-ac8a-d3c05870252c
+                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO4
                         resubmit: false
                         multiple_sumbissions: false
                       required: true
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                              code: FUND_RATING
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                              code: INCEPTION_DATE
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                              code: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                              code: EXPENSE_RATIO
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                              code: ONE_MONTH_RETURNS
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                              code: LOCK_IN_PERIOD
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                              code: NET_ASSET_VALUE
+                            value: '100.50'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: SECTOR-ALLOCATION
+                        list:
+                          - descriptor:
+                              name: Financials
+                              code: FINANCIALS
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                              code: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                              code: PHARMACEUTICALS
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
                 fulfillments:
                   - customer:
                       person:
                         name: Alice
+                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
+                    id: F1
                     state:
                       descriptor:
                         name: Mutual Fund Order Initialized
                     stops:
-                      - authorization:
-                          type: OTP
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
                 quote:
                   price:
                     currency: INR
-                    value: '200'
+                    value: '500'
                   breakup:
                     - descriptor:
                         name: Unit price
                       price:
-                        value: '80'
+                        value: '100'
                         currency: INR
                       quantity:
                         allocated:
                           measure:
-                            value: '2.5'
+                            value: '5'
                             unit: units
                 billing:
                   name: Charles D'Souza
@@ -3994,9 +4485,42 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
+                      label: SIP 1
                       range:
-                        start: '2023-05-25T05:23:03.443Z'
-                        end: '2023-05-25T05:23:03.443Z'
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -4020,7 +4544,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form>\r\n    <label for=\"tnc\">I have read the <a href=\"https://abcmf.co.in/mf/agreement.html\">MF Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/sip-agreement\">\r\n    <label for=\"tnc\">I have read the <a href=\"https://abcmf.co.in/mf/agreement.html\">MF Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO4\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: >-
           Confirm the Mutual Fund investment and authorize the provider to
           proceed.
@@ -4040,7 +4564,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_18
             context:
               domain: ONDC:FIS14
               location:
@@ -4062,9 +4586,13 @@ x-flows:
                   id: P1
                 items:
                   - id: I1
-                    quantity:
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    xinput:
+                      form_response:
+                        submission_id: 7145acfc-b1be-4b2b-a373-07b34e789c1f
                 fulfillments:
                   - customer:
                       person:
@@ -4072,6 +4600,7 @@ x-flows:
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
+                    id: F1
                     stops:
                       - type: start
                         authorization:
@@ -4080,11 +4609,26 @@ x-flows:
                 billing:
                   name: Charles D'Souza
                   email: charles@equitygrow.in
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
                 payments:
                   - collected_by: BPP
-                    type: ON-FULFILLMENT
+                    type: ON-ORDER
                     params:
-                      amount: '200'
+                      amount: '500'
                       currency: INR
                       source_virtual_payment_address: charles@oksbi
       - summary: Validate and approve the Mutual Fund investment application.
@@ -4104,7 +4648,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_8
             context:
               domain: ONDC:FIS14
               location:
@@ -4122,7 +4666,7 @@ x-flows:
               bpp_uri: https://stockwiz.com
             message:
               order:
-                id: 66B7AEDF45
+                id: O1
                 provider:
                   id: P1
                   descriptor:
@@ -4136,21 +4680,113 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
-                    price:
-                      value: '1'
-                      currency: INR
-                    quantity:
-                      minimum:
-                        count: 100
-                      selected:
-                        count: 200
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                              code: FUND_RATING
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                              code: INCEPTION_DATE
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                              code: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                              code: EXPENSE_RATIO
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                              code: ONE_MONTH_RETURNS
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                              code: LOCK_IN_PERIOD
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                              code: NET_ASSET_VALUE
+                            value: '100.50'
+                          - descriptor:
+                              name: Lock-in end Date
+                              code: LOCK_IN_END_DATE
+                            value: '2023-05-01T23:59:59.999Z'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: SECTOR-ALLOCATION
+                        list:
+                          - descriptor:
+                              name: Financials
+                              code: FINANCIALS
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                              code: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                              code: PHARMACEUTICALS
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
                 fulfillments:
                   - customer:
                       person:
                         name: Alice
+                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
+                    id: F1
                     state:
                       descriptor:
                         name: Order placed
@@ -4163,205 +4799,97 @@ x-flows:
                           name: HDFC Fund
                       contact:
                         phone: +91-9999999999
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
                 quote:
                   price:
                     currency: INR
-                    value: '200'
+                    value: '500'
                   breakup:
                     - descriptor:
                         name: Unit price
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
                       price:
-                        value: '80'
+                        value: '100'
                         currency: INR
                       quantity:
                         allocated:
                           measure:
-                            value: '2.5'
+                            value: '5'
                             unit: units
                 billing:
                   name: Charles D'Souza
                   email: charles@equitygrow.in
-                  phone: +91-988777632
                 payments:
-                  - collected_by: BPP
-                    type: ON-FULFILLMENT
+                  - type: ON-ORDER
                     params:
                       amount: '500'
                       currency: INR
-                      transaction_id: bh767iygx65u76iyg
-                      source_virtual_payment_address: charles@oksbi
-                      timestamp: 2023-05-25T05:23:03.443Z
+                      transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
                     status: PAID
-                cancellation_terms:
-                  - external_ref:
-                      mimetype: text/html
-                      url: https://abcmutalfunds.com/mf/tnc.html
-      - summary: >-
-          Request real-time updates on the status of your Mutual Fund
-          investment.
-        api: status
-        details:
-          - description: >-
-              Request the most recent updates regarding the status of your
-              invested Mutual Fund, ensuring you stay informed about its
-              progress.
-            mermaid: |-
-              sequenceDiagram
-                Participant Investment Platform
-                Participant Fund Aggregator / Direct Fund
-                rect rgb(191, 223, 255)
-                Investment Platform ->> Fund Aggregator / Direct Fund: status
-                end
-                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-        reference: if any
-        example:
-          value: &ref_17
-            context:
-              domain: ONDC:FIS14
-              location:
-                country:
-                  code: IND
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              action: status
-              timestamp: '2023-05-25T05:23:03.443Z'
-              version: 2.0.0
-              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-              bap_id: mutual-fund-protocol.becknprotocol.io
-              ttl: PT10M
-              bpp_id: stockwiz.com
-              bpp_uri: https://stockwiz.com
-            message:
-              order_id: 66B7AEDF45
-      - summary: >-
-          Receive real-time updates on your Mutual Fund investment after each
-          milestone.
-        api: on_status
-        details:
-          - description: >-
-              Provider sends timely updates about your Mutual Fund investment
-              after significant milestones, ensuring you're informed throughout
-              the investment journey.
-            mermaid: |-
-              sequenceDiagram
-                Participant Investment Platform
-                Participant Fund Aggregator / Direct Fund
-                Investment Platform ->> Fund Aggregator / Direct Fund: status
-                rect rgb(191, 223, 255)
-                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-                end
-        example:
-          value: &ref_18
-            context:
-              domain: ONDC:FIS14
-              location:
-                country:
-                  code: IND
-              version: 2.0.0
-              action: on_status
-              bap_id: mutual-fund-protocol.becknprotocol.io
-              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              ttl: PT30M
-              timestamp: '2023-05-25T05:23:03.443Z'
-              bpp_id: stockwiz.com
-              bpp_uri: https://stockwiz.com
-            message:
-              order:
-                id: 66B7AEDF45
-                provider:
-                  id: P1
-                  descriptor:
-                    images:
-                      - url: >-
-                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-                        size_type: sm
-                    name: HDFC Midcap Opportunities Fund
-                    short_desc: HDFC Midcap Opportunities Fund
-                items:
-                  - id: I1
-                    descriptor:
-                      name: HDFC Midcap Opportunities Fund - SIP
-                    price:
-                      value: '1'
+                    time:
+                      label: SIP 1
+                      range:
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
                       currency: INR
-                    quantity:
-                      minimum:
-                        count: 100
-                      selected:
-                        count: 200
-                fulfillments:
-                  - customer:
-                      person:
-                        name: Alice
-                      contact:
-                        phone: +91-9999199991
-                        email: alice@example.com
-                    state:
+                    status: NOT-PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
                       descriptor:
-                        name: February SIP Amount Received
-                        code: installment-received
-                    agent:
-                      person:
-                        name: John Williams
-                      organization:
-                        descriptor:
-                          name: HDFC Fund
-                      contact:
-                        phone: +91-9999999999
-                quote:
-                  price:
-                    currency: INR
-                    value: '2400'
-                  breakup:
-                    - descriptor:
-                        name: Jan'23 SIP Installment
-                      price:
-                        value: '80'
-                        currency: INR
-                      quantity:
-                        allocated:
-                          measure:
-                            value: '2.5'
-                            unit: units
-                    - descriptor:
-                        name: Feb'23 Investment
-                      price:
-                        value: '80'
-                        currency: INR
-                      quantity:
-                        allocated:
-                          measure:
-                            value: '2.5'
-                            unit: units
-                billing:
-                  name: Charles D'Souza
-                  email: charles@equitygrow.in
-                  phone: +91-988777632
-                payments:
-                  - collected_by: BPP
-                    type: ON-FULFILLMENT
-                    params:
-                      amount: '200'
-                      currency: INR
-                      transaction_id: bh767iygx65u76iyg
-                      source_virtual_payment_address: charles@oksbi
-                      timestamp: '2023-05-25T05:23:03.443Z'
-                    status: PAID
-                  - collected_by: BPP
-                    type: ON-FULFILLMENT
-                    params:
-                      amount: '200'
-                      currency: INR
-                      transaction_id: bh767iygx65u76iyg
-                      source_virtual_payment_address: charles@oksbi
-                      timestamp: 2023-05-25T05:23:03.443Z
-                    status: PAID
-                cancellation_terms:
-                  - external_ref:
+                        name: Terms
+                    external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
+                documents:
+                  - descriptor:
+                      code: WITHDRAWAL_DOC
+                      name: Withdraw Funds
+                      short_desc: Buyer can withdraw their funds by visiting the below url
+                      long_desc: Buyer can withdraw their funds by visiting the below url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/withdraw-funds/
       - summary: Buyer platform sends a request to cancel order
         api: cancel
         details:
@@ -4393,7 +4921,7 @@ x-flows:
               bpp_id: stockwiz.com
               bpp_uri: https://stockwiz.com
             message:
-              order_id: 66B7AEDF45
+              order_id: O1
               cancellation_reason_id: '5'
               descriptor:
                 short_desc: Fund returns not optimal
@@ -4428,7 +4956,7 @@ x-flows:
               bpp_uri: https://stockwiz.com
             message:
               order:
-                id: 66B7AEDF45
+                id: O1
                 status: CANCELLED
                 provider:
                   id: P1
@@ -4447,9 +4975,11 @@ x-flows:
                   - customer:
                       person:
                         name: John Doe
+                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999999999
                         email: john.doe@example.com
+                    id: F1
                     state:
                       descriptor:
                         name: SIP cancelled
@@ -4475,6 +5005,1467 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
+  - summary: Withdrawal-Mutual funds
+    details:
+      - description: Detailed process of withdrawing mutual funds
+        mermaid: |-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
+            Investment Platform -->> Fund Aggregator / Direct Fund: ACK
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            Fund Aggregator / Direct Fund -->>  Investment Platform : ACK
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            Investment Platform -->> Fund Aggregator / Direct Fund: ACK
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+            Investment Platform -->> Fund Aggregator / Direct Fund: ACK
+            Investment Platform ->> Fund Aggregator / Direct Fund: update
+            Fund Aggregator / Direct Fund -->>  Investment Platform : ACK
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+            Investment Platform -->> Fund Aggregator / Direct Fund: ACk
+    steps:
+      - summary: >-
+          Insurer confirms the  order & provides the withdrawal form URL for you
+          mutual funds.
+        api: on_confirm
+        details:
+          - description: >-
+              Insurer confirms the  order & provides the withdrawal form URL for
+              you mutual funds.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
+                end
+                Investment Platform ->> Fund Aggregator / Direct Fund: status
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+        reference: if any
+        example:
+          value: *ref_8
+      - summary: >-
+          Request real-time updates on the status of your Mutual Fund
+          investment.
+        api: status
+        details:
+          - description: >-
+              Request the most recent updates regarding the status of your
+              invested Mutual Fund, ensuring you stay informed about its
+              progress.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: status
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+        reference: if any
+        example:
+          value: &ref_9
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: status
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order_id: O1
+      - summary: >-
+          Receive real-time updates on your Mutual Fund investment after each
+          milestone.
+        api: on_status
+        details:
+          - description: >-
+              Provider sends timely updates about your Mutual Fund investment
+              after significant milestones, ensuring you're informed throughout
+              the investment journey.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
+                Investment Platform ->> Fund Aggregator / Direct Fund: status
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+                end
+        example:
+          value:
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              version: 2.0.0
+              action: on_status
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                id: O1
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: fund-info
+                        list:
+                          - descriptor:
+                              name: Type
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                            value: '100.50'
+                          - descriptor:
+                              name: Lock-in end Date
+                            value: '2023-05-01T23:59:59.999Z'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: sector-allocation
+                        list:
+                          - descriptor:
+                              name: Financials
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                        id: ecan_d51aef81
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    id: F1
+                    state:
+                      descriptor:
+                        name: Order placed
+                        code: ORDER_PLACED
+                    agent:
+                      person:
+                        name: John Williams
+                      organization:
+                        descriptor:
+                          name: HDFC Fund
+                      contact:
+                        phone: +91-9999999999
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - title: First SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Second SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-02-01T00:00:00.000Z'
+                            end: '2023-02-28T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                    - title: Third SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-03-01T00:00:00.000Z'
+                            end: '2023-03-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Fourth SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-04-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 1
+                      range:
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+                documents:
+                  - descriptor:
+                      code: WITHDRAWAL_DOC
+                      name: Withdraw Funds
+                      short_desc: Buyer can withdraw their funds by visiting the below url
+                      long_desc: Buyer can withdraw their funds by visiting the below url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/withdraw-funds/
+      - summary: Buyer app redirected to withdrawal url page.
+        api: redirect
+        details:
+          - description: >-
+              Buyer app will be redirect to new page using using the link
+              provided in the previous step
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: Receive real-time updated order details.
+        api: on_update
+        details:
+          - description: Provider sends the order details to the Consumer with updated info
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+        example:
+          value:
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              version: 2.0.0
+              action: on_update
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                id: O1
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Bank Account Info
+                        index:
+                          min: 0
+                          cur: 0
+                          max: 1
+                        headings:
+                          - Account Information
+                      form:
+                        id: FO4
+                        mime_type: text/html
+                        url: >-
+                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO4
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: fund-info
+                        list:
+                          - descriptor:
+                              name: Type
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                            value: '100.50'
+                          - descriptor:
+                              name: Lock-in end Date
+                            value: '2023-05-01T23:59:59.999Z'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: sector-allocation
+                        list:
+                          - descriptor:
+                              name: Financials
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                        id: ecan_d51aef81
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    id: F1
+                    state:
+                      descriptor:
+                        name: Order placed
+                        code: ORDER_PLACED
+                    agent:
+                      person:
+                        name: John Williams
+                      organization:
+                        descriptor:
+                          name: HDFC Fund
+                      contact:
+                        phone: +91-9999999999
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                  - id: F2
+                    type: WITHDRAWAL
+                    state:
+                      descriptor:
+                        name: withdrawal
+                        code: WITHDRAWAL_INITIATED
+                    tags:
+                      - descriptor:
+                          name: Withdrawal Amount
+                          code: WITHDRWAL_AMOUNT
+                        list:
+                          - descriptor:
+                              name: Amount
+                            value: '2000'
+                          - descriptor:
+                              name: Units
+                            value: '30'
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - title: First SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Second SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-02-01T00:00:00.000Z'
+                            end: '2023-02-28T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                    - title: Third SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-03-01T00:00:00.000Z'
+                            end: '2023-03-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Fourth SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-04-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 1
+                      range:
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+                documents:
+                  - descriptor:
+                      code: WITHDRAWAL_DOC
+                      name: Withdraw Funds
+                      short_desc: Buyer can withdraw their funds by visiting the below url
+                      long_desc: Buyer can withdraw their funds by visiting the below url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/withdraw-funds/
+      - summary: Get the Mutual fund account info form
+        api: form
+        details:
+          - description: >-
+              Provider platform sends the form for Mutual fund account info
+              form.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+                end
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/account-info\">\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: Request to update bank account info
+        api: update
+        details:
+          - description: Request to update bank account info.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: update
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: update
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              update_target: ''
+              order:
+                id: O1
+                provider:
+                  id: P1
+                items:
+                  - id: I1
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    xinput:
+                      form_response:
+                        submission_id: 09c020de-2020-493a-b0b8-e68076fc54e3
+      - summary: Receive real-time updated order details.
+        api: on_update
+        details:
+          - description: Provider sends the order details to the Consumer with updated info
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: update
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+                end
+        example:
+          value:
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              version: 2.0.0
+              action: on_update
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                id: O1
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: fund-info
+                        list:
+                          - descriptor:
+                              name: Type
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                            value: '100.50'
+                          - descriptor:
+                              name: Lock-in end Date
+                            value: '2023-05-01T23:59:59.999Z'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: sector-allocation
+                        list:
+                          - descriptor:
+                              name: Financials
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                        id: ecan_d51aef81
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    id: F1
+                    state:
+                      descriptor:
+                        name: Order placed
+                        code: ORDER_PLACED
+                    agent:
+                      person:
+                        name: John Williams
+                      organization:
+                        descriptor:
+                          name: HDFC Fund
+                      contact:
+                        phone: +91-9999999999
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                  - id: F2
+                    type: WITHDRAWAL
+                    state:
+                      descriptor:
+                        name: withdrawal
+                        code: WITHDRAWAL_PROCESSING
+                    tags:
+                      - descriptor:
+                          name: Withdrawal Amount
+                          code: WITHDRWAL_AMOUNT
+                        list:
+                          - descriptor:
+                              name: Amount
+                            value: '2000'
+                          - descriptor:
+                              name: Units
+                            value: '30'
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - title: First SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Second SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-02-01T00:00:00.000Z'
+                            end: '2023-02-28T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                    - title: Third SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-03-01T00:00:00.000Z'
+                            end: '2023-03-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Fourth SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-04-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 1
+                      range:
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+                documents:
+                  - descriptor:
+                      code: WITHDRAWAL_DOC
+                      name: Withdraw Funds
+                      short_desc: Buyer can withdraw their funds by visiting the below url
+                      long_desc: Buyer can withdraw their funds by visiting the below url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/withdraw-funds/
+      - summary: >-
+          Request real-time updates on the status of your Mutual Fund
+          investment.
+        api: status
+        details:
+          - description: >-
+              Request the most recent updates regarding the status of your
+              invested Mutual Fund, ensuring you stay informed about its
+              progress.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: status
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+        reference: if any
+        example:
+          value: *ref_9
+      - summary: >-
+          Receive real-time updates on your Mutual Fund investment after each
+          milestone.
+        api: on_status
+        details:
+          - description: >-
+              Provider sends timely updates about your Mutual Fund investment
+              after significant milestones, ensuring you're informed throughout
+              the investment journey.
+            mermaid: |-
+              sequenceDiagram
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: status
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+                end
+        example:
+          value:
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              version: 2.0.0
+              action: on_status
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                id: O1
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: fund-info
+                        list:
+                          - descriptor:
+                              name: Type
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                            value: '100.50'
+                          - descriptor:
+                              name: Lock-in end Date
+                            value: '2023-05-01T23:59:59.999Z'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: sector-allocation
+                        list:
+                          - descriptor:
+                              name: Financials
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: fund-holdings
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                        id: ecan_d51aef81
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    id: F1
+                    state:
+                      descriptor:
+                        name: Order placed
+                        code: ORDER_PLACED
+                    agent:
+                      person:
+                        name: John Williams
+                      organization:
+                        descriptor:
+                          name: HDFC Fund
+                      contact:
+                        phone: +91-9999999999
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                  - id: F2
+                    type: WITHDRAWAL
+                    state:
+                      descriptor:
+                        name: withdrawal
+                        code: WITHDRAWAL_PROCESSED
+                    tags:
+                      - descriptor:
+                          name: Withdrawal Amount
+                          code: WITHDRWAL_AMOUNT
+                        list:
+                          - descriptor:
+                              name: Amount
+                            value: '2000'
+                          - descriptor:
+                              name: Units
+                            value: '30'
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - title: First SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Second SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-02-01T00:00:00.000Z'
+                            end: '2023-02-28T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                    - title: Third SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-03-01T00:00:00.000Z'
+                            end: '2023-03-31T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                    - title: Fourth SIP Investment
+                      item:
+                        id: I1
+                        time:
+                          schedule:
+                            frequency: P1M
+                          range:
+                            start: '2023-04-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                      descriptor:
+                        name: Unit price
+                      price:
+                        value: '50'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '10'
+                            unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 1
+                      range:
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                      transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61
+                    status: PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+                documents:
+                  - descriptor:
+                      code: WITHDRAWAL_DOC
+                      name: Withdraw Funds
+                      short_desc: Buyer can withdraw their funds by visiting the below url
+                      long_desc: Buyer can withdraw their funds by visiting the below url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/withdraw-funds/
 x-examples:
   mutual-funds:
     summary: mutual-funds
@@ -4484,7 +6475,7 @@ x-examples:
         examples:
           - summary: search for mutual funds
             description: TBD
-            value: *ref_7
+            value: *ref_10
           - summary: search for mutual funds
             description: TBD
             value:
@@ -4515,12 +6506,12 @@ x-examples:
                           - value: Midcap
           - summary: search for mutual funds
             description: TBD
-            value: *ref_7
+            value: *ref_10
       on_search:
         examples:
           - summary: mutual funds catalog
             description: TBD
-            value: *ref_8
+            value: *ref_11
       select:
         examples:
           - summary: select-request-lumpsum
@@ -4555,7 +6546,7 @@ x-examples:
                           submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
           - summary: select-request-sip
             description: TBD
-            value: *ref_9
+            value: *ref_12
       on_select:
         examples:
           - summary: on_select-request-lumpsum
@@ -4621,7 +6612,7 @@ x-examples:
                       value: '100000'
           - summary: on_select-request-sip
             description: TBD
-            value: *ref_10
+            value: *ref_13
       init:
         examples:
           - summary: init
@@ -4710,10 +6701,10 @@ x-examples:
                       value: '5000'
           - summary: init-request-sip-account-info
             description: TBD
-            value: *ref_11
+            value: *ref_14
           - summary: init-request-sip
             description: TBD
-            value: *ref_12
+            value: *ref_15
       on_init:
         examples:
           - summary: on_init-request-lumpsum-account-info
@@ -4772,9 +6763,11 @@ x-examples:
                     - customer:
                         person:
                           name: Alice
+                          id: ecan_d51aef81
                         contact:
                           phone: +91-9999199991
                           email: alice@example.com
+                      id: F1
                       state:
                         descriptor:
                           name: Mutual Fund Order Initialized
@@ -4870,9 +6863,11 @@ x-examples:
                     - customer:
                         person:
                           name: Alice
+                          id: ecan_d51aef81
                         contact:
                           phone: +91-9999199991
                           email: alice@example.com
+                      id: F1
                       state:
                         descriptor:
                           name: Mutual Fund Order Initialized
@@ -4917,10 +6912,10 @@ x-examples:
                         url: https://abcmutalfunds.com/mf/tnc.html
           - summary: on_init-request-sip-account-info
             description: TBD
-            value: *ref_13
+            value: *ref_16
           - summary: on_init-request-sip-agreement
             description: TBD
-            value: *ref_14
+            value: *ref_17
       confirm:
         examples:
           - summary: confirm
@@ -4974,7 +6969,7 @@ x-examples:
                       value: '5000'
           - summary: confirm-request-sip
             description: TBD
-            value: *ref_15
+            value: *ref_18
       on_confirm:
         examples:
           - summary: on_confirm
@@ -4997,7 +6992,7 @@ x-examples:
                 bpp_uri: https://stockwiz.com
               message:
                 order:
-                  id: 66B7AEDF45
+                  id: O1
                   provider:
                     id: '1'
                     descriptor:
@@ -5023,9 +7018,11 @@ x-examples:
                     - customer:
                         person:
                           name: Alice
+                          id: ecan_d51aef81
                         contact:
                           phone: +91-9999199991
                           email: alice@example.com
+                      id: F1
                       state:
                         descriptor:
                           name: Order placed
@@ -5073,7 +7070,7 @@ x-examples:
                         url: https://abcmutalfunds.com/mf/tnc.html
           - summary: on_confirm
             description: TBD
-            value: *ref_16
+            value: *ref_8
       update:
         examples:
           - summary: update
@@ -5103,9 +7100,6 @@ x-examples:
                         - descriptor:
                             name: Investment Method
                           list:
-                            - descriptor:
-                                name: Type
-                              value: SIP
                             - descriptor:
                                 name: Amount
                               value: '500'
@@ -5144,7 +7138,7 @@ x-examples:
                 bpp_uri: https://stockwiz.com
               message:
                 order:
-                  id: 66B7AEDF45
+                  id: O1
                   provider:
                     id: '1'
                     descriptor:
@@ -5162,9 +7156,11 @@ x-examples:
                     - customer:
                         person:
                           name: John Doe
+                          id: ecan_d51aef81
                         contact:
                           phone: +91-9999999999
                           email: john.doe@example.com
+                      id: F1
                       state:
                         descriptor:
                           name: SIP amount modified
@@ -5194,7 +7190,7 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_17
+            value: *ref_9
       on_status:
         examples:
           - summary: on_status
@@ -5217,7 +7213,7 @@ x-examples:
                 bpp_uri: https://stockwiz.com
               message:
                 order:
-                  id: 66B7AEDF45
+                  id: O1
                   status: ACTIVE
                   provider:
                     id: '1'
@@ -5236,9 +7232,11 @@ x-examples:
                     - customer:
                         person:
                           name: Alice
+                          id: ecan_d51aef81
                         contact:
                           phone: +91-9999199991
                           email: alice@example.com
+                      id: F1
                       state:
                         descriptor:
                           name: Units being allocated
@@ -5269,7 +7267,119 @@ x-examples:
                         url: https://abcmutalfunds.com/mf/tnc.html
           - summary: on_status-request-sip-installment-received
             description: TBD
-            value: *ref_18
+            value:
+              context:
+                domain: ONDC:FIS14
+                location:
+                  country:
+                    code: IND
+                version: 2.0.0
+                action: on_status
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                ttl: PT30M
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  id: O1
+                  provider:
+                    id: P1
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: HDFC Midcap Opportunities Fund
+                      short_desc: HDFC Midcap Opportunities Fund
+                  items:
+                    - id: I1
+                      descriptor:
+                        name: HDFC Midcap Opportunities Fund - SIP
+                      price:
+                        value: '1'
+                        currency: INR
+                      quantity:
+                        minimum:
+                          count: 100
+                        selected:
+                          count: 200
+                  fulfillments:
+                    - customer:
+                        person:
+                          name: Alice
+                          id: ecan_d51aef81
+                        contact:
+                          phone: +91-9999199991
+                          email: alice@example.com
+                      id: F1
+                      state:
+                        descriptor:
+                          name: February SIP Amount Received
+                          code: installment-received
+                      agent:
+                        person:
+                          name: John Williams
+                        organization:
+                          descriptor:
+                            name: HDFC Fund
+                        contact:
+                          phone: +91-9999999999
+                  quote:
+                    price:
+                      currency: INR
+                      value: '2400'
+                    breakup:
+                      - descriptor:
+                          name: Jan'23 SIP Installment
+                        price:
+                          value: '80'
+                          currency: INR
+                        quantity:
+                          allocated:
+                            measure:
+                              value: '2.5'
+                              unit: units
+                      - descriptor:
+                          name: Feb'23 Investment
+                        price:
+                          value: '80'
+                          currency: INR
+                        quantity:
+                          allocated:
+                            measure:
+                              value: '2.5'
+                              unit: units
+                  billing:
+                    name: Charles D'Souza
+                    email: charles@equitygrow.in
+                    phone: +91-988777632
+                  payments:
+                    - collected_by: BPP
+                      type: ON-FULFILLMENT
+                      params:
+                        amount: '200'
+                        currency: INR
+                        transaction_id: bh767iygx65u76iyg
+                        source_virtual_payment_address: charles@oksbi
+                        timestamp: '2023-05-25T05:23:03.443Z'
+                      status: PAID
+                    - collected_by: BPP
+                      type: ON-FULFILLMENT
+                      params:
+                        amount: '200'
+                        currency: INR
+                        transaction_id: bh767iygx65u76iyg
+                        source_virtual_payment_address: charles@oksbi
+                        timestamp: 2023-05-25T05:23:03.443Z
+                      status: PAID
+                  cancellation_terms:
+                    - external_ref:
+                        mimetype: text/html
+                        url: https://abcmutalfunds.com/mf/tnc.html
       support:
         examples:
           - summary: support
@@ -5388,7 +7498,7 @@ x-attributes:
             category:
               descriptor:
                 code:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BAP
                   usage: MUTUAL_FUNDS
@@ -5398,41 +7508,41 @@ x-attributes:
           catalog:
             descriptor:
               name:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: Stockwiz Corp
                 description: Descriptive name of the catalog.
             providers:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
                 description: Id of the provider
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund
                   description: Descriptive name of the provider.
                 images:
                   url:
-                    required: false
+                    required: optional
                     type: string
                     owner: BPP
                     usage: >-
                       https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
                     description: URL to the image. This can be a data url or an remote url
                   size_type:
-                    required: false
+                    required: optional
                     type: string
                     owner: BPP
                     usage: sm
                     description: Size type of the image
                 short_desc:
-                  required: false
+                  required: optional
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund
@@ -5440,13 +7550,13 @@ x-attributes:
               categories:
                 descriptor:
                   'name ':
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Large Cap
                     description: Physical description name of something.
                   long_desc:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: >-
@@ -5455,40 +7565,40 @@ x-attributes:
                                       investing in large-cap equities.
                     description: Physical description long_desc.
                 id:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: db1928f9
                   description: Id of the category
               items:
                 id:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: 1cd4ea25
                   description: Id of the item
                 descriptor:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: ABC Large Cap Mutual Fund - SIP
                     description: Descriptive name of particular item
                   code:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: sip
                     description: Code value of particular item
                 price:
                   value:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 1
                     description: Value of the price entity
                   currency:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: INR
@@ -5496,7 +7606,7 @@ x-attributes:
                 quantity:
                   minimum:
                     count:
-                      required: false
+                      required: optional
                       type: integer
                       owner: BPP
                       usage: 1
@@ -5504,20 +7614,20 @@ x-attributes:
                         This represents the minimum quantity allowed for
                         purchase of the item
                 fulfillment_ids:
-                  required: false
+                  required: optional
                   type: string
                   owner: BPP
                   usage: 3bd4ea25
                   description: Unique reference ID to the fulfillment of an order
               fulfillments:
                 id:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: 3bd4ea25
                   description: Unique reference ID to the fulfillment of an order
                 type:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: SIP
@@ -5528,7 +7638,7 @@ x-attributes:
                 agent:
                   person:
                     name:
-                      required: true
+                      required: mandatory
                       type: string
                       owner: BPP
                       usage: John Doe
@@ -5538,7 +7648,7 @@ x-attributes:
           order:
             items:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: b2400168
@@ -5546,7 +7656,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: true
+                    required: mandatory
                     type: integer
                     owner: BAP
                     usage: 1
@@ -5555,7 +7665,7 @@ x-attributes:
                       item
             provider:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
@@ -5565,27 +7675,27 @@ x-attributes:
           order:
             items:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: b2400168
                 description: ID of the item.
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund - SIP
                   description: Physical description of something.
               price:
                 currency:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: INR
                   description: Price of the selected item.
                 value:
-                  required: true
+                  required: mandatory
                   type: integer
                   owner: BPP
                   usage: 60
@@ -5593,7 +7703,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: true
+                    required: mandatory
                     type: integer
                     owner: BPP
                     usage: 2
@@ -5601,7 +7711,7 @@ x-attributes:
                       This represents the quantity selected for purchase of the
                       item
               fulfillment_ids:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
@@ -5610,73 +7720,73 @@ x-attributes:
                 head:
                   index:
                     min:
-                      required: true
+                      required: mandatory
                       type: number
                       owner: BPP
                       usage: false
                       description: Describes the min indexvalue
                     max:
-                      required: true
+                      required: mandatory
                       type: number
                       owner: BPP
                       usage: 1
                       description: Describes the max index value
                     cur:
-                      required: true
+                      required: mandatory
                       type: number
                       owner: BPP
                       usage: 1
                       description: Describes the current index value
                   descriptor:
                     name:
-                      required: true
+                      required: mandatory
                       type: string
                       owner: BPP
                       usage: Set up SIP
                       description: Physical description name of something.
                 form:
                   mime_type:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: text/html
                     description: ' Describes the mime of the document'
                   url:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: >-
                       https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
                     description: ' Describes the url of the document'
                   resubmit:
-                    required: true
+                    required: mandatory
                     type: boolean
                     owner: BPP
                     usage: true
                     description: Describes a form can be re-submited again or not.
                   'multiple_sumbissions                                                                                                                                                                                       ':
-                    required: true
+                    required: mandatory
                     type: boolean
                     owner: BPP
                     usage: false
                     description: Describes a form supports multiple sumbissions or not.
             provider:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
                 description: Id of the provider
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund
                   description: Physical description of something.
                 images:
                   url:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: >-
@@ -5684,7 +7794,7 @@ x-attributes:
                     description: URL to the image. This can be a data url or an remote url
             fulfillments:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
@@ -5692,13 +7802,13 @@ x-attributes:
             quote:
               price:
                 value:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: 60
                   description: Describes the price of a product or service
                 currency:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: INR
@@ -5706,13 +7816,13 @@ x-attributes:
               breakup:
                 price:
                   value:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 80
                     description: Describes the value of a product or service
                   currency:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: INR
@@ -5722,13 +7832,13 @@ x-attributes:
                     allocated:
                       measure:
                         value:
-                          required: true
+                          required: mandatory
                           type: string
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
                         unit:
-                          required: true
+                          required: mandatory
                           type: string
                           owner: BPP
                           usage: units
@@ -5738,7 +7848,7 @@ x-attributes:
           order:
             items:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: b2400168
@@ -5746,7 +7856,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: true
+                    required: mandatory
                     type: integer
                     owner: BPP
                     usage: 1
@@ -5756,14 +7866,14 @@ x-attributes:
               xinput:
                 form_response:
                   submission_id:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: ebff9b95
                     description: Describes the submission ID of the form
             provider:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
@@ -5772,20 +7882,20 @@ x-attributes:
               customer:
                 contact:
                   email:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: alice@example.com
                     description: Email address of the cusotmer
                   phone:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 9999199991
                     description: Phone number of the cusotmer
                 person:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Alice
@@ -5795,27 +7905,27 @@ x-attributes:
           order:
             items:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: b2400168
                 description: ID of the item.
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund - SIP
                   description: Physical description of something.
               price:
                 currency:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: INR
                   description: Price of the selected item.
                 value:
-                  required: true
+                  required: mandatory
                   type: integer
                   owner: BPP
                   usage: 60
@@ -5823,7 +7933,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: true
+                    required: mandatory
                     type: integer
                     owner: BPP
                     usage: 2
@@ -5831,7 +7941,7 @@ x-attributes:
                       This represents the quantity selected for purchase of the
                       item
               fulfillment_ids:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
@@ -5840,73 +7950,73 @@ x-attributes:
                 head:
                   index:
                     min:
-                      required: true
+                      required: mandatory
                       type: number
                       owner: BPP
                       usage: false
                       description: Describes the min indexvalue
                     max:
-                      required: true
+                      required: mandatory
                       type: number
                       owner: BPP
                       usage: 1
                       description: Describes the max index value
                     cur:
-                      required: true
+                      required: mandatory
                       type: number
                       owner: BPP
                       usage: 1
                       description: Describes the current index value
                   descriptor:
                     name:
-                      required: true
+                      required: mandatory
                       type: string
                       owner: BPP
                       usage: Set up SIP
                       description: Physical description name of something.
                 form:
                   mime_type:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: text/html
                     description: ' Describes the mime of the document'
                   url:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: >-
                       https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
                     description: ' Describes the url of the document'
                   resubmit:
-                    required: true
+                    required: mandatory
                     type: boolean
                     owner: BPP
                     usage: true
                     description: Describes a form can be re-submited again or not.
                   'multiple_sumbissions                                                                                                                                                                                       ':
-                    required: true
+                    required: mandatory
                     type: boolean
                     owner: BPP
                     usage: false
                     description: Describes a form supports multiple sumbissions or not.
             provider:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
                 description: Id of the provider
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund
                   description: Physical description of something.
                 images:
                   url:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: >-
@@ -5914,7 +8024,7 @@ x-attributes:
                     description: URL to the image. This can be a data url or an remote url
             fulfillments:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
@@ -5922,20 +8032,20 @@ x-attributes:
               customer:
                 contact:
                   email:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: alice@example.com
                     description: Email address of the cusotmer
                   phone:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 9999199991
                     description: Phone number of the cusotmer
                 person:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Alice
@@ -5943,7 +8053,7 @@ x-attributes:
               state:
                 descriptor:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Mutual Fund Order Initialized
@@ -5951,7 +8061,7 @@ x-attributes:
             quote:
               price:
                 value:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: 60
@@ -5959,26 +8069,26 @@ x-attributes:
               breakup:
                 price:
                   value:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 80
                     description: Describes the value of a product or service
                   currency:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: INR
                     description: Describes the currency of a product or service
             billing:
               name:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: Charles D'Souza
                 description: Describes the name of billing entity
               email:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: charles@equitygrow.in
@@ -5987,20 +8097,20 @@ x-attributes:
               fulfillment_state:
                 descriptor:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Terms
                     description: Describes the name of the descriptor
               external_ref:
                 mimetype:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: text/html
                   description: Describes the mime type of external ref
                 url:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: https://abcmutalfunds.com/mf/tnc.html
@@ -6010,7 +8120,7 @@ x-attributes:
           order:
             items:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: b2400168
@@ -6018,7 +8128,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: true
+                    required: mandatory
                     type: integer
                     owner: BPP
                     usage: 1
@@ -6028,14 +8138,14 @@ x-attributes:
               xinput:
                 form_response:
                   submission_id:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: ebff9b95
                     description: Describes the submission ID of the form
             provider:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
@@ -6044,66 +8154,66 @@ x-attributes:
               customer:
                 contact:
                   email:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: alice@example.com
                     description: Email address of the cusotmer
                   phone:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 9999199991
                     description: Phone number of the cusotmer
                 person:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
               stops:
                 type:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: start
                   description: Describes the start of the fulfillment
                 authorization:
                   type:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: OTP
                     description: Describes the type of the authorization scheme
                   token:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 535346
                     description: Describes the token of the authorization scheme
             billing:
               name:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: Charles D'Souza
                 description: Describes the name of billing entity
               email:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: charles@equitygrow.in
                 description: Describes the email of billing entity
             payments:
               collected_by:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: BPP
                 description: Describes the source of payment collection
               type:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: ON-FULFILLMENT
@@ -6112,34 +8222,34 @@ x-attributes:
         message:
           order:
             id:
-              required: true
+              required: mandatory
               type: string
               owner: BPP
               usage: 66B7AED
               description: ID of the order.
             items:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: b2400168
                 description: ID of the item.
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund - SIP
                   description: Physical description of something.
               price:
                 currency:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: INR
                   description: Price of the selected item.
                 value:
-                  required: true
+                  required: mandatory
                   type: integer
                   owner: BPP
                   usage: 60
@@ -6147,7 +8257,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: true
+                    required: mandatory
                     type: integer
                     owner: BPP
                     usage: 2
@@ -6155,28 +8265,28 @@ x-attributes:
                       This represents the quantity selected for purchase of the
                       item
               fulfillment_ids:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
                 description: Unique reference ID to the fulfillment of an order
             provider:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: db1928f9
                 description: Id of the provider
               descriptor:
                 name:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund
                   description: Physical description of something.
                 images:
                   url:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: >-
@@ -6184,7 +8294,7 @@ x-attributes:
                     description: URL to the image. This can be a data url or an remote url
             fulfillments:
               id:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
@@ -6192,20 +8302,20 @@ x-attributes:
               customer:
                 contact:
                   email:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: alice@example.com
                     description: Email address of the cusotmer
                   phone:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 9999199991
                     description: Phone number of the cusotmer
                 person:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Alice
@@ -6213,7 +8323,7 @@ x-attributes:
               state:
                 descriptor:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Mutual Fund Order Initialized
@@ -6221,7 +8331,7 @@ x-attributes:
             quote:
               price:
                 value:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: 60
@@ -6229,13 +8339,13 @@ x-attributes:
               breakup:
                 price:
                   value:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: 80
                     description: Describes the value of a product or service
                   currency:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: INR
@@ -6245,26 +8355,26 @@ x-attributes:
                     allocated:
                       measure:
                         value:
-                          required: true
+                          required: mandatory
                           type: string
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
                         unit:
-                          required: true
+                          required: mandatory
                           type: string
                           owner: BPP
                           usage: units
                           description: Describes allocated units of quantity
             billing:
               name:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: Charles D'Souza
                 description: Describes the name of billing entity
               email:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: charles@equitygrow.in
@@ -6273,58 +8383,58 @@ x-attributes:
               fulfillment_state:
                 descriptor:
                   name:
-                    required: true
+                    required: mandatory
                     type: string
                     owner: BPP
                     usage: Terms
                     description: Describes the name of the descriptor
               external_ref:
                 mimetype:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: text/html
                   description: Describes the mime type of external ref
                 url:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: https://abcmutalfunds.com/mf/tnc.html
                   description: Describes the url of external ref
             payments:
               collected_by:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: BPP
                 description: Describes the source of payment collection
               type:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: ON-FULFILLMENT
                 description: Describes the type of payment collection
               params:
                 amount:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: 500
                   description: Describes a numerical value in decimal form
                 currency:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: INR
                   description: Describes the currency of a product or service
                 transaction_id:
-                  required: true
+                  required: mandatory
                   type: string
                   owner: BPP
                   usage: bh767iygx65u76iyg
                   description: Describes the transaction id of the payment
               status:
-                required: true
+                required: mandatory
                 type: string
                 owner: BPP
                 usage: PAID
