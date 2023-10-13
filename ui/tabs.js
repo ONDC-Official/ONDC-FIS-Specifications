@@ -10,9 +10,8 @@ function onFirstLoad(build_spec){
       loadFlows(data["x-flows"])
       loadAttributes(data["x-attributes"])
       loadErrors(data["x-errorcodes"])
-      loadTlc(data["x-tlc"])
 }
 
-window.onload = function(){
-      onFirstLoad(build_spec)
-} 
+// window.onload = function(){
+//       onFirstLoad(build_spec)
+// } 
