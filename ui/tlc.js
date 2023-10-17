@@ -10,10 +10,14 @@ function loadTlc(data) {
   addTlcSets(indexKey[0]);
 }
 
+function fixSpecialChars(text) {
+  return text.replaceAll(/â/gi, '"');
+}
+
 function addTlcSets(option) {
   const object = tlc[option];
   let previousValues = {};
-
+  const keys = ['Term', 'Api', 'Attribute', 'Owner', 'Value', 'Description']
   object.forEach(function (key) {
     var table = document.getElementById("tlcset");
     const newRow = document.createElement("tr");
@@ -22,11 +26,11 @@ function addTlcSets(option) {
     for (let i = 0; i < 6; i++) {
       const cell = document.createElement("td");
       cell.style.minWidth = "65px";
-      const value = key[i] !== undefined ? key[i] : previousValues[i];
+      const value = key[keys[i]] !== undefined ? fixSpecialChars(key[keys[i]]) : previousValues[keys[i]];
       cell.textContent = value;
       newRow.appendChild(cell);
-      if (key[i] !== undefined) {
-        previousValues[i] = key[i]; 
+      if (key[keys[i]] !== undefined) {
+        previousValues[keys[i]] = key[keys[i]];
       }
     }
 
