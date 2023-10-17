@@ -3380,6 +3380,124 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+      - summary: Creates a consent request with selected product
+        api: on_select
+        details:
+          - description: >-
+              The Lender Platform generates a consent request for capturing
+              buyer's consent.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_22
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_select
+              version: 2.0.0
+              bap_id: credit-protocol.becknprotocol.io
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    tags:
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
+                        display: true
+                    xinput:
+                      form_response:
+                        status: CONSENT_CREATED
+                        submission_id: cc9aa874-fcf9-4497-aa1d-33419134f9a2
+                      required: true
+      - summary: Approval of consent request
+        api: select
+        details:
+          - description: >-
+              The BAP approves the consent request and sends the loan product,
+              the loan provider, and the customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_21
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: select
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bap_id: credit-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    xinput:
+                      form_response:
+                        status: CONSENT_APPROVED
+                        submission_id: cc9aa874-fcf9-4497-aa1d-33419134f9a2
       - summary: >-
           The provider offers the required form for the chosen personal loan
           service.
@@ -3393,11 +3511,6 @@ x-flows:
                 title  Selection
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
-                participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
@@ -3487,6 +3600,15 @@ x-flows:
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
                             value: https://icicibank.com/loan/tnc.html
+                        display: true
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
                         display: true
                     xinput:
                       head:
@@ -4379,7 +4501,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -4480,7 +4602,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -4962,7 +5084,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -6000,7 +6122,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -6083,7 +6205,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -6231,7 +6353,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -6259,16 +6381,12 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
-      - summary: >-
-          Returning a consent request with additional details about the loan
-          product
+      - summary: Creates a consent request with selected product
         api: on_select
         details:
           - description: >-
-              The Lender Platform generates a consent request, and an XInput
-              form may expect other details pertaining to the borrower's
-              business like Tax ID. Company registration address, Ownership
-              Details etc, depending on the type of loan.
+              The Lender Platform generates a consent request for capturing
+              buyer's consent.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -6289,7 +6407,124 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_33
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_select
+              version: 2.0.0
+              bap_id: credit-protocol.becknprotocol.io
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    tags:
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
+                        display: true
+                    xinput:
+                      form_response:
+                        status: CONSENT_CREATED
+                        submission_id: 242ea230-2b57-4126-bd21-5929325de465
+                      required: true
+      - summary: Approval of consent request
+        api: select
+        details:
+          - description: >-
+              The BAP approves the consent request and sends the loan product,
+              the loan provider, and the customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_30
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: select
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bap_id: credit-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    xinput:
+                      form_response:
+                        status: CONSENT_APPROVED
+                        submission_id: 242ea230-2b57-4126-bd21-5929325de465
+      - summary: >-
+          Returns the consent request with additional details about the loan
+          product
+        api: on_select
+        details:
+          - description: >-
+              The Lender Platform updates the consent request, and an XInput
+              form may expect other details pertaining to the borrower's
+              business like Tax ID. Company registration address, Ownership
+              Details etc, depending on the type of loan.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -6370,6 +6605,15 @@ x-flows:
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
                             value: https://icicibank.com/loan/tnc.html
+                        display: true
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
                         display: true
                     xinput:
                       head:
@@ -6457,7 +6701,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -6513,7 +6757,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -7271,7 +7515,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -7766,7 +8010,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -7867,7 +8111,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -8356,7 +8600,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -8669,7 +8913,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_34
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -9119,7 +9363,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_35
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -9568,7 +9812,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_37
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -9781,7 +10025,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
         example:
-          value: &ref_36
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -14305,6 +14549,9 @@ x-examples:
           - summary: select-request-set-loan-amount
             description: TBD
             value: *ref_14
+          - summary: select-request-set-consent-approved
+            description: TBD
+            value: *ref_21
       on_select:
         examples:
           - summary: on_select-request-financial-info-form
@@ -14313,6 +14560,9 @@ x-examples:
           - summary: on_select-request-with-kyc-form
             description: TBD
             value: *ref_15
+          - summary: on_select-request-consent-created
+            description: TBD
+            value: *ref_22
       init:
         examples:
           - summary: init
@@ -14320,20 +14570,20 @@ x-examples:
             value: *ref_17
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_21
+            value: *ref_23
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_22
+            value: *ref_24
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_22
+            value: *ref_24
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_23
+            value: *ref_25
       on_confirm:
         examples:
           - summary: on_confirm
@@ -15726,20 +15976,20 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_24
+            value: *ref_26
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_25
+            value: *ref_27
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_26
+            value: *ref_28
           - summary: select-request-employment-info
             description: TBD
-            value: *ref_27
+            value: *ref_29
           - summary: select-request-financial-info
             description: TBD
             value:
@@ -15770,11 +16020,14 @@ x-examples:
                         form_response:
                           status: SUCCESS
                           submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+          - summary: select-request-consent-approved
+            description: TBD
+            value: *ref_30
       on_select:
         examples:
           - summary: on_select-request-employment-details-form
             description: TBD
-            value: *ref_28
+            value: *ref_31
           - summary: on_select-request-financial-info-form
             description: TBD
             value:
@@ -15869,28 +16122,31 @@ x-examples:
                         required: true
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_29
+            value: *ref_32
+          - summary: on_select-request-with-consent-created
+            description: TBD
+            value: *ref_33
       init:
         examples:
           - summary: init
             description: TBD
-            value: *ref_30
+            value: *ref_34
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_31
+            value: *ref_35
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_32
+            value: *ref_36
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_32
+            value: *ref_36
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_33
+            value: *ref_37
       on_confirm:
         examples:
           - summary: on_confirm
@@ -16364,16 +16620,16 @@ x-examples:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_34
+            value: *ref_38
           - summary: on_status-request-after-installment
             description: TBD
-            value: *ref_35
+            value: *ref_39
           - summary: on_status-request-full-repayment
             description: TBD
-            value: *ref_36
+            value: *ref_40
           - summary: on_status-request-late-repayment-installment
             description: TBD
-            value: *ref_37
+            value: *ref_41
       support:
         examples:
           - summary: support
@@ -16437,7 +16693,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_40
+                code: &ref_44
                   required: mandatory
                   description: Physical description of code value for something
                   reference: if any
@@ -16446,19 +16702,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_38
+              name: &ref_42
                 required: mandatory
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Personal loan
             providers:
-              id: &ref_39
+              id: &ref_43
                 required: mandatory
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_41
-                name: *ref_38
+              descriptor: &ref_45
+                name: *ref_42
                 short_desc:
                   required: optional
                   description: Short description of value for something.
@@ -16477,13 +16733,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
               categories:
-                id: *ref_39
-                descriptor: &ref_53
-                  code: *ref_40
-                  name: *ref_38
+                id: *ref_43
+                descriptor: &ref_57
+                  code: *ref_44
+                  name: *ref_42
               items:
-                id: *ref_39
-                descriptor: *ref_41
+                id: *ref_43
+                descriptor: *ref_45
                 category_ids:
                   required: mandatory
                   description: Categories this item can be listed under
@@ -16492,8 +16748,8 @@ x-attributes:
                 xinput:
                   head:
                     descriptor:
-                      name: *ref_38
-                    index: &ref_42
+                      name: *ref_42
+                    index: &ref_46
                       min:
                         required: optional
                         description: Minimum index value of form
@@ -16510,23 +16766,23 @@ x-attributes:
                         reference: if any
                         usage: 1
                   form:
-                    id: *ref_39
-                    url: &ref_43
+                    id: *ref_43
+                    url: &ref_47
                       required: mandatory
                       description: Unique human readable ID.
                       reference: if any
                       usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-                    mime_type: &ref_44
+                    mime_type: &ref_48
                       required: mandatory
                       description: Describes the mime of the document.
                       reference: if any
                       usage: text/html
-                    resubmit: &ref_45
+                    resubmit: &ref_49
                       required: mandatory
                       description: Describes a form can be re-submited again or not.
                       reference: if any
                       usage: false
-                    multiple_sumbissions: &ref_46
+                    multiple_sumbissions: &ref_50
                       required: mandatory
                       description: Describes a form supports multiple sumbissions or not.
                       reference: if any
@@ -16535,11 +16791,11 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_39
+              id: *ref_43
               items:
-                id: *ref_39
+                id: *ref_43
                 xinput:
-                  form_response: &ref_47
+                  form_response: &ref_51
                     status:
                       required: mandatory
                       description: Describes the status of form
@@ -16554,40 +16810,40 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
             items:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
               xinput:
                 head:
                   descriptor:
-                    name: *ref_38
-                  index: *ref_42
-                form: &ref_62
-                  url: *ref_43
-                  mime_type: *ref_44
-                  resubmit: *ref_45
-                  multiple_sumbissions: *ref_46
+                    name: *ref_42
+                  index: *ref_46
+                form: &ref_66
+                  url: *ref_47
+                  mime_type: *ref_48
+                  resubmit: *ref_49
+                  multiple_sumbissions: *ref_50
       init:
         message:
           order:
             provider:
-              id: *ref_39
+              id: *ref_43
               items:
-                id: *ref_39
+                id: *ref_43
                 xinput:
-                  form_response: *ref_47
+                  form_response: *ref_51
       on_init:
         message:
           order:
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
             items:
-              id: *ref_39
-              descriptor: *ref_41
-              price: &ref_48
+              id: *ref_43
+              descriptor: *ref_45
+              price: &ref_52
                 value:
                   required: optional
                   description: Describes a numerical value in decimal form111
@@ -16599,16 +16855,16 @@ x-attributes:
                   reference: if any
                   usage: IND
               xinput:
-                form_response: *ref_47
-            quote: &ref_49
-              id: *ref_39
+                form_response: *ref_51
+            quote: &ref_53
+              id: *ref_43
               breakup:
                 title:
                   required: mandatory
                   description: the breakup title of the total quoted price
                   reference: if any
                   usage: Amount
-            fulfillments: &ref_50
+            fulfillments: &ref_54
               customer:
                 contact:
                   phone:
@@ -16627,7 +16883,7 @@ x-attributes:
                     description: Describes a person name as any individual
                     reference: if any
                     usage: John
-            payments: &ref_51
+            payments: &ref_55
               type:
                 required: mandatory
                 description: type of the payment
@@ -16666,7 +16922,7 @@ x-attributes:
                     description: This indicates end of a range
                     reference: if any
                     usage: '2021-03-23T10:00:40.065Z'
-            cancellation_terms: &ref_52
+            cancellation_terms: &ref_56
               cancellation_fee:
                 percentage:
                   required: mandatory
@@ -16692,66 +16948,66 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_39
+              id: *ref_43
             items:
-              id: *ref_39
+              id: *ref_43
               xinput:
-                form_response: *ref_47
+                form_response: *ref_51
       on_confirm:
         message:
           order:
-            id: *ref_39
+            id: *ref_43
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
             items:
-              id: *ref_39
-              descriptor: *ref_41
-              price: *ref_48
-            quote: *ref_49
-            fulfillments: *ref_50
-            payments: *ref_51
-            cancellation_terms: *ref_52
+              id: *ref_43
+              descriptor: *ref_45
+              price: *ref_52
+            quote: *ref_53
+            fulfillments: *ref_54
+            payments: *ref_55
+            cancellation_terms: *ref_56
       status:
         message:
-          order_id: *ref_39
+          order_id: *ref_43
       on_status:
         message:
           order:
-            id: *ref_39
+            id: *ref_43
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
               items:
-                id: *ref_39
-                descriptor: *ref_53
-                price: *ref_48
-            quote: *ref_49
-            fulfillments: *ref_50
+                id: *ref_43
+                descriptor: *ref_57
+                price: *ref_52
+            quote: *ref_53
+            fulfillments: *ref_54
       support:
         message:
           support:
-            ref_id: &ref_54
+            ref_id: &ref_58
               required: mandatory
               description: Describes ref_id for support
               reference: if any
               usage: 25d26510-e46e-4a3f-968e-85d1401077f2
-            phone: &ref_55
+            phone: &ref_59
               required: mandatory
               description: Describes the phone information of an entity
               reference: if any
               usage: +91-9897867564
-            email: &ref_56
+            email: &ref_60
               required: mandatory
               description: Email address of the contact
               reference: if any
               usage: john.doe@example.com
       on_support:
         message:
-          support: &ref_65
-            ref_id: *ref_54
-            phone: *ref_55
-            email: *ref_56
+          support: &ref_69
+            ref_id: *ref_58
+            phone: *ref_59
+            email: *ref_60
             url:
               required: mandatory
               description: The URL of the file
@@ -16765,7 +17021,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_59
+                code: &ref_63
                   required: mandatory
                   description: Physical description of code value for something
                   reference: if any
@@ -16774,19 +17030,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_57
+              name: &ref_61
                 required: mandatory
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Invoice based loan
             providers:
-              id: &ref_58
+              id: &ref_62
                 required: mandatory
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_61
-                name: *ref_57
+              descriptor: &ref_65
+                name: *ref_61
                 short_desc:
                   required: optional
                   description: Short description of value for something.
@@ -16805,13 +17061,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
               categories:
-                id: *ref_58
-                descriptor: &ref_60
-                  code: *ref_59
-                  name: *ref_57
+                id: *ref_62
+                descriptor: &ref_64
+                  code: *ref_63
+                  name: *ref_61
               items:
-                id: *ref_58
-                descriptor: *ref_60
+                id: *ref_62
+                descriptor: *ref_64
                 category_ids:
                   required: mandatory
                   description: Categories this item can be listed under
@@ -16820,74 +17076,74 @@ x-attributes:
                 xinput:
                   head:
                     descriptor:
-                      name: *ref_57
-                    index: *ref_42
+                      name: *ref_61
+                    index: *ref_46
                   form:
-                    url: *ref_43
-                    mime_type: *ref_44
-                    resubmit: *ref_45
-                    multiple_sumbissions: *ref_46
-                    id: *ref_58
+                    url: *ref_47
+                    mime_type: *ref_48
+                    resubmit: *ref_49
+                    multiple_sumbissions: *ref_50
+                    id: *ref_62
       select:
         message:
           order:
             provider:
-              id: *ref_58
+              id: *ref_62
               items:
-                id: *ref_58
+                id: *ref_62
                 xinput:
-                  form_response: *ref_47
+                  form_response: *ref_51
       on_select:
         message:
           order:
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
+              id: *ref_62
+              descriptor: *ref_64
               xinput:
                 head:
                   descriptor:
-                    name: *ref_57
-                  index: *ref_42
-                form: *ref_62
+                    name: *ref_61
+                  index: *ref_46
+                form: *ref_66
       init:
         message:
           order:
             provider:
-              id: *ref_58
+              id: *ref_62
               items:
-                id: *ref_58
+                id: *ref_62
                 xinput:
-                  form_response: *ref_47
+                  form_response: *ref_51
       on_init:
         message:
           order:
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
-              price: *ref_48
+              id: *ref_62
+              descriptor: *ref_64
+              price: *ref_52
               xinput:
                 head:
                   descriptor:
-                    name: *ref_57
-                  index: *ref_42
-                form: *ref_62
-            quote: &ref_63
-              id: *ref_58
-              price: *ref_48
+                    name: *ref_61
+                  index: *ref_46
+                form: *ref_66
+            quote: &ref_67
+              id: *ref_62
+              price: *ref_52
               breakup:
                 title:
                   required: mandatory
                   description: the breakup title of the total quoted price
                   reference: if any
                   usage: Amount
-                price: *ref_48
-            fulfillments: &ref_64
+                price: *ref_52
+            fulfillments: &ref_68
               customer:
                 organization:
                   address:
@@ -16923,59 +17179,59 @@ x-attributes:
                       description: Email address of the contact
                       reference: if any
                       usage: alpha.manufacturing@gmail.com
-            payments: *ref_51
-            cancellation_terms: *ref_52
+            payments: *ref_55
+            cancellation_terms: *ref_56
       confirm:
         message:
           order:
             provider:
-              id: *ref_58
+              id: *ref_62
             items:
-              id: *ref_58
+              id: *ref_62
               xinput:
-                form_response: *ref_47
+                form_response: *ref_51
       on_confirm:
         message:
           order:
-            id: *ref_58
+            id: *ref_62
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
-              price: *ref_48
-            quote: *ref_63
-            fulfillments: *ref_64
-            payments: *ref_51
-            cancellation_terms: *ref_52
+              id: *ref_62
+              descriptor: *ref_64
+              price: *ref_52
+            quote: *ref_67
+            fulfillments: *ref_68
+            payments: *ref_55
+            cancellation_terms: *ref_56
       status:
         message:
-          order_id: *ref_58
+          order_id: *ref_62
       on_status:
         message:
           order:
-            id: *ref_58
+            id: *ref_62
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
-              price: *ref_48
-            quote: *ref_63
-            fulfillments: *ref_64
-            payments: *ref_51
-            cancellation_terms: *ref_52
+              id: *ref_62
+              descriptor: *ref_64
+              price: *ref_52
+            quote: *ref_67
+            fulfillments: *ref_68
+            payments: *ref_55
+            cancellation_terms: *ref_56
       support:
         message:
           support:
-            ref_id: *ref_54
-            phone: *ref_55
-            email: *ref_56
+            ref_id: *ref_58
+            phone: *ref_59
+            email: *ref_60
       on_support:
         message:
-          support: *ref_65
+          support: *ref_69
 x-errorcodes:
   code:
     - Event: Application submittion failure
@@ -16984,15 +17240,15 @@ x-errorcodes:
       code: 80101
     - Event: AA consent creation failure
       Description: Lender could not create data fetch consent on account agreegator
-      From: Lender
+      From: BPP
       code: 80201
     - Event: AA data pull failure
       Description: Lender could not retrieve bank statement from the AA
-      From: Lender
+      From: BPP
       code: 80202
     - Event: Offer return failure
       Description: Lenders could not return loan offers to the buyer app
-      From: Lender
+      From: BPP
       code: 80203
     - Event: Offer acceptance failure
       Description: 'Buyer application could not submit user selected offer to the lender '
@@ -17000,11 +17256,11 @@ x-errorcodes:
       code: 80102
     - Event: Individual KYC failure
       Description: Entity KYC failed on lender's platform - no retry
-      From: Lender
+      From: BPP
       code: 80204
     - Event: Entity KYC failure
       Description: Entity KYC failures where retry should be performed
-      From: Lender
+      From: BPP
       code: 80205
     - Event: Disbursment account sharing failure
       Description: Buyer app could not submit the disbursment account details
@@ -17012,27 +17268,27 @@ x-errorcodes:
       code: 80103
     - Event: Disbursment account verification failure
       Description: Lender could not verify the disbursment account details
-      From: Lender
+      From: BPP
       code: 80206
     - Event: Repayment setup failure
       Description: Repayment setup failed on lender's platform
-      From: Lender
+      From: BPP
       code: 80207
     - Event: Loan agreement sharing failure
       Description: Lender could not share the loan agreement
-      From: Lender
+      From: BPP
       code: 80208
     - Event: Loan agreement signing failure - Aadhar eSign
       Description: Aadhar eSign failed while signing the loan agreement
-      From: Lender
+      From: BPP
       code: 80209
     - Event: Monitoring consent creation failure
       Description: Lender could not create account monitoring consent
-      From: Lender
+      From: BPP
       code: 80210
     - Event: Monitoring consent approval failure
       Description: Lender could not retrieve account monitoring consent
-      From: Lender
+      From: BPP
       code: 80211
     - Event: Loan disbursal failure
       Description: Lender could not disburse the loan amount
@@ -17042,15 +17298,15 @@ x-errorcodes:
       Description: >-
         Payment initiation failed on the buyer app (lender couldn't return the
         payment link for ex)
-      From: Lender
+      From: BPP
       code: 80212
     - Event: Payment completion failure
       Description: Payment completion failed on the lender's platform
-      From: Lender
+      From: BPP
       code: 80213
     - Event: 'Timeout: The request or operation timed out.'
       Description: Response from seller app outside of TTL or vice versa
-      From: Lender
+      From: BPP
       code: 80214
     - Event: 'General Error: An unspecified error occurred.'
       Description: 'General '
@@ -17091,3 +17347,190 @@ x-errorcodes:
       Description: The rate limit for an external API has been exceeded.
       From: BPP
       code: 80223
+x-tlc:
+  code:
+    - '0': Buyer App Fee
+      '1': |-
+        search
+        on_search
+      '2': BUYER_FINDER_FEE_TYPE
+      '3': Buyer App
+      '4': “amount”, “percent- annualized”
+      '5': >-
+        If set to “amount” it means Buyer App’s fee is a flat amount in INR.
+
+        If set to “percent- annualized” it means the Buyer App’s fee is set as a
+        percentage of the Total Loan Disbursed for a 12-month tenure loan.
+
+
+        For example: Assume the Buyer App Fees’ value is 5%
+
+
+        For a 12 month tenure loan the ‘effective fees’ paid by Seller App to
+        the Buyer App would be 5% * (12 months/ 12 months) i.e 5%
+
+
+        For 6 month tenure loan the ‘effective fees’ paid by Seller App to the
+        Buyer App would be 5% * (6 months/ 12 months) i.e 2.5%
+
+
+        For 18 month tenure loan the ‘effective fees’ paid by Seller App to the
+        Buyer App would be 5% * (18 months/ 12 months) i.e 7.5%
+    - '2': BUYER_FINDER_FEE_VALUE
+      '3': Buyer App
+      '4': Positive Decimal Number
+      '5': >-
+        Quantum of the Buyer App’s Fee. To be interpreted in connection with the
+        “type” field mentioned above.
+
+        For example, let’s assume the value is set at “5”. If the “type” is set
+        to “Amount”, that means the Buyer App Fee is INR 5. If the “type” is set
+        to “percent - annualized”, it means the Buyer App Fee is 5% of the Total
+        Order Value for a 12- month tenure loan.
+    - '0': Payment Collector
+      '1': |-
+        search
+        on_search
+        init
+        on_init
+      '2': payment.collected_by
+      '3': Either
+      '4': “BAP”, “BPP”
+      '5': >-
+        If set to “BAP”, it means that the Buyer App will collect processing
+        fees if any from the Buyer.
+
+        If set to “BPP”, it means that the Seller App will collect processing
+        fees if any from the Buyer.
+    - '0': Settlement Window
+      '1': |-
+        search
+        on_search
+        init
+        on_init
+      '2': SETTLEMENT_WINDOW
+      '3': Either
+      '4': |-
+        Time period
+        (ISO8601 format)
+      '5': >-
+        The time period from completion of the Settlement Basis within which the
+        Payment Collector will settle with counterparty Network Participant(s).
+        As an illustration, a Settlement Window of 5 days after loan disbursal
+        can be specified as “P5D” (i.e. period 5 days) or “PT120H” (i.e. period
+        120 hours).
+    - '0': Settlement Basis
+      '1': |-
+        search
+        on_search
+        init
+        on_init
+      '2': SETTLEMENT_BASIS
+      '3': Either
+      '4': |-
+        “Delivery”, “ “return_window_expiry, 
+        “ invoice_receipt”
+      '5': >-
+        The event that will trigger settlement from the Payment Collector to
+        counterparty Network Participant(s).
+
+
+        Example:
+
+        Upon confirmation of order delivery, then set this to “delivery” 
+
+
+        Upon expiry of cancellation/ return window, then set this
+        to“return_window_expiry”
+
+
+        Upon receipt of an invoice from the counterparty, then this to
+        “invoice_receipt”
+    - '0': Settlement Amount
+      '1': |-
+        init
+        on_init
+      '2': SETTLEMENT_AMOUNT
+      '3': Either
+      '4': Positive Decimal Number
+      '5': >-
+        The amount that the Payment Collector will remit to the counterparty
+        Network Participant.
+
+        For clarity, if the Buyer App is the Processing Fees collector, the
+        Buyer App will deduct their Buyer finder fees from the Processing Fees
+        and remit the balance to the Seller App. If seller app is the Processing
+        Fees collector, the Seller app will remit the Buyer Finder Fees to Buyer
+        App.
+    - '0': Settlement Type
+      '1': |-
+        search
+        init
+      '2': SETTLEMENT_TYPE
+      '3': Either
+      '4': “neft”, “rtgs”, “upi”
+      '5': >-
+        The Payment Collector will use the selected method to remit the due
+        payment to the counterparty Network Participant. To illustrate, if the
+        Buyer App collects the payment and the Settlement Type is set to “rtgs”,
+        when the settlement is due, the Buyer App will transfer the Seller App’s
+        share of the Buyer Price to the Seller App’s account via RTGS.
+    - '0': Mandatory Arbitration
+      '1': |-
+        on_search
+        on_init
+      '2': MANDATORY_ARBITRATION
+      '3': Seller App
+      '4': true/ false
+      '5': >-
+        If this attribute is set to true, that would mean both parties agree
+        that in case of a dispute, both parties must resolve the dispute through
+        arbitration.
+    - '0': Court Jurisdiction
+      '1': |-
+        on_search
+        on_init
+      '2': COURT_JURISDICTION
+      '3': Seller App
+      '4': Pick a city from a given list of cities which have a High Court bench
+      '5': >-
+        The name of the city whose courts will have exclusive jurisdiction over
+        disputes related to this contract. The list of options will only contain
+        cities which have a High Court bench.
+    - '0': Delay Interest
+      '1': |-
+        on_search
+        on_init
+      '2': DELAY_INTEREST
+      '3': Seller App
+      '4': Positive Decimal Number
+      '5': >-
+        This is the annual rate of interest that the Payment Collector will be
+        charged if they delay a payment to the counterparty Network Participant,
+        calculated pro rata for each calendar day of delay. As an example, if
+        the value is set as “7.3”, and the amount of payment due is INR 1000,
+        that will mean the Payment Collector will pay the counterparty Network
+        Participant an interest of 7.3% per annum (i.e. INR 100), calculated pro
+        rata for each day of delay. So if the Payment Collector delay was 50
+        days, the total interest payable would be INR 10 [calculated as
+        1000x(7.3/100)x(50/365)]
+    - '0': Static Terms
+      '1': |-
+        search
+        on_search
+        init
+        on_init
+      '2': STATIC_TERMS
+      '3': Either
+      '4': URL
+      '5': >-
+        This will be the URL of a web-page where the standard Terms and
+        Conditions of the Network Participant - which are not covered in the API
+        Specification (e.g.: indemnity) - will be hosted. These terms will apply
+        to the transaction, in addition to the terms decided through the ONDC
+        Protocol. If there is a conflict between the terms decided through the
+        Protocol, and the Static Terms, the terms decided through the ONDC
+        Protocol will prevail. Also, if there is a conflict between the Static
+        Terms and the ONDC Network Policy or the Static Terms and the Network
+        Participant Agreement, the terms of the ONDC Network Policy or the
+        Network Participant Agreement (as the case may be) will prevail.
