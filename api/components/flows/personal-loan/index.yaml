@@ -159,10 +159,10 @@ steps:
     example:
       value:
         $ref: "../../examples/personal-loans/select/select-request-personal-info.yaml"
-  - summary: The lender sends available loan offers for the chosen personal loan service.
+  - summary: Creates a consent request with selected product
     api: on_select
     details:
-      - description: The lender platform responds with detailed information and the necessary application form for the selected personal loan service.
+      - description: The lender platform generates a consent request for capturing borrower's consent.
         mermaid: >-
           sequenceDiagram
             title  Selection
@@ -182,8 +182,46 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/personal-loans/on_select/on_select-request-set-loan-amount.yaml"      
-  - summary: The borrower can change the form provided by lender.
+        $ref: "../../examples/personal-loans/on_select/on_select-request-consent-created.yaml"    
+  - summary: Approval of consent request
+    api: select
+    details:
+      - description: The BAP approves the consent request and sends the loan product, the loan provider, and the customer's identity to the BPP.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/select/select-request-set-consent-approved.yaml"
+  - summary: The lender offers the required form for the chosen personal loan service.
+    api: on_select
+    details:
+      - description: The lender platform responds with detailed information and the necessary application form for the selected personal loan service.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/on_select/on_select-request-set-loan-amount.yaml"        
+  - summary: The borrower adjusts the loan amount in the form by the lender.
     api: form
     details:
       - description: The borrower can reduce/change loan amount/term in the form provided by lender.
@@ -330,7 +368,7 @@ steps:
   - summary: The borrower receives the bank account mandate form details form.
     api: form
     details:
-      - description: The provider platform sends the form to get dispachment account details from the consumer.
+      - description: The lender platform sends the form to get dispachment account details from the consumer.
         mermaid: >-
           sequenceDiagram
             title Initializing Order
