@@ -10,14 +10,10 @@ function loadTlc(data) {
   addTlcSets(indexKey[0]);
 }
 
-function fixSpecialChars(text) {
-  return text.replaceAll(/â/gi, '"');
-}
-
 function addTlcSets(option) {
   const object = tlc[option];
   let previousValues = {};
-  const keys = ['Term', 'Api', 'Attribute', 'Owner', 'Value', 'Description']
+  const keys = ['Term', 'Api', 'Attribute', 'Owner', 'Value', 'Description'];
   object.forEach(function (key) {
     var table = document.getElementById("tlcset");
     const newRow = document.createElement("tr");
@@ -25,9 +21,14 @@ function addTlcSets(option) {
 
     for (let i = 0; i < 6; i++) {
       const cell = document.createElement("td");
-      cell.style.minWidth = "65px";
-      const value = key[keys[i]] !== undefined ? fixSpecialChars(key[keys[i]]) : previousValues[keys[i]];
+      const value = key[keys[i]] !== undefined ? key[keys[i]] : previousValues[keys[i]];
       cell.textContent = value;
+
+      // Added classes to "Attribute" and "Value" cells
+      if (keys[i] === 'Attribute' || keys[i] === 'Value' || keys[i] === 'Description') {
+        cell.classList.add(keys[i]);
+      }
+
       newRow.appendChild(cell);
       if (key[keys[i]] !== undefined) {
         previousValues[keys[i]] = key[keys[i]];
