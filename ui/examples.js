@@ -1,4 +1,5 @@
 
+
 // examples.js
 
 var examples
@@ -9,7 +10,7 @@ function updateExample() {
     var selectedValue = example_set.value;
     addExample(selectedValue)
 }
-
+''
 function loadExample(data) {
     examples = data
     var exampleDropDown = document.getElementById('example-set');

@@ -48,7 +48,6 @@ function addAttributeSets(option) {
 
   const firstKey = Object.keys(object)[0];
   const keyDetail = object[firstKey];
-  console.log('object',object,keyDetail,keyDetail?.required_attributes  );
   const requiredAttr = 'required_attributes' in keyDetail
   console.log('requiredAttr', requiredAttr)
   flattenObject(keyDetail,null,null,keyDetail?.required_attributes);
