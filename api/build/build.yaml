@@ -2588,75 +2588,15 @@ x-enum:
         city:
           code:
             - code: std:080
-              description: Bangalore
+              description: >-
+                Represent the city code that identifies the cities. In case of
+                '*' it will fetch all the cities where service is being
+                provided.
               reference: <PR/Issue/Discussion Links md format text>
       domain:
         - code: ONDC:FIS12
-          description: Loan
+          description: Updated domain namespace
           reference: <PR/Issue/Discussion Links md format text>
-      action:
-        - code: search
-          description: buyer app specifies the search intent
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_search
-          description: seller app responds with the catalog based on the search intent
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: select
-          description: buyer app specifies the items & quantity selected by a buyer
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_select
-          description: >-
-            seller app responds with the serviceability info, quote & O2D TAT
-            for selected items;
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: init
-          description: >-
-            buyer & seller app specify & agree to the terms & conditions prior
-            to placing the order;
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_init
-          description: >-
-            buyer & seller app specify & agree to the terms & conditions prior
-            to placing the order;
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: confirm
-          description: buyer app places the order on behalf of the buyer;
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_confirm
-          description: >-
-            seller app responds to the order placed either through
-            auto-acceptance or deferred acceptance or rejection of the order
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: update
-          description: updates in the serviceable loc happens here
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_update
-          description: seller app responds with serviceable
-          reference: <PR/Issue/Discussion Links md format text
-        - code: cancel
-          description: Cancellation of ride
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_cancel
-          description: Specifiy the cancellation of the state
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: track
-          description: Track the order
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_track
-          description: Return tracking infomation of the order
-          reference: <PR/Issue/Discussion Links md format text
-        - code: status
-          description: Request for status of the vehicle
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_status
-          description: Return order with status , Driver pickup - driver drop
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: support
-          description: Fetch support information related to a particular order
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: on_support
-          description: Return support information related to order
-          reference: <PR/Issue/Discussion Links md format text
   on_search:
     context: *ref_0
     message:
@@ -2667,23 +2607,24 @@ x-enum:
               code:
                 - code: PERSONAL_LOAN
                   description: >-
-                    Describes ,an unsecured credit provided by financial
+                    Describes an unsecured credit provided by financial
                     institutions based on criteria like employment history,
                     repayment capacity, income level, profession and credit
-                    history.
+                    history
                   reference: <PR/Issue/Discussion Links md format text
                 - code: INVOICE_BASED_LOAN
                   description: >-
-                    Describes , a credit facility that allows a business to
-                    borrow money using high-value unpaid invoices as collateral.
-                    .
+                    Describes an unsecured credit facility that allows a
+                    business to borrow money using high-value unpaid invoices as
+                    collateral. Borrower must enable GST API access in the GSTN
+                    portal is a prerequisite for applying for an unsecured loan
                   reference: <PR/Issue/Discussion Links md format text
           fulfillments: &ref_2
             state:
               descriptor:
                 code:
                   - code: ORDER_PLACED
-                    description: represents order state
+                    description: Represents order state
                     reference: <PR/Issue/Discussion Links md format text
           payments: &ref_3
             type:
@@ -2705,10 +2646,14 @@ x-enum:
                 reference: <PR/Issue/Discussion Links md format text
             status:
               - code: PAID
-                description: reflects current status
+                description: >-
+                  reflects current status wheteher installment has been paid or
+                  not
                 reference: <PR/Issue/Discussion Links md format text
               - code: NOT-PAID
-                description: reflects current status
+                description: >-
+                  reflects current status wheteher installment has been paid or
+                  not
                 reference: <PR/Issue/Discussion Links md format text
   select:
     context: *ref_0
@@ -2958,11 +2903,11 @@ x-flows:
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     references: if any
     steps:
-      - summary: Users search for available personal loan services.
+      - summary: User search for available personal loan services.
         api: search
         details:
           - description: >-
-              Users explore loan options by searching for personal loan services
+              User explore loan options by searching for personal loan services
               over the network
             mermaid: |-
               sequenceDiagram
@@ -3038,12 +2983,14 @@ x-flows:
                             code: STATIC_TERMS
                           value: >-
                             https://www.icicibank.com/personal-banking/loans/personal-loan
-      - summary: The provider offers a catalog of loan types, including personal loans.
+      - summary: >-
+          The lender offers a static catalog details of loan types like personal
+          loans, gst-based loans etc.
         api: on_search
         details:
           - description: >-
-              The provider platform provides a comprehensive catalog of various
-              loan types, and one of them is personal loans.
+              The lender platform provides a comprehensive catalog of various
+              loan types including personal loans.
             mermaid: |-
               sequenceDiagram
                 title Personal Loan Discovery
@@ -3159,12 +3106,15 @@ x-flows:
                             resubmit: false
                             multiple_sumbissions: false
                           required: true
-      - summary: The consumer receives the personal loan application form.
+      - summary: >-
+          The borrower receives the personal loan application form from lender
+          after providing all details like PAN, mobile number, name, address,
+          date of birth, salary, employment type and company name.
         api: form
         details:
           - description: >-
-              The provider platform sends the application form for the personal
-              loan to the consumer.
+              The lender platform sends the application form for the personal
+              loan to the borrower.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3184,11 +3134,11 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>User Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/user-details\">\r\n    <label for=\"firstName\">First Name</label>\r\n    <input type=\"text\" id=\"firstName\" name=\"firstName\" required />\r\n    <label for=\"lastName\">Last Name</label>\r\n    <input type=\"text\" id=\"lastName\" name=\"lastName\" required />\r\n    <label for=\"dob\">Date of Birth</label>\r\n    <input type=\"date\" id=\"dob\" name=\"dob\" required />\r\n    <label for=\"pan\">PAN</label>\r\n    <input type=\"text\" id=\"pan\" name=\"pan\" required />\r\n    <label for=\"contactNumber\">contact number</label>\r\n    <input type=\"text\" id=\"contactNumber\" name=\"contactNumber\" required />\r\n    <label for=\"employmentType\">Employment type</label>\r\n    <select name=\"employmentType\" id=\"employmentType\" required>\r\n      <option value=\"salaried\">Salaried</option>\r\n      <option value=\"selfEmployed\">Self Employment</option>\r\n    </select>\r\n    <label for=\"income\">Income</label>\r\n    <input type=\"number\" id=\"income\" name=\"income\" required />\r\n    <label for=\"companyName\">Company Name</label>\r\n    <input type=\"text\" id=\"companyName\" name=\"companyName\" required />\r\n    <label for=\"udyamNumber\">UDYAM Number</label>\r\n    <input type=\"text\" id=\"udyamNumber\" name=\"udyamNumber\" />\r\n    <label for=\"addressL1\">Address Line 1</label>\r\n    <input type=\"text\" id=\"addressL1\" name=\"addressL1\" />\r\n    <label for=\"addressL2\">Address Line 2</label>\r\n    <input type=\"text\" id=\"addressL2\" name=\"addressL2\" />\r\n    <label for=\"city\">City</label>\r\n    <input type=\"text\" id=\"city\" name=\"city\" />\r\n    <label for=\"state\">State</label>\r\n    <input type=\"text\" id=\"state\" name=\"state\" />\r\n    <label for=\"pincode\">Pin Code</label>\r\n    <input type=\"text\" id=\"pincode\" name=\"pincode\" />\r\n    <label for=\"aa_id\">Account Aggregator ID</label>\r\n    <input type=\"text\" id=\"aa_id\" name=\"aa_id\" required/>\r\n    <label for=\"bureauConsent\">Bureau Consent</label>\r\n    <input type=\"checkbox\" id=\"bureauConsent\" name=\"bureauConsent\" required/>\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO1\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer chooses the personal loan service.
+      - summary: The borrower chooses the personal loan service.
         api: select
         details:
           - description: >-
-              The consumer selects the specific personal loan service they are
+              The borrower selects the specific personal loan service they are
               interested in.
             mermaid: |-
               sequenceDiagram
@@ -3236,14 +3186,12 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
-      - summary: >-
-          The provider offers the required form for the chosen personal loan
-          service.
+      - summary: Creates a consent request with selected product
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information and the
-              necessary application form for the selected personal loan service.
+              The lender platform generates a consent request for capturing
+              borrower's consent.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3254,6 +3202,121 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_22
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_select
+              version: 2.0.0
+              bap_id: credit-protocol.becknprotocol.io
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    tags:
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
+                        display: true
+                    xinput:
+                      form_response:
+                        status: CONSENT_CREATED
+                        submission_id: cc9aa874-fcf9-4497-aa1d-33419134f9a2
+                      required: true
+      - summary: Approval of consent request
+        api: select
+        details:
+          - description: >-
+              The BAP approves the consent request and sends the loan product,
+              the loan provider, and the customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_21
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: select
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bap_id: credit-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    xinput:
+                      form_response:
+                        status: CONSENT_APPROVED
+                        submission_id: cc9aa874-fcf9-4497-aa1d-33419134f9a2
+      - summary: >-
+          The lender offers the required form for the chosen personal loan
+          service.
+        api: on_select
+        details:
+          - description: >-
+              The lender platform responds with detailed information and the
+              necessary application form for the selected personal loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
                 Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
@@ -3344,6 +3407,15 @@ x-flows:
                               short_desc: Terms and Conditions
                             value: https://icicibank.com/loan/tnc.html
                         display: true
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
+                        display: true
                     xinput:
                       head:
                         descriptor:
@@ -3381,12 +3453,12 @@ x-flows:
                       price:
                         value: '1800'
                         currency: INR
-      - summary: The consumer adjusts the loan amount in the form by the lender.
+      - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
           - description: >-
-              The provider platform sends the form for the consumer to adjusts
-              the loan amount.
+              The borrower can reduce/change loan amount/term in the form
+              provided by lender.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3406,11 +3478,11 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer chooses the personal loan service.
+      - summary: The borrower chooses the personal loan service.
         api: select
         details:
           - description: >-
-              The consumer selects the specific personal loan service they are
+              The borrower selects the specific personal loan service they are
               interested in.
             mermaid: |-
               sequenceDiagram
@@ -3459,12 +3531,12 @@ x-flows:
                         status: SUCCESS
                         submission_id: cc9aa874-fcf9-4497-aa1d-33419134f9a2
       - summary: >-
-          The provider offers the required form for the chosen personal loan
+          The lender sends available loan offers for the chosen personal loan
           service.
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information and the
+              The lender platform responds with detailed information and the
               necessary application form for the selected personal loan service.
             mermaid: |-
               sequenceDiagram
@@ -3603,12 +3675,14 @@ x-flows:
                       price:
                         value: '1800'
                         currency: INR
-      - summary: The consumer receives the KYC details form.
+      - summary: >-
+          The lender invoked the relevant forms like links for KYC, bank
+          details, e-mandate etc.
         api: form
         details:
           - description: >-
-              The provider platform sends the form to collect Know Your Customer
-              (KYC) details from the consumer.
+              The lender platform sends the form to collect Know Your Customer
+              (KYC) details from the borrower.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -3628,12 +3702,12 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>eKYC</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/ekyc\">\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer initiates the personal loan request.
+      - summary: The borrower initiates the personal loan request by filling the form.
         api: init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
-              the personal loan application.
+              The borrower platform initiates the personal loan request by
+              filling the form such as KYC detals, bank details and e-madate.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -3729,12 +3803,15 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '400'
-      - summary: The provider accepts and requests for loan dispach account details.
+      - summary: >-
+          The lender accepts the personal loan request and displays loan status
+          details and requests for loan dispach account details.
         api: on_init
         details:
           - description: >-
-              The provider platform accepts the consumer's request terms and may
-              include additional terms if any.
+              The lender platform accepts the borrower's request terms and and
+              displays loan status details amd may include additional terms if
+              any.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -4186,11 +4263,11 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://icicibank.com/loan/tnc.html
-      - summary: The consumer receives the bank account mandate form details form.
+      - summary: The borrower receives the bank account mandate form details form.
         api: form
         details:
           - description: >-
-              The provider platform sends the form to get dispachment account
+              The lender platform sends the form to get dispachment account
               details from the consumer.
             mermaid: |-
               sequenceDiagram
@@ -4211,11 +4288,11 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Account Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/account-details\">\r\n    <label for=\"accHolderName\">Account Holder Name</label>\r\n    <input type=\"text\" id=\"accHolderName\" name=\"accHolderName\" />\r\n    <label for=\"acctype\">Account Type</label>\r\n    <select name=\"acctype\" id=\"acctype\" required>\r\n      <option value=\"current\">Current</option>\r\n      <option value=\"saving\">Saving</option>\r\n    </select>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <label for=\"aaMonitoringConsent\">Yes I have provided Account Monitoring Consent via Account Aggregator to Loan Provider</label>\r\n    <input type=\"checkbox\" id=\"aaMonitoringConsent\" name=\"aaMonitoringConsent\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO4\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer initiates the personal loan request with account details.
+      - summary: The borrower initiates the personal loan request with account details.
         api: init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
+              The borrower platform shares the request's terms and initializes
               the personal loan application.
             mermaid: |-
               sequenceDiagram
@@ -4235,7 +4312,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -4312,11 +4389,11 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '400'
-      - summary: The provider accepts and adds terms to the request.
+      - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
           - description: >-
-              The provider platform accepts the consumer's request terms and may
+              The lender platform accepts the borrower's request terms and may
               include additional terms if needed.
             mermaid: |-
               sequenceDiagram
@@ -4336,7 +4413,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -4769,12 +4846,12 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://icicibank.com/loan/tnc.html
-      - summary: The consumer receives the Loan Agreement details form.
+      - summary: The borrower receives the loan agreement details form.
         api: form
         details:
           - description: >-
-              The provider platform sends the form to collect eSign on Loan
-              Agreement from the consumer.
+              The lender platform sends the form to collect e-sign on loan
+              agreement from the borrower.
             mermaid: |-
               sequenceDiagram
                 title Order Confirmation
@@ -4794,12 +4871,13 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Loan Agreement</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/agreement\">\r\n    <label for=\"tnc\">I have read the <a href=\"https://icicibank.co.in/loans/agreement.html\">Loan Agreement</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <p>An OTP has been sent to your registered mobile number, please enter: </p>\r\n    <label for=\"otpValue\">One Time Password</label>\r\n    <input type=\"text\" id=\"otpValue\" name=\"otpValue\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO5\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer confirms the personal loan request.
+      - summary: The borrower confirms the personal loan request.
         api: confirm
         details:
           - description: >-
-              The consumer platform confirms the personal loan request and
-              provides all the necessary information as per the terms.
+              The borrower platform confirms the personal loan request by
+              signing the agreement and provides all the necessary information
+              as per the terms.
             mermaid: |-
               sequenceDiagram
                 title Order Confirmation
@@ -4818,7 +4896,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -4846,12 +4924,12 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
-      - summary: The provider confirms the personal loan order.
+      - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
           - description: >-
-              The provider platform confirms the personal loan order and
-              provides the final confirmation details.
+              The lender platform confirms the personal loan order and provides
+              the final confirmation details.
             mermaid: |-
               sequenceDiagram
                 title Order Confirmation
@@ -5286,12 +5364,12 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://icicibank.com/loan/tnc.html
-      - summary: The consumer seeks the most recent loan status update.
+      - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
           - description: >-
-              The consumer platform requests the provider platform to provide
-              the latest status of the personal loan application.
+              The borrower platform requests the lender platform to provide the
+              latest status of the personal loan application.
             mermaid: |-
               sequenceDiagram
                 title MF Ordering - Order Fulfillment
@@ -5325,12 +5403,13 @@ x-flows:
               bpp_uri: https://bpp.credit.icicibank.io
             message:
               ref_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-      - summary: The provider shares the latest loan status with the consumer.
+      - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
           - description: >-
-              The provider platform updates the consumer with the most recent
-              status of the personal loan application.
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
             mermaid: |-
               sequenceDiagram
                 title MF Ordering - Order Fulfillment
@@ -5856,7 +5935,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -5938,7 +6017,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -6089,7 +6168,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -6146,7 +6225,124 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_33
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_select
+              version: 2.0.0
+              bap_id: credit-protocol.becknprotocol.io
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: '1'
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    tags:
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
+                        display: true
+                    xinput:
+                      form_response:
+                        status: CONSENT_CREATED
+                        submission_id: 242ea230-2b57-4126-bd21-5929325de465
+                      required: true
+      - summary: Approval of consent request
+        api: select
+        details:
+          - description: >-
+              The BAP approves the consent request and sends the loan product,
+              the loan provider, and the customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_30
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: select
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://credit-protocol-network.becknprotocol.io/
+              bap_id: credit-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.icicibank.io
+              bpp_uri: https://bpp.credit.icicibank.io
+            message:
+              order:
+                provider:
+                  id: '1'
+                items:
+                  - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+                    xinput:
+                      form_response:
+                        status: CONSENT_APPROVED
+                        submission_id: 242ea230-2b57-4126-bd21-5929325de465
+      - summary: >-
+          Returns the consent request with additional details about the loan
+          product
+        api: on_select
+        details:
+          - description: >-
+              The Lender Platform updates the consent request, and an XInput
+              form may expect other details pertaining to the borrower's
+              business like Tax ID. Company registration address, Ownership
+              Details etc, depending on the type of loan.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -6227,6 +6423,15 @@ x-flows:
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
                             value: https://icicibank.com/loan/tnc.html
+                        display: true
+                      - descriptor:
+                          code: CONSENT_INFO
+                          name: Consent Information
+                        list:
+                          - descriptor:
+                              code: CONSENT_HANDLER
+                              name: Consent Handler
+                            value: 50635a60-7d85-441a-85f4-86f734ca4e4c
                         display: true
                     xinput:
                       head:
@@ -6315,7 +6520,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -6370,7 +6575,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -7136,7 +7341,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -7631,7 +7836,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -7732,7 +7937,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -8223,7 +8428,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -8533,7 +8738,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_34
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -8983,7 +9188,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_35
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -9432,7 +9637,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_37
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -9646,7 +9851,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
         example:
-          value: &ref_36
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -10094,12 +10299,12 @@ x-flows:
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     references: if any
     steps:
-      - summary: The provider confirms the personal loan order.
+      - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
           - description: >-
-              The provider platform confirms the personal loan order and
-              provides the final confirmation details.
+              The lender platform confirms the personal loan order and provides
+              the final confirmation details.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -11223,12 +11428,12 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://icicibank.com/loan/tnc.html
-      - summary: The consumer seeks the most recent loan status update.
+      - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
           - description: >-
-              The consumer platform requests the provider platform to provide
-              the latest status of the personal loan application.
+              The borrower platform requests the lender platform to provide the
+              latest status of the personal loan application.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -11243,12 +11448,13 @@ x-flows:
         reference: if any
         example:
           value: *ref_10
-      - summary: The provider shares the latest loan status with the consumer.
+      - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
           - description: >-
-              The provider platform updates the consumer with the most recent
-              status of the personal loan application.
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -13342,12 +13548,12 @@ x-flows:
     references: if any
     steps:
       - summary: >-
-          The provider offers the required form for the chosen personal loan
+          The lender sends available loan offers for the chosen personal loan
           service.
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information and the
+              The lender platform responds with detailed information and the
               necessary application form for the selected personal loan service.
             mermaid: |-
               sequenceDiagram
@@ -13367,11 +13573,11 @@ x-flows:
         reference: if any
         example:
           value: *ref_13
-      - summary: Consumer platform fetches the Loan amount form
+      - summary: Borrower fetches the loan amount form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the Loan amount form from the Provider
+              Borrower platform fetches the loan amount form from the lender
               platform using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
@@ -13391,11 +13597,11 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer chooses the personal loan service.
+      - summary: The borrower chooses the personal loan service.
         api: select
         details:
           - description: >-
-              The consumer selects the specific personal loan service they are
+              The borrower selects the specific personal loan service they are
               interested in.
             mermaid: |-
               sequenceDiagram
@@ -13416,13 +13622,13 @@ x-flows:
         example:
           value: *ref_14
       - summary: >-
-          The provider offers the required form for the chosen personal loan
+          The lender sends available loan offers for the chosen personal loan
           service.
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information for the
-              selected health insurance service.
+              The lender platform responds with detailed information and the
+              necessary application form for the selected personal loan service.
             mermaid: |-
               sequenceDiagram
                 participant Borrower Platform (BAP)
@@ -13439,11 +13645,11 @@ x-flows:
         reference: if any
         example:
           value: *ref_15
-      - summary: Get PAN deatails form.
+      - summary: Borrower get PAN deatails form from lender.
         api: form
         details:
           - description: >-
-              Consumer platform fetches the PAN Details form from the Provider
+              Borrower platform fetches the PAN details form from the lender
               platform using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
@@ -13461,14 +13667,12 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>eKYC</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/ekyc\">\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: >-
-          Consumer platform seeks the most recent health insurance status
-          update(Form Status).
+      - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
           - description: >-
-              Consumer platform fetches the status of PED form by sending the
-              form id.
+              The borrower platform requests the lender platform to provide the
+              latest status of the personal loan application.
             mermaid: |-
               sequenceDiagram
                 participant Borrower Platform (BAP)
@@ -13483,12 +13687,13 @@ x-flows:
         reference: if any
         example:
           value: *ref_10
-      - summary: >-
-          Provider platform returns the health insurance status update(for Form
-          Status).
+      - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
-          - description: Provider platform returns the latest status of form.
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
             mermaid: |-
               sequenceDiagram
                 participant Borrower Platform (BAP)
@@ -13529,12 +13734,12 @@ x-flows:
     references: if any
     steps:
       - summary: >-
-          The provider offers the required form for the chosen personal loan
+          The lender sends available loan offers for the chosen personal loan
           service.
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information and the
+              The lender platform responds with detailed information and the
               necessary application form for the selected personal loan service.
             mermaid: |-
               sequenceDiagram
@@ -13550,7 +13755,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID 
                 Lender Platform(BPP)->> Borrower Platform (BAP): on_status
-                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK   
         reference: if any
         example:
           value:
@@ -13672,11 +13877,11 @@ x-flows:
                       price:
                         value: '1800'
                         currency: INR
-      - summary: Consumer platform fetches the EKYC form
+      - summary: Borrower platform fetches the EKYC form
         api: form
         details:
           - description: >-
-              Consumer platform fetches the EKYC Details form from the Provider
+              Borrower platform fetches the EKYC Details form from the lender
               platform using the link provided in the previous step
             mermaid: |-
               sequenceDiagram
@@ -13692,16 +13897,17 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID 
                 end
                 Lender Platform(BPP)->> Borrower Platform (BAP): on_status
-                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK    
         reference: if any
         example:
           value: This will redirected to different html page
-      - summary: Insurer provides the Buyer with latest update of form status .
+      - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
           - description: >-
-              Insurer provides the Buyer with latest update of form status from
-              unsolicited call
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
             mermaid: |-
               sequenceDiagram
                 participant Borrower Platform (BAP)
@@ -13823,11 +14029,11 @@ x-flows:
                       price:
                         value: '1800'
                         currency: INR
-      - summary: Buyer platform request the latest form status updates.
+      - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
           - description: >-
-              Buyer platform request the latest form status updates with the
+              Borrower platform request the latest form status updates with the
               formID
             mermaid: |-
               sequenceDiagram
@@ -13844,12 +14050,13 @@ x-flows:
         reference: if any
         example:
           value: *ref_10
-      - summary: >-
-          Insurer provides the Buyer with latest update of form status(Form
-          Processing).
+      - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
-          - description: Insurer provides the Buyer with latest update of the form status
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -13969,11 +14176,11 @@ x-flows:
                       price:
                         value: '1800'
                         currency: INR
-      - summary: Buyer platform request the latest form status updates.
+      - summary: Borrower platform request the latest form status updates.
         api: status
         details:
           - description: >-
-              Buyer platform request the latest form status updates with the
+              Borrower platform request the latest form status updates with the
               formID
             mermaid: |-
               sequenceDiagram
@@ -13991,12 +14198,13 @@ x-flows:
         reference: if any
         example:
           value: *ref_10
-      - summary: >-
-          Insurer provides the Buyer with latest update of form status(Form
-          Completed) .
+      - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
-          - description: Insurer provides the Buyer with latest update of the form status
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -14116,13 +14324,12 @@ x-flows:
                       price:
                         value: '1800'
                         currency: INR
-      - summary: The consumer platform initiates the health insurace request.
+      - summary: The borrower initiates the personal loan request by filling the form
         api: init
         details:
           - description: >-
-              Consumer platform initiates purchase of a specific health
-              insurance plan that suits their customer needs and links the EKYC
-              submission details with it.
+              The borrower platform initiates the personal loan request by
+              filling the form such as KYC detals, bank details and e-madate.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -14162,6 +14369,9 @@ x-examples:
           - summary: select-request-set-loan-amount
             description: TBD
             value: *ref_14
+          - summary: select-request-set-consent-approved
+            description: TBD
+            value: *ref_21
       on_select:
         examples:
           - summary: on_select-request-financial-info-form
@@ -14170,6 +14380,9 @@ x-examples:
           - summary: on_select-request-with-kyc-form
             description: TBD
             value: *ref_15
+          - summary: on_select-request-consent-created
+            description: TBD
+            value: *ref_22
       init:
         examples:
           - summary: init
@@ -14177,20 +14390,20 @@ x-examples:
             value: *ref_17
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_21
+            value: *ref_23
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_22
+            value: *ref_24
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_22
+            value: *ref_24
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_23
+            value: *ref_25
       on_confirm:
         examples:
           - summary: on_confirm
@@ -15583,20 +15796,20 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_24
+            value: *ref_26
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_25
+            value: *ref_27
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_26
+            value: *ref_28
           - summary: select-request-employment-info
             description: TBD
-            value: *ref_27
+            value: *ref_29
           - summary: select-request-financial-info
             description: TBD
             value:
@@ -15627,11 +15840,14 @@ x-examples:
                         form_response:
                           status: SUCCESS
                           submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+          - summary: select-request-consent-approved
+            description: TBD
+            value: *ref_30
       on_select:
         examples:
           - summary: on_select-request-employment-details-form
             description: TBD
-            value: *ref_28
+            value: *ref_31
           - summary: on_select-request-financial-info-form
             description: TBD
             value:
@@ -15726,28 +15942,31 @@ x-examples:
                         required: true
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_29
+            value: *ref_32
+          - summary: on_select-request-with-consent-created
+            description: TBD
+            value: *ref_33
       init:
         examples:
           - summary: init
             description: TBD
-            value: *ref_30
+            value: *ref_34
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_31
+            value: *ref_35
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_32
+            value: *ref_36
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_32
+            value: *ref_36
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_33
+            value: *ref_37
       on_confirm:
         examples:
           - summary: on_confirm
@@ -16221,16 +16440,16 @@ x-examples:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_34
+            value: *ref_38
           - summary: on_status-request-after-installment
             description: TBD
-            value: *ref_35
+            value: *ref_39
           - summary: on_status-request-full-repayment
             description: TBD
-            value: *ref_36
+            value: *ref_40
           - summary: on_status-request-late-repayment-installment
             description: TBD
-            value: *ref_37
+            value: *ref_41
       support:
         examples:
           - summary: support
@@ -16294,7 +16513,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_40
+                code: &ref_44
                   required: mandatory
                   description: Physical description of code value for something
                   reference: if any
@@ -16303,19 +16522,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_38
+              name: &ref_42
                 required: mandatory
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Personal loan
             providers:
-              id: &ref_39
+              id: &ref_43
                 required: mandatory
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_41
-                name: *ref_38
+              descriptor: &ref_45
+                name: *ref_42
                 short_desc:
                   required: optional
                   description: Short description of value for something.
@@ -16334,13 +16553,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
               categories:
-                id: *ref_39
-                descriptor: &ref_53
-                  code: *ref_40
-                  name: *ref_38
+                id: *ref_43
+                descriptor: &ref_57
+                  code: *ref_44
+                  name: *ref_42
               items:
-                id: *ref_39
-                descriptor: *ref_41
+                id: *ref_43
+                descriptor: *ref_45
                 category_ids:
                   required: mandatory
                   description: Categories this item can be listed under
@@ -16349,8 +16568,8 @@ x-attributes:
                 xinput:
                   head:
                     descriptor:
-                      name: *ref_38
-                    index: &ref_42
+                      name: *ref_42
+                    index: &ref_46
                       min:
                         required: optional
                         description: Minimum index value of form
@@ -16367,23 +16586,23 @@ x-attributes:
                         reference: if any
                         usage: 1
                   form:
-                    id: *ref_39
-                    url: &ref_43
+                    id: *ref_43
+                    url: &ref_47
                       required: mandatory
                       description: Unique human readable ID.
                       reference: if any
                       usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-                    mime_type: &ref_44
+                    mime_type: &ref_48
                       required: mandatory
                       description: Describes the mime of the document.
                       reference: if any
                       usage: text/html
-                    resubmit: &ref_45
+                    resubmit: &ref_49
                       required: mandatory
                       description: Describes a form can be re-submited again or not.
                       reference: if any
                       usage: false
-                    multiple_sumbissions: &ref_46
+                    multiple_sumbissions: &ref_50
                       required: mandatory
                       description: Describes a form supports multiple sumbissions or not.
                       reference: if any
@@ -16392,11 +16611,11 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_39
+              id: *ref_43
               items:
-                id: *ref_39
+                id: *ref_43
                 xinput:
-                  form_response: &ref_47
+                  form_response: &ref_51
                     status:
                       required: mandatory
                       description: Describes the status of form
@@ -16411,40 +16630,40 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
             items:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
               xinput:
                 head:
                   descriptor:
-                    name: *ref_38
-                  index: *ref_42
-                form: &ref_62
-                  url: *ref_43
-                  mime_type: *ref_44
-                  resubmit: *ref_45
-                  multiple_sumbissions: *ref_46
+                    name: *ref_42
+                  index: *ref_46
+                form: &ref_66
+                  url: *ref_47
+                  mime_type: *ref_48
+                  resubmit: *ref_49
+                  multiple_sumbissions: *ref_50
       init:
         message:
           order:
             provider:
-              id: *ref_39
+              id: *ref_43
               items:
-                id: *ref_39
+                id: *ref_43
                 xinput:
-                  form_response: *ref_47
+                  form_response: *ref_51
       on_init:
         message:
           order:
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
             items:
-              id: *ref_39
-              descriptor: *ref_41
-              price: &ref_48
+              id: *ref_43
+              descriptor: *ref_45
+              price: &ref_52
                 value:
                   required: optional
                   description: Describes a numerical value in decimal form111
@@ -16456,16 +16675,16 @@ x-attributes:
                   reference: if any
                   usage: IND
               xinput:
-                form_response: *ref_47
-            quote: &ref_49
-              id: *ref_39
+                form_response: *ref_51
+            quote: &ref_53
+              id: *ref_43
               breakup:
                 title:
                   required: mandatory
                   description: the breakup title of the total quoted price
                   reference: if any
                   usage: Amount
-            fulfillments: &ref_50
+            fulfillments: &ref_54
               customer:
                 contact:
                   phone:
@@ -16484,7 +16703,7 @@ x-attributes:
                     description: Describes a person name as any individual
                     reference: if any
                     usage: John
-            payments: &ref_51
+            payments: &ref_55
               type:
                 required: mandatory
                 description: type of the payment
@@ -16523,7 +16742,7 @@ x-attributes:
                     description: This indicates end of a range
                     reference: if any
                     usage: '2021-03-23T10:00:40.065Z'
-            cancellation_terms: &ref_52
+            cancellation_terms: &ref_56
               cancellation_fee:
                 percentage:
                   required: mandatory
@@ -16549,66 +16768,66 @@ x-attributes:
         message:
           order:
             provider:
-              id: *ref_39
+              id: *ref_43
             items:
-              id: *ref_39
+              id: *ref_43
               xinput:
-                form_response: *ref_47
+                form_response: *ref_51
       on_confirm:
         message:
           order:
-            id: *ref_39
+            id: *ref_43
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
             items:
-              id: *ref_39
-              descriptor: *ref_41
-              price: *ref_48
-            quote: *ref_49
-            fulfillments: *ref_50
-            payments: *ref_51
-            cancellation_terms: *ref_52
+              id: *ref_43
+              descriptor: *ref_45
+              price: *ref_52
+            quote: *ref_53
+            fulfillments: *ref_54
+            payments: *ref_55
+            cancellation_terms: *ref_56
       status:
         message:
-          order_id: *ref_39
+          order_id: *ref_43
       on_status:
         message:
           order:
-            id: *ref_39
+            id: *ref_43
             provider:
-              id: *ref_39
-              descriptor: *ref_41
+              id: *ref_43
+              descriptor: *ref_45
               items:
-                id: *ref_39
-                descriptor: *ref_53
-                price: *ref_48
-            quote: *ref_49
-            fulfillments: *ref_50
+                id: *ref_43
+                descriptor: *ref_57
+                price: *ref_52
+            quote: *ref_53
+            fulfillments: *ref_54
       support:
         message:
           support:
-            ref_id: &ref_54
+            ref_id: &ref_58
               required: mandatory
               description: Describes ref_id for support
               reference: if any
               usage: 25d26510-e46e-4a3f-968e-85d1401077f2
-            phone: &ref_55
+            phone: &ref_59
               required: mandatory
               description: Describes the phone information of an entity
               reference: if any
               usage: +91-9897867564
-            email: &ref_56
+            email: &ref_60
               required: mandatory
               description: Email address of the contact
               reference: if any
               usage: john.doe@example.com
       on_support:
         message:
-          support: &ref_65
-            ref_id: *ref_54
-            phone: *ref_55
-            email: *ref_56
+          support: &ref_69
+            ref_id: *ref_58
+            phone: *ref_59
+            email: *ref_60
             url:
               required: mandatory
               description: The URL of the file
@@ -16622,7 +16841,7 @@ x-attributes:
           intent:
             category:
               descriptor:
-                code: &ref_59
+                code: &ref_63
                   required: mandatory
                   description: Physical description of code value for something
                   reference: if any
@@ -16631,19 +16850,19 @@ x-attributes:
         message:
           catalog:
             descriptor:
-              name: &ref_57
+              name: &ref_61
                 required: mandatory
                 description: Physical description of name value for something.
                 reference: if any
                 usage: Invoice based loan
             providers:
-              id: &ref_58
+              id: &ref_62
                 required: mandatory
                 description: Unique human readable ID.
                 reference: if any
                 usage: df5a0d61-f3f5-46ac-ad1d-21b2b60b18ab
-              descriptor: &ref_61
-                name: *ref_57
+              descriptor: &ref_65
+                name: *ref_61
                 short_desc:
                   required: optional
                   description: Short description of value for something.
@@ -16662,13 +16881,13 @@ x-attributes:
                     usage: >-
                       https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
               categories:
-                id: *ref_58
-                descriptor: &ref_60
-                  code: *ref_59
-                  name: *ref_57
+                id: *ref_62
+                descriptor: &ref_64
+                  code: *ref_63
+                  name: *ref_61
               items:
-                id: *ref_58
-                descriptor: *ref_60
+                id: *ref_62
+                descriptor: *ref_64
                 category_ids:
                   required: mandatory
                   description: Categories this item can be listed under
@@ -16677,74 +16896,74 @@ x-attributes:
                 xinput:
                   head:
                     descriptor:
-                      name: *ref_57
-                    index: *ref_42
+                      name: *ref_61
+                    index: *ref_46
                   form:
-                    url: *ref_43
-                    mime_type: *ref_44
-                    resubmit: *ref_45
-                    multiple_sumbissions: *ref_46
-                    id: *ref_58
+                    url: *ref_47
+                    mime_type: *ref_48
+                    resubmit: *ref_49
+                    multiple_sumbissions: *ref_50
+                    id: *ref_62
       select:
         message:
           order:
             provider:
-              id: *ref_58
+              id: *ref_62
               items:
-                id: *ref_58
+                id: *ref_62
                 xinput:
-                  form_response: *ref_47
+                  form_response: *ref_51
       on_select:
         message:
           order:
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
+              id: *ref_62
+              descriptor: *ref_64
               xinput:
                 head:
                   descriptor:
-                    name: *ref_57
-                  index: *ref_42
-                form: *ref_62
+                    name: *ref_61
+                  index: *ref_46
+                form: *ref_66
       init:
         message:
           order:
             provider:
-              id: *ref_58
+              id: *ref_62
               items:
-                id: *ref_58
+                id: *ref_62
                 xinput:
-                  form_response: *ref_47
+                  form_response: *ref_51
       on_init:
         message:
           order:
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
-              price: *ref_48
+              id: *ref_62
+              descriptor: *ref_64
+              price: *ref_52
               xinput:
                 head:
                   descriptor:
-                    name: *ref_57
-                  index: *ref_42
-                form: *ref_62
-            quote: &ref_63
-              id: *ref_58
-              price: *ref_48
+                    name: *ref_61
+                  index: *ref_46
+                form: *ref_66
+            quote: &ref_67
+              id: *ref_62
+              price: *ref_52
               breakup:
                 title:
                   required: mandatory
                   description: the breakup title of the total quoted price
                   reference: if any
                   usage: Amount
-                price: *ref_48
-            fulfillments: &ref_64
+                price: *ref_52
+            fulfillments: &ref_68
               customer:
                 organization:
                   address:
@@ -16780,56 +16999,56 @@ x-attributes:
                       description: Email address of the contact
                       reference: if any
                       usage: alpha.manufacturing@gmail.com
-            payments: *ref_51
-            cancellation_terms: *ref_52
+            payments: *ref_55
+            cancellation_terms: *ref_56
       confirm:
         message:
           order:
             provider:
-              id: *ref_58
+              id: *ref_62
             items:
-              id: *ref_58
+              id: *ref_62
               xinput:
-                form_response: *ref_47
+                form_response: *ref_51
       on_confirm:
         message:
           order:
-            id: *ref_58
+            id: *ref_62
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
-              price: *ref_48
-            quote: *ref_63
-            fulfillments: *ref_64
-            payments: *ref_51
-            cancellation_terms: *ref_52
+              id: *ref_62
+              descriptor: *ref_64
+              price: *ref_52
+            quote: *ref_67
+            fulfillments: *ref_68
+            payments: *ref_55
+            cancellation_terms: *ref_56
       status:
         message:
-          order_id: *ref_58
+          order_id: *ref_62
       on_status:
         message:
           order:
-            id: *ref_58
+            id: *ref_62
             provider:
-              id: *ref_58
-              descriptor: *ref_61
+              id: *ref_62
+              descriptor: *ref_65
             items:
-              id: *ref_58
-              descriptor: *ref_60
-              price: *ref_48
-            quote: *ref_63
-            fulfillments: *ref_64
-            payments: *ref_51
-            cancellation_terms: *ref_52
+              id: *ref_62
+              descriptor: *ref_64
+              price: *ref_52
+            quote: *ref_67
+            fulfillments: *ref_68
+            payments: *ref_55
+            cancellation_terms: *ref_56
       support:
         message:
           support:
-            ref_id: *ref_54
-            phone: *ref_55
-            email: *ref_56
+            ref_id: *ref_58
+            phone: *ref_59
+            email: *ref_60
       on_support:
         message:
           support: *ref_65
