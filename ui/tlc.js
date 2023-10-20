@@ -17,7 +17,7 @@ function addTlcSets(option) {
   object.forEach(function (key) {
     var table = document.getElementById("tlcset");
     const newRow = document.createElement("tr");
-    newRow.classList.add("test");
+    newRow.classList.add("tlc-row");
 
     for (let i = 0; i < 6; i++) {
       const cell = document.createElement("td");

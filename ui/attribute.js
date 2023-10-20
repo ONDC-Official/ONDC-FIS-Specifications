@@ -8,6 +8,7 @@ function updateAttribute() {
 }
 
 function updateSetsAttribute() {
+  console.log('1')
   var attributesDropDown = document.getElementById("attribute-dropdown");
   var example_set = document.getElementById("attribute-sets-dropdown");
   document.querySelectorAll(".test").forEach((div) => div.remove());
