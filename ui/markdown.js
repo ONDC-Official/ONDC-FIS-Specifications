@@ -15,21 +15,22 @@ async function fetchMarkdown(branchName) {
         setsDropDown.innerHTML = "";
         filteredData?.forEach(function (item) {
           var option = document.createElement("option");
-          option.text = item?.name;
+          const fileName = item?.name?.split('.md')[0];
+          option.text = fileName;
           setsDropDown.add(option);
         });
-        renderMarkdown(filteredData[0]?.name);
+        renderMarkdown(branchName,filteredData[0]?.name?.split('.md')[0]);
       }
     }
   } catch (error) {
     console.log("Error fetching contract", error?.message || error);
-    document.getElementById("markdown-container").innerHTML = `Error while fetching files with branch ${branchName}`;
+    document.getElementById("markdown-container").innerHTML = `Error while fetching files for branch ${branchName}`;
   }
 }
 
-function renderMarkdown(file) {
+function renderMarkdown(branchName,file) {
   fetch(
-    `https://raw.githubusercontent.com/ONDC-Official/ONDC-FIS-Specifications/feat/markdown/api/components/docs/${file}`
+    `https://raw.githubusercontent.com/ONDC-Official/ONDC-FIS-Specifications/${branchName}/api/components/docs/${file}.md`
   )
     .then((response) => response.text())
     .then((text) => {
@@ -40,14 +41,6 @@ function renderMarkdown(file) {
 
 function updateFeature() {
   var example_set = document.getElementById("feature-sets-dropdown");
-  renderMarkdown(example_set.value);
-}
-
-function upadteContract() {
   const selectedOption = document.getElementById("contract-dropdown")?.value;
-  fetchMarkdown(selectedOption);
+  renderMarkdown(selectedOption,example_set.value);
 }
-
-window.onload = function () {
-  upadteContract();
-};

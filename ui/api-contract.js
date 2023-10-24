@@ -73,6 +73,7 @@ async function loadContracts() {
 function upadteContract() {
   const selectedOption = document.getElementById("contract-dropdown")?.value;
   readBuildFile(selectedOption);
+  fetchMarkdown(selectedOption);
 }
 
 window.onload = function () {
