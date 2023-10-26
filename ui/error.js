@@ -1,7 +1,6 @@
 var errors;
 
 function loadErrors(data) {
-  console.log('loadErrors')
   var elements = document.getElementsByClassName("error-wrapper");
   while (elements.length > 0) {
     elements[0].parentNode.removeChild(elements[0]);
@@ -12,7 +11,6 @@ function loadErrors(data) {
 }
 
 function addErrorSets(option) {
-  console.log('addErrorSets')
   const object = errors[option]
   object.forEach(function (key) {
     var table = document.getElementById("errorset");
