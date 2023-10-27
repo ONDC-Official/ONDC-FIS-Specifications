@@ -11,6 +11,10 @@ function loadErrors(data) {
 }
 
 function addErrorSets(option) {
+  var elements = document.getElementsByClassName("error-row");
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
   const object = errors[option]
   object.forEach(function (key) {
     var table = document.getElementById("errorset");

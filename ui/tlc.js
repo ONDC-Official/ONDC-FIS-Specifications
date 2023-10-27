@@ -11,6 +11,11 @@ function loadTlc(data) {
 }
 
 function addTlcSets(option) {
+
+  const elements= document.getElementById("tlcset").querySelectorAll('.tlc-row')
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
   const object = tlc[option];
   let previousValues = {};
   const keys = ['Term', 'Api', 'Attribute', 'Owner', 'Value', 'Description'];
