@@ -31,7 +31,7 @@ async function readBuildFile(branchName) {
     // }
     let splitedText = atob(formattedResponse?.content);
     build_spec = JSON.parse(getStringAfterEquals(splitedText));
-    onFirstLoad(build_spec);
+        onFirstLoad(build_spec);
   } catch (error) {
     console.log("Error fetching contract", error?.message || error);
     //alert('Something went wrong, Please try again later')
@@ -73,7 +73,6 @@ async function loadContracts() {
 function upadteContract() {
   const selectedOption = document.getElementById("contract-dropdown")?.value;
   readBuildFile(selectedOption);
-  fetchMarkdown(selectedOption);
 }
 
 window.onload = function () {
