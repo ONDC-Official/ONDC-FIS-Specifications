@@ -25,12 +25,10 @@ function onFirstLoad(build_spec) {
               loadAttributes(data[xProperty]);
               break;
             case "x-errorcodes":
-              shouldDisplay(data[xProperty].code,"errorcodes-navbar")
-              loadErrors(data[xProperty]);
+              if(shouldDisplay(data[xProperty].code,"errorcodes-navbar"))loadErrors(data[xProperty]);
               break;
             case "x-tlc":
-              shouldDisplay(data[xProperty].code,"tlc-nav")
-              loadTlc(data[xProperty]);
+              if(shouldDisplay(data[xProperty].code,"tlc-nav"))loadTlc(data[xProperty]);
               break;
             case "x-featureui":
               if(shouldDisplay(data[xProperty].filenames,"feature-ui-nav"))renderDropdownMarkdown(branch_name,data[xProperty].filenames)
@@ -50,6 +48,7 @@ function onFirstLoad(build_spec) {
               
               case "x-tlc":
                 shouldDisplay([],"tlc-nav")
+                break;
             }
           console.log(`${xProperty} is not present in the build_spec.`);
         }
