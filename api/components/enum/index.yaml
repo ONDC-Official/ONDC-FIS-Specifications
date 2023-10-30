@@ -1,10 +1,10 @@
 search:
   context: &context
     $ref: "./context.yaml"
-  # message:
-  #   intent:
-      # category: &category
-      #     $ref: './category.yaml'
+  message:
+    intent:
+      category: &category
+          $ref: './category.yaml'
 on_search:
   context: *context
   message:
@@ -12,33 +12,35 @@ on_search:
       providers:
         items: &item
           $ref: "./item.yaml"
-        fulfillments: &fulfillment
-          $ref: "./fulfillment.yaml"
-        payments: &payment
-          $ref: "./payment.yaml"
+        # category: *category
 select:
   context: *context
   message:
     order: &order
       items: *item
-      fulfillments: *fulfillment
-      payments: *payment
 on_select:
   context: *context
   message:
     order: *order
 init:
   context: *context
-  message:
-    order: *order
+  # message:
+  #   order: 
+      # payment:
+      #   $ref: "./payment.yaml#/collected_by"
 on_init:
   context: *context
   message:
-    order: *order
+    order: &order
+      items: *item
+      # payment: &payment
+      #   $ref: "./payment.yaml"
+      fulfillments: &fulfillment
+        $ref: "./Fulfillment.yaml"
+      cancellation_terms: &cancellation_terms
+        $ref: "./cancellation_terms.yaml"
 confirm:
   context: *context
-  message:
-    order: *order
 on_confirm:
   context: *context
   message:
@@ -49,9 +51,15 @@ on_status:
   context: *context
   message:
     order: *order
-cancel:
+update:
   context: *context
-on_cancel:
+  message:
+    order: &order
+      # payment: &payment
+      #   $ref: "./payment.yaml"
+      fulfillments: &fulfillment
+        $ref: "./fulfillment.yaml"
+on_update:
   context: *context
   message:
     order: *order
