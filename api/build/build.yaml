@@ -2749,7 +2749,7 @@ x-enum:
           reference: <PR/Issue/Discussion Links md format text>
     message:
       intent:
-        category:
+        category: &ref_1
           descriptor:
             code:
               - code: PERSONAL_LOAN
@@ -2771,7 +2771,7 @@ x-enum:
     message:
       catalog:
         providers:
-          items: &ref_1
+          items: &ref_2
             descriptor:
               code:
                 - code: PERSONAL_LOAN
@@ -2788,22 +2788,67 @@ x-enum:
                     collateral. Borrower must enable GST API access in the GSTN
                     portal is a prerequisite for applying for an unsecured loan
                   reference: <PR/Issue/Discussion Links md format text
+          categories: *ref_1
   select:
     context: *ref_0
     message:
-      order: &ref_2
-        items: *ref_1
+      order: &ref_3
+        items: *ref_2
   on_select:
     context: *ref_0
     message:
-      order: *ref_2
+      order: *ref_3
   init:
     context: *ref_0
+    message:
+      order:
+        payments:
+          collected_by: &ref_4
+            - code: BPP
+              description: When seller app is collecting the payment
+              reference: <PR/Issue/Discussion Links md format text
+            - code: BAP
+              description: When buyer app is collecting the payment
+              reference: <PR/Issue/Discussion Links md format text
   on_init:
     context: *ref_0
     message:
-      order: &ref_3
-        items: *ref_1
+      order: &ref_5
+        items: *ref_2
+        payments: &ref_6
+          type:
+            - code: ON-ORDER
+              description: Payment happens on order placement
+              reference: <PR/Issue/Discussion Links md format text
+            - code: ON-FULFILLMENT
+              description: Payment happens on completion of the service
+              reference: <PR/Issue/Discussion Links md format text
+            - code: POST-FULFILLMENT
+              description: Payment happens post completion of the service
+              reference: <PR/Issue/Discussion Links md format text
+          collected_by: *ref_4
+          status:
+            - code: PAID
+              description: >-
+                Reflects current status wheteher installment has been paid or
+                not
+              reference: <PR/Issue/Discussion Links md format text
+            - code: NOT-PAID
+              description: >-
+                Reflects current status wheteher installment has been paid or
+                not
+              reference: <PR/Issue/Discussion Links md format text
+            - code: FAILED
+              description: When the payment gets failed
+              reference: <PR/Issue/Discussion Links md format text
+            - code: OVERDUE
+              description: When the payment has not been paid and went to overdue state
+              reference: <PR/Issue/Discussion Links md format text
+            - code: DEFAULTED
+              description: >-
+                After certain duration of overdue payment, it eventually comes
+                to default state
+              reference: <PR/Issue/Discussion Links md format text
         fulfillments:
           state:
             descriptor:
@@ -2847,17 +2892,18 @@ x-enum:
   on_confirm:
     context: *ref_0
     message:
-      order: *ref_3
+      order: *ref_5
   status:
     context: *ref_0
   on_status:
     context: *ref_0
     message:
-      order: *ref_3
+      order: *ref_5
   update:
     context: *ref_0
     message:
-      order: &ref_4
+      order: &ref_7
+        payments: *ref_6
         fulfillments:
           state:
             descriptor:
@@ -2887,12 +2933,12 @@ x-enum:
   on_update:
     context: *ref_0
     message:
-      order: *ref_4
+      order: *ref_7
 x-tags:
   search:
     message:
       intent:
-        payment: &ref_6
+        payment: &ref_9
           tags:
             - code: BUYER_FINDER_FEES
               description: Describes the finder fees of the loan for buyer
@@ -2948,7 +2994,7 @@ x-tags:
                   Describes the general information of the loan like interest
                   rate, tenure, amount etc
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_5
+                list: &ref_8
                   - code: MIN_INTEREST_RATE
                     description: Minimum rate of interest for the loan
                     reference: <PR/Issue/Discussion Links md format text>
@@ -2973,7 +3019,7 @@ x-tags:
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_8
+              list: &ref_11
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -2997,14 +3043,14 @@ x-tags:
   on_select:
     message:
       order:
-        items: &ref_7
+        items: &ref_10
           tags:
             - code: GENERAL_INFO
               description: >-
                 Describes the general information of the loan like interest
                 rate, tenure, amount etc
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_5
+              list: *ref_8
             - code: LOAN_INFO
               description: >-
                 Describes the more specific information about loan like term,
@@ -3050,11 +3096,11 @@ x-tags:
   init:
     message:
       order:
-        payments: *ref_6
+        payments: *ref_9
   on_init:
     message:
       order:
-        items: *ref_7
+        items: *ref_10
         provider:
           tags:
             - code: CONTACT_INFO
@@ -3062,11 +3108,11 @@ x-tags:
                 Describes the contact info regarding Gro & customer support
                 details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_8
+              list: *ref_11
   on_confirm:
     message:
       order:
-        items: *ref_7
+        items: *ref_10
         provider:
           tags:
             - code: CONTACT_INFO
@@ -3074,15 +3120,15 @@ x-tags:
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_8
+              list: *ref_11
   on_status:
     message:
       order:
-        items: *ref_7
+        items: *ref_10
   on_update:
     message:
       order:
-        items: *ref_7
+        items: *ref_10
 x-flows:
   - summary: Personal Loan
     details:
@@ -3176,7 +3222,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_21
             context:
               domain: ONDC:FIS12
               location:
@@ -3250,7 +3296,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_22
             context:
               domain: ONDC:FIS12
               location:
@@ -3475,7 +3521,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -3527,7 +3573,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -3593,7 +3639,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -3642,7 +3688,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_16
             context:
               domain: ONDC:FIS12
               location:
@@ -3819,7 +3865,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_17
             context:
               domain: ONDC:FIS12
               location:
@@ -3873,7 +3919,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_18
             context:
               domain: ONDC:FIS12
               location:
@@ -4043,7 +4089,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_20
             context:
               domain: ONDC:FIS12
               location:
@@ -4608,7 +4654,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -4700,7 +4746,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -5171,7 +5217,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -5223,7 +5269,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_12
             context:
               domain: ONDC:FIS12
               location:
@@ -5451,7 +5497,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_13
             context:
               domain: ONDC:FIS12
               location:
@@ -5491,7 +5537,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_19
             context:
               domain: ONDC:FIS12
               location:
@@ -5766,7 +5812,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -5839,7 +5885,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -6063,7 +6109,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -6120,7 +6166,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -6186,7 +6232,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -6237,7 +6283,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -6415,7 +6461,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -6470,7 +6516,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -7215,7 +7261,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -7695,7 +7741,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -7787,7 +7833,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -8266,7 +8312,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -8321,7 +8367,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_14
             context:
               domain: ONDC:FIS12
               location:
@@ -8560,7 +8606,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_15
             context:
               domain: ONDC:FIS12
               location:
@@ -8609,7 +8655,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_38
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -8822,7 +8868,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_39
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -9033,7 +9079,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         example:
-          value: &ref_41
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -9250,7 +9296,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
         example:
-          value: &ref_40
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -9484,7 +9530,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_12
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -10279,7 +10325,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_13
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -10533,7 +10579,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_14
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -11050,7 +11096,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_12
+          value: *ref_15
       - summary: >-
           Lender provides the borrower with real-time updates on their invoice
           based loan after receiving the prepayment.
@@ -11312,7 +11358,7 @@ x-flows:
                 Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_16
       - summary: Borrower fetches the loan amount form
         api: form
         details:
@@ -11360,7 +11406,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_17
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -11384,7 +11430,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_18
       - summary: Borrower get PAN deatails form from lender.
         api: form
         details:
@@ -11426,7 +11472,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK         
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_13
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -11447,7 +11493,7 @@ x-flows:
                 end     
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_19
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -11789,7 +11835,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_13
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -11937,7 +11983,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_13
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -12085,7 +12131,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_20
 x-examples:
   personal-loan:
     summary: personal-loan
@@ -12095,60 +12141,60 @@ x-examples:
         examples:
           - summary: search for personal loan
             description: TBD
-            value: *ref_18
+            value: *ref_21
       on_search:
         examples:
           - summary: personal loan catalog
             description: TBD
-            value: *ref_19
+            value: *ref_22
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_20
+            value: *ref_23
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_14
+            value: *ref_17
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_21
+            value: *ref_24
       on_select:
         examples:
           - summary: on_select-request-financial-info-form
             description: TBD
-            value: *ref_13
+            value: *ref_16
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_15
+            value: *ref_18
           - summary: on_select-request-consent-created
             description: TBD
-            value: *ref_22
+            value: *ref_25
       init:
         examples:
           - summary: init
             description: TBD
-            value: *ref_17
+            value: *ref_20
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_23
+            value: *ref_26
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_24
+            value: *ref_27
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_24
+            value: *ref_27
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_25
+            value: *ref_28
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_9
+            value: *ref_12
       update:
         examples:
           - summary: update
@@ -12617,12 +12663,12 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_10
+            value: *ref_13
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_16
+            value: *ref_19
           - summary: on_status-request-full-repayment
             description: TBD
             value:
@@ -13066,20 +13112,20 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_26
+            value: *ref_29
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_27
+            value: *ref_30
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_28
+            value: *ref_31
           - summary: select-request-employment-info
             description: TBD
-            value: *ref_29
+            value: *ref_32
           - summary: select-request-financial-info
             description: TBD
             value:
@@ -13112,12 +13158,12 @@ x-examples:
                           submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
           - summary: select-request-consent-approved
             description: TBD
-            value: *ref_30
+            value: *ref_33
       on_select:
         examples:
           - summary: on_select-request-employment-details-form
             description: TBD
-            value: *ref_31
+            value: *ref_34
           - summary: on_select-request-financial-info-form
             description: TBD
             value:
@@ -13212,36 +13258,36 @@ x-examples:
                         required: true
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_32
+            value: *ref_35
           - summary: on_select-request-with-consent-created
             description: TBD
-            value: *ref_33
+            value: *ref_36
       init:
         examples:
           - summary: init
             description: TBD
-            value: *ref_34
+            value: *ref_37
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_35
+            value: *ref_38
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_36
+            value: *ref_39
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_36
+            value: *ref_39
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_37
+            value: *ref_40
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_11
+            value: *ref_14
       update:
         examples:
           - summary: update
@@ -13469,21 +13515,21 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_12
+            value: *ref_15
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_38
+            value: *ref_41
           - summary: on_status-request-after-installment
             description: TBD
-            value: *ref_39
+            value: *ref_42
           - summary: on_status-request-full-repayment
             description: TBD
-            value: *ref_40
+            value: *ref_43
           - summary: on_status-request-late-repayment-installment
             description: TBD
-            value: *ref_41
+            value: *ref_44
       support:
         examples:
           - summary: support
@@ -15640,322 +15686,3 @@ x-attributes:
               description: Url of support helpdesk
               owner: BPP
               type: string
-x-errorcodes:
-  code:
-    - Event: Application submittion failure
-      Description: Buyer application could not submit the loan application to the lender/s
-      From: BAP
-      code: 80101
-    - Event: AA consent creation failure
-      Description: Lender could not create data fetch consent on account agreegator
-      From: BPP
-      code: 80201
-    - Event: AA data pull failure
-      Description: Lender could not retrieve bank statement from the AA
-      From: BPP
-      code: 80202
-    - Event: Offer return failure
-      Description: Lenders could not return loan offers to the buyer app
-      From: BPP
-      code: 80203
-    - Event: Offer acceptance failure
-      Description: 'Buyer application could not submit user selected offer to the lender '
-      From: BAP
-      code: 80102
-    - Event: Individual KYC failure
-      Description: Entity KYC failed on lender's platform - no retry
-      From: BPP
-      code: 80204
-    - Event: Entity KYC failure
-      Description: Entity KYC failures where retry should be performed
-      From: BPP
-      code: 80205
-    - Event: Disbursment account sharing failure
-      Description: Buyer app could not submit the disbursment account details
-      From: BAP
-      code: 80103
-    - Event: Disbursment account verification failure
-      Description: Lender could not verify the disbursment account details
-      From: BPP
-      code: 80206
-    - Event: Repayment setup failure
-      Description: Repayment setup failed on lender's platform
-      From: BPP
-      code: 80207
-    - Event: Loan agreement sharing failure
-      Description: Lender could not share the loan agreement
-      From: BPP
-      code: 80208
-    - Event: Loan agreement signing failure - Aadhar eSign
-      Description: Aadhar eSign failed while signing the loan agreement
-      From: BPP
-      code: 80209
-    - Event: Monitoring consent creation failure
-      Description: Lender could not create account monitoring consent
-      From: BPP
-      code: 80210
-    - Event: Monitoring consent approval failure
-      Description: Lender could not retrieve account monitoring consent
-      From: BPP
-      code: 80211
-    - Event: Loan disbursal failure
-      Description: Lender could not disburse the loan amount
-      From: BAP
-      code: 80104
-    - Event: Payment initiation failure
-      Description: >-
-        Payment initiation failed on the buyer app (lender couldn't return the
-        payment link for ex)
-      From: BPP
-      code: 80212
-    - Event: Payment completion failure
-      Description: Payment completion failed on the lender's platform
-      From: BPP
-      code: 80213
-    - Event: 'Timeout: The request or operation timed out.'
-      Description: Response from seller app outside of TTL or vice versa
-      From: BPP
-      code: 80214
-    - Event: 'General Error: An unspecified error occurred.'
-      Description: 'General '
-      From: BPP/BAP
-      code: 80215
-    - Event: 'Invalid Input: User input is not valid.'
-      Description: Incorrect PAN etc.
-      From: BPP
-      code: 80216
-    - Event: 'Missing Data: Required data is missing.'
-      Description: Form submission without mandatory details
-      From: BPP/BAP
-      code: 80217
-    - Event: 'Data Validation Failed: Input data failed validation checks.'
-      From: BPP
-      code: 80218
-    - Event: 'Service Unavailable: The service is temporarily unavailable.'
-      Description: Form hosted by the seller is unavailable
-      From: BPP
-      code: 80219
-    - Event: 'File Not Found: The requested file does not exist.'
-      Description: Invoice based loans has GST reports to be uploaded
-      From: BPP
-      code: 80220
-    - Event: '3001 - File Upload Failed: An error occurred while uploading a file.'
-      Description: Invoice based loans has GST reports to be uploaded
-      From: BAP
-      code: 80105
-    - Event: 'File Format Not Supported: The uploaded file format is not supported.'
-      Description: Invoice based loans has GST reports to be uploaded
-      From: BPP
-      code: 80221
-    - Event: 'File Size Exceeded: The uploaded file exceeds size limits.'
-      Description: Invoice based loans has GST reports to be uploaded
-      From: BPP
-      code: 80222
-    - Event: API Rate Limit Exceeded
-      Description: The rate limit for an external API has been exceeded.
-      From: BPP
-      code: 80223
-x-tlc:
-  code:
-    - Term: Buyer App Fee
-      Api: |-
-        search
-        on_search
-      Attribute: BUYER_FINDER_FEE_TYPE
-      Owner: Buyer App
-      Value: '"amount", "percent- annualized"'
-      Description: >-
-        If set to "amount" it means Buyer App's fee is a flat amount in INR.
-
-        If set to "percent- annualized" it means the Buyer App's fee is set as a
-        percentage of the Total Loan Disbursed for a 12-month tenure loan.
-
-
-        For example: Assume the Buyer App Fees' value is 5%
-
-
-        For a 12 month tenure loan the 'effective fees' paid by Seller App to
-        the Buyer App would be 5% * (12 months/ 12 months) i.e 5%
-
-
-        For 6 month tenure loan the 'effective fees' paid by Seller App to the
-        Buyer App would be 5% * (6 months/ 12 months) i.e 2.5%
-
-
-        For 18 month tenure loan the 'effective fees' paid by Seller App to the
-        Buyer App would be 5% * (18 months/ 12 months) i.e 7.5%
-    - Attribute: BUYER_FINDER_FEE_VALUE
-      Owner: Buyer App
-      Value: Positive Decimal Number
-      Description: >-
-        Quantum of the Buyer App's Fee. To be interpreted in connection with the
-        "type" field mentioned above.
-
-        For example, let's assume the value is set at "5". If the "type" is set
-        to "Amount", that means the Buyer App Fee is INR 5. If the "type" is set
-        to "percent - annualized", it means the Buyer App Fee is 5% of the Total
-        Order Value for a 12- month tenure loan.
-    - Term: Payment Collector
-      Api: |-
-        search
-        on_search
-        init
-        on_init
-      Attribute: payment.collected_by
-      Owner: Either
-      Value: >-
-        If set to "BAP", it means that the Buyer App will collect processing
-        fees if any from the Buyer. If set to "BPP", it means that the Seller
-        App will collect processing fees if any from the Buyer.
-      Description: >-
-        If set to "amount" it means Buyer App's fee is a flat amount in INR.
-
-        If set to "percent- annualized" it means the Buyer App's fee is set as a
-        percentage of the Total Loan Disbursed for a 12-month tenure loan.
-
-
-        For example: Assume the Buyer App Fees' value is 5%
-
-
-        For a 12 month tenure loan the 'effective fees' paid by Seller App to
-        the Buyer App would be 5% * (12 months/ 12 months) i.e 5%
-
-
-        For 6 month tenure loan the 'effective fees' paid by Seller App to the
-        Buyer App would be 5% * (6 months/ 12 months) i.e 2.5%
-
-
-        For 18 month tenure loan the 'effective fees' paid by Seller App to the
-        Buyer App would be 5% * (18 months/ 12 months) i.e 7.5%
-    - Term: Settlement Window
-      Api: |-
-        search
-        on_search
-        init
-        on_init
-      Attribute: SETTLEMENT_WINDOW
-      Owner: Either
-      Value: |-
-        Time period
-        (ISO8601 format)
-      Description: >-
-        The time period from completion of the Settlement Basis within which the
-        Payment Collector will settle with counterparty Network Participant(s).
-        As an illustration, a Settlement Window of 5 days after loan disbursal
-        can be specified as "P5D" (i.e. period 5 days) or "PT120H" (i.e. period
-        120 hours).
-    - Term: Settlement Basis
-      Api: |-
-        search
-        on_search
-        init
-        on_init
-      Attribute: SETTLEMENT_BASIS
-      Owner: Either
-      Value: |-
-        "Delivery", "return_window_expiry", 
-        " invoice_receipt"
-      Description: >-
-        The event that will trigger settlement from the Payment Collector to
-        counterparty Network Participant(s).
-
-
-        Example:
-
-        Upon confirmation of order delivery, then set this to "delivery" 
-
-
-        Upon expiry of cancellation/ return window, then set this
-        to"return_window_expiry"
-
-
-        Upon receipt of an invoice from the counterparty, then this to
-        "invoice_receipt"
-    - Term: Settlement Amount
-      Api: |-
-        init
-        on_init
-      Attribute: SETTLEMENT_AMOUNT
-      Owner: Either
-      Value: Positive Decimal Number
-      Description: >-
-        The amount that the Payment Collector will remit to the counterparty
-        Network Participant.
-
-        For clarity, if the Buyer App is the Processing Fees collector, the
-        Buyer App will deduct their Buyer finder fees from the Processing Fees
-        and remit the balance to the Seller App. If seller app is the Processing
-        Fees collector, the Seller app will remit the Buyer Finder Fees to Buyer
-        App.
-    - Term: Settlement Type
-      Api: |-
-        search
-        init
-      Attribute: SETTLEMENT_TYPE
-      Owner: Either
-      Value: '"neft", "rtgs", "upi"'
-      Description: >-
-        The Payment Collector will use the selected method to remit the due
-        payment to the counterparty Network Participant. To illustrate, if the
-        Buyer App collects the payment and the Settlement Type is set to "rtgs",
-        when the settlement is due, the Buyer App will transfer the Seller App's
-        share of the Buyer Price to the Seller App's account via RTGS.
-    - Term: Mandatory Arbitration
-      Api: |-
-        on_search
-        on_init
-      Attribute: MANDATORY_ARBITRATION
-      Owner: Seller App
-      Value: true/ false
-      Description: >-
-        If this attribute is set to true, that would mean both parties agree
-        that in case of a dispute, both parties must resolve the dispute through
-        arbitration.
-    - Term: Court Jurisdiction
-      Api: |-
-        on_search
-        on_init
-      Attribute: COURT_JURISDICTION
-      Owner: Seller App
-      Value: Pick a city from a given list of cities which have a High Court bench
-      Description: >-
-        The name of the city whose courts will have exclusive jurisdiction over
-        disputes related to this contract. The list of options will only contain
-        cities which have a High Court bench.
-    - Term: Delay Interest
-      Api: |-
-        on_search
-        on_init
-      Attribute: DELAY_INTEREST
-      Owner: Seller App
-      Value: Positive Decimal Number
-      Description: >-
-        This is the annual rate of interest that the Payment Collector will be
-        charged if they delay a payment to the counterparty Network Participant,
-        calculated pro rata for each calendar day of delay. As an example, if
-        the value is set as "7.3", and the amount of payment due is INR 1000,
-        that will mean the Payment Collector will pay the counterparty Network
-        Participant an interest of 7.3% per annum (i.e. INR 100), calculated pro
-        rata for each day of delay. So if the Payment Collector delay was 50
-        days, the total interest payable would be INR 10 [calculated as
-        1000x(7.3/100)x(50/365)]
-    - Term: Static Terms
-      Api: |-
-        search
-        on_search
-        init
-        on_init
-      Attribute: STATIC_TERMS
-      Owner: Either
-      Value: URL
-      Description: >-
-        This will be the URL of a web-page where the standard Terms and
-        Conditions of the Network Participant - which are not covered in the API
-        Specification (e.g.: indemnity) - will be hosted. These terms will apply
-        to the transaction, in addition to the terms decided through the ONDC
-        Protocol. If there is a conflict between the terms decided through the
-        Protocol, and the Static Terms, the terms decided through the ONDC
-        Protocol will prevail. Also, if there is a conflict between the Static
-        Terms and the ONDC Network Policy or the Static Terms and the Network
-        Participant Agreement, the terms of the ONDC Network Policy or the
-        Network Participant Agreement (as the case may be) will prevail.
