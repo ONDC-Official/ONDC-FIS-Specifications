@@ -1,5 +1,7 @@
 const fs = require("fs");
 const yaml = require("js-yaml");
+const path = require('path');
+
 const $RefParser = require("json-schema-ref-parser");
 const { execSync } = require("child_process");
 const Ajv = require("ajv");
@@ -10,7 +12,6 @@ const ajv = new Ajv({
 const addFormats = require("ajv-formats");
 ajv.addFormat("phone", "")
 addFormats(ajv);
-
 require("ajv-errors")(ajv);
 const process = require("process");
 
@@ -24,14 +25,26 @@ var uiPath = "../../ui/build.js";
 // const outputPath = `./build.yaml`;
 // const unresolvedFilePath = `https://raw.githubusercontent.com/beckn/protocol-specifications/master/api/transaction/components/index.yaml`
 const tempPath = `./temp.yaml`;
+// add featureui docs
+const markdownFiles = checkMDFiles();
+writeFilenamesToYaml(markdownFiles);
+compareFiles();
 getSwaggerYaml("example_set", outputPath);
-// const { buildAttribiutes } = require('./build-attributes.js')
+const { buildAttribiutes } = require('./build-attributes.js')
+const { buildErrorCodes } = require('./build-error-code.js')
+const { buildTlc } = require('./build-tlc.js')
 
 const SKIP_VALIDATION = {
   flows: "skip1",
   examples: "skip2",
   enums: "skip3",
   tags: "skip4",
+};
+
+const BUILD = {
+  attributes: "attributes",
+  error: "errorCode",
+  tlc: "tlc"
 };
 
 async function baseYMLFile(file) {
@@ -163,8 +176,6 @@ async function checkObjectKeys(currentExamplePos, currentSchemaPos, logObject) {
 }
 
 async function validateEnumsTags(exampleEnums, schemaMap) {
-    // console.log('exampleEnums', JSON.stringify(exampleEnums));
-    // return
   for (const example of Object.keys(exampleEnums)) {
     const currentExample = exampleEnums[example];
     const currentSchema = schemaMap[example];
@@ -208,12 +219,16 @@ async function validateTags(tags, schema,isAttribute) {
   for (const tag of Object.keys(tags)) {
     const currentTag = tags[tag];
     const currentSchema = schema[tag]?.properties;
+
     //context & message
     for (const tagItem of Object.keys(currentTag)) {
       const currentTagValue = currentTag[tagItem];
       let schemaForTraversal;
-      if (currentSchema[tagItem]?.type === "object") {
+            if (currentSchema[tagItem]?.type === "object") {
         schemaForTraversal = currentSchema[tagItem]?.properties;
+      }//for validating attribute contexts
+      else if(currentSchema[tagItem]?.allOf[0] && isAttribute){
+        schemaForTraversal = currentSchema[tagItem]?.allOf[0]?.properties;
       }
       const logObject = `${isAttribute}/${tag}/${tagItem}/`;
       if(isAttribute) await traverseAttributes(currentTagValue, schemaForTraversal, logObject);
@@ -226,7 +241,8 @@ async function traverseAttributes(currentAttributeValue, schemaForTraversal, log
   for (const currentAttributeKey of Object.keys(currentAttributeValue)) {
     const currentAttr = currentAttributeValue[currentAttributeKey];
     const schemaType = schemaForTraversal[currentAttributeKey];
-    //&& 'type' in currentAttr && 'owner' in currentAttr && 'usage' in currentAttr && 'description' in currentAttr
+
+        //&& 'type' in currentAttr && 'owner' in currentAttr && 'usage' in currentAttr && 'description' in currentAttr
     if ('required' in currentAttr ) {
       continue ;
     }
@@ -263,15 +279,24 @@ async function getSwaggerYaml(example_set, outputPath) {
     let hasTrueResult = false; // Flag variable
     let schemaMap = {};
     
-    //un-comment this function for parsing attributes
-    //  await buildAttribiutes();
+    if (process.argv.includes(BUILD.attributes)) {
+      await buildAttribiutes()
+    }
+
+    if (process.argv.includes(BUILD.error)) {
+      await buildErrorCodes()
+    }
+
+    if (process.argv.includes(BUILD.tlc)) {
+      await buildTlc()
+    }
 
     for (const path in paths) {
       const pathSchema =
         paths[path]?.post?.requestBody?.content?.["application/json"]?.schema;
       schemaMap[path.substring(1)] = pathSchema;
     }
-
+    
     if (!process.argv.includes(SKIP_VALIDATION.flows)) {
       hasTrueResult = await validateFlows(flows, schemaMap);
     }
@@ -290,7 +315,6 @@ async function getSwaggerYaml(example_set, outputPath) {
     if (!process.argv.includes(SKIP_VALIDATION.attributes) && !hasTrueResult) {
       hasTrueResult = await validateAttributes(attributes, schemaMap);
     }
-
 
     if (hasTrueResult) return;
 
@@ -346,6 +370,11 @@ function addEnumTag(base, layer) {
   base["x-flows"] = layer["flows"];
   base["x-examples"] = layer["examples"];
   base["x-attributes"] = layer["attributes"];
+  base["x-errorcodes"] = layer["error_codes"];
+  base["x-tlc"] = layer["tlc"];
+  base["x-featureui"] = layer["feature-ui"]
+  base["x-sandboxui"] = layer["sandbox-ui"]
+
 }
 
 function GenerateYaml(base, layer, output_yaml) {
@@ -359,3 +388,42 @@ function GenerateYaml(base, layer, output_yaml) {
   const jsonDump = "let build_spec = " + JSON.stringify(base);
   fs.writeFileSync(uiPath, jsonDump, "utf8");
 }
+
+function checkMDFiles(){
+  const filePath = './docs';
+if(!fs.existsSync(path.join(filePath)))fs.mkdirSync(filePath) //create docs folder if not exists
+  const files = fs.readdirSync(filePath);
+  const markdownFiles=files.filter((file)=>file.endsWith(".md"))
+ return markdownFiles
+}
+
+function readfileWithYaml(){
+    const yamlFilePath = path.join('./docs/', '', 'index.yaml');
+    const yamlData = yaml.load(fs.readFileSync(yamlFilePath, 'utf8'));
+    return yamlData.filenames;
+}
+
+
+function compareFiles () {
+    const mdFiles = checkMDFiles();
+    const yamlFiles = readfileWithYaml();
+  
+    // Check if the arrays are equal
+    const isEqual = JSON.stringify(mdFiles) === JSON.stringify(yamlFiles);
+  
+    if (isEqual) {
+    } else {
+      throw new Error(`Files at docs/index.yaml doesn't exist`);
+    }
+  };
+
+  function writeFilenamesToYaml (filenames) {
+    // Create an array of YAML links
+    const yamlLinks = filenames.map(filename => `${filename}`);
+    const yamlData = { filenames: yamlLinks };
+    const yamlFilePath = path.join('./docs/', 'index.yaml');
+    // Convert the data to YAML format and write it to the file
+    const yamlString = yaml.dump(yamlData);
+    fs.writeFileSync(yamlFilePath, yamlString, 'utf8');
+  };
+    
