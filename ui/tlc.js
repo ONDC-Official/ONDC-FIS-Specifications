@@ -2,7 +2,7 @@ var tlc;
 
 function loadTlc(data) {
   var elements = document.getElementsByClassName("tlc-test");
-  while (elements.length > 0) {
+  while (elements?.length > 0) {
     elements[0].parentNode.removeChild(elements[0]);
   }
   tlc = data;

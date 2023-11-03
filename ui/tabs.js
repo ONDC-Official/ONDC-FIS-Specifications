@@ -65,7 +65,7 @@ function onFirstLoad(build_spec) {
     }
 
 function shouldDisplay (data,id){
-if(isNaN(data.length) || data.length <1){
+if(isNaN(data?.length) || data?.length <1){
   const element = document.getElementById(id)
   if(element) element.classList.add("d-none")
   return false
