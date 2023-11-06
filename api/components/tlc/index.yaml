@@ -1,8 +1,7 @@
 code:
-  - Term: Buyer App Fee
+  - Term: Buyer App Fee Type
     Api: |-
       search
-      on_search
     Attribute: BUYER_FINDER_FEE_TYPE
     Owner: Buyer App
     Value: '"amount", "percent- annualized"'
@@ -26,17 +25,27 @@ code:
 
       For 18 month tenure loan the 'effective fees' paid by Seller App to the
       Buyer App would be 5% * (18 months/ 12 months) i.e 7.5%
-  - Attribute: BUYER_FINDER_FEE_VALUE
+  - Term: Buyer App Fee Percentage
+    Attribute: BUYER_FINDER_FEES_PERCENTAGE
     Owner: Buyer App
     Value: Positive Decimal Number
     Description: >-
-      Quantum of the Buyer App's Fee. To be interpreted in connection with the
+      Percentage of the Buyer App's Fee. To be interpreted in connection with the
       "type" field mentioned above.
 
       For example, let's assume the value is set at "5". If the "type" is set to
-      "Amount", that means the Buyer App Fee is INR 5. If the "type" is set to
       "percent - annualized", it means the Buyer App Fee is 5% of the Total
       Order Value for a 12- month tenure loan.
+  - Term: Buyer App Fee Amount
+    Attribute: BUYER_FINDER_FEES_AMOUNT
+    Owner: Buyer App
+    Value: Positive Decimal Number
+    Description: >-
+      Amount of the Buyer App's Fee. To be interpreted in connection with the
+      "type" field mentioned above.
+
+      For example, let's assume the value is set at "5". If the "type" is set to
+      "Amount", that means the Buyer App Fee is INR 5.
   - Term: Payment Collector
     Api: |-
       search
@@ -44,7 +53,7 @@ code:
       init
       on_init
     Attribute: payment.collected_by
-    Owner: Either
+    Owner: Both
     Value: >-
       If set to "BAP", it means that the Buyer App will collect processing fees
       if any from the Buyer. If set to "BPP", it means that the Seller App will
@@ -76,7 +85,7 @@ code:
       init
       on_init
     Attribute: SETTLEMENT_WINDOW
-    Owner: Either
+    Owner: Collector (Either BAP or BPP)
     Value: |-
       Time period
       (ISO8601 format)
@@ -93,10 +102,10 @@ code:
       init
       on_init
     Attribute: SETTLEMENT_BASIS
-    Owner: Either
+    Owner: Collector (Either BAP or BPP)
     Value: |-
       "Delivery", "return_window_expiry", 
-      " invoice_receipt"
+      "invoice_receipt"
     Description: >-
       The event that will trigger settlement from the Payment Collector to
       counterparty Network Participant(s).
@@ -118,7 +127,7 @@ code:
       init
       on_init
     Attribute: SETTLEMENT_AMOUNT
-    Owner: Either
+    Owner: Receiver (BAP or BPP)
     Value: Positive Decimal Number
     Description: >-
       The amount that the Payment Collector will remit to the counterparty
@@ -130,10 +139,10 @@ code:
       collector, the Seller app will remit the Buyer Finder Fees to Buyer App.
   - Term: Settlement Type
     Api: |-
-      search
       init
+      on_init
     Attribute: SETTLEMENT_TYPE
-    Owner: Either
+    Owner: Receiver (BAP or BPP)
     Value: '"neft", "rtgs", "upi"'
     Description: >-
       The Payment Collector will use the selected method to remit the due
@@ -165,10 +174,12 @@ code:
       cities which have a High Court bench.
   - Term: Delay Interest
     Api: |-
+      search
       on_search
+      init
       on_init
     Attribute: DELAY_INTEREST
-    Owner: Seller App
+    Owner: Receiver (BAP or BPP)
     Value: Positive Decimal Number
     Description: >-
       This is the annual rate of interest that the Payment Collector will be
@@ -187,7 +198,7 @@ code:
       init
       on_init
     Attribute: STATIC_TERMS
-    Owner: Either
+    Owner: Both
     Value: URL
     Description: >-
       This will be the URL of a web-page where the standard Terms and Conditions
