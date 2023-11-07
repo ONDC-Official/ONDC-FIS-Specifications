@@ -2877,12 +2877,12 @@ x-tags:
   search:
     message:
       intent:
-        payment:
+        payment: &ref_8
           tags:
             - code: BUYER_FINDER_FEES
-              description: describes the general Information of the loan
+              description: Describes the finder fees of the loan for buyer
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_10
+              list:
                 - code: BUYER_FINDER_FEES_TYPE
                   description: Buyer finder fee type.
                   reference: <PR/Issue/Discussion Links md format text>
@@ -2893,9 +2893,9 @@ x-tags:
                   description: Buyer finder fee in amount
                   reference: <PR/Issue/Discussion Links md format text>
             - code: SETTLEMENT_TERMS
-              description: describes the general Information of the loan
+              description: Describes the settlement terms of the loan
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_11
+              list:
                 - code: SETTLEMENT_WINDOW
                   description: Time window to complete settlement
                   reference: <PR/Issue/Discussion Links md format text>
@@ -2926,12 +2926,12 @@ x-tags:
     message:
       catalog:
         providers:
-          items:
+          items: &ref_7
             tags:
               - code: HEALTH_INFO
-                description: describes the general Information for health based insurance
+                description: Describes the general information for health based insurance
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_7
+                list:
                   - code: CO_PAYMENT
                     description: >-
                       a fixed out-of-pocket amount paid by an insured for
@@ -2958,9 +2958,9 @@ x-tags:
                       and Services Tax (GST) system in India.
                     reference: <PR/Issue/Discussion Links md format text>
               - code: MARINE_INFO
-                description: describes the general Information for marine based insurance
+                description: Describes the general information for marine based insurance
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_8
+                list:
                   - code: CO_PAYMENT
                     description: >-
                       a fixed out-of-pocket amount paid by an insured for
@@ -3011,9 +3011,9 @@ x-tags:
                       and Services Tax (GST) system in India.
                     reference: <PR/Issue/Discussion Links md format text>
               - code: MOTOR_INFO
-                description: describes the general Information for motor based insurance
+                description: Describes the general information for motor based insurance
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_9
+                list:
                   - code: PERSONAL_ACCIDENT_COVER
                     description: >-
                       It is an insurance policy that provides financial
@@ -3186,45 +3186,23 @@ x-tags:
                       to businesses and individuals registered under the Goods
                       and Services Tax (GST) system in India.
                     reference: <PR/Issue/Discussion Links md format text>
-  select: &ref_12
+  select: &ref_9
     message:
       order:
-        items:
-          tags:
-            - code: HEALTH_INFO
-              description: describes the general Information for health based insurance
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_7
-            - code: MARINE_INFO
-              description: describes the general Information for marine based insurance
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_8
-            - code: MOTOR_INFO
-              description: describes the general Information for motor based insurance
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_9
-        payments:
-          tags:
-            - code: BUYER_FINDER_FEES
-              description: describes the general Information of the loan
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_10
-            - code: SETTLEMENT_TERMS
-              description: describes the general Information of the loan
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_11
-  on_select: *ref_12
-  init: *ref_12
-  on_init: *ref_12
-  confirm: *ref_12
-  on_confirm: *ref_12
-  on_status: *ref_12
-  on_cancel: *ref_12
-  on_update: *ref_12
+        items: *ref_7
+        payment: *ref_8
+  on_select: *ref_9
+  init: *ref_9
+  on_init: *ref_9
+  confirm: *ref_9
+  on_confirm: *ref_9
+  on_status: *ref_9
+  on_cancel: *ref_9
+  on_update: *ref_9
 x-flows:
   - summary: Marine Insurance Application
     details:
-      - description: Discovery of marine insurance .
+      - description: Discovery of marine insurance
         mermaid: |-
           sequenceDiagram
             title Marine  insurance Discovery
@@ -3295,12 +3273,12 @@ x-flows:
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK            
     references: if any
     steps:
-      - summary: Users search for available marine insurance providers.
+      - summary: Buyer app search for available marine insurance providers
         api: search
         details:
           - description: >-
-              Users explore marine insurance options by searching for providers
-              over the network.
+              Buyer app explore marine insurance options by searching for
+              insurers over the network.
             mermaid: |-
               sequenceDiagram
                 title Marine insurance Discovery
@@ -3316,7 +3294,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_40
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3387,14 +3365,14 @@ x-flows:
                           value: >-
                             https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: >-
-          Provides a catalog of different insurance plans products offered by a
-          single lender form marine insurance
+          Insurer provides a catalog of different insurance products offered by
+          a single lender
         api: on_search
         details:
           - description: >-
-              Platform sends a comprehensive catalog of various insurace
-              products specifically tailored for marine INSURANCE, all of which
-              are offered by a single lender.
+              Insurer sends a comprehensive catalog of various insurance
+              products specifically tailored for marine insurance all of which
+              are offered by a single lender with personal info form.
             mermaid: |-
               sequenceDiagram
                 title marine insurance Discovery
@@ -3410,7 +3388,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_41
             context:
               domain: ONDC:FIS13
               location:
@@ -3497,12 +3475,12 @@ x-flows:
                             resubmit: false
                             multiple_sumbissions: false
                           required: true
-      - summary: Get the personal/individual information based form
+      - summary: Buyer app fetches the personal/individual information form
         api: form
         details:
           - description: >-
-              Provide platform to send customer's  personal/individual
-              information
+              Buyer app fetches the personal information details form from the
+              insurer using the link provided in the previous step.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3522,13 +3500,13 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Personal Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/personal-info\">\r\n    <label for=\"email\">Email</label>\r\n    <input type=\"text\" id=\"email\" name=\"email\" />\r\n    <label for=\"phone\">Phone</label>\r\n    <input type=\"text\" id=\"phone\" name=\"phone\" />\r\n    <label for =\"commodityType\">Commodity type</label>\r\n    <select name=\"commodityType\" id=\"commodityType\">\r\n      <option value=\"commodity_1000\">New machinery machine tools and spares in closed ISO containers</option>\r\n      <option value=\"commodity_1001\">New Machinery or mechanical/electrical/electronic equipment for industrial use</option>\r\n      <option value=\"commodity_1002\">Solar panel</option>\r\n      <option value=\"commodity_1003\">Machinery machine tools spares duly packed/lashed</option>\r\n      <option value=\"commodity_1004\">Electronic and white goods</option>\r\n      <option value=\"commodity_1005\">All types of FMCG commodities</option>\r\n      <option value=\"commodity_1006\">All kinds of food like oils essence flavours and other various packed items</option>\r\n      <option value=\"commodity_1006\">Automobiles</option>\r\n      <option value=\"commodity_1007\">Iron & steel rods, metal pipes, tubes</option>\r\n      <option value=\"commodity_1008\">Stationery items</option>\r\n      <option value=\"commodity_1009\">Timber and wood products</option>\r\n      <option value=\"commodity_1010\">Edible oil in tanker</option>\r\n      <option value=\"commodity_1011\">Garments,apparel,fabrics or textiles</option>\r\n      <option value=\"commodity_1012\">All types of containers</option>\r\n      <option value=\"commodity_1013\">All types of paints duly packed</option>\r\n      <option value=\"commodity_1014\">Auto spare parts</option>\r\n      <option value=\"commodity_1015\">Cables and wires</option>\r\n      <option value=\"commodity_1016\">Ceramic products and tiles</option>\r\n      <option value=\"commodity_1017\">Edible vegetables or fruits and nuts or peel of citrus fruits</option>\r\n      <option value=\"commodity_1018\">Granite and marble</option>\r\n      <option value=\"commodity_1019\">Household items-new and old</option>\r\n      <option value=\"commodity_1020\">Leather and leather goods</option>\r\n      <option value=\"commodity_1021\">Metal hand tools</option>\r\n      <option value=\"commodity_1022\">Metal handicrafts and brasswares</option>\r\n      <option value=\"commodity_1023\">Metal scrap in ISO container</option>\r\n      <option value=\"commodity_1024\">Metals of all types excluding precious metals</option>\r\n      <option value=\"commodity_1025\">Milk and ghee packaged or in tankers</option>\r\n      <option value=\"commodity_1026\">New CPM equipment</option>\r\n      <option value=\"commodity_1027\">Non hazardous chemicals in bags</option>\r\n      <option value=\"commodity_1028\">Pharmaceuticals and bulk drugs</option>\r\n      <option value=\"commodity_1029\">Plastics and articles thereof</option>\r\n      <option value=\"commodity_1030\">Rough marble in blocks</option>\r\n      <option value=\"commodity_1031\">Rubber and articles thereof</option>\r\n      <option value=\"commodity_1032\">Soap, cosmetics, toiletries</option>\r\n      <option value=\"commodity_1033\">Toys, games and sports equipment</option>\r\n      <option value=\"commodity_1034\">Used CPM machines and equipments</option>\r\n      <option value=\"commodity_1035\">Used machinery machine tools and spares in closed ISO container</option>\r\n    </select>\r\n    <input type =\"text\" id= \"commodity type\" name = \"commodity type\"/>\r\n    <label for=\"sum_issured\">Sum insured</label>\r\n    <input type=\"text\" id=\"Sum insured\" name=\"Sum insured\" />\r\n    <label for=\"Mode of conveyance\">Mode of conveyance</label>\r\n    <input type=\"text\" id=\"Mode of conveyance\" name=\"Mode of conveyance\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\" FO1\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: Select insurance of interest for more details
+      - summary: Buyer app selects a marine insurance for more details
         api: select
         details:
           - description: >-
-              Consumer platform selects a specific marine insurance plan that
-              suits their customer needs and links the personal info submission
-              details with it.
+              Buyer app selects a specific marine insurance plan that suits
+              their needs and links the personal info details submission with
+              it.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3548,7 +3526,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_42
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -3584,14 +3562,12 @@ x-flows:
                         submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
                 provider:
                   id: P1
-      - summary: >-
-          Provider platform returns the response to selected marine insurance
-          plan.
+      - summary: Insurer returns the response to selected marine insurance plan
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information for the
-              selected marine insurace plan.
+              Insurer responds to the buyer app requests by sending the
+              additional info form.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3715,10 +3691,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Get the additional information based form
+      - summary: Buyer app fetches the additional information based form
         api: form
         details:
-          - description: Fetches the additional information form
+          - description: >-
+              Buyer app fetches the additional information details form from the
+              insurer using the link provided in the previous step.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3738,13 +3716,13 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n    <title>Descriptor Form</title>\r\n</head>\r\n<body>\r\n    <form action=\"/form/submission/additional-info\">\r\n        <label for=\"INDIVIDUAL_NAME\">Cndividual naompany/Ime</label>\r\n        <input type=\"text\" id=\"INDIVIDUAL_NAME\" name=\"INDIVIDUAL_NAME\"><br>\r\n        <label for=\"POLICY_START_DATE\">Policy start date</label>\r\n        <input type=\"text\" id=\"POLICY_START_DATE\" name=\"POLICY_START_DATE\"><br>\r\n        <label for=\"Coverage from\">Coverage from</label>\r\n        <input type=\"text\" id=\"Coverage from\" name=\"COVERAGE_FROM\"><br>\r\n        <label for=\"COVERAGE_TO\">Coverage to</label>\r\n        <input type=\"text\" id=\"COVERAGE_TO\" name=\"COVERAGE_TO\"><br>\r\n        <label for=\"CARGO DETAILS\">Cargo details</label>\r\n        <input type=\"text\" id=\"CARGO DETAILS\" name=\"CARGO DETAILS\"><br>\r\n        <label for=\"PACKAGING_DETAILS\">Packaging details</label>\r\n        <input type=\"text\" id=\"PACKAGING_DETAILS\" name=\"PACKAGING_DETAILS\"><br>\r\n        <label for=\"INVOICE_NUMBER\">Invoice number</label>\r\n        <input type=\"text\" id=\"INVOICE_NUMBER\" name=\"INVOICE_NUMBER\"><br>\r\n        <label for=\"INVOICE_DATE\">Invoice date</label>\r\n        <input type=\"text\" id=\"INVOICE_DATE\" name=\"INVOICE_DATE\"><br>\r\n        <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\" FO2\">\r\n        <input type=\"submit\" value=\"Submit\">\r\n    </form>\r\n</body>\r\n</html>\r\n"
-      - summary: Select insurance of interest for more details
+      - summary: Buyer app selects a marine insurance for more details
         api: select
         details:
           - description: >-
-              Consumer platform selects a specific marine insurance plan that
-              suits their customer needs and links the personal info submission
-              details with it.
+              Buyer app selects a specific marine insurance plan that suits
+              their needs and links the additional info submission details with
+              it.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3799,14 +3777,12 @@ x-flows:
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
                 provider:
                   id: P1
-      - summary: >-
-          Provider platform returns the response to selected marine insurance
-          plan.
+      - summary: Insurer returns the response to selected marine insurance plan
         api: on_select
         details:
           - description: >-
-              The provider platform responds with detailed information for the
-              selected marine insurace plan.
+              Insurer responds to the buyer app requests by sending the adhar
+              KYC form.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3825,7 +3801,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_43
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -3928,10 +3904,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: Get the aadhar-kyc information based form
+      - summary: Buyer app fetches the adhar KYC details form
         api: form
         details:
-          - description: Fetches the aadhar-kyc information form
+          - description: >-
+              Buyer app fetches the adhar KYC details form from the insurer
+              using the link provided in the previous step.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3951,12 +3929,13 @@ x-flows:
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>eKYC</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/aadhaar-kyc\">\r\n    <form action=\"/action_page.php\">\r\n      <label for=\"adhrNo\">Aadhaar Number: </label>\r\n      <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n      <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n      <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n      <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n      <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The consumer initiates the marine insurace request.
+      - summary: The buyer app initiates the marine insurace request
         api: init
         details:
           - description: >-
-              The consumer platform shares the request's terms and initializes
-              the Marine_INSURANCE application.
+              Buyer app initiates purchase of a specific marine insurance plan
+              that suits their needs and links the adhar EKYC submission details
+              with it.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -3975,7 +3954,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_44
             context:
               domain: ONDC:FIS13
               location:
@@ -4075,12 +4054,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '100000'
-      - summary: The consumer initiates the marine insurace request.
+      - summary: Insurer returns the response to initailized marine insurance plan
         api: on_init
         details:
           - description: >-
-              The consumer platform shares the request's terms , shares the
-              policy summary with the payment link provided
+              Insurer responds to buyer and ask for buyer details by sending a
+              form.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -4099,7 +4078,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_45
             context:
               domain: ONDC:FIS13
               location:
@@ -4259,12 +4238,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: The consumer confirms the marine insurance request.
+      - summary: Buyer app confirms the marine insurance request
         api: confirm
         details:
           - description: >-
-              The consumer platform confirms the marine insurance request and
-              provides all the necessary information as per the terms.
+              Buyer app confirms the marine insurance request and provides all
+              the necessary information as per the terms.
             mermaid: |-
               sequenceDiagram
                 title  Order Confirmation
@@ -4279,7 +4258,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_46
             context:
               domain: ONDC:FIS13
               location:
@@ -4431,12 +4410,12 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
-      - summary: The provider confirms the marine INSURANCE order.
+      - summary: Insurer confirms the marine insurance order
         api: on_confirm
         details:
           - description: >-
-              The provider platform confirms the marine  insurace and provides
-              the final confirmation details.
+              Insurer confirms the marine insurace and provides the confirmation
+              details.
             mermaid: |-
               sequenceDiagram
                 title  Order Confirmation
@@ -4451,7 +4430,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_47
             context:
               domain: ONDC:FIS13
               location:
@@ -4732,7 +4711,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_20
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -4817,7 +4796,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_21
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -5225,7 +5204,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_22
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5284,7 +5263,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_10
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5515,7 +5494,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_11
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5574,7 +5553,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_12
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5800,7 +5779,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_23
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5865,7 +5844,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_24
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -6092,7 +6071,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_14
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6177,7 +6156,7 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '400'
-      - summary: Insurer returns the response to initailized health insurance plan
+      - summary: Insurer returns the response to initailized marine insurance plan
         api: on_init
         details:
           - description: >-
@@ -6201,7 +6180,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_30
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6504,7 +6483,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_25
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6614,7 +6593,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_29
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6920,7 +6899,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_27
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -7030,7 +7009,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_32
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -7338,7 +7317,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_26
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -7416,7 +7395,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_31
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -7675,7 +7654,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_36
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -7716,7 +7695,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_37
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -7889,7 +7868,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_28
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -7999,7 +7978,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_33
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -8309,7 +8288,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_34
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -8438,7 +8417,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_15
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -8619,7 +8598,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_38
             context:
               action: cancel
               bap_id: fis.test.bap.io
@@ -8661,7 +8640,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_39
             context:
               action: on_cancel
               bap_id: fis.test.bap.io
@@ -8888,7 +8867,7 @@ x-flows:
                 Insurer Platform (BPP)-->>Buyer Platform (BAP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_10
       - summary: Buyer app fetches the PED details
         api: form
         details:
@@ -8961,7 +8940,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_11
       - summary: Insurer returns the response to selected health insurance plan
         api: on_select
         details:
@@ -8984,7 +8963,7 @@ x-flows:
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_12
       - summary: Get PAN amd DOB details form
         api: form
         details:
@@ -9047,7 +9026,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK       
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_16
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -9635,7 +9614,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_13
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -9835,7 +9814,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_13
       - summary: >-
           Insurer provides the buyer with latest update of form status (Form
           Completed)
@@ -10020,7 +9999,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_14
   - summary: Claim Health Insurance
     details:
       - description: Detailed process of claiming a Health Insurance
@@ -10060,7 +10039,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_15
       - summary: Buyer app redirected to claim url page
         api: redirect
         details:
@@ -10297,7 +10276,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_35
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -10558,7 +10537,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_16
       - summary: >-
           Insurer provides the buyer with latest update of claim status (Claim
           Completed)
@@ -10818,7 +10797,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_15
       - summary: Buyer app redirected to claim url page
         api: redirect
         details:
@@ -10845,7 +10824,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_17
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -11072,7 +11051,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_17
   - summary: Motor Insurance Application
     details:
       - description: Discovery of motor insurance .
@@ -11165,7 +11144,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_48
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -11250,7 +11229,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_49
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -11837,7 +11816,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_18
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -12305,7 +12284,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_18
       - summary: >-
           Provider platform returns the response to selected motor insurance
           plan.
@@ -12334,7 +12313,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_51
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -12560,7 +12539,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_50
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -12627,7 +12606,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_52
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -12853,7 +12832,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_19
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -12974,7 +12953,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_54
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -13267,7 +13246,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_19
       - summary: >-
           Provider platform returns the response to initailized motor insurance
           plan.
@@ -13295,7 +13274,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_53
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -13579,7 +13558,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_58
+          value: &ref_55
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -13701,7 +13680,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_59
+          value: &ref_56
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -14282,73 +14261,73 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_23
+            value: *ref_20
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_24
+            value: *ref_21
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_25
+            value: *ref_22
           - summary: select-request-pan-dob-info
             description: TBD
-            value: *ref_26
+            value: *ref_23
           - summary: select-request-ped-info
             description: TBD
-            value: *ref_14
+            value: *ref_11
       on_select:
         examples:
           - summary: on_select-request-pan-dob-info-details-form
             description: TBD
-            value: *ref_27
+            value: *ref_24
           - summary: on_select-request-ped-info-form
             description: TBD
-            value: *ref_15
+            value: *ref_12
           - summary: on_select-request-with-personal info
             description: TBD
-            value: *ref_13
+            value: *ref_10
       init:
         examples:
           - summary: init-request for buyer info
             description: TBD
-            value: *ref_28
+            value: *ref_25
           - summary: init-request-ekyc-info
             description: TBD
-            value: *ref_17
+            value: *ref_14
           - summary: init-request-review-info
             description: TBD
-            value: *ref_29
+            value: *ref_26
           - summary: init-insured info
             description: TBD
-            value: *ref_30
+            value: *ref_27
           - summary: init-request-medical-info
             description: TBD
-            value: *ref_31
+            value: *ref_28
       on_init:
         examples:
           - summary: on_init-request-buyer-info-form
             description: TBD
-            value: *ref_32
+            value: *ref_29
           - summary: on_init-request-ekyc-info-form
             description: TBD
-            value: *ref_33
+            value: *ref_30
           - summary: on_init-request-review-info
             description: TBD
-            value: *ref_34
+            value: *ref_31
           - summary: on_init-request-insured-info-form
             description: TBD
-            value: *ref_35
+            value: *ref_32
           - summary: on_init-request-medical-info-form
             description: TBD
-            value: *ref_36
+            value: *ref_33
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_37
+            value: *ref_34
       on_confirm:
         examples:
           - summary: on_confirm
@@ -14746,10 +14725,10 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_38
+            value: *ref_35
           - summary: review-form-status-request
             description: TBD
-            value: *ref_39
+            value: *ref_36
       on_status:
         examples:
           - summary: on_status
@@ -14942,17 +14921,17 @@ x-examples:
                       url: https://abcinsurance.com/policies/O1.pdf
           - summary: on_status-review-form-processed
             description: TBD
-            value: *ref_40
+            value: *ref_37
       cancel:
         examples:
           - summary: cancel
             description: TBD
-            value: *ref_41
+            value: *ref_38
       on_cancel:
         examples:
           - summary: on_cancel
             description: TBD
-            value: *ref_42
+            value: *ref_39
   marine-insurance:
     summary: marine-insurance
     description: marine-insurance
@@ -14961,42 +14940,42 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_43
+            value: *ref_40
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_44
+            value: *ref_41
       select:
         examples:
           - summary: select-request-aadhar-kyc info
             description: TBD
-            value: *ref_45
+            value: *ref_42
       on_select:
         examples:
           - summary: on_select-request-aadhar-kyc-info detail
             description: TBD
-            value: *ref_46
+            value: *ref_43
       init:
         examples:
           - summary: init-request info
             description: TBD
-            value: *ref_47
+            value: *ref_44
       on_init:
         examples:
           - summary: on_init-request-buyer-info-form
             description: TBD
-            value: *ref_48
+            value: *ref_45
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_49
+            value: *ref_46
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_50
+            value: *ref_47
       status:
         examples:
           - summary: status
@@ -15412,28 +15391,28 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_51
+            value: *ref_48
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_52
+            value: *ref_49
       select:
         examples:
           - summary: select-request-vehicle-info
             description: TBD
-            value: *ref_21
+            value: *ref_18
           - summary: select-request-pan-info
             description: TBD
-            value: *ref_53
+            value: *ref_50
       on_select:
         examples:
           - summary: on_select-request-pan
             description: TBD
-            value: *ref_54
+            value: *ref_51
           - summary: on_select-request-personal-info
             description: TBD
-            value: *ref_55
+            value: *ref_52
       init:
         examples:
           - summary: init-request-persoanl-info
@@ -15534,25 +15513,25 @@ x-examples:
                               value: '1000'
           - summary: init-request-vehicle-nominee
             description: TBD
-            value: *ref_22
+            value: *ref_19
       on_init:
         examples:
           - summary: on_init-request-personal-info
             description: TBD
-            value: *ref_56
+            value: *ref_53
           - summary: on_init-request-vehicle-info
             description: TBD
-            value: *ref_57
+            value: *ref_54
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_58
+            value: *ref_55
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_59
+            value: *ref_56
       on_update:
         examples:
           - summary: on_update
