@@ -136,82 +136,6 @@ steps:
       value: 
         $ref: ../../examples/invoice-based-loans/forms/invoice-based-loans-org-info.html
 
-
-  # - summary: Selection of a loan product (Org Details)
-  #   api: select
-  #   details:
-  #     - description: The BAP sends the loan product, the loan provider, and the customer's identity to the BPP.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Selection
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #   reference: if any
-  #   example:
-  #     value:
-  #       $ref: "../../examples/invoice-based-loans/select/select-request-org-details.yaml"
-  #  #first select form
-  # - summary: Returning a consent request with additional details about the loan product 
-  #   api: on_select
-  #   details:
-  #     - description: The Lender Platform generates a consent request, and an XInput form may expect other details pertaining to the borrower's business like Tax ID. Company registration address, Ownership Details etc, depending on the type of loan.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Selection
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  #   reference: if any
-  #   example:
-  #     value:
-  #       $ref: "../../examples/invoice-based-loans/on_select/on_select-request-financial-info-form.yaml"      
-  # - summary: Get the Financial Info based loan form
-  #   api: form
-  #   details:
-  #     - description: Provider platform sends the form for Financial Info based loan.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Selection
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Financial Info)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           end
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #   reference: if any
-  #   example:
-  #     value: 
-  #       $ref: ../../examples/invoice-based-loans/forms/invoice-based-loans-financial-info.html
-
-
    #second select form
   - summary: The borrower chooses the invoice based loan service
     api: select
@@ -570,6 +494,77 @@ steps:
     example: 
       value:
         $ref: "../../examples/invoice-based-loans/init/init-request-account-info-complete.yaml"
+  #add on_init & init for consent
+  - summary: The lender accepts the personal loan request and displays loan status details and requests for e-mandate details.
+    api: on_init
+    details:
+      - description: Provider platform accepts the terms of order and appends its own terms and responds with the final draft
+        mermaid: >-
+          sequenceDiagram
+            title  Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/on_init/on_init-request-emandate.yaml" 
+  
+  - summary: The borrower will be redirected to the e-mandate details form
+    api: form
+    details:
+      - description: The lender platform sends the form to get dispachment e-mandate details from the consumer.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/invoice-based-loans/forms/emandate.html
+  
+  - summary: Submission of Additional Information and requesting for offer (Loan Agreement)
+    api: init
+    details:
+      - description: BAP submits the additional information that was requested by the BPP in the XInput form.
+        mermaid: >-
+          sequenceDiagram
+            title  Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/invoice-based-loans/init/init-request-loan-aggrement.yaml"
+  
   - summary: Lender makes an offer with repayment terms
     api: on_init
     details:
@@ -580,7 +575,7 @@ steps:
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Details)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -666,6 +661,75 @@ steps:
     example:
       value:
         $ref: "../../examples/invoice-based-loans/on_confirm/on_confirm-request.yaml" 
+  #consent-handler flow
+  - summary: The provider platform updates the consumer.
+    api: on_update
+    details:
+      - description: The provider platform updates the consumer with on_update request response.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/on_update/on_update-request-consent.yaml" 
+  - summary: The borrower (BAP) sends the update request by sending the order ID.
+    api: update
+    details:
+      - description: The borrower (BAP) sends the update request by sending the order ID to be updated along with the object in the order to be updated as update_target.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+           
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/update/update-request-consent-approved.yaml" 
+  - summary: The provider platform updates the consumer.
+    api: on_update
+    details:
+      - description: The provider platform updates the consumer with on_update request response.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+           
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/on_update/on_update_request-disbursed.yaml"
+  
+  
+  
   - summary: The borrower seeks the most recent loan status update.
     api: status
     details:
@@ -739,31 +803,8 @@ steps:
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     example:
       value:
-        $ref: "../../examples/invoice-based-loans/on_status/on_status-request-after-installment.yaml"         
-  - summary: Lender provides the borrower with real-time updates on their invoice based loan after each late EMI payment.
-    api: on_status
-    details:
-      - description: When the lender did not receive the Equated Monthly Installments (EMI) on time from the borrower, the on_status API delivers prompt updates to the borrower. These updates include the current status of the invoice based loan, ensuring transparency and keeping the borrower informed throughout the loan repayment process.
-        mermaid: >-
-          sequenceDiagram
-            title MF Ordering - Order Fulfillment
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(1)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(2)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status(3)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-    example:
-      value:
-        $ref: "../../examples/invoice-based-loans/on_status/on_status-request-late-repayment-installment.yaml"                                   
+        $ref: "../../examples/invoice-based-loans/on_status/on_status-request-after-installment.yaml"                                     
+  
   - summary: Lender provides the borrower with real-time updates on their invoice based loan after full EMI payment.
     api: on_status
     details:

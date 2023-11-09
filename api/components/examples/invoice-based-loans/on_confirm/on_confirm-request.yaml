@@ -17,9 +17,9 @@ context:
   timestamp: '2023-05-25T05:23:03.443Z'
 message:
   order:
-    id: 66B7AEDF45
+    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
     provider:
-      id: '1'
+      id: PROVIDER_ID
       descriptor:
         images:
           - url: >-
@@ -58,7 +58,7 @@ message:
                 name: Customer support email
               value: "customer.care@icicibank.com"
     items:
-      - id: 66b7b9bad166-4a3f-ada6-ca063dc9d321
+      - id: ITEM_ID_INVOICE_LOAN
         descriptor:
           code: INVOICE_BASED_LOAN
           name: "Invoice Based Loan Offer: INR 2,00,000"
@@ -107,10 +107,10 @@ message:
                   code: TNC_LINK
                   name: Terms & Conditions
                   short_desc: Terms and Conditions
-                value: 'https://icicibank.com/loan/tnc.html'
+                value: 'https://bpp.credit.becknprotocol.org/loan/tnc.html'
             display: true
     quote:
-      id: b469bb12-9f67-4898-8f39-ea7816f54289
+      id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
         value: '231800'
@@ -127,6 +127,7 @@ message:
           price:
             value: '1800'
             currency: INR
+      ttl: PT15D
     fulfillments:
       - customer:
           organization:
@@ -142,20 +143,63 @@ message:
         state:
           descriptor:
             code: SANCTIONED
-            name: Loan Sanctioned
     payments:
-      - type: ON-ORDER
-        url: 'https://emandate.icicibank.in'
+      - type: ON_ORDER
+        status: NOT-PAID
+        collected_by: BPP
+        # params:
+        #   amount: '46360'
+        #   currency: INR
+        # time:
+        #   label: Installment 1
+        #   range:
+        #     start: '2023-06-01T00:00:00.000Z'
+        #     end: '2023-06-30T00:23:59.999Z'
+        tags:
+          - descriptor:
+              code: BUYER_FINDER_FEES
+            display: false
+            list:
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_TYPE
+                value: "percent-annualized"
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_PERCENTAGE
+                value: "1"
+          - descriptor:
+              code: SETTLEMENT_TERMS
+            display: false
+            list:
+              - descriptor: 
+                  code: SETTLEMENT_WINDOW
+                value: 'PT60M'
+              - descriptor: 
+                  code: SETTLEMENT_BASIS
+                value: 'INVOICE_RECEIPT'
+              - descriptor: 
+                  code: MANDATORY_ARBITRATION
+                value: 'TRUE'
+              - descriptor: 
+                  code: COURT_JURISDICTION
+                value: 'New Delhi'
+              - descriptor: 
+                  code: STATIC_TERMS
+                value: 'https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan'
+              - descriptor: 
+                  code: SETTLEMENT_AMOUNT
+                value: '1159'
+      - type: POST_FULFILLMENT
         params:
-          amount: '46360'
+          amount: "46360"
           currency: INR
         status: NOT-PAID
         time:
           label: Installment 1
           range:
-            start: '2023-06-01T00:00:00.000Z'
-            end: '2023-06-30T00:23:59.999Z'
-      - params:
+            start: "2023-06-01T00:00:00.000Z"
+            end: "2023-06-30T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        params:
           amount: '46360'
           currency: INR
         status: NOT-PAID
@@ -164,7 +208,8 @@ message:
           range:
             start: '2023-07-01T00:00:00.000Z'
             end: '2023-07-31T00:23:59.999'
-      - params:
+      - type: POST_FULFILLMENT
+        params:
           amount: '46360'
           currency: INR
         status: NOT-PAID
@@ -173,7 +218,8 @@ message:
           range:
             start: '2023-08-01T00:00:00.000Z'
             end: '2023-08-31T00:23:59.999'
-      - params:
+      - type: POST_FULFILLMENT
+        params:
           amount: '46360'
           currency: INR
         status: NOT-PAID
@@ -182,7 +228,8 @@ message:
           range:
             start: '2023-09-01T00:00:00.000Z'
             end: '2023-09-30T00:23:59.999Z'
-      - params:
+      - type: POST_FULFILLMENT
+        params:
           amount: '46360'
           currency: INR
         status: NOT-PAID
@@ -195,18 +242,25 @@ message:
       - fulfillment_state:
           descriptor:
             code: SANCTIONED
-            name: Loan sanctioned
         cancellation_fee:
           percentage: 3%
-        external_ref:
+      - external_ref:
           mimetype: text/html
-          url: 'https://icicibank.com/loan/tnc.html'
+          url: 'https://bpp.credit.becknprotocol.org/loan/tnc.html'
       - fulfillment_state:
           descriptor:
             code: DISBURSED
             name: Loan disbursed
         cancellation_fee:
           percentage: 5%
-        external_ref:
-          mimetype: text/html
-          url: 'https://icicibank.com/loan/tnc.html'
+    documents:
+      - descriptor:
+          code: LOAN_AGREEMENT
+          name: Loan Agreement Document
+          short_desc: Download your Loan Agreement document here
+          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, 
+            interest rate, repayment schedule, and collateral,
+            binding a lender and borrower in a formal financial arrangement.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-agreement/O1.pdf
+        
