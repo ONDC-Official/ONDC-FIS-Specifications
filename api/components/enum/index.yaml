@@ -18,10 +18,6 @@ select:
   message: 
     order: &order
       items: *items
-      fulfillments: &fulfillments
-        $ref: './fulfillment.yaml'   
-      payments: &payment 
-        $ref: './payment.yaml'  
 on_select:
   context: *context
   message:
@@ -29,11 +25,16 @@ on_select:
 init:
   context: *context
   message:
-    order: *order
+    order:
+      items: *items
+      payments: &payment 
+        $ref: './payment.yaml' 
 on_init:
   context: *context
   message:
-    order: *order
+    order:
+      items: *items
+      payments: *payment
 confirm:
   context: *context
   message: 
@@ -41,25 +42,45 @@ confirm:
 on_confirm:
   context: *context
   message:
-    order: &order_document
+    order:
       items: *items
-      fulfillments: *fulfillments
+      fulfillments: &fulfillments
+        $ref: './fulfillment.yaml'  
       payments: *payment
       documents: &document
         $ref: './documents.yaml'
+      cancellation_terms:
+        fulfillment_state:
+          $ref: './cancellation_terms.yaml'  
 status:
   context: *context
 on_status:
   context: *context
   message:
-    order: *order
+    order:
+      items: *items
+      fulfillments: *fulfillments
+      payments: *payment
+      documents: *document
 cancel:
   context: *context
 on_cancel:
   context: *context
   message:
-    order: *order
+    order:
+      items: *items
+      payments: *payment
+      documents: *document
+update:
+  context: *context
+  message:
+    order:
+      payments: *payment
 on_update:
   context: *context
   message: 
-    order: *order_document
+    order:
+      items: *items
+      fulfillments: *fulfillments
+      payments: *payment
+      documents: *document
