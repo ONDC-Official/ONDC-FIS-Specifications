@@ -7,24 +7,28 @@ on_search:
   message:
     catalog:
       providers:
-        items:
+        items: &items
           $ref: "./tag-group.yaml#/items"
-select: &ref0
+        payment: &payment
+          $ref: "./tag-group.yaml#/payment/tags/settlement_terms"
+on_select: &ref0
   message:
     order:
-      items: &items
-        $ref: "./tag-group.yaml#/items"
-      payment: &payment
-        $ref: "./tag-group.yaml#/payment"
-on_select: *ref0
-init: *ref0
-on_init: *ref0
-confirm: &ref1
+      items: *items
+init: 
+  message:
+    order:
+      payment: *payment
+on_init:
   message:
     order:
       items: *items
       payment: *payment
-      fulfillments:
+confirm: &ref1
+  message:
+    order:
+      items: *items
+      fulfillments: &fulfillments
         $ref: "./tag-group.yaml#/fulfillments"
 on_confirm: *ref1
 on_status: *ref1
