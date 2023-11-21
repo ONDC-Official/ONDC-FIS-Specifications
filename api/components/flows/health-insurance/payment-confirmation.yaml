@@ -1,0 +1,134 @@
+summary: Payment Confirmation
+details:
+  - description: The detailed process for retrieving payment status when collected by BPP.
+    mermaid: >-
+      sequenceDiagram
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): init
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status(with transaction Id)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status(payment status)
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+
+references: if any
+steps:
+  - summary: Buyer app initiates the health insurance request
+    api: init
+    details:
+      - description: Buyer app initiates purchase of a specific health insurance plan that suits their needs and links the medical information submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/health-insurance/init/init-request-medical-info.yaml"
+  - summary: Insurer returns the response to initailized health insurance plan
+    api: on_init
+    details:
+      - description: Insurer responds to buyer and ask for nominee details information by sending a form.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/health-insurance/on_init/on_init-request-medical-info.yaml"
+  - summary: Buyer app requests the Insurer to provide the most recent status of the payment.
+    api: status
+    details:
+      - description: The buyer app utilizes the transaction ID to retrieve the current status of the payment. 
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/health-insurance/status/form-status-request.yaml" 
+  
+  - summary: Insurer shares the latest payment status
+    api: on_status
+    details:
+      - description: The insurer provides the most recent status of the payment, indicating whether it has been paid or remains unpaid.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/health-insurance/on_status/on_status_payment_request.yaml"
+  - summary: Buyer app confirms the health insurance request
+    api: confirm
+    details:
+      - description: Buyer app confirms the health insurance request and provides all the necessary information as per the terms.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/health-insurance/confirm/confirm-request.yaml"         
+  - summary: Insurer confirms the health insurance order
+    api: on_confirm
+    details:
+      - description: Insurer confirms the health insurace and provides the confirmation details.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/health-insurance/on_confirm/on_confirm-request_1.yaml"  
+  
