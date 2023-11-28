@@ -2745,8 +2745,8 @@ x-enum:
               description: Bangalore
               reference: <PR/Issue/Discussion Links md format text>
       domain:
-        - code: ONDC:FIS12
-          description: Loan
+        - code: ONDC:FIS14
+          description: Describes investment domain.
           reference: <PR/Issue/Discussion Links md format text>
       action:
         - code: search
@@ -2829,16 +2829,22 @@ x-enum:
               code:
                 - code: SIP
                   description: >-
-                    Describes ,an unsecured credit provided by financial
-                    institutions based on criteria like employment history,
-                    repayment capacity, income level, profession and credit
-                    history.
+                    Describes, a kind of investment which requires to make
+                    payments at regular intervals.
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: LUMPSUM
+                  description: >-
+                    Describes, a kind of investment which requires to pay the
+                    entire amount at once.
                   reference: <PR/Issue/Discussion Links md format text
           fulfillments: &ref_2
             stops:
               type:
-                - code: OTP
-                  description: null
+                - code: SIP_INVESTMENT_PERIOD
+                  description: Describes the sip investment period
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: WITHDRAWAL
+                  description: Describes the type of fulfillment.
                   reference: <PR/Issue/Discussion Links md format text
             state:
               descriptor:
@@ -2906,7 +2912,7 @@ x-enum:
   on_confirm:
     context: *ref_0
     message:
-      order: &ref_5
+      order:
         items: *ref_1
         fulfillments: *ref_2
         payments: *ref_3
@@ -2927,7 +2933,14 @@ x-enum:
   on_cancel:
     context: *ref_0
     message:
-      order: *ref_5
+      order:
+        items: *ref_1
+        fulfillments: *ref_2
+        payments: *ref_3
+        status:
+          - code: CANCELLED
+            description: Reflects current order status
+            reference: <PR/Issue/Discussion Links md format text
 x-tags:
   on_search:
     message:
@@ -2938,57 +2951,76 @@ x-tags:
               - code: FUND_INFO
                 description: describes the general fund Information
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_6
+                list: &ref_5
                   - code: TYPE
-                    description: Mutual funds type
+                    description: Describes, Mutual funds type.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: FUND_MANAGER
-                    description: fund manager
+                    description: >-
+                      Describes, an investment experts responsible for managing
+                      mutual funds.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: FUND_RATING
-                    description: fund rating
+                    description: Describes,mutual funds rating.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: INCEPTION_DATE
-                    description: Inception Date
+                    description: >-
+                      Describes, The date on which the fund began its
+                      operations.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: AUM
-                    description: Aum
+                    description: >-
+                      Describes, Asset Under Management is the total cumulative
+                      investment sum of a particular Mutual Fund.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: EXPENSE_RATIO
-                    description: Expense Ratio
+                    description: >-
+                      Describes, the annual maintenance charge levied by mutual
+                      funds to finance its expenses.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: ONE_MONTH_RETURNS
                     description: 1 month returns
                     reference: <PR/Issue/Discussion Links md format text>
+                  - code: SIX_MONTH_RETURNS
+                    description: 6 month returns
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: ONE_YEAR_RETURNS
+                    description: 1 year returns
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: THREE_YEAR_RETURNS
+                    description: 3 year returns
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: FIVE_YEAR_RETURNS
+                    description: 5 year returns
+                    reference: <PR/Issue/Discussion Links md format text>
                   - code: LOCK_IN_PERIOD
-                    description: Lock-in Period
+                    description: >-
+                      Describes, the period during which the investor is
+                      prohibited from redeeming the units of the fund.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: MAX_WITHDRAWAL_PERCENTAGE
-                    description: Lock-in Period
+                    description: Describes, the maximum withdrawal percentage.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: NET_ASSET_VALUE
-                    description: Net Asset Value
+                    description: Describes, a fund's per-share intrinsic value.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: LOCK_IN_END_DATE
-                    description: Lock-in end Date
+                    description: Describes, the end date for lock-in period.
                     reference: <PR/Issue/Discussion Links md format text>
               - code: SECTOR_ALLOCATION
                 description: describes the general fund Information
                 reference: <PR/Issue/Discussion Links md format text>
                 list:
                   - code: FINANCIALS
-                    description: Financials
+                    description: Describes, the Financials sector for mutual funds.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: IT
-                    description: IT
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: FINANCIALS
-                    description: Financials
+                    description: Describes, the IT sector for mutual funds.
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: PHARMACEUTICALS
-                    description: Pharmaceuticals
+                    description: Describes, the pharmaceuticals sector for mutual funds.
                     reference: <PR/Issue/Discussion Links md format text>
-  select: &ref_7
+  select: &ref_6
     message:
       order:
         items:
@@ -2996,14 +3028,26 @@ x-tags:
             - code: FUND_INFO
               description: describes the general Information of the loan
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_6
-  on_select: *ref_7
-  init: *ref_7
-  on_init: *ref_7
-  confirm: *ref_7
-  on_confirm: *ref_7
-  on_status: *ref_7
-  on_update: *ref_7
+              list: *ref_5
+        fulfillments:
+          tags:
+            - code: WITHDRAWAL_AMOUNT
+              description: describes the information about mutual fund withdrawan.
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: AMOUNT
+                  description: Describes, the amount to be withdrawn.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: UNITS
+                  description: Describes, the units to be withdrawn.
+                  reference: <PR/Issue/Discussion Links md format text>
+  on_select: *ref_6
+  init: *ref_6
+  on_init: *ref_6
+  confirm: *ref_6
+  on_confirm: *ref_6
+  on_status: *ref_6
+  on_update: *ref_6
 x-flows:
   - summary: Mutual funds
     details:
@@ -3080,7 +3124,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_9
             context:
               domain: ONDC:FIS14
               location:
@@ -3124,7 +3168,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_10
             context:
               domain: ONDC:FIS14
               location:
@@ -3176,8 +3220,8 @@ x-flows:
                     items:
                       - id: I1
                         descriptor:
-                          name: ABC Large Cap Mutual Fund - SIP
-                          code: sip
+                          name: HDFC Midcap Opportunities Fund - SIP
+                          code: SIP
                         category_ids:
                           - C1
                         fulfillment_ids:
@@ -3218,18 +3262,23 @@ x-flows:
                                 value: 2.25%
                               - descriptor:
                                   name: 3 month returns
+                                  code: THREE_MONTH_RETURNS
                                 value: 6%
                               - descriptor:
                                   name: 6 month returns
+                                  code: SIX_MONTH_RETURNS
                                 value: 7%
                               - descriptor:
                                   name: 1 year returns
+                                  code: ONE_YEAR_RETURNS
                                 value: 15.25%
                               - descriptor:
                                   name: 3 year returns
+                                  code: THREE_YEAR_RETURNS
                                 value: 45%
                               - descriptor:
                                   name: 5 year returns
+                                  code: FIVE_YEAR_RETURNS
                                 value: 60%
                               - descriptor:
                                   name: Lock-in Period
@@ -3246,7 +3295,7 @@ x-flows:
                             display: true
                           - descriptor:
                               name: Sectors
-                              code: SECTOR-ALLOCATION
+                              code: SECTOR_ALLOCATION
                             list:
                               - descriptor:
                                   name: Financials
@@ -3262,7 +3311,7 @@ x-flows:
                                 value: 2.32%
                           - descriptor:
                               name: Fund Holdings
-                              code: fund-holdings
+                              code: FUND_HOLDINGS
                             list:
                               - descriptor:
                                   name: Max Financial Services Ltd
@@ -3275,8 +3324,8 @@ x-flows:
                                 value: < 1%
                       - id: I2
                         descriptor:
-                          name: ABC Large Cap Mutual Fund - Lumpsum
-                          code: lumpsum
+                          name: HDFC Midcap Opportunities Fund - Lumpsum
+                          code: LUMPSUM
                         price:
                           value: '5000'
                           currency: INR
@@ -3314,7 +3363,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_11
             context:
               domain: ONDC:FIS14
               location:
@@ -3370,7 +3419,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_12
             context:
               domain: ONDC:FIS14
               location:
@@ -3401,6 +3450,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -3459,18 +3509,23 @@ x-flows:
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
@@ -3487,7 +3542,7 @@ x-flows:
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: SECTOR-ALLOCATION
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
@@ -3503,7 +3558,7 @@ x-flows:
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -3666,6 +3721,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -3724,18 +3780,23 @@ x-flows:
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
@@ -3752,7 +3813,7 @@ x-flows:
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: SECTOR-ALLOCATION
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
@@ -3768,7 +3829,7 @@ x-flows:
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -3846,7 +3907,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_13
             context:
               domain: ONDC:FIS14
               location:
@@ -3927,7 +3988,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_15
             context:
               domain: ONDC:FIS14
               location:
@@ -3958,6 +4019,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -4016,18 +4078,23 @@ x-flows:
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
@@ -4044,7 +4111,7 @@ x-flows:
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: SECTOR-ALLOCATION
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
@@ -4060,7 +4127,370 @@ x-flows:
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
+                        list:
+                          - descriptor:
+                              name: Max Financial Services Ltd
+                            value: 2.30%
+                          - descriptor:
+                              name: Dixon Technologies (India) Ltd
+                            value: 1.00%
+                          - descriptor:
+                              name: Mankind Pharma Ltd
+                            value: < 1%
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                        id: ecan_d51aef81
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    id: F1
+                    state:
+                      descriptor:
+                        name: Mutual Fund Order Initialized
+                    stops:
+                      - type: SIP_INVESTMENT_PERIOD
+                        time:
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-04-30T23:59:59.999Z'
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      item:
+                        time:
+                          label: SIP 1
+                          range:
+                            start: '2023-01-01T00:00:00.000Z'
+                            end: '2023-01-31T23:59:59.999Z'
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                          unit: units
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                payments:
+                  - type: ON-ORDER
+                    url: https://emandate.abcmutalfunds.in
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 1
+                      range:
+                        start: '2023-01-01T00:00:00.000Z'
+                        end: '2023-01-31T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 2
+                      range:
+                        start: '2023-02-01T00:00:00.000Z'
+                        end: '2023-02-28T23:59:59.999Z'
+                    collected_by: BPP
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 3
+                      range:
+                        start: '2023-03-01T00:00:00.000Z'
+                        end: '2023-03-31T23:59:59.999Z'
+                  - type: ON-ORDER
+                    params:
+                      amount: '500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: SIP 4
+                      range:
+                        start: '2023-04-01T00:00:00.000Z'
+                        end: '2023-04-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Terms
+                    external_ref:
+                      mimetype: text/html
+                      url: https://abcmutalfunds.com/mf/tnc.html
+      - summary: Get the Mutual fund account info form
+        api: form
+        details:
+          - description: >-
+              Provider platform sends the form for Mutual fund account info
+              form.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+                end
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/account-info\">\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: >-
+          Submit additional information and initiate the Mutual Fund investment
+          request.
+        api: init
+        details:
+          - description: >-
+              Provide the required additional information as requested and
+              initiate the process for the chosen Mutual Fund investment.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                rect rgb(191, 223, 255)
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
+        reference: if any
+        example:
+          value: &ref_14
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: init
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: P1
+                items:
+                  - id: I1
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    xinput:
+                      form_response:
+                        submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
+                billing:
+                  name: Charles D'Souza
+                  email: charles@equitygrow.in
+                fulfillments:
+                  - customer:
+                      person:
+                        name: Alice
+                        id: ecan_d51aef81
+                      contact:
+                        phone: +91-9999199991
+                        email: alice@example.com
+                    id: F1
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - descriptor:
+                        name: Unit price
+                      price:
+                        value: '100'
+                        currency: INR
+                      quantity:
+                        allocated:
+                          measure:
+                            value: '5'
+                            unit: units
+                payments:
+                  - params:
+                      source_bank_account_number: '32558994999'
+                      source_bank_code: SBIN0001234
+      - summary: >-
+          Receive the final investment offer and terms after submitting
+          additional information.
+        api: on_init
+        details:
+          - description: >-
+              Provider responds with the final draft of the investment offer,
+              including terms and conditions, based on the information provided
+              during the initiation.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                end
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
+        reference: if any
+        example:
+          value: &ref_16
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+              version: 2.0.0
+              action: on_init
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Begin SIP
+                        index:
+                          min: 0
+                          cur: 1
+                          max: 1
+                        headings:
+                          - Account Information
+                          - Agreement
+                      form:
+                        id: FO4
+                        mime_type: text/html
+                        url: >-
+                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO4
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Fund Rating
+                              code: FUND_RATING
+                            value: '4.5'
+                          - descriptor:
+                              name: Inception Date
+                              code: INCEPTION_DATE
+                            value: ' 2020-01-15'
+                          - descriptor:
+                              name: AUM
+                              code: AUM
+                            value: 250,000,000
+                          - descriptor:
+                              name: Expense Ratio
+                              code: EXPENSE_RATIO
+                            value: 1.25%
+                          - descriptor:
+                              name: 1 month returns
+                              code: ONE_MONTH_RETURNS
+                            value: 2.25%
+                          - descriptor:
+                              name: 3 month returns
+                              code: THREE_MONTH_RETURNS
+                            value: 6%
+                          - descriptor:
+                              name: 6 month returns
+                              code: SIX_MONTH_RETURNS
+                            value: 7%
+                          - descriptor:
+                              name: 1 year returns
+                              code: ONE_YEAR_RETURNS
+                            value: 15.25%
+                          - descriptor:
+                              name: 3 year returns
+                              code: THREE_YEAR_RETURNS
+                            value: 45%
+                          - descriptor:
+                              name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
+                            value: 60%
+                          - descriptor:
+                              name: Lock-in Period
+                              code: LOCK_IN_PERIOD
+                            value: P4M
+                          - descriptor:
+                              name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
+                            value: 100%
+                          - descriptor:
+                              name: Net Asset Value
+                              code: NET_ASSET_VALUE
+                            value: '100.50'
+                        display: true
+                      - descriptor:
+                          name: Sectors
+                          code: SECTOR_ALLOCATION
+                        list:
+                          - descriptor:
+                              name: Financials
+                              code: FINANCIALS
+                            value: 18.54%
+                          - descriptor:
+                              name: IT
+                              code: IT
+                            value: 10.18%
+                          - descriptor:
+                              name: Pharmaceuticals
+                              code: PHARMACEUTICALS
+                            value: 2.32%
+                      - descriptor:
+                          name: Fund Holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -4164,357 +4594,6 @@ x-flows:
                     external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
-      - summary: Get the Mutual fund account info form
-        api: form
-        details:
-          - description: >-
-              Provider platform sends the form for Mutual fund account info
-              form.
-            mermaid: |-
-              sequenceDiagram
-                title MF Ordering - Initializing Order
-                Participant Investment Platform
-                Participant Fund Aggregator / Direct Fund
-                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
-                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-                rect rgb(191, 223, 255)
-                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
-                end
-        reference: if any
-        example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/account-info\">\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO3\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: >-
-          Submit additional information and initiate the Mutual Fund investment
-          request.
-        api: init
-        details:
-          - description: >-
-              Provide the required additional information as requested and
-              initiate the process for the chosen Mutual Fund investment.
-            mermaid: |-
-              sequenceDiagram
-                title MF Ordering - Initializing Order
-                Participant Investment Platform
-                Participant Fund Aggregator / Direct Fund
-                rect rgb(191, 223, 255)
-                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
-                end
-                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
-        reference: if any
-        example:
-          value: &ref_15
-            context:
-              domain: ONDC:FIS14
-              location:
-                country:
-                  code: IND
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              action: init
-              timestamp: '2023-05-25T05:23:03.443Z'
-              version: 2.0.0
-              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-              bap_id: mutual-fund-protocol.becknprotocol.io
-              ttl: PT10M
-              bpp_id: stockwiz.com
-              bpp_uri: https://stockwiz.com
-            message:
-              order:
-                provider:
-                  id: P1
-                items:
-                  - id: I1
-                    category_ids:
-                      - C1
-                    fulfillment_ids:
-                      - F1
-                    xinput:
-                      form_response:
-                        submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
-                billing:
-                  name: Charles D'Souza
-                  email: charles@equitygrow.in
-                fulfillments:
-                  - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
-                      contact:
-                        phone: +91-9999199991
-                        email: alice@example.com
-                    id: F1
-                quote:
-                  price:
-                    currency: INR
-                    value: '500'
-                  breakup:
-                    - descriptor:
-                        name: Unit price
-                      price:
-                        value: '100'
-                        currency: INR
-                      quantity:
-                        allocated:
-                          measure:
-                            value: '5'
-                            unit: units
-                payments:
-                  - params:
-                      source_bank_account_number: '32558994999'
-                      source_bank_code: SBIN0001234
-      - summary: >-
-          Receive the final investment offer and terms after submitting
-          additional information.
-        api: on_init
-        details:
-          - description: >-
-              Provider responds with the final draft of the investment offer,
-              including terms and conditions, based on the information provided
-              during the initiation.
-            mermaid: |-
-              sequenceDiagram
-                title MF Ordering - Initializing Order
-                Participant Investment Platform
-                Participant Fund Aggregator / Direct Fund
-                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
-                rect rgb(191, 223, 255)
-                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-                end
-                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
-        reference: if any
-        example:
-          value: &ref_17
-            context:
-              domain: ONDC:FIS14
-              location:
-                country:
-                  code: IND
-              version: 2.0.0
-              action: on_init
-              bap_id: mutual-fund-protocol.becknprotocol.io
-              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              ttl: PT30M
-              timestamp: '2023-05-25T05:23:03.443Z'
-              bpp_id: stockwiz.com
-              bpp_uri: https://stockwiz.com
-            message:
-              order:
-                provider:
-                  id: P1
-                  descriptor:
-                    images:
-                      - url: >-
-                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-                        size_type: sm
-                    name: HDFC Midcap Opportunities Fund
-                    short_desc: HDFC Midcap Opportunities Fund
-                items:
-                  - id: I1
-                    descriptor:
-                      name: HDFC Midcap Opportunities Fund - SIP
-                    category_ids:
-                      - C1
-                    fulfillment_ids:
-                      - F1
-                    xinput:
-                      head:
-                        descriptor:
-                          name: Begin SIP
-                        index:
-                          min: 0
-                          cur: 1
-                          max: 1
-                        headings:
-                          - Account Information
-                          - Agreement
-                      form:
-                        id: FO4
-                        mime_type: text/html
-                        url: >-
-                          https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO4
-                        resubmit: false
-                        multiple_sumbissions: false
-                      required: true
-                    tags:
-                      - descriptor:
-                          name: Fund Information
-                          code: FUND_INFO
-                        list:
-                          - descriptor:
-                              name: Type
-                              code: TYPE
-                            value: Equity
-                          - descriptor:
-                              name: Fund Manager
-                              code: FUND_MANAGER
-                            value: HDFC Asset Management Company
-                          - descriptor:
-                              name: Fund Rating
-                              code: FUND_RATING
-                            value: '4.5'
-                          - descriptor:
-                              name: Inception Date
-                              code: INCEPTION_DATE
-                            value: ' 2020-01-15'
-                          - descriptor:
-                              name: AUM
-                              code: AUM
-                            value: 250,000,000
-                          - descriptor:
-                              name: Expense Ratio
-                              code: EXPENSE_RATIO
-                            value: 1.25%
-                          - descriptor:
-                              name: 1 month returns
-                              code: ONE_MONTH_RETURNS
-                            value: 2.25%
-                          - descriptor:
-                              name: 3 month returns
-                            value: 6%
-                          - descriptor:
-                              name: 6 month returns
-                            value: 7%
-                          - descriptor:
-                              name: 1 year returns
-                            value: 15.25%
-                          - descriptor:
-                              name: 3 year returns
-                            value: 45%
-                          - descriptor:
-                              name: 5 year returns
-                            value: 60%
-                          - descriptor:
-                              name: Lock-in Period
-                              code: LOCK_IN_PERIOD
-                            value: P4M
-                          - descriptor:
-                              name: Max Withdrawal Percentage
-                              code: MAX_WITHDRAWAL_PERCENTAGE
-                            value: 100%
-                          - descriptor:
-                              name: Net Asset Value
-                              code: NET_ASSET_VALUE
-                            value: '100.50'
-                        display: true
-                      - descriptor:
-                          name: Sectors
-                          code: SECTOR-ALLOCATION
-                        list:
-                          - descriptor:
-                              name: Financials
-                              code: FINANCIALS
-                            value: 18.54%
-                          - descriptor:
-                              name: IT
-                              code: IT
-                            value: 10.18%
-                          - descriptor:
-                              name: Pharmaceuticals
-                              code: PHARMACEUTICALS
-                            value: 2.32%
-                      - descriptor:
-                          name: Fund Holdings
-                          code: fund-holdings
-                        list:
-                          - descriptor:
-                              name: Max Financial Services Ltd
-                            value: 2.30%
-                          - descriptor:
-                              name: Dixon Technologies (India) Ltd
-                            value: 1.00%
-                          - descriptor:
-                              name: Mankind Pharma Ltd
-                            value: < 1%
-                fulfillments:
-                  - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
-                      contact:
-                        phone: +91-9999199991
-                        email: alice@example.com
-                    id: F1
-                    state:
-                      descriptor:
-                        name: Mutual Fund Order Initialized
-                    stops:
-                      - type: SIP_INVESTMENT_PERIOD
-                        time:
-                          range:
-                            start: '2023-01-01T00:00:00.000Z'
-                            end: '2023-04-30T23:59:59.999Z'
-                quote:
-                  price:
-                    currency: INR
-                    value: '500'
-                  breakup:
-                    - descriptor:
-                        name: Unit price
-                      price:
-                        value: '100'
-                        currency: INR
-                      quantity:
-                        allocated:
-                          measure:
-                            value: '5'
-                            unit: units
-                billing:
-                  name: Charles D'Souza
-                  email: charles@equitygrow.in
-                payments:
-                  - type: ON-ORDER
-                    url: https://emandate.abcmutalfunds.in
-                    params:
-                      amount: '500'
-                      currency: INR
-                    status: NOT-PAID
-                    time:
-                      label: SIP 1
-                      range:
-                        start: '2023-01-01T00:00:00.000Z'
-                        end: '2023-01-31T23:59:59.999Z'
-                    collected_by: BPP
-                  - type: ON-ORDER
-                    params:
-                      amount: '500'
-                      currency: INR
-                    status: NOT-PAID
-                    time:
-                      label: SIP 2
-                      range:
-                        start: '2023-02-01T00:00:00.000Z'
-                        end: '2023-02-28T23:59:59.999Z'
-                    collected_by: BPP
-                  - type: ON-ORDER
-                    params:
-                      amount: '500'
-                      currency: INR
-                    status: NOT-PAID
-                    time:
-                      label: SIP 3
-                      range:
-                        start: '2023-03-01T00:00:00.000Z'
-                        end: '2023-03-31T23:59:59.999Z'
-                  - type: ON-ORDER
-                    params:
-                      amount: '500'
-                      currency: INR
-                    status: NOT-PAID
-                    time:
-                      label: SIP 4
-                      range:
-                        start: '2023-04-01T00:00:00.000Z'
-                        end: '2023-04-30T23:59:59.999Z'
-                cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
-                      mimetype: text/html
-                      url: https://abcmutalfunds.com/mf/tnc.html
       - summary: Get the Mutual fund agreement form
         api: form
         details:
@@ -4551,7 +4630,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_17
             context:
               domain: ONDC:FIS14
               location:
@@ -4635,7 +4714,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_8
+          value: &ref_7
             context:
               domain: ONDC:FIS14
               location:
@@ -4667,6 +4746,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -4706,18 +4786,23 @@ x-flows:
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
@@ -4738,7 +4823,7 @@ x-flows:
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: SECTOR-ALLOCATION
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
@@ -4754,7 +4839,7 @@ x-flows:
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -4891,7 +4976,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_21
             context:
               domain: ONDC:FIS14
               location:
@@ -4925,7 +5010,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
                 end
         example:
-          value: &ref_20
+          value: &ref_22
             context:
               domain: ONDC:FIS14
               location:
@@ -4957,7 +5042,8 @@ x-flows:
                 items:
                   - id: I1
                     descriptor:
-                      name: ABC Large Cap Mutual Fund
+                      name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                 fulfillments:
                   - customer:
                       person:
@@ -5031,7 +5117,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_7
       - summary: >-
           Request real-time updates on the status of your Mutual Fund
           investment.
@@ -5052,7 +5138,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_8
             context:
               domain: ONDC:FIS14
               location:
@@ -5121,6 +5207,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -5128,7 +5215,7 @@ x-flows:
                     tags:
                       - descriptor:
                           name: Fund Information
-                          code: fund-info
+                          code: FUND_INFO
                         list:
                           - descriptor:
                               name: Type
@@ -5150,21 +5237,27 @@ x-flows:
                             value: 1.25%
                           - descriptor:
                               name: 1 month returns
+                              code: ONE_MONTH_RETURNS
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
@@ -5181,20 +5274,23 @@ x-flows:
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: sector-allocation
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
+                              code: FINANCIALS
                             value: 18.54%
                           - descriptor:
                               name: IT
+                              code: IT
                             value: 10.18%
                           - descriptor:
                               name: Pharmaceuticals
+                              code: PHARMACEUTICALS
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -5400,7 +5496,7 @@ x-flows:
                 end
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
         example:
-          value:
+          value: &ref_19
             context:
               domain: ONDC:FIS14
               location:
@@ -5432,6 +5528,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -5458,73 +5555,92 @@ x-flows:
                     tags:
                       - descriptor:
                           name: Fund Information
-                          code: fund-info
+                          code: FUND_INFO
                         list:
                           - descriptor:
                               name: Type
+                              code: TYPE
                             value: Equity
                           - descriptor:
                               name: Fund Manager
+                              code: FUND_MANAGER
                             value: HDFC Asset Management Company
                           - descriptor:
                               name: Fund Rating
+                              code: FUND_RATING
                             value: '4.5'
                           - descriptor:
                               name: Inception Date
+                              code: INCEPTION_DATE
                             value: ' 2020-01-15'
                           - descriptor:
                               name: AUM
+                              code: AUM
                             value: 250,000,000
                           - descriptor:
                               name: Expense Ratio
+                              code: EXPENSE_RATIO
                             value: 1.25%
                           - descriptor:
                               name: 1 month returns
+                              code: ONE_MONTH_RETURNS
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
+                              code: LOCK_IN_PERIOD
                             value: P4M
                           - descriptor:
                               name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
                             value: 100%
                           - descriptor:
                               name: Net Asset Value
+                              code: NET_ASSET_VALUE
                             value: '100.50'
                           - descriptor:
                               name: Lock-in end Date
+                              code: LOCK_IN_END_DATE
                             value: '2023-05-01T23:59:59.999Z'
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: sector-allocation
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
+                              code: FINANCIALS
                             value: 18.54%
                           - descriptor:
                               name: IT
+                              code: IT
                             value: 10.18%
                           - descriptor:
                               name: Pharmaceuticals
+                              code: PHARMACEUTICALS
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -5575,9 +5691,11 @@ x-flows:
                         list:
                           - descriptor:
                               name: Amount
+                              code: AMOUNT
                             value: '2000'
                           - descriptor:
                               name: Units
+                              code: UNITS
                             value: '30'
                 quote:
                   price:
@@ -5756,7 +5874,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
         reference: if any
         example:
-          value:
+          value: &ref_18
             context:
               domain: ONDC:FIS14
               location:
@@ -5841,7 +5959,7 @@ x-flows:
                     tags:
                       - descriptor:
                           name: Fund Information
-                          code: fund-info
+                          code: FUND_INFO
                         list:
                           - descriptor:
                               name: Type
@@ -5894,20 +6012,23 @@ x-flows:
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: sector-allocation
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
+                              code: FINANCIALS
                             value: 18.54%
                           - descriptor:
                               name: IT
+                              code: IT
                             value: 10.18%
                           - descriptor:
                               name: Pharmaceuticals
+                              code: PHARMACEUTICALS
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -6127,7 +6248,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_8
       - summary: >-
           Receive real-time updates on your Mutual Fund investment after each
           milestone.
@@ -6146,7 +6267,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
                 end
         example:
-          value:
+          value: &ref_20
             context:
               domain: ONDC:FIS14
               location:
@@ -6178,6 +6299,7 @@ x-flows:
                   - id: I1
                     descriptor:
                       name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
                     category_ids:
                       - C1
                     fulfillment_ids:
@@ -6186,73 +6308,92 @@ x-flows:
                     tags:
                       - descriptor:
                           name: Fund Information
-                          code: fund-info
+                          code: FUND_INFO
                         list:
                           - descriptor:
                               name: Type
+                              code: TYPE
                             value: Equity
                           - descriptor:
                               name: Fund Manager
+                              code: FUND_MANAGER
                             value: HDFC Asset Management Company
                           - descriptor:
                               name: Fund Rating
+                              code: FUND_RATING
                             value: '4.5'
                           - descriptor:
                               name: Inception Date
+                              code: INCEPTION_DATE
                             value: ' 2020-01-15'
                           - descriptor:
                               name: AUM
+                              code: AUM
                             value: 250,000,000
                           - descriptor:
                               name: Expense Ratio
+                              code: EXPENSE_RATIO
                             value: 1.25%
                           - descriptor:
                               name: 1 month returns
+                              code: ONE_MONTH_RETURNS
                             value: 2.25%
                           - descriptor:
                               name: 3 month returns
+                              code: THREE_MONTH_RETURNS
                             value: 6%
                           - descriptor:
                               name: 6 month returns
+                              code: SIX_MONTH_RETURNS
                             value: 7%
                           - descriptor:
                               name: 1 year returns
+                              code: ONE_YEAR_RETURNS
                             value: 15.25%
                           - descriptor:
                               name: 3 year returns
+                              code: THREE_YEAR_RETURNS
                             value: 45%
                           - descriptor:
                               name: 5 year returns
+                              code: FIVE_YEAR_RETURNS
                             value: 60%
                           - descriptor:
                               name: Lock-in Period
+                              code: LOCK_IN_PERIOD
                             value: P4M
                           - descriptor:
                               name: Max Withdrawal Percentage
+                              code: MAX_WITHDRAWAL_PERCENTAGE
                             value: 100%
                           - descriptor:
                               name: Net Asset Value
+                              code: NET_ASSET_VALUE
                             value: '100.50'
                           - descriptor:
                               name: Lock-in end Date
+                              code: LOCK_IN_END_DATE
                             value: '2023-05-01T23:59:59.999Z'
                         display: true
                       - descriptor:
                           name: Sectors
-                          code: sector-allocation
+                          code: SECTOR_ALLOCATION
                         list:
                           - descriptor:
                               name: Financials
+                              code: FINANCIALS
                             value: 18.54%
                           - descriptor:
                               name: IT
+                              code: IT
                             value: 10.18%
                           - descriptor:
                               name: Pharmaceuticals
+                              code: PHARMACEUTICALS
                             value: 2.32%
                       - descriptor:
                           name: Fund Holdings
-                          code: fund-holdings
+                          code: FUND_HOLDINGS
                         list:
                           - descriptor:
                               name: Max Financial Services Ltd
@@ -6462,7 +6603,7 @@ x-examples:
         examples:
           - summary: search for mutual funds
             description: TBD
-            value: *ref_10
+            value: *ref_9
           - summary: search for mutual funds
             description: TBD
             value:
@@ -6495,280 +6636,63 @@ x-examples:
         examples:
           - summary: mutual funds catalog
             description: TBD
-            value: *ref_11
+            value: *ref_10
       select:
         examples:
           - summary: select-request-sip
             description: TBD
-            value: *ref_12
+            value: *ref_11
       on_select:
         examples:
           - summary: on_select-request-sip
             description: TBD
-            value: *ref_13
+            value: *ref_12
       init:
         examples:
           - summary: init-request-sip-account-info
             description: TBD
-            value: *ref_14
+            value: *ref_13
           - summary: init-request-sip
             description: TBD
-            value: *ref_15
+            value: *ref_14
       on_init:
         examples:
           - summary: on_init-request-sip-account-info
             description: TBD
-            value: *ref_16
+            value: *ref_15
           - summary: on_init-request-sip-agreement
             description: TBD
-            value: *ref_17
+            value: *ref_16
       confirm:
         examples:
           - summary: confirm-request-sip
             description: TBD
-            value: *ref_18
+            value: *ref_17
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_8
+            value: *ref_7
       update:
         examples:
           - summary: update
             description: TBD
-            value:
-              context:
-                domain: ONDC:FIS14
-                location:
-                  country:
-                    code: IND
-                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-                action: update
-                timestamp: '2023-05-25T05:23:03.443Z'
-                version: 2.0.0
-                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-                bap_id: mutual-fund-protocol.becknprotocol.io
-                ttl: PT10M
-                bpp_id: stockwiz.com
-                bpp_uri: https://stockwiz.com
-              message:
-                update_target: order.quote
-                order:
-                  id: 66B7AEDF45
-                  payments:
-                    - tags:
-                        - descriptor:
-                            name: Investment Method
-                          list:
-                            - descriptor:
-                                name: Amount
-                              value: '500'
-                            - descriptor:
-                                name: SIP Start Date
-                              value: '2023-01-07'
-                            - descriptor:
-                                name: SIP Frequency
-                              value: Monthly
-                            - descriptor:
-                                name: SIP End Date
-                              value: '2026-01-07'
-                  quote:
-                    price:
-                      currency: INR
-                      value: '1000'
+            value: *ref_18
       on_update:
         examples:
           - summary: on_update
             description: TBD
-            value:
-              context:
-                domain: ONDC:FIS14
-                location:
-                  country:
-                    code: IND
-                version: 2.0.0
-                action: on_update
-                bap_id: mutual-fund-protocol.becknprotocol.io
-                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-                ttl: PT30M
-                timestamp: '2023-05-25T05:23:03.443Z'
-                bpp_id: stockwiz.com
-                bpp_uri: https://stockwiz.com
-              message:
-                order:
-                  id: O1
-                  provider:
-                    id: '1'
-                    descriptor:
-                      images:
-                        - url: >-
-                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-                          size_type: sm
-                      name: HDFC Midcap Opportunities Fund
-                      short_desc: HDFC Midcap Opportunities Fund
-                  items:
-                    - id: MFLC001
-                      descriptor:
-                        name: ABC Large Cap Mutual Fund
-                  fulfillments:
-                    - customer:
-                        person:
-                          name: John Doe
-                          id: ecan_d51aef81
-                        contact:
-                          phone: +91-9999999999
-                          email: john.doe@example.com
-                      id: F1
-                      state:
-                        descriptor:
-                          name: SIP amount modified
-                  quote:
-                    price:
-                      currency: INR
-                      value: '1000'
-                  payments:
-                    - type: ON-ORDER
-                      url: https://payment.abcmutalfunds.in
-                      params:
-                        amount: '1000'
-                        currency: INR
-                      status: NOT-PAID
-                      time:
-                        range:
-                          start: '2023-05-25T05:23:03.443Z'
-                          end: '2023-06-25T05:23:03.443Z'
-                  cancellation_terms:
-                    - fulfillment_state:
-                        descriptor:
-                          name: Terms
-                      external_ref:
-                        mimetype: text/html
-                        url: https://abcmutalfunds.com/mf/tnc.html
+            value: *ref_19
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_9
+            value: *ref_8
       on_status:
         examples:
-          - summary: on_status-request-sip-installment-received
+          - summary: on_status-request-sip-withdraw
             description: TBD
-            value:
-              context:
-                domain: ONDC:FIS14
-                location:
-                  country:
-                    code: IND
-                version: 2.0.0
-                action: on_status
-                bap_id: mutual-fund-protocol.becknprotocol.io
-                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-                ttl: PT30M
-                timestamp: '2023-05-25T05:23:03.443Z'
-                bpp_id: stockwiz.com
-                bpp_uri: https://stockwiz.com
-              message:
-                order:
-                  id: O1
-                  provider:
-                    id: P1
-                    descriptor:
-                      images:
-                        - url: >-
-                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-                          size_type: sm
-                      name: HDFC Midcap Opportunities Fund
-                      short_desc: HDFC Midcap Opportunities Fund
-                  items:
-                    - id: I1
-                      descriptor:
-                        name: HDFC Midcap Opportunities Fund - SIP
-                      price:
-                        value: '1'
-                        currency: INR
-                      quantity:
-                        minimum:
-                          count: 100
-                        selected:
-                          count: 200
-                  fulfillments:
-                    - customer:
-                        person:
-                          name: Alice
-                          id: ecan_d51aef81
-                        contact:
-                          phone: +91-9999199991
-                          email: alice@example.com
-                      id: F1
-                      state:
-                        descriptor:
-                          name: February SIP Amount Received
-                          code: installment-received
-                      agent:
-                        person:
-                          name: John Williams
-                        organization:
-                          descriptor:
-                            name: HDFC Fund
-                        contact:
-                          phone: +91-9999999999
-                  quote:
-                    price:
-                      currency: INR
-                      value: '2400'
-                    breakup:
-                      - descriptor:
-                          name: Jan'23 SIP Installment
-                        price:
-                          value: '80'
-                          currency: INR
-                        quantity:
-                          allocated:
-                            measure:
-                              value: '2.5'
-                              unit: units
-                      - descriptor:
-                          name: Feb'23 Investment
-                        price:
-                          value: '80'
-                          currency: INR
-                        quantity:
-                          allocated:
-                            measure:
-                              value: '2.5'
-                              unit: units
-                  billing:
-                    name: Charles D'Souza
-                    email: charles@equitygrow.in
-                    phone: +91-988777632
-                  payments:
-                    - collected_by: BPP
-                      type: ON-FULFILLMENT
-                      params:
-                        amount: '200'
-                        currency: INR
-                        transaction_id: bh767iygx65u76iyg
-                        source_virtual_payment_address: charles@oksbi
-                        timestamp: '2023-05-25T05:23:03.443Z'
-                      status: PAID
-                    - collected_by: BPP
-                      type: ON-FULFILLMENT
-                      params:
-                        amount: '200'
-                        currency: INR
-                        transaction_id: bh767iygx65u76iyg
-                        source_virtual_payment_address: charles@oksbi
-                        timestamp: 2023-05-25T05:23:03.443Z
-                      status: PAID
-                  cancellation_terms:
-                    - external_ref:
-                        mimetype: text/html
-                        url: https://abcmutalfunds.com/mf/tnc.html
+            value: *ref_20
       support:
         examples:
           - summary: support
@@ -6824,12 +6748,12 @@ x-examples:
         examples:
           - summary: cancel
             description: TBD
-            value: *ref_19
+            value: *ref_21
       on_cancel:
         examples:
           - summary: on_cancel
             description: TBD
-            value: *ref_20
+            value: *ref_22
       track:
         examples:
           - summary: track
