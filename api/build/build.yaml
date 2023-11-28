@@ -2861,6 +2861,9 @@ x-enum:
                   - code: WITHDRAWAL_PROCESSED
                     description: represents order state for withdrawal
                     reference: <PR/Issue/Discussion Links md format text
+                  - code: CANCELLED
+                    description: represents order cancelled state
+                    reference: <PR/Issue/Discussion Links md format text
           payments: &ref_3
             type:
               - code: ON-ORDER
@@ -3337,14 +3340,8 @@ x-flows:
                     fulfillments:
                       - id: F1
                         type: SIP
-                        agent:
-                          person:
-                            name: John Doe
                       - id: F2
                         type: ONE-TIME
-                        agent:
-                          person:
-                            name: John Doe
       - summary: Choose a specific Mutual Fund product for investment.
         api: select
         details:
@@ -3392,12 +3389,6 @@ x-flows:
                 fulfillments:
                   - id: F1
                     type: SIP
-                    agent:
-                      person:
-                        name: John Doe
-                    customer:
-                      person:
-                        id: ecan_d51aef81
       - summary: >-
           Receive detailed information and a consent request for the chosen
           Mutual Fund product.
@@ -3465,7 +3456,7 @@ x-flows:
                           max: 1
                         headings:
                           - Sip Setup
-                          - Know Your Customer
+                          - Know Your Customer/Registration Form
                       form:
                         id: FO1
                         mime_type: text/html
@@ -3596,6 +3587,8 @@ x-flows:
 
               <body>
                 <form action="/form/submission/sip-setup" ondc-template="financial-services:sip-set-up">
+                  <label for="registertion-id">Registration ID: </label>
+                  <input type="text" name="registertion-id" />
                   <label for="sip-start-date">SIP Start Date: </label>
                   <input type="date" name="sip-start-date" />
                   <label for="sip-end-date">SIP End Date: </label>
@@ -3607,6 +3600,43 @@ x-flows:
                   </select>
                   <label for="sip-amount">SIP Amount</label>
                   <input type="text" name="sip-amount" />
+                  
+                  <input type="hidden" id="formId" name="formId" value="FO1">
+                  <input type="submit" value="Submit">
+                </form>
+              </body>
+            </html>
+      - summary: Get the Lumpsum setup form
+        api: form
+        details:
+          - description: Provider platform sends the form for Lumpsum setup.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Selection
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: select
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form
+                end
+        reference: if any
+        example:
+          value: |
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Document</title>
+              </head>
+
+              <body>
+                <form action="/form/submission/lumpsum-setup" ondc-template="financial-services:lumpsum-set-up">
+                  <label for="registertion-id">Registration ID: </label>
+                  <input type="text" name="registertion-id" />
+                  <label for="lumpsum-amount">lumpsum Amount</label>
+                  <input type="text" name="lumpsum-amount" />
                   
                   <input type="hidden" id="formId" name="formId" value="FO1">
                   <input type="submit" value="Submit">
@@ -3663,12 +3693,6 @@ x-flows:
                 fulfillments:
                   - id: F1
                     type: SIP
-                    agent:
-                      person:
-                        name: John Doe
-                    customer:
-                      person:
-                        id: ecan_d51aef81
       - summary: >-
           Receive detailed information and a consent request for the chosen
           Mutual Fund product.
@@ -3736,10 +3760,10 @@ x-flows:
                           max: 1
                         headings:
                           - Sip Setup
-                          - Know Your Customer
+                          - Know Your Customer/Registration Form
                       form:
                         id: FO2
-                        mime_type: text/html
+                        mime_type: application/html
                         url: >-
                           https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/FO2
                         resubmit: false
@@ -3843,12 +3867,6 @@ x-flows:
                 fulfillments:
                   - id: F1
                     type: SIP
-                    agent:
-                      person:
-                        name: John Doe
-                    customer:
-                      person:
-                        id: ecan_d51aef81
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -3870,10 +3888,10 @@ x-flows:
                           measure:
                             value: '5'
                             unit: units
-      - summary: Get the Kyc form
+      - summary: Redirect the EKYC/Registration portal
         api: form
         details:
-          - description: Provider platform sends the form for Kyc.
+          - description: Provider platform hosts the EKYC/Registration From.
             mermaid: |-
               sequenceDiagram
                 title MF Ordering - Selection
@@ -3886,7 +3904,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Document</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/sip-kyc\">\r\n    <label for=\"adhrNo\">Aadhaar Number: </label>\r\n    <input type=\"text\" id=\"adhrNo\" name=\"adhrNo\" />\r\n    <label for=\"tnc\">I agree to fetch the necessary information using my Aadhaar</a></label>\r\n    <input type=\"checkbox\" id=\"tnc\" name=\"tnc\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: This will redirected to different html page
       - summary: >-
           Submit additional information and initiate the Mutual Fund investment
           request.
@@ -3939,12 +3957,6 @@ x-flows:
                 fulfillments:
                   - id: F1
                     type: SIP
-                    agent:
-                      person:
-                        name: John Doe
-                    customer:
-                      person:
-                        id: ecan_d51aef81_d51aef81
                 billing:
                   name: Charles D'Souza
                   email: charles@equitygrow.in
@@ -4140,16 +4152,10 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
                     id: F1
-                    state:
-                      descriptor:
-                        name: Mutual Fund Order Initialized
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -4225,10 +4231,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
       - summary: Get the Mutual fund account info form
@@ -4302,9 +4305,6 @@ x-flows:
                   email: charles@equitygrow.in
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
@@ -4398,7 +4398,7 @@ x-flows:
                           - Agreement
                       form:
                         id: FO4
-                        mime_type: text/html
+                        mime_type: application/html
                         url: >-
                           https://6vs8xnx5i7.abcmf.co.in/mf-agreement/xinput/formid/FO4
                         resubmit: false
@@ -4501,16 +4501,10 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
                     id: F1
-                    state:
-                      descriptor:
-                        name: Mutual Fund Order Initialized
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -4586,10 +4580,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
       - summary: Get the Mutual fund agreement form
@@ -4615,9 +4606,8 @@ x-flows:
         api: confirm
         details:
           - description: >-
-              Confirm your investment decision and provide explicit
-              authorization for the provider to proceed with the chosen Mutual
-              Fund investment.
+              Confirm your investment decision for the provider to proceed with
+              the chosen Mutual Fund investment.
             mermaid: |-
               sequenceDiagram
                 Participant Investment Platform
@@ -4665,11 +4655,6 @@ x-flows:
                         phone: +91-9999199991
                         email: alice@example.com
                     id: F1
-                    stops:
-                      - type: start
-                        authorization:
-                          type: OTP
-                          token: '535346'
                 billing:
                   name: Charles D'Souza
                   email: charles@equitygrow.in
@@ -4850,9 +4835,6 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
@@ -4861,14 +4843,6 @@ x-flows:
                       descriptor:
                         name: Order placed
                         code: ORDER_PLACED
-                    agent:
-                      person:
-                        name: John Williams
-                      organization:
-                        descriptor:
-                          name: HDFC Fund
-                      contact:
-                        phone: +91-9999999999
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -4946,10 +4920,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
                 documents:
@@ -5044,15 +5015,13 @@ x-flows:
                       code: SIP
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999999999
                         email: john.doe@example.com
                     id: F1
                     state:
                       descriptor:
+                        code: CANCELLED
                         name: SIP cancelled
                 quote:
                   price:
@@ -5070,10 +5039,7 @@ x-flows:
                         start: '2023-05-25T05:23:03.443Z'
                         end: '2023-05-25T05:23:03.443Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
   - summary: Withdrawal-Mutual funds
@@ -5301,9 +5267,6 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
@@ -5312,14 +5275,6 @@ x-flows:
                       descriptor:
                         name: Order placed
                         code: ORDER_PLACED
-                    agent:
-                      person:
-                        name: John Williams
-                      organization:
-                        descriptor:
-                          name: HDFC Fund
-                      contact:
-                        phone: +91-9999999999
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -5458,10 +5413,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
                 documents:
@@ -5539,7 +5491,7 @@ x-flows:
                         index:
                           min: 0
                           cur: 0
-                          max: 1
+                          max: 0
                         headings:
                           - Account Information
                       form:
@@ -5651,9 +5603,6 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
@@ -5662,14 +5611,6 @@ x-flows:
                       descriptor:
                         name: Order placed
                         code: ORDER_PLACED
-                    agent:
-                      person:
-                        name: John Williams
-                      organization:
-                        descriptor:
-                          name: HDFC Fund
-                      contact:
-                        phone: +91-9999999999
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -5827,10 +5768,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
                 documents:
@@ -6037,9 +5975,6 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
@@ -6048,14 +5983,6 @@ x-flows:
                       descriptor:
                         name: Order placed
                         code: ORDER_PLACED
-                    agent:
-                      person:
-                        name: John Williams
-                      organization:
-                        descriptor:
-                          name: HDFC Fund
-                      contact:
-                        phone: +91-9999999999
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -6211,10 +6138,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
                 documents:
@@ -6402,9 +6326,6 @@ x-flows:
                             value: < 1%
                 fulfillments:
                   - customer:
-                      person:
-                        name: Alice
-                        id: ecan_d51aef81
                       contact:
                         phone: +91-9999199991
                         email: alice@example.com
@@ -6413,14 +6334,6 @@ x-flows:
                       descriptor:
                         name: Order placed
                         code: ORDER_PLACED
-                    agent:
-                      person:
-                        name: John Williams
-                      organization:
-                        descriptor:
-                          name: HDFC Fund
-                      contact:
-                        phone: +91-9999999999
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -6576,10 +6489,7 @@ x-flows:
                         start: '2023-04-01T00:00:00.000Z'
                         end: '2023-04-30T23:59:59.999Z'
                 cancellation_terms:
-                  - fulfillment_state:
-                      descriptor:
-                        name: Terms
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://abcmutalfunds.com/mf/tnc.html
                 documents:
@@ -6944,14 +6854,6 @@ x-attributes:
                     A code that describes the mode of fulfillment. This is
                     typically set when there are multiple ways an order can be
                     fulfilled. 
-                agent:
-                  person:
-                    name:
-                      required: mandatory
-                      type: string
-                      owner: BPP
-                      usage: John Doe
-                      description: Describes the agent name
       select:
         message:
           order:
@@ -7359,14 +7261,6 @@ x-attributes:
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
-              state:
-                descriptor:
-                  name:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: Mutual Fund Order Initialized
-                    description: Current state of the fulfillment
             quote:
               price:
                 value:
@@ -7406,7 +7300,7 @@ x-attributes:
               fulfillment_state:
                 descriptor:
                   name:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: Terms
@@ -7488,19 +7382,6 @@ x-attributes:
                   owner: BPP
                   usage: start
                   description: Describes the start of the fulfillment
-                authorization:
-                  type:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: OTP
-                    description: Describes the type of the authorization scheme
-                  token:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: 535346
-                    description: Describes the token of the authorization scheme
             billing:
               name:
                 required: mandatory
@@ -7692,7 +7573,7 @@ x-attributes:
               fulfillment_state:
                 descriptor:
                   name:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: Terms
