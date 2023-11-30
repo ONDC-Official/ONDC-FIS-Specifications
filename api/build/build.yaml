@@ -2086,8 +2086,8 @@ components:
             - PAID
             - NOT-PAID
             - FORECLOSED
-            - DELAYED_PAID
-            - DELAYED_NOT_PAID
+            - DELAYED
+            - DEFERRED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -2875,6 +2875,19 @@ x-enum:
                 After certain duration of overdue payment, it eventually comes
                 to default state
               reference: <PR/Issue/Discussion Links md format text
+          time:
+            label:
+              - code: MISSED_EMI_PAYMENT
+                description: >-
+                  Describes, when buyer missed to make a scheduled installment
+                  payment.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: FORECLOSE
+                description: Describes, when buyer initates the foreclose intent.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: PRE_PART_PAYMENT
+                description: Describes, when buyer initates the pre part intent.
+                reference: <PR/Issue/Discussion Links md format text
         fulfillments:
           state:
             descriptor:
@@ -2900,15 +2913,6 @@ x-enum:
                   reference: <PR/Issue/Discussion Links md format text
                 - code: COMPLETED
                   description: When the overall process for loan gets over
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: FORECLOSE
-                  description: Describes, when buyer initates the foreclose intent.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: FORECLOSED
-                  description: Describes, the current state of loan.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: PRE_PART_PAYMENT
-                  description: Describes, when buyer initates the pre part intent intent.
                   reference: <PR/Issue/Discussion Links md format text
         cancellation_terms:
           fulfillment_state:
@@ -2981,15 +2985,6 @@ x-enum:
                   reference: <PR/Issue/Discussion Links md format text
                 - code: COMPLETED
                   description: When the overall process for loan gets over
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: FORECLOSE
-                  description: Describes, when buyer initates the foreclose intent.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: FORECLOSED
-                  description: Describes, the current state of loan.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: PRE_PART_PAYMENT
-                  description: Describes, when buyer initates the pre part intent intent.
                   reference: <PR/Issue/Discussion Links md format text
   on_update:
     context: *ref_0
@@ -15466,13 +15461,12 @@ x-flows:
               bpp_id: bpp.credit.becknprotocol.org
               bpp_uri: https://bpp.credit.becknprotocol.org
             message:
-              update_target: fulfillments
+              update_target: payments
               order:
                 id: 66B7AEDF45
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: FORECLOSE
+                payments:
+                  - time:
+                      label: FORECLOSE
       - summary: The provider platform updates the consumer.
         api: on_update
         details:
@@ -15725,7 +15719,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Forclosuer Payment
+                      label: FORECLOSE
                     type: POST_FULFILLMENT
                   - type: ON_ORDER
                     status: PAID
@@ -15770,7 +15764,7 @@ x-flows:
                       currency: INR
                     status: PAID
                     time:
-                      label: Installment 1
+                      label: Installment
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
@@ -15780,7 +15774,7 @@ x-flows:
                       currency: INR
                     status: PAID
                     time:
-                      label: Installment 2
+                      label: Installment
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
@@ -15790,7 +15784,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Installment 3
+                      label: Installment
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
@@ -15800,7 +15794,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Installment 4
+                      label: Installment
                       range:
                         start: '2023-09-01T00:00:00.000Z'
                         end: '2023-09-30T23:59:59.999Z'
@@ -15810,7 +15804,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Installment 5
+                      label: Installment
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
@@ -16107,7 +16101,7 @@ x-flows:
                       currency: INR
                     status: FORECLOSED
                     time:
-                      label: Forclosuer Payment
+                      label: FORECLOSE
                   - type: ON_ORDER
                     status: PAID
                     collected_by: BPP
@@ -16309,20 +16303,15 @@ x-flows:
               bpp_id: bpp.credit.becknprotocol.org
               bpp_uri: https://bpp.credit.becknprotocol.org
             message:
-              update_target: payments,fulfillments
+              update_target: payments
               order:
                 id: 66B7AEDF45
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: PRE_PART_PAYMENT
                 payments:
                   - params:
                       amount: '92720'
                       currency: INR
-                    status: NOT-PAID
                     time:
-                      label: Pre-Part Payment
+                      label: PRE_PART_PAYMENT
       - summary: The provider platform updates the consumer.
         api: on_update
         details:
@@ -16575,7 +16564,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Pre Part Payment
+                      label: PRE_PART_PAYMENT
                     type: POST_FULFILLMENT
                   - type: ON_ORDER
                     status: PAID
@@ -16620,7 +16609,7 @@ x-flows:
                       currency: INR
                     status: PAID
                     time:
-                      label: Installment 1
+                      label: Installment
                       range:
                         start: '2023-06-01T00:00:00.000Z'
                         end: '2023-06-30T23:59:59.999Z'
@@ -16630,7 +16619,7 @@ x-flows:
                       currency: INR
                     status: PAID
                     time:
-                      label: Installment 2
+                      label: Installment
                       range:
                         start: '2023-07-01T00:00:00.000Z'
                         end: '2023-07-31T23:59:59.999Z'
@@ -16640,7 +16629,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Installment 3
+                      label: Installment
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
@@ -16660,7 +16649,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Installment 5
+                      label: Installment
                       range:
                         start: '2023-10-01T00:00:00.000Z'
                         end: '2023-10-31T23:59:59.999Z'
@@ -16951,7 +16940,7 @@ x-flows:
                       currency: INR
                     status: PAID
                     time:
-                      label: Pre Part Payment
+                      label: PRE_PART_PAYMENT
                   - type: ON_ORDER
                     status: PAID
                     collected_by: BPP
@@ -17154,13 +17143,12 @@ x-flows:
               bpp_id: bpp.credit.becknprotocol.org
               bpp_uri: https://bpp.credit.becknprotocol.org
             message:
-              update_target: fulfillments
+              update_target: payments
               order:
                 id: 66B7AEDF45
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: MISSED_EMI_PAYMENT
+                payments:
+                  - time:
+                      label: MISSED_EMI_PAYMENT
       - summary: The provider platform updates the consumer.
         api: on_update
         details:
@@ -17405,7 +17393,7 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     time:
-                      label: Late fee payment for Installment-3
+                      label: MISSED_EMI_PAYMENT
                       range:
                         start: '2023-08-01T00:00:00.000Z'
                         end: '2023-08-31T23:59:59.999Z'
@@ -17471,7 +17459,7 @@ x-flows:
                     params:
                       amount: '46360'
                       currency: INR
-                    status: DELAYED_NOT_PAID
+                    status: DELAYED
                     time:
                       label: Installment 3
                       range:
@@ -17844,7 +17832,7 @@ x-flows:
                     params:
                       amount: '46360'
                       currency: INR
-                    status: DELAYED_PAID
+                    status: DEFERRED
                     time:
                       label: Installment 3
                       range:
