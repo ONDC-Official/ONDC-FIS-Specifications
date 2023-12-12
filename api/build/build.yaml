@@ -1201,8 +1201,6 @@ components:
           type: string
         code:
           type: string
-        sub_code:
-          type: string
         short_desc:
           type: string
         long_desc:
@@ -2087,8 +2085,6 @@ components:
           enum:
             - PAID
             - NOT-PAID
-            - DELAYED
-            - DEFERRED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -2255,7 +2251,6 @@ components:
           type: array
           items:
             type: object
-            additionalProperties: false
             properties:
               item:
                 $ref: '#/components/schemas/Item'
@@ -2532,24 +2527,6 @@ components:
             `false`, it should not be displayed. This value can override the
             group display value.
           type: boolean
-        list:
-          description: >-
-            An array of Tag objects listed under this group. This property can
-            be set by BAPs during search to narrow the `search` and achieve more
-            relevant results. When received during `on_search`, BAPs must render
-            this list under the heading described by the `name` property of this
-            schema.
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              descriptor:
-                description: >-
-                  Description of the Tag, can be used to store detailed
-                  information.
-                allOf:
-                  - $ref: '#/components/schemas/Descriptor'
     TagGroup:
       description: >-
         A collection of tag objects with group level attributes. For detailed
@@ -3224,92 +3201,6 @@ x-tags:
                       Describes, N – No value of REDEEM_ALLOWED for the Scheme
                       Plan.
                     reference: <PR/Issue/Discussion Links md format text>
-              - code: SIP_ALLOWED
-                description: >-
-                  Describes, whether SIP Transactions are permissible for the
-                  scheme plan
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: 'Y'
-                    description: >-
-                      Describes, Y – Yes value of SIP_ALLOWED for the Scheme
-                      Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: 'N'
-                    description: >-
-                      Describes, N – No value of SIP_ALLOWED for the Scheme
-                      Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-              - code: SWITCH_IN_ALLOWED
-                description: >-
-                  Describes, whether Switch In Transactions are permissible for
-                  the scheme plan.
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: 'Y'
-                    description: >-
-                      Describes, Y – Yes value of SWITCH_IN_ALLOWED for the
-                      Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: 'N'
-                    description: >-
-                      Describes, N – No value of SWITCH_IN_ALLOWED for the
-                      Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-              - code: SWITCH_OUT_ALLOWED
-                description: >-
-                  Describes, whether Switch Out Transactions are permissible for
-                  the scheme plan.
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: 'Y'
-                    description: >-
-                      Describes, Y – Yes value of Switch Out for the Scheme
-                      Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: 'N'
-                    description: Describes, N – No value of Switch Out for the Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-              - code: STP_IN_ALLOWED
-                description: >-
-                  Describes, whether STP Out Transactions are permissible for
-                  the scheme plan.
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: 'Y'
-                    description: Describes, Y – Yes value of STP Out for the Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: 'N'
-                    description: Describes, N – No value of STP Out for the Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-              - code: DEMAT_ALLOWED
-                description: >-
-                  Describes, whether the units can be allotted in DEMAT mode for
-                  the scheme plan
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: 'Y'
-                    description: Describes, Y – Yes value of DEMAT for the Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: 'N'
-                    description: Describes, N – No value of DEMAT for the Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-              - code: SWP_ALLOWED
-                description: >-
-                  Describes, whether SWP Transactions are permissible for the
-                  scheme plan
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: 'Y'
-                    description: >-
-                      Describes, Y – Yes value of SWP Transactions for the
-                      Scheme Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: 'N'
-                    description: >-
-                      Describes, N – No value of SWP Transactions for the Scheme
-                      Plan.
-                    reference: <PR/Issue/Discussion Links md format text>
               - code: CATG_ID
                 description: Describes, indicate the category type for the scheme Plan.
                 reference: <PR/Issue/Discussion Links md format text>
@@ -3709,12 +3600,12 @@ x-flows:
                     items:
                       - id: I1
                         descriptor:
-                          name: HDFC Midcap Opportunities Fund - SIP
-                          code: SIP
+                          name: HDFC Midcap Opportunities Fund
                         category_ids:
                           - C1
                         fulfillment_ids:
                           - F1
+                          - F2
                         matched: true
                         tags:
                           - descriptor:
@@ -3826,32 +3717,162 @@ x-flows:
                                   code: REDEEM_ALLOWED
                                 value: 'Y'
                               - descriptor:
-                                  name: SIP Allowed
-                                  code: SIP_ALLOWED
+                                  name: Category ID
+                                  code: CATG_ID
+                                value: '1'
+                              - descriptor:
+                                  name: Sub Category ID
+                                  code: SUB_CATG_ID
+                                value: '1'
+                              - descriptor:
+                                  name: Scheme Flag
+                                  code: SCHEME_FLAG
+                                value: AC
+                              - descriptor:
+                                  name: Sys Freq
+                                  code: SYS_FREQ
+                                value: D
+                              - descriptor:
+                                  name: Sys Freq Opt
+                                  code: SYS_FREQ_OPT
+                                value: A
+                              - descriptor:
+                                  name: Min_Amt
+                                  code: MIN_AMT
+                                value: '4534'
+                              - descriptor:
+                                  name: Max_Amt
+                                  code: MAX_AMT
+                                value: '4534'
+                              - descriptor:
+                                  name: Multiple_Amt
+                                  code: MULTIPLE_AMT
+                                value: '4534'
+                              - descriptor:
+                                  name: Min_Units
+                                  code: MIN_UNITS
+                                value: '3'
+                              - descriptor:
+                                  name: Multiple Units
+                                  code: MULTIPLE_UNITS
+                                value: '12'
+                            display: true
+                      - id: I2
+                        descriptor:
+                          name: ICIC Midcap Opportunities Fund
+                        category_ids:
+                          - C1
+                        fulfillment_ids:
+                          - F2
+                        matched: true
+                        tags:
+                          - descriptor:
+                              name: Fund Information
+                              code: FUND_INFO
+                            list:
+                              - descriptor:
+                                  name: Type
+                                  code: TYPE
+                                value: Equity
+                              - descriptor:
+                                  name: Fund Manager
+                                  code: FUND_MANAGER
+                                value: ICICI Asset Management Company
+                              - descriptor:
+                                  name: Scheme Name
+                                  code: SCHEME_NAME
+                                value: Liquid Funds
+                              - descriptor:
+                                  name: Scheme ID
+                                  code: SCHEME_ID
+                                value: b4ce447d
+                              - descriptor:
+                                  name: AMFI ID
+                                  code: AMFI_ID
+                                value: AMFI_ID_VALUE
+                              - descriptor:
+                                  name: RTA ID
+                                  code: RTA_ID
+                                value: RTA_ID_VALUE
+                              - descriptor:
+                                  name: Scheme Instr 'No'
+                                  code: SCHEME_INSTR_NO'
+                                value: 4b9a22f5
+                              - descriptor:
+                                  name: Scheme Code
+                                  code: SCHEME_CODE
+                                value: 4b9a22f512
+                              - descriptor:
+                                  name: Fund Code
+                                  code: FUND_CODE
+                                value: 4b9a22
+                              - descriptor:
+                                  name: Plan Name
+                                  code: PLAN_NAME
+                                value: PLAN NAME
+                              - descriptor:
+                                  name: Scheme Type
+                                  code: SCHEME_TYPE
+                                value: OE
+                              - descriptor:
+                                  name: Plan Type
+                                  code: PLAN_TYPE
+                                value: DIR
+                              - descriptor:
+                                  name: Plan Opt
+                                  code: PLAN_OPT
+                                value: GR
+                              - descriptor:
+                                  name: Div Opt
+                                  code: DIV_OPT
+                                value: PAYOUT
+                              - descriptor:
+                                  name: Pri Isin
+                                  code: PRI_ISIN
+                                value: PRI_VALUE
+                              - descriptor:
+                                  name: Sec Isin
+                                  code: SEC_ISIN
+                                value: SEC_VALUE
+                              - descriptor:
+                                  name: Nfo Start
+                                  code: NFO_START
+                                value: 17/011/2023
+                              - descriptor:
+                                  name: Nfo End
+                                  code: NFO_END
+                                value: 17/011/2098
+                              - descriptor:
+                                  name: Allot Date
+                                  code: ALLOT_DATE
+                                value: 17/011/2098
+                              - descriptor:
+                                  name: Reopen Date
+                                  code: REOPEN_DATE
+                                value: 17/011/2098
+                              - descriptor:
+                                  name: Maturity Date
+                                  code: MATURITY_DATE
+                                value: 17/011/2098
+                              - descriptor:
+                                  name: Entry Load
+                                  code: ENTRY_LOAD
+                                value: ENTRY_LOAD_VALUE
+                              - descriptor:
+                                  name: Exit Load
+                                  code: EXIT_LOAD
+                                value: EXIT_LOAD_VALUE
+                              - descriptor:
+                                  name: Pur Allowed
+                                  code: PUR_ALLOWED
                                 value: 'Y'
                               - descriptor:
-                                  name: Switch Out Allowed
-                                  code: SWITCH_OUT_ALLOWED
+                                  name: NFO Allowed
+                                  code: NFO_ALLOWED
                                 value: 'Y'
                               - descriptor:
-                                  name: Switch In Allowed
-                                  code: SWITCH_IN_ALLOWED
-                                value: 'Y'
-                              - descriptor:
-                                  name: STP Out Allowed
-                                  code: STP_OUT_ALLOWED
-                                value: 'Y'
-                              - descriptor:
-                                  name: STP In Allowed
-                                  code: STP_IN_ALLOWED
-                                value: 'Y'
-                              - descriptor:
-                                  name: SWP Allowed
-                                  code: SWP_ALLOWED
-                                value: 'Y'
-                              - descriptor:
-                                  name: Demat Allowed
-                                  code: DEMAT_ALLOWED
+                                  name: Redeem_Allowed
+                                  code: REDEEM_ALLOWED
                                 value: 'Y'
                               - descriptor:
                                   name: Category ID
@@ -3906,15 +3927,6 @@ x-flows:
                                   code: MIN_CUM_AMT
                                 value: '2000'
                             display: true
-                      - id: I2
-                        descriptor:
-                          name: HDFC Midcap Opportunities Fund - Lumpsum
-                          code: LUMPSUM
-                        category_ids:
-                          - C1
-                        fulfillment_ids:
-                          - F2
-                        matched: true
                     fulfillments:
                       - id: F1
                         type: SIP
@@ -4239,34 +4251,6 @@ x-flows:
                               code: REDEEM_ALLOWED
                             value: 'Y'
                           - descriptor:
-                              name: SIP Allowed
-                              code: SIP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch Out Allowed
-                              code: SWITCH_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch In Allowed
-                              code: SWITCH_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP Out Allowed
-                              code: STP_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP In Allowed
-                              code: STP_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SWP Allowed
-                              code: SWP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Demat Allowed
-                              code: DEMAT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
                               name: Category ID
                               code: CATG_ID
                             value: '1'
@@ -4472,6 +4456,25 @@ x-flows:
                 fulfillments:
                   - id: F1
                     type: SIP
+                    customer:
+                      person:
+                        id: PAN:EKLZS12E
+                    agent:
+                      person:
+                        id: EUIN:1234
+                    tags:
+                      - descriptor:
+                          name: Broker Info
+                          code: BROKER_INFO
+                        list:
+                          - descriptor:
+                              name: ARN Of Organization
+                              code: ARN_ORGANIZATION
+                            value: AA0802
+                          - descriptor:
+                              name: ARN Of Sub Broker
+                              code: ARN_SUB_BROKER
+                            value: AA0802
       - summary: >-
           Seller app returns the response with updated quote & xinput form
           index.
@@ -4655,34 +4658,6 @@ x-flows:
                           - descriptor:
                               name: Redeem_Allowed
                               code: REDEEM_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SIP Allowed
-                              code: SIP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch Out Allowed
-                              code: SWITCH_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch In Allowed
-                              code: SWITCH_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP Out Allowed
-                              code: STP_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP In Allowed
-                              code: STP_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SWP Allowed
-                              code: SWP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Demat Allowed
-                              code: DEMAT_ALLOWED
                             value: 'Y'
                           - descriptor:
                               name: Category ID
@@ -5097,34 +5072,6 @@ x-flows:
                           - descriptor:
                               name: Redeem_Allowed
                               code: REDEEM_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SIP Allowed
-                              code: SIP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch Out Allowed
-                              code: SWITCH_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch In Allowed
-                              code: SWITCH_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP Out Allowed
-                              code: STP_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP In Allowed
-                              code: STP_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SWP Allowed
-                              code: SWP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Demat Allowed
-                              code: DEMAT_ALLOWED
                             value: 'Y'
                           - descriptor:
                               name: Category ID
@@ -5555,34 +5502,6 @@ x-flows:
                               code: REDEEM_ALLOWED
                             value: 'Y'
                           - descriptor:
-                              name: SIP Allowed
-                              code: SIP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch Out Allowed
-                              code: SWITCH_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch In Allowed
-                              code: SWITCH_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP Out Allowed
-                              code: STP_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP In Allowed
-                              code: STP_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SWP Allowed
-                              code: SWP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Demat Allowed
-                              code: DEMAT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
                               name: Category ID
                               code: CATG_ID
                             value: '1'
@@ -5883,34 +5802,6 @@ x-flows:
                           - descriptor:
                               name: Redeem_Allowed
                               code: REDEEM_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SIP Allowed
-                              code: SIP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch Out Allowed
-                              code: SWITCH_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch In Allowed
-                              code: SWITCH_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP Out Allowed
-                              code: STP_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP In Allowed
-                              code: STP_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SWP Allowed
-                              code: SWP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Demat Allowed
-                              code: DEMAT_ALLOWED
                             value: 'Y'
                           - descriptor:
                               name: Category ID
@@ -6258,34 +6149,6 @@ x-flows:
                           - descriptor:
                               name: Redeem_Allowed
                               code: REDEEM_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SIP Allowed
-                              code: SIP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch Out Allowed
-                              code: SWITCH_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Switch In Allowed
-                              code: SWITCH_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP Out Allowed
-                              code: STP_OUT_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: STP In Allowed
-                              code: STP_IN_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: SWP Allowed
-                              code: SWP_ALLOWED
-                            value: 'Y'
-                          - descriptor:
-                              name: Demat Allowed
-                              code: DEMAT_ALLOWED
                             value: 'Y'
                           - descriptor:
                               name: Category ID
@@ -7366,10 +7229,10 @@ x-examples:
     example_set:
       search:
         examples:
-          - summary: search for mutual funds
+          - summary: search for mutual funds Full Pull
             description: TBD
             value: *ref_7
-          - summary: search for mutual funds
+          - summary: search for mutual funds incremental from given time
             description: TBD
             value:
               context:
@@ -7392,20 +7255,10 @@ x-examples:
                       code: MUTUAL_FUNDS
                     time:
                       range:
-                        start: '2023-11-25T05:23:03.443Z'
-                        end: '2023-11-27T05:23:03.443Z'
+                        start: '2023-11-23T05:23:03.443Z'
                   descriptor:
                     code: INCREMENTAL_PULL
-                  tags:
-                    - descriptor:
-                        name: Incremental Pull
-                        code: INCREMENTAL_PULL
-                      list:
-                        - descriptor:
-                            name: register
-                            code: REGISTER
-                          value: 'false'
-          - summary: search for mutual funds
+          - summary: search for mutual funds register for incremental pull
             description: TBD
             value:
               context:
@@ -7426,10 +7279,6 @@ x-examples:
                   category:
                     descriptor:
                       code: MUTUAL_FUNDS
-                    time:
-                      range:
-                        start: '2023-11-25T05:23:03.443Z'
-                        end: '2023-11-27T05:23:03.443Z'
                   descriptor:
                     code: INCREMENTAL_PULL
                   tags:
@@ -9050,5 +8899,4 @@ x-attributes:
                 usage: PAID
                 description: Describes the payment status
 x-featureui:
-  filenames:
-    - signing-verification.md
+  filenames: []
