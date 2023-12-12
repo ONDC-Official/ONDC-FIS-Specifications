@@ -1201,6 +1201,8 @@ components:
           type: string
         code:
           type: string
+        sub_code:
+          type: string
         short_desc:
           type: string
         long_desc:
@@ -2085,6 +2087,8 @@ components:
           enum:
             - PAID
             - NOT-PAID
+            - DELAYED
+            - DEFERRED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -2251,6 +2255,7 @@ components:
           type: array
           items:
             type: object
+            additionalProperties: false
             properties:
               item:
                 $ref: '#/components/schemas/Item'
@@ -2527,6 +2532,24 @@ components:
             `false`, it should not be displayed. This value can override the
             group display value.
           type: boolean
+        list:
+          description: >-
+            An array of Tag objects listed under this group. This property can
+            be set by BAPs during search to narrow the `search` and achieve more
+            relevant results. When received during `on_search`, BAPs must render
+            this list under the heading described by the `name` property of this
+            schema.
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              descriptor:
+                description: >-
+                  Description of the Tag, can be used to store detailed
+                  information.
+                allOf:
+                  - $ref: '#/components/schemas/Descriptor'
     TagGroup:
       description: >-
         A collection of tag objects with group level attributes. For detailed
@@ -6570,36 +6593,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: |
-            <!DOCTYPE html>
-            <html lang="en">
-              <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>Document</title>
-              </head>
-
-              <body>
-                <form action="/form/submission/sip-setup" ondc-template="financial-services:sip-set-up">
-                  <label for="registertion-id">Registration ID: </label>
-                  <input type="text" name="registertion-id" />
-                  <label for="sip-start-date">SIP Start Date: </label>
-                  <input type="date" name="sip-start-date" />
-                  <label for="sip-end-date">SIP End Date: </label>
-                  <input type="date" name="sip-end-date" />
-                  <label for="sip-frequency">SIP Frequency</label>
-                  <select name="sip-frequency">
-                    <option value="monthly">Monthly</option>
-                    <option value="weekly">Weekly</option>
-                  </select>
-                  <label for="sip-amount">SIP Amount</label>
-                  <input type="text" name="sip-amount" />
-                  
-                  <input type="hidden" id="formId" name="formId" value="FO1">
-                  <input type="submit" value="Submit">
-                </form>
-              </body>
-            </html>
+          value: This will redirected to different html page
       - summary: Submit the Withdrawal info form & initiate the request.
         api: init
         details:
@@ -8899,4 +8893,5 @@ x-attributes:
                 usage: PAID
                 description: Describes the payment status
 x-featureui:
-  filenames: []
+  filenames:
+    - signing-verification.md
