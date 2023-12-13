@@ -73,7 +73,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/search/search-request-mf.yaml"
+        $ref: "../../examples/mutual-funds/search/search-request-full-pull.yaml"
   - summary: Receive a catalog of different Mutual Fund products offered by providers.
     api: on_search
     details:
@@ -95,7 +95,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_search/on_search-request.yaml"
+        $ref: "../../examples/mutual-funds/on_search/on_search-request_1.2.yaml"
 
 # sip select on_select
   - summary: Choose a specific Mutual Fund product for investment.
@@ -116,10 +116,10 @@ steps:
     example:
       value:
         $ref: "../../examples/mutual-funds/select/select-request-sip.yaml"
-  - summary: Receive detailed information and a consent request for the chosen Mutual Fund product.
+  - summary: Seller app returns the response to selected mutual fund with xinput forms.
     api: on_select
     details:
-      - description: Provider generates a consent request and provides additional information specific to the selected Mutual Fund product, catering to your investment decision.
+      - description: Seller app returns the response to selected mutual fund with SIP setup & payment information forms.
         mermaid: &onSelect >-
           sequenceDiagram
             title MF Ordering - Selection
@@ -133,7 +133,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_select/on_select-request-sip.yaml"      
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-sip_1.2.yaml"      
   - summary: Get the SIP setup form
     api: form
     details:
@@ -170,54 +170,54 @@ steps:
     example:
       value: 
         $ref: ../../examples/mutual-funds/forms/mutual-funds-lumpsum-setup.html
-  - summary: Choose a specific Mutual Fund product for investment.
+  - summary: Buyer app submit the SIP setup form.
     api: select
     details:
-      - description: Select the Mutual Fund product that aligns with your investment preferences and goals.
+      - description: Submit the SIP setup form with submissionId.
         mermaid: *select
     reference: if any
     example:
       value:
         $ref: "../../examples/mutual-funds/select/select-request-sip_1.yaml"
-  - summary: Receive detailed information and a consent request for the chosen Mutual Fund product.
+  - summary: Seller app returns the response with updated quote & xinput form index.
     api: on_select
     details:
-      - description: Provider generates a consent request and provides additional information specific to the selected Mutual Fund product, catering to your investment decision.
+      - description: Seller app returns the response with updated quote & xinput form index.
         mermaid: *onSelect
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_select/on_select-request-sip_1.yaml"      
-  - summary: Redirect the EKYC/Registration portal
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-payment_1.2.yaml"      
+  - summary: Get the Payment Info form(Redirection)
     api: form
     details:
-      - description: Provider platform hosts the EKYC/Registration From.
+      - description: Provider platform sends the Payment Info From.
         mermaid: *selectForm
     reference: if any
     example:
       value: 
-        $ref: ../../examples/mutual-funds/forms/mutual-funds-kyc.html
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
 
 
   #sip init on_init
-  - summary: Submit additional information and initiate the Mutual Fund investment request.
+  - summary: Submit the payment info form & initiate the Mutual Fund investment request.
     api: init
     details:
-      - description: Provide the required additional information as requested and initiate the process for the chosen Mutual Fund investment.
+      - description: Buyer app submit the Payment Info form with submission Id.
         mermaid: >-
             sequenceDiagram
               title MF Ordering - Initializing Order
               Participant Investment Platform
               Participant Fund Aggregator / Direct Fund
               rect rgb(191, 223, 255)
-              Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+              Investment Platform ->> Fund Aggregator / Direct Fund: init
               end
-              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-              Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
     reference: if any
     example: 
       value:
-        $ref: "../../examples/mutual-funds/init/init-request-sip-account-info.yaml"
+        $ref: "../../examples/mutual-funds/init/init-request-payment-info-1.2.yaml"
   - summary: Receive the final investment offer and terms after submitting additional information.
     api: on_init
     details:
@@ -227,19 +227,19 @@ steps:
               title MF Ordering - Initializing Order
               Participant Investment Platform
               Participant Fund Aggregator / Direct Fund
-              Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+              Investment Platform ->> Fund Aggregator / Direct Fund: init
               rect rgb(191, 223, 255)
-              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init
               end
-              Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_init/on_init-request-sip-account-info.yaml" 
-  - summary: Get the Mutual fund account info form
+        $ref: "../../examples/mutual-funds/on_init/on_init-request-sip-agreement-1.2.yaml" 
+  - summary: Get the Mutual fund agreement form(Redirection)
     api: form
     details:
-      - description: Provider platform sends the form for Mutual fund account info.
+      - description: Provider platform sends the form for Mutual fund Agreement.
         mermaid: >-
               sequenceDiagram
                 title MF Ordering - Initializing Order
@@ -248,73 +248,12 @@ steps:
                 Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
                 rect rgb(191, 223, 255)
-                Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form
                 end
     reference: if any
     example:
       value: 
-        $ref: ../../examples/mutual-funds/forms/mutual-funds-account-info.html
-
-  - summary: Submit additional information and initiate the Mutual Fund investment request.
-    api: init
-    details:
-      - description: Provide the required additional information as requested and initiate the process for the chosen Mutual Fund investment.
-        mermaid: &init >-
-            sequenceDiagram
-              title MF Ordering - Initializing Order
-              Participant Investment Platform
-              Participant Fund Aggregator / Direct Fund
-              rect rgb(191, 223, 255)
-              Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
-              end
-              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-              Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
-    reference: if any
-    example: 
-      value:
-        $ref: "../../examples/mutual-funds/init/init-request-sip.yaml"
-  
-  - summary: Receive the final investment offer and terms after submitting additional information.
-    api: on_init
-    details:
-      - description: Provider responds with the final draft of the investment offer, including terms and conditions, based on the information provided during the initiation.
-        mermaid: &OnInit >-
-            sequenceDiagram
-              title MF Ordering - Initializing Order
-              Participant Investment Platform
-              Participant Fund Aggregator / Direct Fund
-              Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
-              rect rgb(191, 223, 255)
-              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-              end
-              Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/mutual-funds/on_init/on_init-request-sip-agreement.yaml" 
-  - summary: Get the Mutual fund agreement form
-    api: form
-    details:
-      - description: Provider platform sends the Mutual fund agreement form.
-        mermaid: &InitForm >-
-          sequenceDiagram
-            title MF Ordering - Initializing Order
-            Participant Investment Platform
-            Participant Fund Aggregator / Direct Fund
-            Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
-            rect rgb(191, 223, 255)
-            Fund Aggregator / Direct Fund ->>  Investment Platform : form (Aggrement form)
-            end
-    reference: if any
-    example:
-      value: 
-        $ref: ../../examples/mutual-funds/forms/mutual-funds-agreement.html
-
-
-  
-
-  
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
 
   - summary: Confirm the Mutual Fund investment and authorize the provider to proceed.
     api: confirm
@@ -331,11 +270,11 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/confirm/confirm-request-sip.yaml"         
-  - summary: Validate and approve the Mutual Fund investment application.
+        $ref: "../../examples/mutual-funds/confirm/confirm-request-1.2.yaml"         
+  - summary: Seller app validate and approve the Mutual Fund investment application.
     api: on_confirm
     details:
-      - description: Provider validates and approves the submitted investment application for the chosen Mutual Fund, proceeding with the investment process.
+      - description: Seller validates and approves the submitted investment application for the chosen Mutual Fund & provide the payment link.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
@@ -347,70 +286,87 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-sip.yaml" 
+        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-1.2.yaml" 
 
-
-
-  # - summary: Request real-time updates on the status of your Mutual Fund investment.
-  #   api: status
-  #   details:
-  #     - description: Request the most recent updates regarding the status of your invested Mutual Fund, ensuring you stay informed about its progress.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           Participant Investment Platform
-  #           Participant Fund Aggregator / Direct Fund
-  #           rect rgb(191, 223, 255)
-  #           Investment Platform ->> Fund Aggregator / Direct Fund: status
-  #           end
-  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-  #   reference: if any
-  #   example:
-  #     value:
-  #       $ref: "../../examples/mutual-funds/status/status-request.yaml" 
-  # - summary: Receive real-time updates on your Mutual Fund investment after each milestone.
-  #   api: on_status
-  #   details:
-  #     - description: Provider sends timely updates about your Mutual Fund investment after significant milestones, ensuring you're informed throughout the investment journey.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           Participant Investment Platform
-  #           Participant Fund Aggregator / Direct Fund
-  #           Investment Platform ->> Fund Aggregator / Direct Fund: status
-  #           rect rgb(191, 223, 255)
-  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-  #           end
-  #   example:
-  #     value:
-  #       $ref: "../../examples/mutual-funds/on_status/on_status-request-sip-installment-received.yaml" 
-  
-  - summary: Buyer platform sends a request to cancel order
-    api: cancel
+  #on_update: payment done
+  - summary: Seller app provides with latest payment status.
+    api: on_update
     details:
-      - description: Buyer platform sends a request to cancel order.
+      - description: Seller sends the latest payment status.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
             Participant Fund Aggregator / Direct Fund
             rect rgb(191, 223, 255)
-            Investment Platform ->> Fund Aggregator / Direct Fund: cancel
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
             end
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_update/on_update-request-1.2.yaml"
+  - summary: Request real-time updates on the status of your Mutual Fund investment.
+    api: status
+    details:
+      - description: Request the most recent updates regarding the status of your invested Mutual Fund, ensuring you stay informed about its progress.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/cancel/cancel-request.yaml" 
-  - summary: Seller platform confirms the order cancellation
-    api: on_cancel
+        $ref: "../../examples/mutual-funds/status/status-request.yaml" 
+  - summary: Receive real-time updates on your Mutual Fund investment after each milestone.
+    api: on_status
     details:
-      - description: Seller platform confirms the order cancellation
+      - description: Provider sends timely updates about your Mutual Fund investment after significant milestones, ensuring you're informed throughout the investment journey.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
             Participant Fund Aggregator / Direct Fund
-            Investment Platform ->> Fund Aggregator / Direct Fund: cancel
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
             rect rgb(191, 223, 255)
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
             end
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_cancel/on_cancel-request.yaml"      
+        $ref: "../../examples/mutual-funds/on_status/on_staus-request-rta-processed-1.2.yaml" 
+ 
+  # - summary: Buyer platform sends a request to cancel order
+  #   api: cancel
+  #   details:
+  #     - description: Buyer platform sends a request to cancel order.
+  #       mermaid: >-
+  #         sequenceDiagram
+  #           Participant Investment Platform
+  #           Participant Fund Aggregator / Direct Fund
+  #           rect rgb(191, 223, 255)
+  #           Investment Platform ->> Fund Aggregator / Direct Fund: cancel
+  #           end
+  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/mutual-funds/cancel/cancel-request.yaml" 
+  # - summary: Seller platform confirms the order cancellation
+  #   api: on_cancel
+  #   details:
+  #     - description: Seller platform confirms the order cancellation
+  #       mermaid: >-
+  #         sequenceDiagram
+  #           Participant Investment Platform
+  #           Participant Fund Aggregator / Direct Fund
+  #           Investment Platform ->> Fund Aggregator / Direct Fund: cancel
+  #           rect rgb(191, 223, 255)
+  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
+  #           end
+  #   example:
+  #     value:
+  #       $ref: "../../examples/mutual-funds/on_cancel/on_cancel-request.yaml"      

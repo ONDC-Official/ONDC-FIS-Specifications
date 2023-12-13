@@ -1,0 +1,352 @@
+summary: Withdrawal-Mutual funds
+details:
+  - description: Detailed process of withdrawing mutual funds
+    mermaid: >-
+      sequenceDiagram
+        title MF Discovery
+        Participant Investment Platform
+        Participant Gateway
+        Participant Fund Aggregator
+        Participant Direct Fund 1
+        Investment Platform ->> Gateway: search
+        Gateway ->> Fund Aggregator: search
+        Gateway ->> Direct Fund 1: search
+        Fund Aggregator ->>  Investment Platform : on_search
+        Direct Fund 1 ->>  Investment Platform : on_search
+        Fund Aggregator ->>  Investment Platform : form
+        Direct Fund 1 ->>  Investment Platform : form
+  - description: Ordering
+    mermaid: >-
+      sequenceDiagram
+        title MF Ordering - Selection
+        Participant Investment Platform
+        Participant Fund Aggregator / Direct Fund
+        Investment Platform ->> Fund Aggregator / Direct Fund: select
+        Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+        Fund Aggregator / Direct Fund ->>  Investment Platform : form (Kyc)
+  - description: Initializing the order  
+    mermaid: >-
+            sequenceDiagram
+              title MF Ordering - Initializing Order
+              Participant Investment Platform
+              Participant Fund Aggregator / Direct Fund
+              Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form (Account Info) 
+  - description: Order Confirmation
+    mermaid: >-
+      sequenceDiagram
+        title MF Ordering - Order Confirmation
+        Participant Investment Platform
+        Participant Fund Aggregator / Direct Fund
+        Investment Platform ->> Fund Aggregator / Direct Fund: confirm - BAP sends proof or payment, acceptance of T&Cs 
+        Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm - BPP sends confirmed order with order ID and latest fulfillment state
+  - description: Fulfillment
+    mermaid: >-
+      sequenceDiagram
+        title MF Ordering - Order Fulfillment
+        Participant Investment Platform
+        Participant Fund Aggregator / Direct Fund
+        Investment Platform ->> Fund Aggregator / Direct Fund: status - BAP request for latest status   
+        Fund Aggregator / Direct Fund ->>  Investment Platform : on_status - BPP sends order details with latest updated context
+
+references: if any
+steps:
+  - summary: Explore available Mutual Fund options over the network.
+    api: search
+    details:
+      - description: Conduct searches over the network to discover a variety of Mutual Fund investment opportunities.
+        mermaid: >-
+          sequenceDiagram
+            title MF Discovery
+            Participant Investment Platform
+            Participant Gateway
+            Participant Fund Aggregator
+            Participant Direct Fund 1
+            rect rgb(191, 223, 255)
+              Investment Platform ->> Gateway: search
+              Gateway ->> Fund Aggregator: search
+              Gateway ->> Direct Fund 1: search
+            end
+            Fund Aggregator ->>  Investment Platform : on_search
+            Direct Fund 1 ->>  Investment Platform : on_search
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/search/search-request-full-pull.yaml"
+  - summary: Receive a catalog of different Mutual Fund products offered by providers.
+    api: on_search
+    details:
+      - description: Platform provides a comprehensive catalog of various Mutual Fund products from different providers, tailored to your investment needs.
+        mermaid:  >- 
+          sequenceDiagram
+            title MF Discovery
+            Participant Investment Platform
+            Participant Gateway
+            Participant Fund Aggregator
+            Participant Direct Fund 1
+            Investment Platform ->> Gateway: search
+            Gateway ->> Fund Aggregator: search
+            Gateway ->> Direct Fund 1: search
+            rect rgb(191, 223, 255)
+            Fund Aggregator ->>  Investment Platform : on_search
+            Direct Fund 1 ->>  Investment Platform : on_search
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_search/on_search-request_1.2.yaml"
+
+# sip select on_select
+  - summary: Buyer selects the item for withdrawal transaction 
+    api: select
+    details:
+      - description: Buyer selects the item for withdrawal transaction with pan & other details.
+        mermaid: &select >-
+          sequenceDiagram
+            title MF Ordering - Selection
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: select
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/select/select-withdrawal-1.2.yaml"
+  - summary: Seller app returns the response to selected mutual fund with xinput forms.
+    api: on_select
+    details:
+      - description: Seller app returns the response to selected mutual fund with withdrawal info form.
+        mermaid: &onSelect >-
+          sequenceDiagram
+            title MF Ordering - Selection
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: select
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-withdrawal_1.2.yaml"      
+  - summary: Get the Withdrawal form
+    api: form
+    details:
+      - description: Provider platform sends the form for Withdrawal.
+        mermaid: &selectForm >-
+            sequenceDiagram
+              title MF Ordering - Selection
+              Participant Investment Platform
+              Participant Fund Aggregator / Direct Fund
+              Investment Platform ->> Fund Aggregator / Direct Fund: select
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+              rect rgb(191, 223, 255)
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
+              end
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
+
+ 
+
+  #sip init on_init
+  - summary: Submit the Withdrawal info form & initiate the request.
+    api: init
+    details:
+      - description: Buyer app submit the Payment Info form with submission Id.
+        mermaid: >-
+            sequenceDiagram
+              title MF Ordering - Initializing Order
+              Participant Investment Platform
+              Participant Fund Aggregator / Direct Fund
+              rect rgb(191, 223, 255)
+              Investment Platform ->> Fund Aggregator / Direct Fund: init
+              end
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
+    reference: if any
+    example: 
+      value:
+        $ref: "../../examples/mutual-funds/init/init-request-payment-info-1.2.yaml"
+  - summary: Receive the final investment offer and terms after submitting additional information.
+    api: on_init
+    details:
+      - description: Provider responds with the final draft of the investment offer, including terms and conditions, based on the information provided during the initiation.
+        mermaid: >-
+            sequenceDiagram
+              title MF Ordering - Initializing Order
+              Participant Investment Platform
+              Participant Fund Aggregator / Direct Fund
+              Investment Platform ->> Fund Aggregator / Direct Fund: init
+              rect rgb(191, 223, 255)
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_init
+              end
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_init/on_init-request-withdrawal-1.2.yaml" 
+  - summary: Get the Mutual fund agreement form(Redirection)
+    api: form
+    details:
+      - description: Provider platform sends the form for Mutual fund Agreement.
+        mermaid: >-
+              sequenceDiagram
+                title MF Ordering - Initializing Order
+                Participant Investment Platform
+                Participant Fund Aggregator / Direct Fund
+                Investment Platform ->> Fund Aggregator / Direct Fund: init - BAP sends consumer ID, <br/> billing details
+                Fund Aggregator / Direct Fund ->>  Investment Platform : on_init - BPP sends final quote, <br/> payment terms, and other form urls
+                rect rgb(191, 223, 255)
+                Fund Aggregator / Direct Fund ->>  Investment Platform : form
+                end
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
+
+  # check withdrawal status(Initiated) 
+  - summary: Request real-time updates on the status of Withdrawal.
+    api: status
+    details:
+      - description: Request the most recent updates regarding the status of your Withdrawal, ensuring you stay informed about its progress.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/status/status-request-withdrawal-1.2.yaml" 
+  - summary: Receive real-time updates on your Withdrawal after each milestone.
+    api: on_status
+    details:
+      - description: Provider sends timely updates about your Withdrawal after significant milestones, ensuring you're informed throughout the Withdrawal journey.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            end
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_status/on_status_request-withdrawal-initiated-1.2.yaml" 
+ 
+
+  - summary: Confirm the withdrawal and authorize the provider to proceed.
+    api: confirm
+    details:
+      - description: Confirm your withdrawal with the agreement form submission id.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: confirm
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/confirm/confirm-request-withdrawal-1.2.yaml"         
+  - summary: Seller app validate and approve the Mutual Fund investment application.
+    api: on_confirm
+    details:
+      - description: Seller validates and approves the submitted investment application for the chosen Mutual Fund & provide the payment link.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: confirm
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-withdrawal-1.2.yaml" 
+
+   # check withdrawal status 
+  
+  # check withdrawal status(Processing) 
+  - summary: Request real-time updates on the status of Withdrawal.
+    api: status
+    details:
+      - description: Request the most recent updates regarding the status of your Withdrawal, ensuring you stay informed about its progress.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/status/status-request-withdrawal-1.2.yaml" 
+  - summary: Receive real-time updates on your Withdrawal after each milestone.
+    api: on_status
+    details:
+      - description: Provider sends timely updates about your Withdrawal after significant milestones, ensuring you're informed throughout the Withdrawal journey.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            end
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_status/on_status_request-withdrawal-processing-1.2.yaml" 
+ 
+
+  # check withdrawal status(Processed) 
+  - summary: Request real-time updates on the status of Withdrawal.
+    api: status
+    details:
+      - description: Request the most recent updates regarding the status of your Withdrawal, ensuring you stay informed about its progress.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/status/status-request.yaml" 
+  - summary: Receive real-time updates on your Withdrawal after each milestone.
+    api: on_status
+    details:
+      - description: Provider sends timely updates about your Withdrawal after significant milestones, ensuring you're informed throughout the Withdrawal journey.
+        mermaid: >-
+          sequenceDiagram
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            end
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_status/on_status_request-withdrawal-processed-1.2.yaml" 
+ 
+
+ 
