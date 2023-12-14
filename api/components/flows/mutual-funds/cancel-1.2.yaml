@@ -1,6 +1,6 @@
-summary: Withdrawal-Mutual funds
+summary: Mutual funds
 details:
-  - description: Detailed process of withdrawing mutual funds
+  - description: Discovery of Funds
     mermaid: >-
       sequenceDiagram
         title MF Discovery
@@ -96,10 +96,10 @@ steps:
       value:
         $ref: "../../examples/mutual-funds/on_search/on_search-request_1.2.yaml"
 # sip select on_select
-  - summary: Buyer app selects a specific mutual fund product for withdrawal transaction 
+  - summary: Buyer app selects a specific mutual fund product for investment for more details
     api: select
     details:
-      - description: Buyer app selects the item for withdrawal transaction with pan & other details.
+      - description: Buyer app selects a mutual fund product that aligns with your investment preferences and goals.
         mermaid: &select >-
           sequenceDiagram
             title MF Ordering - Selection
@@ -113,11 +113,11 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/select/select-withdrawal-1.2.yaml"
+        $ref: "../../examples/mutual-funds/select/select-request-sip.yaml"
   - summary: Provider returns the response to selected mutual fund product
     api: on_select
     details:
-      - description: Provider returns the response to selected mutual fund with withdrawal info form.
+      - description: Provider returns the response to selected mutual fund with SIP setup & lumpsum setup forms.
         mermaid: &onSelect >-
           sequenceDiagram
             title MF Ordering - Selection
@@ -131,11 +131,11 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_select/on_select-request-withdrawal_1.2.yaml"      
-  - summary: Buyer app fetches the withdrawal form
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-sip_1.2.yaml"      
+  - summary: Buyer app fetches the SIP setup form
     api: form
     details:
-      - description: Buyer app fetches the withdrawal form from the provider using the link provided in the previous step.
+      - description: Buyer app fetches the SIP setup form from the provider using the link provided in the previous step.
         mermaid: &selectForm >-
             sequenceDiagram
               title MF Ordering - Selection
@@ -149,12 +149,57 @@ steps:
     reference: if any
     example:
       value: 
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-sip-setup.html
+  - summary: Buyer app fetches the lumpsum setup form
+    api: form
+    details:
+      - description: Buyer app fetches the lumpsum setup form from the provider using the link provided in the previous step.
+        mermaid: &selectForm >-
+            sequenceDiagram
+              title MF Ordering - Selection
+              Participant Investment Platform
+              Participant Fund Aggregator / Direct Fund
+              Investment Platform ->> Fund Aggregator / Direct Fund: select
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+              rect rgb(191, 223, 255)
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
+              end
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-lumpsum-setup.html
+  - summary: Buyer app selects a mutual funds product for more details
+    api: select
+    details:
+      - description: Buyer app selects a specific mutual fund plan that suits their needs and links the SIP setup form with submissionId.
+        mermaid: *select
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/select/select-request-sip_1.yaml"
+  - summary: Provider returns the response to selected mutual fund product
+    api: on_select
+    details:
+      - description: Provider responds to the buyer app requests by sending the updated quote & xinput form index.
+        mermaid: *onSelect
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-payment_1.2.yaml"      
+  - summary: Buyer app fetches the payment info form (Redirection)
+    api: form
+    details:
+      - description: Buyer app fetches the payment info form from the provider using the link provided in the previous step.
+        mermaid: *selectForm
+    reference: if any
+    example:
+      value: 
         $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
   #sip init on_init
-  - summary: The buyer app initiates the mutual fund withdrawal request
+  - summary: The buyer app initiates the mutual fund investment request
     api: init
     details:
-      - description: Buyer app initiates withdrawal of a specific mutual fund that suits their needs and links the withdrawal info form with submission Id.
+      - description: Buyer app initiates purchase of a specific mutual fund that suits their needs and links the payment info form with submission Id.
         mermaid: >-
             sequenceDiagram
               title MF Ordering - Initializing Order
@@ -169,10 +214,10 @@ steps:
     example: 
       value:
         $ref: "../../examples/mutual-funds/init/init-request-payment-info-1.2.yaml"
-  - summary: Provider returns the response to initailized request
+  - summary: Provider returns the response to initailized mutual fund plan
     api: on_init
     details:
-      - description: Provider responds with the final draft of the withdrawal offer along with mutual agreement form.
+      - description: Provider responds with the final draft of the investment offer, including terms and conditions, based on the information provided during the initiation.
         mermaid: >-
             sequenceDiagram
               title MF Ordering - Initializing Order
@@ -186,7 +231,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_init/on_init-request-withdrawal-1.2.yaml" 
+        $ref: "../../examples/mutual-funds/on_init/on_init-request-sip-agreement-1.2.yaml" 
   - summary: Buyer app fetches the mutual fund agreement form (Redirection)
     api: form
     details:
@@ -204,44 +249,11 @@ steps:
     reference: if any
     example:
       value: 
-        $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
-  # check withdrawal status(Initiated) 
-  - summary: Buyer app seeks the most real-time updates on the status of withdrawal
-    api: status
-    details:
-      - description: Buyer app seeks the most recent updates regarding the status of withdrawal ensuring you stay informed about its progress.
-        mermaid: >-
-          sequenceDiagram
-            Participant Investment Platform
-            Participant Fund Aggregator / Direct Fund
-            rect rgb(191, 223, 255)
-            Investment Platform ->> Fund Aggregator / Direct Fund: status
-            end
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/mutual-funds/status/status-request-withdrawal-1.2.yaml" 
-  - summary: Provider sends the real-time updates on your withdrawal after each milestone
-    api: on_status
-    details:
-      - description: Provider sends timely updates about your withdrawal after significant milestones, ensuring you're informed throughout the withdrawal journey.
-        mermaid: >-
-          sequenceDiagram
-            Participant Investment Platform
-            Participant Fund Aggregator / Direct Fund
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
-            Investment Platform ->> Fund Aggregator / Direct Fund: status
-            rect rgb(191, 223, 255)
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-            end
-    example:
-      value:
-        $ref: "../../examples/mutual-funds/on_status/on_status_request-withdrawal-initiated-1.2.yaml" 
-  - summary: Buyer app confirms the mutual fund withdrawal and authorize the provider to proceed
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-agreement.html
+  - summary: Buyer app confirms the mutual fund investment and authorize the provider to proceed
     api: confirm
     details:
-      - description: Buyer app confirms the mutual fund withdrawal and provides all the necessary information as per the terms.
+      - description: Buyer app confirms the mutual fund investment and provides all the necessary information as per the terms.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
@@ -253,11 +265,11 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/confirm/confirm-request-withdrawal-1.2.yaml"         
-  - summary: Provider validate and confirms the mutual fund withdrawal application
+        $ref: "../../examples/mutual-funds/confirm/confirm-request-1.2.yaml"         
+  - summary: Provider validate and confirms the mutual fund investment application
     api: on_confirm
     details:
-      - description: Provider validates and confirms the withdrawal application for the chosen mutual fund and provides the confirmation details.
+      - description: Provider validates and confirms the investment application for the chosen mutual fund and provides the confirmation details.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
@@ -269,71 +281,35 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-withdrawal-1.2.yaml" 
-  # check withdrawal status(Processing) 
-  - summary: Buyer app seeks the real-time updates on the status of withdrawal in processing
-    api: status
+        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-1.2.yaml" 
+  - summary: Buyer app cancels the order
+    api: cancel
     details:
-      - description: Buyer app seeks the real-time updates on the status of withdrawal in processing ensuring you stay informed about its progress.
+      - description: Buyer app requests for cancellation of order.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
             Participant Fund Aggregator / Direct Fund
             rect rgb(191, 223, 255)
-            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            Investment Platform ->> Fund Aggregator / Direct Fund: cancel
             end
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/status/status-request-withdrawal-1.2.yaml" 
-  - summary: Provider provides the real-time updates on your withdrawal in processing
-    api: on_status
+        $ref: "../../examples/mutual-funds/cancel/cancel-request.yaml" 
+  - summary: Provider accepts/appends the terms of cancellation
+    api: on_cancel
     details:
-      - description: Provider sends timely updates about your withdrawal in processing ensuring you're informed throughout the withdrawal journey.
+      - description: Provider accepts the terms of cancel request and provides with latest order update.
         mermaid: >-
           sequenceDiagram
             Participant Investment Platform
             Participant Fund Aggregator / Direct Fund
-            Investment Platform ->> Fund Aggregator / Direct Fund: status
+            Investment Platform ->> Fund Aggregator / Direct Fund: cancel
             rect rgb(191, 223, 255)
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_cancel
             end
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_status/on_status_request-withdrawal-processing-1.2.yaml" 
-  # check withdrawal status(Processed) 
-  - summary: Buyer app seeks the real-time updates on the status of withdrawal processed
-    api: status
-    details:
-      - description: Buyer app seeks the real-time updates on the status of withdrawal processed ensuring you stay informed about its progress.
-        mermaid: >-
-          sequenceDiagram
-            Participant Investment Platform
-            Participant Fund Aggregator / Direct Fund
-            rect rgb(191, 223, 255)
-            Investment Platform ->> Fund Aggregator / Direct Fund: status
-            end
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/mutual-funds/status/status-request.yaml" 
-  - summary: Provider provides the real-time updates on your withdrawal after being processed
-    api: on_status
-    details:
-      - description: Provider sends timely updates about your withdrawal processed ensuring you're informed throughout the withdrawal journey.
-        mermaid: >-
-          sequenceDiagram
-            Participant Investment Platform
-            Participant Fund Aggregator / Direct Fund
-            Investment Platform ->> Fund Aggregator / Direct Fund: status
-            rect rgb(191, 223, 255)
-            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-            end
-    example:
-      value:
-        $ref: "../../examples/mutual-funds/on_status/on_status_request-withdrawal-processed-1.2.yaml" 
- 
-
- 
+        $ref: "../../examples/mutual-funds/on_cancel/on_cancel-request.yaml"      
