@@ -4,6 +4,7 @@ function renderDropdownMarkdown(branchname,filteredData){
       var setsDropDown = document.getElementById("feature-sets-dropdown");
         setsDropDown.innerHTML = "";
         filteredData?.forEach(function (item) {
+          if( item === "log-verification.md") return 
           var option = document.createElement("option");
           const fileName = item?.split('.md')[0];
           option.text = fileName;
