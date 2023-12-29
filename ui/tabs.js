@@ -3,7 +3,7 @@
 
 function onFirstLoad(build_spec) {
       let data = build_spec;
-      const xProperties = ["x-enum", "x-tags", "x-examples", "x-flows", "x-attributes", "x-errorcodes", "x-tlc","x-featureui","x-sandboxui"];
+      const xProperties = ["x-enum", "x-tags", "x-examples", "x-flows", "x-attributes", "x-errorcodes", "x-tlc","x-featureui","x-sandboxui", "x-testcasesui",];
       const dropdown =  document.getElementById("contract-dropdown");
       const branch_name = dropdown.options[dropdown.selectedIndex].text;
       xProperties.forEach((xProperty) => {
@@ -38,6 +38,10 @@ function onFirstLoad(build_spec) {
             case "x-sandboxui":
               if(shouldDisplay(data[xProperty].dropdown,"sandbox-nav")) loadSandbox(data[xProperty])
               break;
+            case "x-testcasesui":
+              if(shouldDisplay(data[xProperty].filenames,"logSubmission-navbar"))
+               renderDropdownCases(branch_name, data[xProperty].filenames);
+              break;
             default:
               break; 
           }
@@ -55,6 +59,9 @@ function onFirstLoad(build_spec) {
                 break;
               case "x-sandboxui":
                 shouldDisplay([],"sandbox-nav")
+                break;
+              case "x-testcasesui":
+                shouldDisplay([], "logSubmission-navbar");
                 break;
               default:
                 break;
