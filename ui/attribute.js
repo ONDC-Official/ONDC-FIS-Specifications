@@ -44,54 +44,6 @@ function updateSets(value, option) {
   const object = attributes[value]?.attribute_set;
   emptyAttributeTreeDiv()
   localStorage.setItem("attributes", JSON.stringify(object[option]))
-  const test = {
-    message: {
-      order: {
-        fulfillments: {
-          customer: {
-            contact: {
-              phone: {
-                required: "Mandatory",
-                type: "string",
-                owner: "BAP",
-                usage: "91-9667788867",
-                description: "Phone number of the customer",
-              },
-            },
-          },
-        },
-        payments: {
-          required: "Mandatory",
-          type: "string",
-          owner: "BAP",
-          usage: "91-9667788867",
-          description: "Phone number of the customer",
-          collected_by: {
-            required: "Mandatory",
-            type: "string",
-            owner: "BAP",
-            usage: "BPP",
-            description: "Describes who will collect the payment",
-          },
-          status: {
-            required: "Mandatory",
-            type: "string",
-            owner: "BAP",
-            usage: "NOT-PAID",
-            description: "Status of payment whether paid or not",
-          },
-          type: {
-            required: "Mandatory",
-            type: "string",
-            owner: "BAP",
-            usage: "PRE-FULLFILMENT",
-            description: "Describes when a payment has to be paid",
-          },
-        },
-      },
-    },
-  };
-  // displayAttributeTree(JSON.parse(JSON.stringify(test)))
   displayAttributeTree(JSON.parse(JSON.stringify(object[option])))
   flattenObject(object[option],null,null,object[option]?.required_attributes);
 }
@@ -112,54 +64,6 @@ function addAttributeSets(option) {
   const requiredAttr = 'required_attributes' in keyDetail
   emptyAttributeTreeDiv()
   localStorage.setItem("attributes", JSON.stringify(keyDetail))
-  const test = {
-    message: {
-      order: {
-        fulfillments: {
-          customer: {
-            contact: {
-              phone: {
-                required: "Mandatory",
-                type: "string",
-                owner: "BAP",
-                usage: "91-9667788867",
-                description: "Phone number of the customer",
-              },
-            },
-          },
-        },
-        payments: {
-          required: "Mandatory",
-          type: "string",
-          owner: "BAP",
-          usage: "91-9667788867",
-          description: "Phone number of the customer",
-          collected_by: {
-            required: "Mandatory",
-            type: "string",
-            owner: "BAP",
-            usage: "BPP",
-            description: "Describes who will collect the payment",
-          },
-          status: {
-            required: "Mandatory",
-            type: "string",
-            owner: "BAP",
-            usage: "NOT-PAID",
-            description: "Status of payment whether paid or not",
-          },
-          type: {
-            required: "Mandatory",
-            type: "string",
-            owner: "BAP",
-            usage: "PRE-FULLFILMENT",
-            description: "Describes when a payment has to be paid",
-          },
-        },
-      },
-    },
-  };
-  // displayAttributeTree(JSON.parse(JSON.stringify(test)))
   displayAttributeTree(JSON.parse(JSON.stringify(keyDetail)))
   flattenObject(keyDetail,null,null,keyDetail?.required_attributes);
 }

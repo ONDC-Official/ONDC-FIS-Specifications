@@ -2,111 +2,120 @@ function displayTooltip(data, name) {
   const cmp = document.getElementById("node-info");
   cmp.innerHTML = `
     <p><b>${name}</b></p>
-    <small><b>Required</b> : ${data["required"]}</small>
-    <small><b>Sample Usage</b> : ${data["usage"]}</small>
-    <small><b>Owner</b> : ${data["owner"]}</small>
-    <small><b>Type</b> : ${data["type"]}</small>
-    <small><b>Description</b> : ${data["description"]}</small>`;
+    <small><b>Required</b> : ${data["_required"] || data["required"]}</small>
+    <small><b>Sample Usage</b> : ${data["_usage"] || data["usage"]}</small>
+    <small><b>Owner</b> : ${data["_owner"] || data["owner"]}</small>
+    <small><b>Type</b> : ${data["_type"] || data["type"]}</small>
+    <small><b>Description</b> : ${
+      data["_description"] || data["description"]
+    }</small>`;
   cmp.style.display = "flex";
 }
 
 function displayAttributeTree(payload) {
+  function formatdataForTree(data) {
+    const noOfKeys = Object.keys(data).length;
+    if (
+      ("required" in data &&
+        "type" in data &&
+        "owner" in data &&
+        "usage" in data &&
+        "description" in data &&
+        noOfKeys === 5) ||
+      ("_required" in data &&
+        "_type" in data &&
+        "_owner" in data &&
+        "_usage" in data &&
+        "_description" in data &&
+        noOfKeys === 5)
+    ) {
+      return { leafNode: true, children: false, _info: false };
+    }
 
-    function formatdataForTree(data) {
-        const noOfKeys = Object.keys(data).length;
-        if (
-          "required" in data &&
-          "type" in data &&
-          "owner" in data &&
-          "usage" in data &&
-          "description" in data &&
-          noOfKeys === 5
-        ) {
-          return { leafNode: true, children: false, _info: false };
+    const allObj = [];
+
+    Object.entries(data).forEach(([key, value]) => {
+      const tempObj = {};
+      tempObj.name = key;
+
+      if (typeof value === "object") {
+        const response = formatdataForTree(value);
+        if (response.leafNode) {
+          tempObj.tooltip = value;
+        } else if (response.children && response._info) {
+          tempObj.children = response.children;
+          tempObj._info = response._info;
+        } else {
+          tempObj.children = response.children;
         }
-    
-        const allObj = [];
-    
-        Object.entries(data).forEach(([key, value]) => {
-          const tempObj = {};
-          tempObj.name = key;
-    
-          if (typeof value === "object") {
-            const response = formatdataForTree(value);
-            if (response.leafNode) {
-              tempObj.tooltip = value;
-            } else if (response.children && response._info) {
-              tempObj.children = response.children;
-              tempObj._info = response._info;
-            } else {
-              tempObj.children = response.children;
-            }
-            // if (returnedObjArray.length === 0) {
-            //   tempObj.tooltip = value;
-            // } else {
-            //   tempObj.children = returnedObjArray;
-            // }
-            allObj.push(tempObj);
-          } 
-        });
-    
-        if (
-          "required" in data &&
-          "type" in data &&
-          "owner" in data &&
-          "usage" in data &&
-          "description" in data &&
-          noOfKeys > 5
-        ) {
-          const info = {
-            required: data["required"],
-            type: data["type"],
-            owner: data["owner"],
-            usage: data["usage"],
-            description: data["description"],
-          };
-          return { leafNode: false, children: allObj, _info: info };
-        }
-    
-        return { leafNode: false, children: allObj, _info: false };
+
+        allObj.push(tempObj);
       }
+    });
 
-//   function formatdataForTree(data) {
-//     if (
-//       "required" in data &&
-//       "type" in data &&
-//       "owner" in data &&
-//       "usage" in data &&
-//       "description" in data
-//     ) {
-//       return [];
-//     }
+    if (
+      ("required" in data &&
+        "type" in data &&
+        "owner" in data &&
+        "usage" in data &&
+        "description" in data &&
+        noOfKeys > 5) ||
+      ("_required" in data &&
+        "_type" in data &&
+        "_owner" in data &&
+        "_usage" in data &&
+        "_description" in data &&
+        noOfKeys > 5)
+    ) {
+      const info = {
+        required: data["_required"] || data["required"],
+        type: data["_type"] || data["type"],
+        owner: data["_owner"] || data["owner"],
+        usage: data["_usage"] || data["usage"],
+        description: data["_description"] || data["description"],
+      };
+      return { leafNode: false, children: allObj, _info: info };
+    }
 
-//     const allObj = [];
+    return { leafNode: false, children: allObj, _info: false };
+  }
 
-//     Object.entries(data).forEach(([key, value]) => {
-//       const tempObj = {};
-//       tempObj.name = key;
+  //   function formatdataForTree(data) {
+  //     if (
+  //       "required" in data &&
+  //       "type" in data &&
+  //       "owner" in data &&
+  //       "usage" in data &&
+  //       "description" in data
+  //     ) {
+  //       return [];
+  //     }
 
-//       if (typeof value === "object") {
-//         const returnedObjArray = formatdataForTree(value);
-//         if (returnedObjArray.length === 0) {
-//           tempObj.tooltip = value;
-//         } else {
-//           tempObj.children = returnedObjArray;
-//         }
-//       } else {
-//         tempObj.value = value;
-//       }
+  //     const allObj = [];
 
-//       allObj.push(tempObj);
-//     });
+  //     Object.entries(data).forEach(([key, value]) => {
+  //       const tempObj = {};
+  //       tempObj.name = key;
 
-//     return allObj;
-//   }
+  //       if (typeof value === "object") {
+  //         const returnedObjArray = formatdataForTree(value);
+  //         if (returnedObjArray.length === 0) {
+  //           tempObj.tooltip = value;
+  //         } else {
+  //           tempObj.children = returnedObjArray;
+  //         }
+  //       } else {
+  //         tempObj.value = value;
+  //       }
+
+  //       allObj.push(tempObj);
+  //     });
+
+  //     return allObj;
+  //   }
 
   var treeData = formatdataForTree(payload).children[0];
-  console.log("treeData", treeData)
+  console.log("treeData", treeData);
 
   // Get JSON data
   // treeJSON = d3.json("flare.json", function (error, treeData) {
@@ -590,13 +599,22 @@ function displayAttributeTree(payload) {
     node
       .select("circle")
       .style("fill", function (d) {
-        return d.tooltip ? "blue" : d._info ? "green" : "#fff";
+        console.log("d>>>", d);
+        return d?.tooltip?.required === "Mandatory" ||
+          d?.tooltip?._required === "Mandatory"
+          ? "blue"
+          : d?.tooltip?.required === "Optional" ||
+            d?.tooltip?._required === "Optional"
+          ? "yellow"
+          : d._info
+          ? "green"
+          : "#fff";
       })
       .on("mouseover", function (d) {
         if (d.tooltip || d._info) {
           displayTooltip(d.tooltip || d._info, d.name);
-        } 
-      })
+        }
+      });
     //   .on("mouseout", function (d) {
     //     const cmp = document.getElementById("node-info")
     //     cmp.innerHTML = ''
