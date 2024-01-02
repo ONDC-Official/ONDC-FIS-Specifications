@@ -114,7 +114,8 @@ function displayAttributeTree(payload) {
   //     return allObj;
   //   }
 
-  var treeData = formatdataForTree(payload).children[0];
+  const childrenData = formatdataForTree(payload);
+  var treeData = { name: "payload", children: childrenData.children };
   console.log("treeData", treeData);
 
   // Get JSON data
