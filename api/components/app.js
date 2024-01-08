@@ -406,7 +406,7 @@ function findMandatoryRequiredKeys(obj, result, parentKeys = []) {
     if (obj.hasOwnProperty(key)) {
       if (typeof obj[key] === "object") {
         findMandatoryRequiredKeys(obj[key], result, [...parentKeys, key]);
-      } else if (key === "required" && obj[key]?.toLowerCase() == "mandatory") {
+      } else if (key === "required" && obj[key] === "string" && obj[key]?.toLowerCase() == "mandatory") {
         result.push([...parentKeys]);
       }
     }
