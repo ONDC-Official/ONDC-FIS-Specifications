@@ -19,7 +19,7 @@ function renderMarkdown(branchName,file) {
   )
     .then((response) => response.text())
     .then((text) => {
-      const textWithBranchName = text.replace("branchName", branchName);
+      const textWithBranchName = text.replace(/branchName/g, branchName);
       const html = marked.parse(textWithBranchName);
       document.getElementById("markdown-container").innerHTML = html;
     });
