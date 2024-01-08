@@ -2013,7 +2013,6 @@ components:
           enum:
             - PAID
             - NOT-PAID
-            - FORECLOSED
             - DELAYED
             - DEFERRED
         time:
@@ -2182,6 +2181,7 @@ components:
           type: array
           items:
             type: object
+            additionalProperties: false
             properties:
               item:
                 $ref: '#/components/schemas/Item'
@@ -3054,16 +3054,17 @@ x-enum:
         cancellation_terms:
           fulfillment_state:
             descriptor:
-              - code: INSURANCE_PROCESSING
-                description: >-
-                  When the bank in the process of verification of insured before
-                  deliveriving the ammount
-                reference: <PR/Issue/Discussion Links md format text
-              - code: INSURANCE_GRANTED
-                description: >-
-                  When the bank delivers the amount to the insured after
-                  verification and approval
-                reference: <PR/Issue/Discussion Links md format text
+              code:
+                - code: INSURANCE_PROCESSING
+                  description: >-
+                    When the bank in the process of verification of insured
+                    before deliveriving the ammount
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: INSURANCE_GRANTED
+                  description: >-
+                    When the bank delivers the amount to the insured after
+                    verification and approval
+                  reference: <PR/Issue/Discussion Links md format text
   status:
     context: *ref_0
   on_status:
@@ -3102,51 +3103,49 @@ x-tags:
       intent:
         payment:
           tags:
-            buyer_finder_fees:
-              - code: BUYER_FINDER_FEES
-                description: Describes the finder fees for buyer
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: BUYER_FINDER_FEES_TYPE
-                    description: Buyer finder fee type
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: BUYER_FINDER_FEES_PERCENTAGE
-                    description: Buyer finder fee in percentage
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: BUYER_FINDER_FEES_AMOUNT
-                    description: Buyer finder fee in amount
-                    reference: <PR/Issue/Discussion Links md format text>
-            settlement_terms: &ref_7
-              - code: SETTLEMENT_TERMS
-                description: Describes the settlement terms
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: SETTLEMENT_WINDOW
-                    description: Time window to complete settlement
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: SETTLEMENT_BASIS
-                    description: Basis required to complete settlement
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: SETTLEMENT_TYPE
-                    description: Payment method to complete settlement
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: MANDATORY_ARBITRATION
-                    description: >-
-                      Flag to denote if dispute can be resolved through
-                      arbitration
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: COURT_JURISDICTION
-                    description: Denotes court that will have jurisdiction for the case
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: DELAY_INTEREST
-                    description: Denotes interest to be paid as a delay charge
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: STATIC_TERMS
-                    description: Terms for settlement
-                    reference: <PR/Issue/Discussion Links md format text>
-                  - code: SETTLEMENT_AMOUNT
-                    description: Denotes settlement amount
-                    reference: <PR/Issue/Discussion Links md format text>
+            - code: BUYER_FINDER_FEES
+              description: Describes the finder fees for buyer
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: BUYER_FINDER_FEES_TYPE
+                  description: Buyer finder fee type
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_PERCENTAGE
+                  description: Buyer finder fee in percentage
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_AMOUNT
+                  description: Buyer finder fee in amount
+                  reference: <PR/Issue/Discussion Links md format text>
+            - code: SETTLEMENT_TERMS
+              description: Describes the settlement terms
+              reference: <PR/Issue/Discussion Links md format text>
+              list: &ref_7
+                - code: SETTLEMENT_WINDOW
+                  description: Time window to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_BASIS
+                  description: Basis required to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_TYPE
+                  description: Payment method to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: MANDATORY_ARBITRATION
+                  description: >-
+                    Flag to denote if dispute can be resolved through
+                    arbitration
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: COURT_JURISDICTION
+                  description: Denotes court that will have jurisdiction for the case
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: DELAY_INTEREST
+                  description: Denotes interest to be paid as a delay charge
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: STATIC_TERMS
+                  description: Terms for settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_AMOUNT
+                  description: Denotes settlement amount
+                  reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
@@ -3418,7 +3417,7 @@ x-tags:
                       Previous policy end date is the date at which last
                       insurance policy of the vehicle ended
                     reference: <PR/Issue/Discussion Links md format text>
-          payment: *ref_7
+          payments: *ref_7
   on_select: &ref_10
     message:
       order:
@@ -3426,12 +3425,12 @@ x-tags:
   init:
     message:
       order:
-        payment: *ref_7
+        payments: *ref_7
   on_init:
     message:
       order:
         items: *ref_8
-        payment: *ref_7
+        payments: *ref_7
   confirm: &ref_9
     message:
       order:
@@ -3672,6 +3671,7 @@ x-flows:
                     items:
                       - category_ids:
                           - C1
+                        id: I1
                         tags:
                           - descriptor:
                               name: General Information
@@ -3719,32 +3719,32 @@ x-flows:
                             resubmit: false
                             multiple_sumbissions: false
                           required: true
-                    payment:
+                    payments:
                       - collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
+                        tags:
                           - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT60M
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: Delivery
+                              - descriptor:
+                                  code: DELAY_INTEREST
+                                value: '2.5'
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Buyer app fetches the personal/individual information form
         api: form
         details:
@@ -5199,32 +5199,32 @@ x-flows:
                             resubmit: true
                             multiple_sumbissions: false
                           required: true
-                    payment:
+                    payments:
                       - collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
+                        tags:
                           - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT60M
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: Delivery
+                              - descriptor:
+                                  code: DELAY_INTEREST
+                                value: '2.5'
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Buyer app fetches the personal/individual information form
         api: form
         details:
@@ -5276,6 +5276,12 @@ x-flows:
                 </select>
                 <label for="dob">Date of Birth</label>
                 <input type="date" id="dob" name="dob" />
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
                 <label for="amount">Coverage amount</label>
                 <input type="number" id="amount" name="amount" />
                 <label for="panIndia">Pan India Cover</label>
@@ -6593,11 +6599,11 @@ x-flows:
                     <input type="text" id="address" name="address" />
                     <label for="dob">Date of Birth</label>
                     <input type="date" id="dob" name="dob" />
-                    <label for="sex">Sex</label>
-                    <select name="sex" id="sex">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" required>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="transgender">Transgender</option>
                     </select>
                     <label for="email">Email</label>
                     <input type="text" id="email" name="email" />
@@ -6988,11 +6994,11 @@ x-flows:
                   <option value="father">Father</option>
                   <option value="mother">Mother</option>
                 </select>
-                <label for="sex">Sex</label>
-                <select name="sex" id="sex">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="transgender">Transgender</option>
                 </select>
                 <label for="dob">Date of Birth</label>
                 <input type="date" id="dob" name="dob" />
@@ -11642,32 +11648,32 @@ x-flows:
                                 count: 1
                             descriptor:
                               name: Daily Allowance
-                    payment:
+                    payments:
                       - collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
+                        tags:
                           - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT60M
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: Delivery
+                              - descriptor:
+                                  code: DELAY_INTEREST
+                                value: '2.5'
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Buyer app fetches the vehicle details form for new policy
         api: form
         details:
@@ -11712,6 +11718,12 @@ x-flows:
                 <input type="text" id="email" name="email" />
                 <label for="phone">Phone</label>
                 <input type="text" id="phone" name="phone" />
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
                 <label for="vehicleUniqueCode">Vehicle Unique Code</label>
                 <input type="text" id="vehicleUniqueCode" name="vehicleUniqueCode" />
                 <label for="rtoCode">RTO Code</label>
@@ -11784,6 +11796,12 @@ x-flows:
                 <input type="text" id="email" name="email" />
                 <label for="phone">Phone</label>
                 <input type="text" id="phone" name="phone" />
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
                 <label for="registrationNumber">Vehicle Registration number</label>
                 <input type="text" id="registrationNumber" name="registrationNumber" />
                 <label for="idv">IDV</label>
@@ -13486,7 +13504,11 @@ x-flows:
                 <label for="dob">DoB</label>
                 <input type="text" id="dob" name="dob" />
                 <label for="gender">Gender</label>
-                <input type="text" id="gender" name="gender" />
+                <select name="gender" id="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
                 <!-- <label for="politicallyExposedPerson">Politically exposed person</label>
                 <input type="text" id="politicallyExposedPerson" name="politicallyExposedPerson" /> -->
                 <label for="email">Email</label>
@@ -16203,9 +16225,8 @@ x-examples:
                         duration: P1Y
                         label: TENURE
                       xinput:
-                        form:
+                        form_response:
                           submission_id: aae9ece0-3733-4875-8cd3-3e8600f5c7f3
-                          url: https://fis.test.bpp.io/form/ekyc
                     - id: PERSONAL_ACCIDENT_COVER
                       time:
                         duration: P1Y
@@ -16562,7 +16583,7 @@ x-attributes:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: db1928f9
+                  usage: C1
                   description: Unique id of category
               descriptor:
                 long_desc:
@@ -16593,7 +16614,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -16604,14 +16625,16 @@ x-attributes:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: 3bd4ea25
+                usage: |
+                  P1
                 description: Unique id of provider
               items:
                 category_ids:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: 9bd4Ka25
+                  usage: |
+                    C1
                   description: Unique category ids of product in list
                 descriptor:
                   name:
@@ -16619,19 +16642,19 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: Health Gain Plus Individual
-                    description: Name of the item
+                    description: Type of insurance for the particular category
                   short_desc:
                     required: Optional
                     type: string
                     owner: BPP
                     usage: ABC Individaul Health Insurance Class A with custom addon
-                    description: Short description of item
+                    description: Short description about the insurance type
                 id:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: 1cd4ea25
-                  description: Unique id of item
+                  usage: I1
+                  description: Unique id of the item
                 time:
                   duration:
                     required: Mandatory
@@ -16660,19 +16683,19 @@ x-attributes:
                         type: number
                         owner: BPP
                         usage: false
-                        description: Minimum index value of form
+                        description: Minimum number of pages in a form
                       max:
                         required: Mandatory
                         type: number
                         owner: BPP
                         usage: 1
-                        description: Maximum index value of form
+                        description: Maximum number of pages in a form
                       cur:
                         required: Mandatory
                         type: number
                         owner: BPP
                         usage: 1
-                        description: Current index value of form
+                        description: Current page to be filled in a form
                   form:
                     mime_type:
                       required: Mandatory
@@ -16699,36 +16722,36 @@ x-attributes:
                       usage: false
                       description: Whether form can be submitted multiple times or not
                 add_ons:
-                  'id                                                                                                                                                            ':
+                  id:
                     required: Optional
                     type: string
                     owner: BPP
-                    usage: 2xd4ea25
-                    description: Describes the unique id of the add_ons
+                    usage: |
+                      A1
+                    description: Describes the unique id of the add_ons item
                   quantity:
                     available:
-                      'count                                                                                                                                                   ':
-                        '':
-                          required: Optional
-                          type: number
-                          owner: BPP
-                          usage: 1
-                          description: >-
-                            Describes the count of available quantity for add_on
-                            item
+                      count:
+                        required: Optional
+                        type: number
+                        owner: BPP
+                        usage: 1
+                        description: >-
+                          Describes the count of available quantity for add_on
+                          item
                   descriptor:
                     'name                                                                                                                                                   ':
                       required: Optional
                       type: string
                       owner: BPP
                       usage: No Claim Bonus
-                      description: Describes the name of add_on item
+                      description: Describes the name of the add_on item
                     'code                                                                                                                                                   ':
                       required: Optional
                       type: string
                       owner: BPP
                       usage: NO_CLAIM_BONUS
-                      description: Describes the code of add_on item
+                      description: Describes the code of the add_on item
       select:
         message:
           order:
@@ -16758,41 +16781,40 @@ x-attributes:
                 required: Optional
                 type: string
                 owner: BAP
-                usage: 3bd4ea25
+                usage: |
+                  FULFILMENT_ID
                 description: Unique id of fulfillment
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BAP
-                  usage: 2xd4ea25
+                  usage: |
+                    A1
                   description: Unique id of the add_ons item
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BAP
-                        usage: 1
-                        description: >-
-                          Describes the count of available quantity for add_on
-                          item
-              'id                                                                                                                                          ':
-                '':
-                  required: Mandatory
-                  type: number
-                  owner: BAP
-                  usage: Ixd4ea25
-                  description: Unique id of item
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BAP
+                      usage: 1
+                      description: Describes the count of selected quantity for add_on item
+              id:
+                required: Mandatory
+                type: number
+                owner: BAP
+                usage: I1
+                description: Unique id of item
               xinput:
                 form_response:
                   submission_id:
                     required: Mandatory
                     type: string
                     owner: BAP
-                    usage: ebff9b95
+                    usage: |
+                      79850933-4e41-4c76-bbe6-c5a392481226
                     description: >-
                       Unique submission id which a buyer got as a reponse after
                       successful submission of form 
@@ -16800,14 +16822,15 @@ x-attributes:
                     required: Mandatory
                     type: string
                     owner: BAP
-                    usage: ebff9b95
+                    usage: |
+                      SUCCESS
                     description: Describes the status of form
             provider:
               id:
                 required: Mandatory
                 type: string
                 owner: BAP
-                usage: enff9b99
+                usage: P1
                 description: Unique id of provider
       on_select:
         message:
@@ -16817,7 +16840,8 @@ x-attributes:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: ebff9b95
+                usage: |
+                  C1
                 description: Unique id of category
               descriptor:
                 name:
@@ -16825,18 +16849,18 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: Health Gain Plus Individual
-                  description: Insurer name
+                  description: Type of insurance for the particular category
                 short_desc:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: ABC Individaul Health Insurance Class A with custom addon
-                  description: Short description about insurer
+                  description: Short description about the insurance type
               id:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: zbfv9b91
+                usage: I1
                 description: Unique id of item
               time:
                 duration:
@@ -16866,13 +16890,13 @@ x-attributes:
                       type: number
                       owner: BPP
                       usage: false
-                      description: Minimum index value of form
+                      description: Minimum number of pages in a form
                     max:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 1
-                      description: Maximum index value of form
+                      description: Maximum number of pages in a form
                 form:
                   mime_type:
                     required: Mandatory
@@ -16899,23 +16923,22 @@ x-attributes:
                     usage: false
                     description: Whether form can be submitted multiple times or not
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: 2xd4ea25
-                  description: Describes the unique id of the add_ons
+                  usage: A1
+                  description: Describes the unique id of the add_ons item
                 quantity:
                   available:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BPP
-                        usage: 1
-                        description: >-
-                          Describes the count of available quantity for add_on
-                          item
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: >-
+                        Describes the count of available quantity for add_on
+                        item
                 descriptor:
                   'name                                                                                                                                                   ':
                     required: Mandatory
@@ -16929,16 +16952,6 @@ x-attributes:
                     owner: BPP
                     usage: NO_CLAIM_BONUS
                     description: Describes the code of add_on item
-            tems:
-              xinput:
-                head:
-                  index:
-                    cur:
-                      required: Mandatory
-                      type: number
-                      owner: BPP
-                      usage: 1
-                      description: Current index value of form
             provider:
               descriptor:
                 long_desc:
@@ -16963,7 +16976,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -17009,40 +17022,40 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: 60
-                  description: Value of order price
+                  description: Value of the order price
                 currency:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: INR
-                  description: Currency of the price
+                  description: Currency of the order price
       init:
         message:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BAP
-                  usage: 2xd4ea25
+                  usage: A1
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BAP
-                        usage: 1
-                        description: Describes the count of selected quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BAP
+                      usage: 1
+                      description: Describes the count of selected quantity of add_on item
               xinput:
                 form_response:
                   submission_id:
                     required: Mandatory
                     type: string
                     owner: BAP
-                    usage: ebff9b95
+                    usage: |
+                      6685ea78-fc80-4288-93fd-2a0c461e40fa
                     description: >-
                       Unique submission id which a buyer got as a reponse after
                       successful submission of form 
@@ -17050,7 +17063,8 @@ x-attributes:
                     required: Mandatory
                     type: string
                     owner: BAP
-                    usage: ebff9b95
+                    usage: |
+                      SUCCESS
                     description: Describes the status of form
             fulfillments:
               customer:
@@ -17074,55 +17088,121 @@ x-attributes:
                     owner: BAP
                     usage: Joe Adam
                     description: Name of the customer
+            payments:
+              collected_by:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: BPP
+                description: Describes who will collect the payment
+              params:
+                amount:
+                  required: Mandatory
+                  type: number
+                  owner: BAP
+                  usage: 1000
+                  description: Amount to be collected
+                bank_account_number:
+                  required: Mandatory
+                  type: number
+                  owner: BAP
+                  usage: 180002341
+                  description: Accout number in which payment has to be collected
+                bank_code:
+                  required: Mandatory
+                  type: string
+                  owner: BAP
+                  usage: SBIN0001234
+                  description: 'Code of the bank '
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BAP
+                  usage: INR
+                  description: Currency in which payment has to be paid
+              status:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
+              type:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: PRE-FULLFILMENT
+                description: Describes when a payment has to be paid
       on_init:
         message:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: 2xd4ea25
+                  usage: A1
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BPP
-                        usage: 1
-                        description: Describes the count of selected quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the count of selected quantity of add_on item
                 descriptor:
                   'name                                                                                                                                                   ':
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: No Claim Bonus
-                    description: Describes the name of add_on item
+                    description: Describes the name of the add_on item
                   'code                                                                                                                                                   ':
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: NO_CLAIM_BONUS
-                    description: Describes the code of add_on item
+                    description: Describes the code of the add_on item
+              category_ids:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: C1
+                description: Unique id of category
+              descriptor:
+                name:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: Health Gain Plus Individual
+                  description: Type of insurance for the particular category
+                short_desc:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: ABC Individaul Health Insurance Class A with custom addon
+                  description: Short description about the insurance type
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: I1
+                description: Unique id of item
+              time:
+                duration:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: P1Y
+                  description: Describes duration as per ISO8601 format
+                label:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: TENURE
+                  description: Label value of the time
               xinput:
-                form_response:
-                  submission_id:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: >-
-                      Unique submission id which a buyer got as a reponse after
-                      successful submission of form 
-                  status:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: Describes the status of form
                 head:
                   descriptor:
                     name:
@@ -17137,13 +17217,13 @@ x-attributes:
                       type: number
                       owner: BPP
                       usage: false
-                      description: Minimum index value of form
+                      description: Minimum number of pages in a form
                     max:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 1
-                      description: Maximum index value of form
+                      description: Maximum number of pages in a form
                 form:
                   mime_type:
                     required: Mandatory
@@ -17169,54 +17249,6 @@ x-attributes:
                     owner: BPP
                     usage: false
                     description: Whether form can be submitted multiple times or not
-              category_ids:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: ebff9b95
-                description: Unique id of category
-              descriptor:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: Health Gain Plus Individual
-                  description: Insurer name
-                short_desc:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: ABC Individaul Health Insurance Class A with custom addon
-                  description: Short description about insurer
-              id:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: zbfv9b91
-                description: Unique id of item
-              time:
-                duration:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: P1Y
-                  description: Describes duration as per ISO8601 format
-                label:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: TENURE
-                  description: Label value of the time
-            tems:
-              xinput:
-                head:
-                  index:
-                    cur:
-                      required: Mandatory
-                      type: number
-                      owner: BPP
-                      usage: 1
-                      description: Current index value of form
             fulfillments:
               customer:
                 contact:
@@ -17306,7 +17338,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -17358,34 +17390,34 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: INR
-                  description: Currency of the price
+                  description: Currency of the order price
       confirm:
         message:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BAP
-                  usage: 2xd4ea25
+                  usage: A1
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BAP
-                        usage: 1
-                        description: Describes the count of selected quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BAP
+                      usage: 1
+                      description: Describes the count of selected quantity of add_on item
               xinput:
                 form_response:
                   submission_id:
                     required: Mandatory
                     type: string
                     owner: BAP
-                    usage: ebff9b95
+                    usage: |
+                      6ae80f7d-1fe2-4bb2-8ead-8c3c2ded9358
                     description: >-
                       Unique submission id which a buyer got as a reponse after
                       successful submission of form 
@@ -17393,13 +17425,14 @@ x-attributes:
                     required: Mandatory
                     type: string
                     owner: BAP
-                    usage: ebff9b95
+                    usage: |
+                      SUCCESS
                     description: Describes the status of form
               id:
                 required: Mandatory
                 type: string
                 owner: BAP
-                usage: zbfv9b91
+                usage: I1
                 description: Unique id of item
             fulfillments:
               customer:
@@ -17421,7 +17454,7 @@ x-attributes:
                 required: Mandatory
                 type: string
                 owner: BAP
-                usage: enff9b99
+                usage: P1
                 description: 'Unique id of provider '
             payments:
               collected_by:
@@ -17506,27 +17539,26 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: INR
-                  description: Currency of the price
+                  description: Currency of the order price
       on_confirm:
         message:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: C1
+                  usage: A1
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BPP
-                        usage: 1
-                        description: Describes the count of available quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the count of selected quantity
                 descriptor:
                   code:
                     required: Mandatory
@@ -17546,22 +17578,6 @@ x-attributes:
                 owner: false
                 usage: I1
                 description: Unique id of item
-              xinput:
-                form_response:
-                  submission_id:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: >-
-                      Unique submission id which a buyer got as a reponse after
-                      successful submission of form 
-                  status:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: Describes the status of form
             fulfillments:
               customer:
                 contact:
@@ -17570,7 +17586,7 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: joe.adam@abc.org
-                    description: Email address of the cust0mer
+                    description: Email address of the customer
                   phone:
                     required: Mandatory
                     type: string
@@ -17582,7 +17598,7 @@ x-attributes:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: enff9b99
+                usage: P1
                 description: 'Unique id of provider '
               descriptor:
                 long_desc:
@@ -17607,13 +17623,13 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: xs
-                    description: Size type of the Image
+                    description: Size type of the image
                 short_desc:
                   required: Mandatory
                   type: string
@@ -17720,39 +17736,37 @@ x-attributes:
             usage: 5
             description: Unique id of cancellation reason
           descriptor:
-            'short_desc                                                                                                                          ':
-              '':
-                required: Mandatory
-                type: string
-                owner: BAP
-                usage: User bought the other policy
-                description: Short description for the reason of cancellation
+            short_desc:
+              required: Mandatory
+              type: string
+              owner: BAP
+              usage: User bought the other policy
+              description: Short description for the reason of cancellation
           order_id:
             required: Mandatory
             type: string
             owner: BAP
-            usage: ebff9b95
+            usage: O1
             description: Unique id of order
       on_cancel:
         message:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: C1
+                  usage: A1
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BPP
-                        usage: 1
-                        description: Describes the count of available quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the count of selected quantity of add_on item
                 descriptor:
                   code:
                     required: Mandatory
@@ -17772,22 +17786,6 @@ x-attributes:
                 owner: false
                 usage: I1
                 description: Unique id of item
-              xinput:
-                form_response:
-                  submission_id:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: >-
-                      Unique submission id which a buyer got as a reponse after
-                      successful submission of form 
-                  status:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: Describes the status of form
             fulfillments:
               customer:
                 contact:
@@ -17796,7 +17794,7 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: joe.adam@abc.org
-                    description: Email address of the cust0mer
+                    description: Email address of the customer
                   phone:
                     required: Mandatory
                     type: string
@@ -17808,7 +17806,7 @@ x-attributes:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: enff9b99
+                usage: P1
                 description: 'Unique id of provider '
               descriptor:
                 long_desc:
@@ -17833,7 +17831,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -17942,27 +17940,27 @@ x-attributes:
               type: string
               owner: BPP
               usage: CANCELLED
-              description: false
+              description: Status of order
             documents:
               descriptor:
                 code:
                   required: Mandatory
                   type: false
                   owner: false
-                  usage: false
-                  description: Phsyical description of code
+                  usage: POLICY_DOC
+                  description: Code of the document attached
                 name:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: Insurance Policy Document
-                  description: Physical description name of something.
+                  description: Name of the document attached
                 short_desc:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: Download your digitally signed policy document here
-                  description: Short description of something.
+                  description: Short description of document attached
                 long_desc:
                   required: Mandatory
                   type: string
@@ -17974,61 +17972,63 @@ x-attributes:
                                 password in DDMMMYYYYXXXX format where DDMMMYYYY represents your
                                 date of birth, and XXXX represents the first four letters of your
                                 name          Motor, Marine etc
-                  description: Long description of something.
+                  description: Long description of document attached
                 mime_type:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: application/pdf
-                  description: ' Describes the mime of the document'
+                  description: ' Describes the type of the document'
                 url:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: https://abcinsurance.com/policies/O1.pdf
-                  description: URL to the image. This can be a data url or an remote url
+                  description: >-
+                    URL to download the document. This can be a data url or a
+                    remote url
       status:
         message:
-          'ref_id                                                                                                                  ':
-            '':
-              required: Mandatory
-              type: string
-              owner: BAP
-              usage: c04a04ee-d892-400f-bbe6-479a43b4448a
-              description: Unique id of reference
+          ref_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: |
+              c04a04ee-d892-400f-bbe6-479a43b4448a
+            description: Unique id of reference
           order_id:
             required: Mandatory
             type: string
             owner: BAP
-            usage: ebff9b95
+            usage: O1
             description: Unique id of order
       on_status:
         message:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BPP
-                  usage: 2xd4ea25
+                  usage: A1
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BPP
-                        usage: 1
-                        description: Describes the count of selected quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the count of selected quantity
               xinput:
                 form_response:
                   submission_id:
                     required: Mandatory
                     type: string
                     owner: BPP
-                    usage: ebff9b95
+                    usage: |
+                      79850933-4e41-4c76-bbe6-c5a392481226 
                     description: >-
                       Unique submission id which a buyer got as a reponse after
                       successful submission of form 
@@ -18036,13 +18036,14 @@ x-attributes:
                     required: Mandatory
                     type: string
                     owner: BPP
-                    usage: ebff9b95
+                    usage: |
+                      RENEW_PROCESSED
                     description: Describes the status of form
               category_ids:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: ebff9b95
+                usage: C1
                 description: Unique id of category
               descriptor:
                 name:
@@ -18050,18 +18051,18 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: Health Gain Plus Individual
-                  description: Insurer name
+                  description: Type of insurance for the particular category
                 short_desc:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: ABC Individaul Health Insurance Class A with custom addon
-                  description: Short description about insurer
+                  description: Short description about the insurance type
               id:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: zbfv9b91
+                usage: I1
                 description: Unique id of item
               time:
                 duration:
@@ -18159,7 +18160,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -18211,7 +18212,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: INR
-                  description: Currency of the price
+                  description: Currency of the order price
       update:
         message:
           order:
@@ -18248,7 +18249,7 @@ x-attributes:
           order:
             items:
               add_ons:
-                'id                                                                                                                                                            ':
+                id:
                   required: Mandatory
                   type: string
                   owner: BPP
@@ -18256,18 +18257,17 @@ x-attributes:
                   description: Describes the unique id of the add_ons
                 quantity:
                   selected:
-                    'count                                                                                                                                                   ':
-                      '':
-                        required: Mandatory
-                        type: number
-                        owner: BPP
-                        usage: 1
-                        description: Describes the count of selected quantity
+                    count:
+                      required: Mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the count of selected quantity of add_on item
               category_ids:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: ebff9b95
+                usage: C1
                 description: Unique id of category
               descriptor:
                 name:
@@ -18275,12 +18275,12 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: Health Gain Plus Individual
-                  description: Insurer name
+                  description: Type of insurance for the particular category
               id:
                 required: Mandatory
                 type: string
                 owner: BPP
-                usage: zbfv9b91
+                usage: I1
                 description: Unique id of item
               time:
                 duration:
@@ -18378,7 +18378,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -18430,7 +18430,53 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: INR
-                  description: Currency of the price
+                  description: Currency of the order price
+            documents:
+              descriptor:
+                code:
+                  required: Mandatory
+                  type: String
+                  owner: BPP
+                  usage: POLICY_DOC
+                  description: Code of the document attached
+                name:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: Insurance Policy Document
+                  description: Name of the document attached
+                short_desc:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: Download your digitally signed policy document here
+                  description: Short description of document attached
+                long_desc:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: >-
+                    Download you digitally signed policy document here. This
+                    document is
+                                password protected. To open this document, please type in your
+                                password in DDMMMYYYYXXXX format where DDMMMYYYY represents your
+                                date of birth, and XXXX represents the first four letters of your
+                                name          Motor, Marine etc
+                  description: Long description of document attached
+                mime_type:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: application/pdf
+                  description: ' Describes the type of the document'
+                url:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: https://abcinsurance.com/policies/O1.pdf
+                  description: >-
+                    URL to download the document. This can be a data url or a
+                    remote url
   motor_insurance:
     attribute_set:
       search:
@@ -18489,13 +18535,13 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Optional
                     type: string
                     owner: BPP
                     usage: xs
-                    description: Size type of the Image
+                    description: Size type of the image
                 short_desc:
                   required: Optional
                   type: string
@@ -18515,13 +18561,13 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: 2-Wheeler 3rd Party Motor Insurance
-                    description: Name of the item
+                    description: Type of insurance for the particular category
                   short_desc:
                     required: Optional
                     type: string
                     owner: BPP
                     usage: 2-Wheeler 3rd Party Motor Insurance
-                    description: Short description of item
+                    description: Short description about the insurance type
                   images:
                     url:
                       required: Optional
@@ -18529,13 +18575,13 @@ x-attributes:
                       owner: BPP
                       usage: >-
                         https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                      description: Physical description of insurer
+                      description: Information about the insurance type in form of image
                     size_type:
                       required: Optional
                       type: string
                       owner: BPP
                       usage: xs
-                      description: Size type of the Image
+                      description: Size type of the image
                 time:
                   duration:
                     required: Mandatory
@@ -18564,19 +18610,19 @@ x-attributes:
                         type: number
                         owner: BPP
                         usage: false
-                        description: Minimum index value of form
+                        description: Minimum number of pages in a form
                       cur:
                         required: Mandatory
                         type: number
                         owner: BPP
                         usage: false
-                        description: Current index value of form
+                        description: Current page to be filled in a form
                       max:
                         required: Mandatory
                         type: number
                         owner: BPP
                         usage: false
-                        description: Maximum index value of form
+                        description: Maximum number of pages in a form
                     headings:
                       required: Mandatory
                       type: string
@@ -18620,7 +18666,7 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: A1
-                    description: Describes the id of the add_ons
+                    description: Describes the unique id of the add_ons items
                   quantity:
                     available:
                       count:
@@ -18628,7 +18674,7 @@ x-attributes:
                         type: number
                         owner: BPP
                         usage: 1
-                        description: Describes the unique id of the add_ons
+                        description: Describes the available quantity of the add_ons
                     maximum:
                       count:
                         required: Optional
@@ -18644,13 +18690,13 @@ x-attributes:
                       type: string
                       owner: BPP
                       usage: Consumables Cover
-                      description: Describes the name of add_on item
+                      description: Describes the name of the add_on item
                     'code                                                                                                                                                   ':
                       required: Optional
                       type: string
                       owner: BPP
                       usage: CONSUMABLES_COVER
-                      description: Describes the code of add_on item
+                      description: Describes the code of the add_on item
       select:
         message:
           order:
@@ -18661,7 +18707,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: A1
-                  description: Describes the id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     count:
@@ -18732,7 +18778,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -18758,7 +18804,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: 2-Wheeler 3rd Party Motor Insurance
-                  description: Insurer name
+                  description: Type of insurance for the particular category
                 short_desc:
                   required: Mandatory
                   type: string
@@ -18766,7 +18812,7 @@ x-attributes:
                   usage: >-
                     2-Wheeler 3rd Party Motor Insurance by ABC Insurance
                     Provider
-                  description: Short description about insurer
+                  description: Short description about the insurance type
               id:
                 required: Mandatory
                 type: string
@@ -18801,19 +18847,19 @@ x-attributes:
                       type: number
                       owner: BPP
                       usage: false
-                      description: Minimum index value of form
+                      description: Minimum number of pages in a form
                     max:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 2
-                      description: Maximum index value of form
+                      description: Maximum number of pages in a form
                     cur:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 1
-                      description: Current index value of form
+                      description: Current page to be filled in a form
                 form:
                   mime_type:
                     required: Mandatory
@@ -18845,7 +18891,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: A1
-                  description: Describes the unique id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     count:
@@ -18860,13 +18906,13 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: Cosumables Cover
-                    description: Describes the name of add_on item
+                    description: Describes the name of the add_on item
                   code:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: CONSUMABLES_COVER
-                    description: Describes the code of add_on item
+                    description: Describes the code of the add_on item
             quote:
               'id                                                                                                                                                                      ':
                 required: Mandatory
@@ -18924,7 +18970,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: A1
-                  description: Describes the id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     'count ':
@@ -18932,9 +18978,7 @@ x-attributes:
                       type: number
                       owner: BAP
                       usage: 1
-                      description: >-
-                        Describes the count of available quantity for add_on
-                        item
+                      description: Describes the count of selected quantity for add_on item
               id:
                 required: Mandatory
                 type: string
@@ -18965,13 +19009,13 @@ x-attributes:
                     type: string
                     owner: BAP
                     usage: joe.adam@abc.org
-                    description: Email address of the cusotmer
+                    description: Email address of the customer
                   phone:
                     required: Mandatory
                     type: string
                     owner: BAP
                     usage: 91-9999999999
-                    description: Phone number of the cusotmer
+                    description: Phone number of the customer
                 person:
                   name:
                     required: Mandatory
@@ -18979,6 +19023,57 @@ x-attributes:
                     owner: BAP
                     usage: Joe Adam
                     description: Name of the customer
+            payments:
+              collected_by:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: BPP
+                description: Describes who will collect the payment
+              params:
+                amount:
+                  required: Mandatory
+                  type: number
+                  owner: BPP
+                  usage: 12505
+                  description: Amount to be collected
+                bank_account_number:
+                  required: Mandatory
+                  type: number
+                  owner: BPP
+                  usage: 180002341
+                  description: Accout number in which payment has to be collected
+                bank_code:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: SBIN0001234
+                  description: 'Code of the bank '
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency in which payment has to be paid
+              status:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
+              type:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: PRE-ORDER
+                description: Describes when a payment has to be paid
+              url:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: >-
+                  https://www.abcinsurance.com/pg-gateway/payment?amount=12505&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
+                description: Describes payment url
       on_init:
         message:
           order:
@@ -18996,7 +19091,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: A1
-                  description: Describes the id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     'count ':
@@ -19004,16 +19099,14 @@ x-attributes:
                       type: number
                       owner: BAP
                       usage: 1
-                      description: >-
-                        Describes the count of available quantity for add_on
-                        item
+                      description: Describes the count of selected quantity for add_on item
                 descriptor:
                   'code                                                                                                                                                   ':
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: CONSUMABLES_COVER
-                    description: Describes the code of add_on item
+                    description: Describes the code of the add_on item
               id:
                 required: Mandatory
                 type: string
@@ -19048,19 +19141,19 @@ x-attributes:
                       type: number
                       owner: BPP
                       usage: false
-                      description: Minimum index value of form
+                      description: Minimum number of pages in a form
                     max:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 1
-                      description: Maximum index value of form
+                      description: Maximum number of pages in a form
                     cur:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 1
-                      description: Current index value of form
+                      description: Current page to be filled in a form
                 form:
                   mime_type:
                     required: Mandatory
@@ -19094,13 +19187,13 @@ x-attributes:
                     type: string
                     owner: BAP
                     usage: joe.adam@abc.org
-                    description: Email address of the cusotmer
+                    description: Email address of the customer
                   phone:
                     required: Mandatory
                     type: string
                     owner: BAP
                     usage: 91-9999999999
-                    description: Phone number of the cusotmer
+                    description: Phone number of the customer
                 person:
                   name:
                     required: Mandatory
@@ -19216,7 +19309,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: A1
-                  description: Describes the id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     'count ':
@@ -19224,9 +19317,7 @@ x-attributes:
                       type: number
                       owner: BPP
                       usage: 1
-                      description: >-
-                        Describes the count of available quantity for add_on
-                        item
+                      description: Describes the count of selected quantity for add_on item
               id:
                 required: Mandatory
                 type: string
@@ -19257,13 +19348,13 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: joe.adam@abc.org
-                    description: Email address of the cusotmer
+                    description: Email address of the customer
                   phone:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: 91-9999999999
-                    description: Phone number of the cusotmer
+                    description: Phone number of the customer
                 person:
                   name:
                     required: Mandatory
@@ -19348,7 +19439,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -19368,7 +19459,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: A1
-                  description: Describes the id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     'count ':
@@ -19376,22 +19467,20 @@ x-attributes:
                       type: number
                       owner: BAP
                       usage: 1
-                      description: >-
-                        Describes the count of available quantity for add_on
-                        item
+                      description: Describes the count of selected quantity for add_on item
                 descriptor:
                   name:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: Cosumables Cover
-                    description: Describes the name of add_on item
+                    description: Describes the name of the add_on item
                   code:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: CONSUMABLES_COVER
-                    description: Describes the code of add_on item
+                    description: Describes the code of the add_on item
               id:
                 required: Mandatory
                 type: string
@@ -19419,13 +19508,13 @@ x-attributes:
                     type: string
                     owner: BAP
                     usage: 91-9999999999
-                    description: Phone number of the cusotmer
+                    description: Phone number of the customer
               id:
                 required: true
                 type: string
                 owner: BPP
                 usage: F1
-                description: Describes the id of the fulfillment
+                description: Describes the unique id of the fulfillment
               state:
                 descriptor:
                   code:
@@ -19542,8 +19631,7 @@ x-attributes:
                     type: string
                     owner: BAP
                     usage: 9667788867
-                    description: Describes the phone number of the fulfillment
-        messgae:
+                    description: Describes the phone number of the customer
           update_target:
             required: Mandatory
             type: string
@@ -19583,7 +19671,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
                     required: Mandatory
                     type: string
@@ -19603,7 +19691,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: A1
-                  description: Describes the id of the add_ons
+                  description: Describes the unique id of the add_ons items
                 quantity:
                   selected:
                     'count ':
@@ -19611,22 +19699,20 @@ x-attributes:
                       type: number
                       owner: BAP
                       usage: 1
-                      description: >-
-                        Describes the count of available quantity for add_on
-                        item
+                      description: Describes the count of selected quantity for add_on item
                 descriptor:
                   name:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: Cosumables Cover
-                    description: Describes the name of add_on item
+                    description: Describes the name of the add_on item
                   code:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: CONSUMABLES_COVER
-                    description: Describes the code of add_on item
+                    description: Describes the code of the add_on item
               id:
                 required: Mandatory
                 type: string
@@ -19654,13 +19740,13 @@ x-attributes:
                     type: string
                     owner: BAP
                     usage: 91-9999999999
-                    description: Phone number of the cusotmer
+                    description: Phone number of the customer
               id:
                 required: true
                 type: string
                 owner: BPP
                 usage: F1
-                description: Describes the id of the fulfillment
+                description: Describes the unique id of the fulfillment
               state:
                 descriptor:
                   code:
@@ -19791,16 +19877,16 @@ x-attributes:
                 usage: P1
                 description: Unique id of provider
               descriptor:
-                image:
+                images:
                   url:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abcinsurance/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
                   size_type:
-                    required: optional
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: sm
@@ -19823,22 +19909,7 @@ x-attributes:
                   owner: BPP
                   usage: 'ABC Insurance Ltd '
                   description: Long description about insurer
-            provider:
-              categories:
-                id:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: C1
-                  description: Unique id of category
-                descriptor:
-                  code:
-                    required: Mandatory
-                    type: string
-                    owner: BPP
-                    usage: INDIVIDUAL_INSURANCE
-                    description: 'Type of insurance category '
-              item:
+              items:
                 category_ids:
                   required: Mandatory
                   type: string
@@ -19860,19 +19931,19 @@ x-attributes:
                         type: number
                         owner: BPP
                         usage: false
-                        description: Minimum index value of form
+                        description: Minimum number of pages in a form
                       max:
                         required: Mandatory
                         type: number
                         owner: BPP
                         usage: false
-                        description: Maximum index value of form
+                        description: Maximum number of pages in a form
                       cur:
                         required: Mandatory
                         type: number
                         owner: BPP
                         usage: false
-                        description: Current index value of form
+                        description: Current page to be filled in a form
                     headings:
                       required: Mandatory
                       type: string
@@ -19919,7 +19990,7 @@ x-attributes:
       select:
         message:
           order:
-            fulfillment:
+            fulfillments:
               customer:
                 contact:
                   email:
@@ -19934,14 +20005,14 @@ x-attributes:
                     owner: BAP
                     usage: 91-9999999999
                     description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BAP
-                  usage: Joe Adam
-                  description: Name of the contact
-            item:
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BAP
+                    usage: Joe Adam
+                    description: Name of the contact
+            items:
               id:
                 required: Mandatory
                 type: string
@@ -19987,13 +20058,13 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: ABC Marine Insurance Policy
-                  description: Insurer name
+                  description: Name of the insurance item
                 short_des:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: ABC Marine Insurance Class A
-                  description: Short description about insurer
+                  description: Short description about the item
               id:
                 required: Mandatory
                 type: string
@@ -20015,19 +20086,19 @@ x-attributes:
                       type: number
                       owner: BPP
                       usage: false
-                      description: Minimum index value of form
+                      description: Minimum number of pages in a form
                     max:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: 1
-                      description: Maximum index value of form
+                      description: Maximum number of pages in a form
                     cur:
                       required: Mandatory
                       type: number
                       owner: BPP
                       usage: false
-                      description: Current index value of form
+                      description: Current page to be filled in a form
                   headings:
                     required: Mandatory
                     type: string
@@ -20095,7 +20166,7 @@ x-attributes:
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: Physical description of insurer
+                    description: Logo of insurer
               id:
                 required: Mandatory
                 type: string
@@ -20135,13 +20206,13 @@ x-attributes:
                     owner: BAP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BAP
-                  usage: Joe Adam
-                  description: Name of the contact
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BAP
+                    usage: Joe Adam
+                    description: Name of the contact
             items:
               id:
                 required: Mandatory
@@ -20155,7 +20226,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: Coverage Time
-                  description: Validity of insurance policy
+                  description: Label value of the time
                 range:
                   start:
                     required: Mandatory
@@ -20183,7 +20254,6 @@ x-attributes:
                     owner: BAP
                     usage: https://fis.test.bpp.io/form/ekyc
                     description: Url to be redirected after getting a response
-                form_responnse:
                   submission_id:
                     required: Mandatory
                     type: string
@@ -20224,19 +20294,6 @@ x-attributes:
                   owner: BAP
                   usage: INR
                   description: Currency in whcih payment has to be paid
-            payment:
-              status:
-                required: Mandatory
-                type: string
-                owner: BAP
-                usage: NOT-PAID
-                description: Status of payment whether paid or not
-              type:
-                required: Mandatory
-                type: string
-                owner: BAP
-                usage: 'PRE-FULFILLMENT  '
-                description: Describes when a payment has to be paid
             provider:
               id:
                 required: Mandatory
@@ -20259,19 +20316,19 @@ x-attributes:
                   owner: BAP
                   usage: Base Price
                   description: Describes the title of breakup
-            price:
-              currency:
-                required: Mandatory
-                type: string
-                owner: BAP
-                usage: INR
-                description: Currency of the price
-              value:
-                required: Mandatory
-                type: integer
-                owner: BAP
-                usage: 100000
-                description: Value of order price
+              price:
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BAP
+                  usage: INR
+                  description: Currency of the price
+                value:
+                  required: Mandatory
+                  type: integer
+                  owner: BAP
+                  usage: 100000
+                  description: Value of the order price
       on_init:
         message:
           order:
@@ -20290,32 +20347,32 @@ x-attributes:
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: Joe Adam
-                  description: Name of the contact
-                dob:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 32894
-                  description: Date of birth of person
-                gender:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: male
-                  description: Gender of person
-              organization:
-                address:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                  description: Address of the organization
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: Joe Adam
+                    description: Name of the contact
+                  dob:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 32894
+                    description: Date of birth of the person
+                  gender:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: male
+                    description: Gender of the person
+                organization:
+                  address:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
+                    description: Address of the organization
             items:
               category_ids:
                 required: Mandatory
@@ -20337,13 +20394,13 @@ x-attributes:
                   type: integer
                   owner: BPP
                   usage: 1000
-                  description: Currency of the price
+                  description: Value of the order price
                 currency:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: INR
-                  description: Currency of the price
+                  description: Currency of the order price
               breakup:
                 title:
                   required: Mandatory
@@ -20390,19 +20447,6 @@ x-attributes:
                   owner: BPP
                   usage: INR
                   description: Currency in whcih payment has to be paid
-            payment:
-              status:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: NOT-PAID
-                description: Status of payment whether paid or not
-              type:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: PRE-ORDER
-                description: Describes when a payment has to be paid
       confirm:
         message:
           order:
@@ -20421,19 +20465,19 @@ x-attributes:
                     owner: BAP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BAP
-                  usage: Joe Adam
-                  description: Name of the contact
-                gender:
-                  required: Mandatory
-                  type: string
-                  owner: BAP
-                  usage: male
-                  description: Gender of person
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BAP
+                    usage: Joe Adam
+                    description: Name of the contact
+                  gender:
+                    required: Mandatory
+                    type: string
+                    owner: BAP
+                    usage: male
+                    description: Gender of the person
             items:
               id:
                 required: Mandatory
@@ -20447,7 +20491,7 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: Coverage Time
-                  description: Validity of insurance policy
+                  description: Label value of the time
                 range:
                   start:
                     required: Mandatory
@@ -20493,19 +20537,6 @@ x-attributes:
                   owner: BAP
                   usage: INR
                   description: Currency in whcih payment has to be paid
-            payment:
-              status:
-                required: Mandatory
-                type: string
-                owner: BAP
-                usage: NOT-PAID
-                description: Status of payment whether paid or not
-              type:
-                required: Mandatory
-                type: string
-                owner: BAP
-                usage: PRE-ORDER
-                description: Describes when a payment has to be paid
             provider:
               id:
                 required: Mandatory
@@ -20520,7 +20551,7 @@ x-attributes:
                   type: integer
                   owner: BAP
                   usage: 1000
-                  description: Currency of the price
+                  description: Value of the price
                 currency:
                   required: Mandatory
                   type: string
@@ -20555,7 +20586,7 @@ x-attributes:
               type: string
               owner: BPP
               usage: ACTIVE
-              description: Status of order
+              description: Status of the order
             fulfillments:
               customer:
                 contact:
@@ -20571,32 +20602,32 @@ x-attributes:
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: Joe Adam
-                  description: Name of the contact
-                dob:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 32894
-                  description: Date of birth of person
-                gender:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: male
-                  description: Gender of person
-              organization:
-                address:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                  description: Address of the organization
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: Joe Adam
+                    description: Name of the contact
+                  dob:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 32894
+                    description: Date of birth of person
+                  gender:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: male
+                    description: Gender of the person
+                organization:
+                  address:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
+                    description: Address of the organization
             items:
               id:
                 required: Mandatory
@@ -20610,7 +20641,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: Coverage Time
-                  description: Validity of insurance policy
+                  description: Label value of the time
                 range:
                   start:
                     required: Mandatory
@@ -20662,13 +20693,6 @@ x-attributes:
                 owner: BPP
                 usage: https://payment.fis.test.bpp.io
                 description: Url for payment to be paid
-            payment:
-              status:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: NOT-PAID
-                description: Status of payment whether paid or not
             provider:
               descriptor:
                 long_desc:
@@ -20714,7 +20738,7 @@ x-attributes:
               type: string
               owner: BPP
               usage: ACTIVE
-              description: Status of order
+              description: Status of the order
             fulfillments:
               customer:
                 contact:
@@ -20730,32 +20754,32 @@ x-attributes:
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: Joe Adam
-                  description: Name of the contact
-                dob:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 32894
-                  description: Date of birth of person
-                gender:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: male
-                  description: Gender of person
-              organization:
-                address:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                  description: Address of the organization
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: Joe Adam
+                    description: Name of the contact
+                  dob:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 32894
+                    description: Date of birth of person
+                  gender:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: male
+                    description: Gender of the person
+                organization:
+                  address:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
+                    description: Address of the organization
             items:
               fulfillment_ids:
                 required: Mandatory
@@ -20769,7 +20793,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: Coverage Time
-                  description: Validity of insurance policy
+                  description: Label value of the time
                 range:
                   start:
                     required: Mandatory
@@ -20819,7 +20843,7 @@ x-attributes:
                   type: integer
                   owner: BPP
                   usage: 1000
-                  description: Currency of the price
+                  description: Value of the price
                 currency:
                   required: Mandatory
                   type: string
@@ -20878,13 +20902,6 @@ x-attributes:
                 owner: BPP
                 usage: https://payment.fis.test.bpp.io
                 description: Url for payment to be paid
-            payment:
-              status:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: NOT-PAID
-                description: Status of payment whether paid or not
       cancel:
         message:
           order_id:
@@ -20928,33 +20945,33 @@ x-attributes:
                     type: string
                     owner: BPP
                     usage: joe.adam@abc.org
-                    description: Phone number of contact
-              person:
-                name:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: Joe Adam
-                  description: Name of the contact
-                dob:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 32894
-                  description: Date of birth of person
-                gender:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: male
-                  description: Gender of person
-              organization:
-                address:
-                  required: Mandatory
-                  type: string
-                  owner: BPP
-                  usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
-                  description: Address of the organization
+                    description: Phone number of the contact
+                person:
+                  name:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: Joe Adam
+                    description: Name of the contact
+                  dob:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 32894
+                    description: Date of birth of the person
+                  gender:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: male
+                    description: Gender of the person
+                organization:
+                  address:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
+                    description: Address of the organization
             provider:
               id:
                 required: Mandatory
@@ -21006,7 +21023,7 @@ x-attributes:
                   type: string
                   owner: BPP
                   usage: Coverage Time
-                  description: Validity of insurance policy
+                  description: Label value of the time
                 range:
                   start:
                     required: Mandatory
@@ -21058,19 +21075,178 @@ x-attributes:
                 owner: BPP
                 usage: https://payment.fis.test.bpp.io
                 description: Url for payment to be paid
-            payment:
-              status:
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: NOT-PAID
-                description: Status of payment whether paid or not
+x-errorcodes:
+  code:
+    - Event: 'Customer Information Submission failure '
+      Description: Buyer App failed to share customer information with Insurers
+      From: BPP
+      code: 81201
+    - Event: Offer return failure
+      Description: Insurers couldn't return insurance offers to the buyer app
+      From: BPP
+      code: 81202
+    - Event: Individual KYC failure
+      Description: Customers KYC failed
+      From: BPP
+      code: 81203
+    - Event: 'Manual Verification completion failure '
+      Description: |-
+        Health: Insurer failed to complete Medical Test of the customer
+        Motor: Insurer failed to complete manual inspection of vehicle
+      From: BPP
+      code: 81204
+    - Event: 'Payment link sharing failure '
+      Description: Insurer failed to share payment URL with Buyer App
+      From: BPP
+      code: 81205
+    - Event: 'Payment Acceptance/ E-mandate setup failure '
+      Description: Customer failed to pay or setup an emandate Setup
+      From: BPP
+      code: 81206
+    - Event: 'Policy document sharing failure '
+      Description: Insurer failed to share policy document with buyer app
+      From: BPP
+      code: 81207
+x-tlc:
+  code:
+    - Term: Buyer App Fee Type
+      Api: search
+      Attribute: BUYER_FINDER_FEE_TYPE
+      Owner: Buyer App
+      Value: '"amount", "percent-annualized"'
+      Description: >-
+        If set to “amount” it means Buyer App’s fee is a flat amount in INR.
+
+        If set to “percent-annualized” it means the Buyer App’s fee is set as a
+        percentage of the Total Premium Amount Paid by the customer.
+    - Term: Buyer App Fee Amount
+      Api: search
+      Attribute: BUYER_FINDER_FEES_AMOUNT
+      Owner: Buyer App
+      Value: Positive Decimal Number
+      Description: >-
+        Quantum of the Buyer App’s Fee. To be interpreted in connection with the
+        “type” field mentioned above.
+
+        For example, let’s assume the value is set at “5”. If the “type” is set
+        to “Amount”, that means the Buyer App Fee is INR 5. If the “type” is set
+        to “percent”, it means the Buyer App Fee is 5% of the Total Order Value.
+    - Term: Buyer App Fee Percentage
+      Api: search
+      Attribute: BUYER_FINDER_FEES_PERCENTAGE
+      Owner: Buyer App
+      Value: Positive Decimal Number
+      Description: >-
+        Percentage of the Buyer App's Fee. To be interpreted in connection with
+        the "type" field mentioned above
+    - Term: Payment Collector
+      Api: search
+      Attribute: search
+      Owner: Both
+      Value: >-
+        If set to "BAP", it means that the Buyer App will collect processing
+        fees if any from the Buyer. If set to "BPP", it means that the Seller
+        App will collect processing fees if any from the Buyer.
+      Description: >-
+        If set to "BAP", it means that the Buyer App will collect processing
+        fees if any from the Buyer. If set to "BPP", it means that the Seller
+        App will collect processing fees if any from the Buyer.
+    - Term: Settlement Window
+      Api: 'search, on_search, init, on_init        '
+      Attribute: SETTLEMENT_WINDOW
+      Owner: Collector (Either BAP or BPP)
+      Value: Time period (ISO8601 format)
+      Description: >-
+        The time period from completion of the transaction within which the
+        Payment Collector will settle with counterparty Network Participant(s).
+        As an illustration, a Settlement Window of 5 days after policy disbursal
+        can be specified as “P5D” (i.e. period 5 days) or “PT120H” (i.e. period
+        120 hours)
+    - Term: Settlement Basis
+      Api: 'search, on_search, init, on_init        '
+      Attribute: SETTLEMENT_BASIS
+      Owner: Collector (Either BAP or BPP)
+      Value: '"Delivery", "return_window_expiry", "invoice_receipt"'
+      Description: >-
+        The event that will trigger settlement from the Payment Collector to
+        counterparty Network Participant(s). Example: Upon confirmation of order
+        delivery, then set this to "delivery". Upon expiry of cancellation/
+        return window, then set this to"return_window_expiry". Upon receipt of
+        an invoice from the counterparty, then this to "invoice_receipt"
+    - Term: Settlement Amount
+      Api: init, on_init
+      Attribute: SETTLEMENT_AMOUNT
+      Owner: Receiver (BAP or BPP)
+      Value: Positive Decimal Number
+      Description: >-
+        The amount that the Payment Collector will remit to the counterparty
+        Network Participant
+    - Term: Settlement Type
+      Api: init, on_init
+      Attribute: SETTLEMENT_TYPE
+      Owner: Receiver (BAP or BPP)
+      Value: '"upi", "neft", "rtgs"'
+      Description: >-
+        The Payment Collector will use the selected method to remit the due
+        payment to the counterparty Network Participant. To illustrate, if the
+        Buyer App collects the payment and the Settlement Type is set to "rtgs",
+        when the settlement is due, the Buyer App will transfer the Seller App's
+        share of the Buyer Price to the Seller App's account via RTGS.
+    - Term: Mandatory Arbitration
+      Api: on_search, on_init
+      Attribute: MANDATORY_ARBITRATION
+      Owner: Seller App
+      Value: true/ false
+      Description: >-
+        If this attribute is set to true, that would mean both parties agree
+        that in case of a dispute, both parties must resolve the dispute through
+        arbitration.
+    - Term: Court Jurisdiction
+      Api: on_search, on_init
+      Attribute: COURT_JURISDICTION
+      Owner: Seller App
+      Value: Pick a city from a given list of cities which have a High Court bench
+      Description: >-
+        The name of the city whose courts will have exclusive jurisdiction over
+        disputes related to this contract. The list of options will only contain
+        cities which have a High Court bench.
+    - Term: Delay Interest
+      Api: search, on_search, on_init
+      Attribute: DELAY_INTEREST
+      Owner: Receiver (BAP or BPP)
+      Value: Positive Decimal Number
+      Description: >-
+        This is the annual rate of interest that the Payment Collector will be
+        charged if they delay a payment to the counterparty Network Participant,
+        calculated pro rata for each calendar day of delay. As an example, if
+        the value is set as "7.3", and the amount of payment due is INR 1000,
+        that will mean the Payment Collector will pay the counterparty Network
+        Participant an interest of 7.3% per annum (i.e. INR 100), calculated pro
+        rata for each day of delay. So if the Payment Collector delay was 50
+        days, the total interest payable would be INR 10 [calculated as
+        1000x(7.3/100)x(50/365)]
+    - Term: Static Terms
+      Api: search on_search init on_init
+      Attribute: STATIC_TERMS
+      Owner: Both
+      Value: URL
+      Description: >-
+        This will be the URL of a web-page where the standard Terms and
+        Conditions of the Network Participant - which are not covered in the API
+        Specification (e.g.: indemnity) - will be hosted. These terms will apply
+        to the transaction, in addition to the terms decided through the ONDC
+        Protocol. If there is a conflict between the terms decided through the
+        Protocol, and the Static Terms, the terms decided through the ONDC
+        Protocol will prevail. Also, if there is a conflict between the Static
+        Terms and the ONDC Network Policy or the Static Terms and the Network
+        Participant Agreement, the terms of the ONDC Network Policy or the
+        Network Participant Agreement (as the case may be) will prevail.
 x-featureui:
   filenames:
     - Health_Insuarance.md
     - Marine_Insuarance.md
     - Motor_Insuarance.md
-    - signing-verification.md
+    - log-verification.md
 x-sandboxui:
   dropdown:
     - environment-name: staging
