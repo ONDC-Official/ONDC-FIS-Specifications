@@ -1,7 +1,7 @@
 function displayTooltip(data, name, attrPath) {
   const cmp = document.getElementById("node-info");
   cmp.innerHTML = `
-    <p><b>Attribute Name: ${name}</b></p>
+    <p><b>Attribute Name:</b> ${name}</p>
     <div id="attribute-tree-data">
     <div class="tree-data-field">
         <div class="key-field"><small><b>Attribute path</b></small></div>
