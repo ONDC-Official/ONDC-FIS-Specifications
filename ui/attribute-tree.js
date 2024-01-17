@@ -652,11 +652,8 @@ function displayAttributeTree(payload) {
           : "#fff";
       })
       .on("mouseover", function (d) {
-        console.log('displayTooltip', d)
         if (d.tooltip || d._info) {
-            const attributeName = d?.name === "_description" ?  d?.parent.name : d.name 
-            const attributePath = d?.name === "_description" ?  d?.parent.attrPath: d.attrPath 
-            displayTooltip(d.tooltip || d._info, attributeName, attributePath);
+            displayTooltip(d.tooltip || d._info, d.name, d.attrPath);
         }
       });
     //   .on("mouseout", function (d) {
