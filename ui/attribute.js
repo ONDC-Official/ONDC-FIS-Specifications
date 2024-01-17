@@ -121,6 +121,7 @@ function flattenObject(obj, prefix = "", result = {},requiredAttr) {
       if (Array.isArray(obj[key])) {
         result[newKey] = obj[key];
       } else if (typeof obj[key] === "object" && obj[key] !== null) {
+        if(key === "_description") return
         flattenObject(obj[key], newKey, result,requiredAttr);
       } else {
         result[newKey] = obj[key];
