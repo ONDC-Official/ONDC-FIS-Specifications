@@ -68,7 +68,7 @@ function displayAttributeTree(payload) {
       tempObj.name = key;
       tempObj.attrPath = preKey.length ? preKey + "." + key : key;
 
-      if (typeof value === "object") {
+      if (typeof value === "object" && key !== "_description") {
         const response = formatdataForTree(value, tempObj.attrPath);
         if (response.leafNode) {
           tempObj.tooltip = value;
@@ -82,6 +82,17 @@ function displayAttributeTree(payload) {
         allObj.push(tempObj);
       }
     });
+
+    if ("_description" in data) {
+      const info = {
+        required: data._description["required"],
+        type: data._description["type"],
+        owner: data._description["owner"],
+        usage: data._description["usage"],
+        description: data._description["description"],
+      };
+      return { leafNode: false, children: allObj, _info: info };
+    }
 
     if (
       ("required" in data &&
@@ -641,8 +652,11 @@ function displayAttributeTree(payload) {
           : "#fff";
       })
       .on("mouseover", function (d) {
+        console.log('displayTooltip', d)
         if (d.tooltip || d._info) {
-          displayTooltip(d.tooltip || d._info, d.name, d.attrPath);
+            const attributeName = d?.name === "_description" ?  d?.parent.name : d.name 
+            const attributePath = d?.name === "_description" ?  d?.parent.attrPath: d.attrPath 
+            displayTooltip(d.tooltip || d._info, attributeName, attributePath);
         }
       });
     //   .on("mouseout", function (d) {
