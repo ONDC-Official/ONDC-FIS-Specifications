@@ -408,7 +408,8 @@ function findMandatoryRequiredKeys(obj, result, parentKeys = []) {
     if (obj.hasOwnProperty(key)) {
       if (typeof obj[key] === "object") {
         findMandatoryRequiredKeys(obj[key], result, [...parentKeys, key]);
-      } else if (key === "required" && obj[key] === "string" && obj[key]?.toLowerCase() == "mandatory") {
+        //&& obj[key] === "string" 
+      } else if (key === "required"  &&  obj[key]?.toLowerCase() == "mandatory") {
         result.push([...parentKeys]);
       }
     }
@@ -454,8 +455,8 @@ async function validateExamplesAttributes(exampleSets, attributes) {
               
           }
           
-        }
       }
+    }
     }
   } catch (error) {
     console.log("Error validating examples with attributes", error);
