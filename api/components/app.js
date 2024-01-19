@@ -39,6 +39,8 @@ const SKIP_VALIDATION = {
   examples: "skip2",
   enums: "skip3",
   tags: "skip4",
+  attributes: "skip5",
+  exampleAttributes: "skip6"
 };
 
 const BUILD = {
@@ -316,6 +318,10 @@ async function getSwaggerYaml(example_set, outputPath) {
       hasTrueResult = await validateAttributes(attributes, schemaMap);
     }
 
+    if (!process.argv.includes(SKIP_VALIDATION.exampleAttributes) && !hasTrueResult) {
+      await validateExamplesAttributes(exampleSets, attributes)
+    }
+   
     if (hasTrueResult) return;
 
     if (!hasTrueResult) {
@@ -334,6 +340,129 @@ async function getSwaggerYaml(example_set, outputPath) {
   }
 }
 
+async function validateObject(example, attribute, endPoint) {
+  let mandatoryRequiredKeys = [];
+
+  findMandatoryRequiredKeys(attribute, mandatoryRequiredKeys);
+
+  checkKeysExistence(example, mandatoryRequiredKeys, endPoint);
+
+  return true;
+}
+
+function handleError(keys, endPoint) {
+  throw new Error(
+    `Key path ${keys.join(
+      "."
+    )} does not exist in the example object at ${endPoint}`
+  );
+}
+
+const checkKeysExistence = (example, mandatoryRequiredKeys, endPoint) => {
+  if (example === null || typeof example !== "object") {
+    handleError(`Invalid example object at ${endPoint}`);
+  }
+
+  for (let keys of mandatoryRequiredKeys) {
+    let currentObj = example;
+    let isArray = false;
+    let currentIndex = 0;
+    let currentKeys = [];
+
+    for (let key of keys) {
+      key = key.trim()// ahsan
+      if (Array.isArray(currentObj)) {
+        isArray = true;
+        currentKeys = keys.slice(currentIndex);
+        break;
+      }
+      
+      if (!currentObj.hasOwnProperty(key)) {
+        console.log(endPoint)
+        handleError(keys, endPoint);
+      }
+
+      currentObj = currentObj[key];
+      currentIndex++;
+    }
+
+    if (isArray) {
+      handleIfObjectIsArray(currentKeys, currentObj, endPoint);
+    }
+  }
+};
+
+function handleIfObjectIsArray(keys, currentObj, endPoint) {
+  if (Array.isArray(currentObj)) {
+    for (let obj of currentObj) {
+      if (typeof obj === "object") {
+        checkKeysExistence(obj, [keys], endPoint);
+      } else if (Array.isArray(obj)) {
+        handleIfObjectIsArray(keys, obj, endPoint);
+      }
+    }
+  }
+}
+
+function findMandatoryRequiredKeys(obj, result, parentKeys = []) {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (typeof obj[key] === "object") {
+        findMandatoryRequiredKeys(obj[key], result, [...parentKeys, key]);
+        //&& obj[key] === "string" 
+      } else if (key === "required"  && typeof obj[key] ==="string" && obj[key]?.toLowerCase() == "mandatory") {
+        result.push([...parentKeys]);
+      }
+    }
+  }
+}
+  
+const iterateObject = (example, mandatoryRequiredKeys, endPoint) => { 
+  for ( const attribs of Object.keys(attrib)){
+    //console.log('attribs', attribs, attrib[attribs])
+    if( typeof attrib[attribs] === "object" && attrib[attribs]?.required){
+      if(getExample[attribs]){
+        console.log('value against attribute found', attribs);
+      }
+    }else{
+      if(typeof attrib[attribs] === "object" && !attrib[attribs]?.required){
+        if(typeof attrib[attribs]){
+          iterateObject()
+        }
+      }
+    }
+}
+
+}
+
+async function validateExamplesAttributes(exampleSets, attributes) {
+  try {
+    for (const exampleSet of Object.keys(exampleSets)) {
+      //check if attributes found for particular example.
+      if (attributes.hasOwnProperty(exampleSet)) {
+        const { example_set } = exampleSets[exampleSet] || {};
+        const { attribute_set } = attributes[exampleSet] || {};
+        for (const example_sets of Object.keys(example_set)) {
+          const { examples } = example_set[example_sets] || []
+         
+          for (const example of examples) {
+              //sending only matched examples=attribute set like search=search
+              if(attribute_set[example_sets]){
+                const currentAttribute = attribute_set[example_sets]
+                await validateObject(example?.value, currentAttribute, example_sets)
+              }else{
+                console.log(`attribute not found for ${example_sets}`)
+              }
+              
+          }
+          
+      }
+    }
+    }
+  } catch (error) {
+    console.log("Error validating examples with attributes", error);
+  }
+}
 function cleanup() {
   try {
     fs.unlinkSync(tempPath);

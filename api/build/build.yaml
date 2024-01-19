@@ -193,6 +193,8 @@ paths:
                   properties:
                     ref_id:
                       $ref: '#/components/schemas/Order/properties/id'
+                    order_id:
+                      $ref: '#/components/schemas/Order/properties/id'
               required:
                 - context
                 - message
@@ -1182,8 +1184,6 @@ components:
       type: object
       additionalProperties: false
       properties:
-        organization:
-          $ref: '#/components/schemas/Organization'
         person:
           $ref: '#/components/schemas/Person'
         contact:
@@ -1207,6 +1207,7 @@ components:
           type: string
         additional_desc:
           type: object
+          additionalProperties: false
           properties:
             url:
               type: string
@@ -1533,6 +1534,7 @@ components:
             This represents the exact quantity allocated for purchase of the
             item.
           type: object
+          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1544,6 +1546,7 @@ components:
             This represents the exact quantity available for purchase of the
             item. The buyer can only purchase multiples of this
           type: object
+          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1555,6 +1558,7 @@ components:
             This represents the maximum quantity allowed for purchase of the
             item
           type: object
+          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1566,6 +1570,7 @@ components:
             This represents the minimum quantity allowed for purchase of the
             item
           type: object
+          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1575,6 +1580,7 @@ components:
         selected:
           description: This represents the quantity selected for purchase of the item
           type: object
+          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1584,6 +1590,7 @@ components:
         unitized:
           description: This represents the quantity available in a single unit of the item
           type: object
+          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1863,10 +1870,6 @@ components:
             Status of the order. Allowed values can be defined by the network
             policy
           type: string
-          enum:
-            - ACTIVE
-            - COMPLETE
-            - CANCELLED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2045,8 +2048,11 @@ components:
             will be sent as url params. Two url param values,
             ```$transaction_id``` and ```$amount``` are mandatory.
           format: uri
+        tl_method:
+          type: string
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2075,11 +2081,6 @@ components:
             - ON-FULFILLMENT
             - POST-FULFILLMENT
             - ON-ORDER
-            - PRE_ORDER
-            - PRE_FULFILLMENT
-            - ON_FULFILLMENT
-            - POST_FULFILLMENT
-            - ON_ORDER
         status:
           type: string
           enum:
@@ -2178,6 +2179,7 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -2242,6 +2244,7 @@ components:
         id:
           description: ID of the quote.
           type: string
+          format: uuid
         price:
           description: The total quoted price
           allOf:
@@ -2251,6 +2254,7 @@ components:
           type: array
           items:
             type: object
+            additionalProperties: false
             properties:
               item:
                 $ref: '#/components/schemas/Item'
@@ -2399,6 +2403,7 @@ components:
           $ref: '#/components/schemas/DecimalValue'
         range:
           type: object
+          additionalProperties: false
           properties:
             min:
               $ref: '#/components/schemas/DecimalValue'
@@ -2483,14 +2488,14 @@ components:
       type: object
       additionalProperties: false
       properties:
-        order_id:
-          type: string
         ref_id:
           type: string
         callback_phone:
           type: string
+          format: phone
         phone:
           type: string
+          format: phone
         email:
           type: string
           format: email
@@ -2578,6 +2583,7 @@ components:
           $ref: '#/components/schemas/Duration'
         range:
           type: object
+          additionalProperties: false
           properties:
             start:
               type: string
@@ -8759,6 +8765,86 @@ x-attributes:
   mutual-funds:
     attribute_set:
       search:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
         message:
           intent:
             category:
@@ -8770,6 +8856,98 @@ x-attributes:
                   usage: MUTUAL_FUNDS
                   description: Physical description of code value for something
       on_search:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: on_search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           catalog:
             descriptor:
@@ -8815,14 +8993,14 @@ x-attributes:
                   description: Short description of the provider
               categories:
                 descriptor:
-                  'name ':
-                    required: mandatory
+                  name:
+                    required: optional
                     type: string
                     owner: BPP
                     usage: Large Cap
                     description: Physical description name of something.
                   long_desc:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: >-
@@ -8831,7 +9009,7 @@ x-attributes:
                                       investing in large-cap equities.
                     description: Physical description long_desc.
                 id:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: db1928f9
@@ -8851,20 +9029,20 @@ x-attributes:
                     usage: ABC Large Cap Mutual Fund - SIP
                     description: Descriptive name of particular item
                   code:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: sip
                     description: Code value of particular item
                 price:
                   value:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: 1
                     description: Value of the price entity
                   currency:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: INR
@@ -8901,7 +9079,107 @@ x-attributes:
                     A code that describes the mode of fulfillment. This is
                     typically set when there are multiple ways an order can be
                     fulfilled. 
+                agent:
+                  person:
+                    name:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: John Doe
+                      description: Describes the agent name
       select:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: select
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             items:
@@ -8914,7 +9192,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: mandatory
+                    required: optional
                     type: integer
                     owner: BAP
                     usage: 1
@@ -8929,6 +9207,98 @@ x-attributes:
                 usage: db1928f9
                 description: Id of the provider
       on_select:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: on_select
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             items:
@@ -8947,13 +9317,13 @@ x-attributes:
                   description: Physical description of something.
               price:
                 currency:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: INR
                   description: Price of the selected item.
                 value:
-                  required: mandatory
+                  required: optional
                   type: integer
                   owner: BPP
                   usage: 60
@@ -8961,7 +9331,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: mandatory
+                    required: optional
                     type: integer
                     owner: BPP
                     usage: 2
@@ -9022,7 +9392,415 @@ x-attributes:
                     owner: BPP
                     usage: true
                     description: Describes a form can be re-submited again or not.
-                  'multiple_sumbissions                                                                                                                                                                                       ':
+                  multiple_sumbissions:
+                    required: mandatory
+                    type: boolean
+                    owner: BPP
+                    usage: false
+                    description: Describes a form supports multiple sumbissions or not.
+            provider:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: db1928f9
+                description: Id of the provider
+              descriptor:
+                name:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Physical description of something.
+                images:
+                  url:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                    description: URL to the image. This can be a data url or an remote url
+            fulfillments:
+              id:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
+            quote:
+              price:
+                value:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 60
+                  description: Describes the price of a product or service
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Describes the currency of a product or service
+              breakup:
+                item:
+                  price:
+                    value:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: 80
+                      description: Describes the value of a product or service
+                    currency:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: INR
+                      description: Describes the currency of a product or service
+                  quantity:
+                    allocated:
+                      measure:
+                        value:
+                          required: optional
+                          type: string
+                          owner: BPP
+                          usage: 2.5
+                          description: Describes allocated quantity
+      init:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: init
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
+        message:
+          order:
+            items:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: b2400168
+                description: 'Unique ID of the order. '
+              quantity:
+                selected:
+                  count:
+                    required: optional
+                    type: integer
+                    owner: BPP
+                    usage: 1
+                    description: >-
+                      This represents the quantity selected for purchase of the
+                      item
+              xinput:
+                form_response:
+                  submission_id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: ebff9b95
+                    description: Describes the submission ID of the form
+            provider:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: db1928f9
+                description: Id of the provider
+            fulfillments:
+              customer:
+                contact:
+                  email:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: alice@example.com
+                    description: Email address of the cusotmer
+                  phone:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: 9999199991
+                    description: Phone number of the cusotmer
+                person:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Alice
+                    description: Name of the customer
+      on_init:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: on_init
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
+        message:
+          order:
+            items:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: b2400168
+                description: ID of the item.
+              descriptor:
+                name:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund - SIP
+                  description: Physical description of something.
+              price:
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Price of the selected item.
+                value:
+                  required: optional
+                  type: integer
+                  owner: BPP
+                  usage: 60
+                  description: Describes a numerical value in decimal form
+              quantity:
+                selected:
+                  count:
+                    required: optional
+                    type: integer
+                    owner: BPP
+                    usage: 2
+                    description: >-
+                      This represents the quantity selected for purchase of the
+                      item
+              fulfillment_ids:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
+              xinput:
+                head:
+                  index:
+                    min:
+                      required: mandatory
+                      type: number
+                      owner: BPP
+                      usage: false
+                      description: Describes the min indexvalue
+                    max:
+                      required: mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the max index value
+                    cur:
+                      required: mandatory
+                      type: number
+                      owner: BPP
+                      usage: 1
+                      description: Describes the current index value
+                  descriptor:
+                    name:
+                      required: mandatory
+                      type: string
+                      owner: BPP
+                      usage: Set up SIP
+                      description: Physical description name of something.
+                form:
+                  mime_type:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: text/html
+                    description: ' Describes the mime of the document'
+                  url:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
+                    description: ' Describes the url of the document'
+                  resubmit:
+                    required: mandatory
+                    type: boolean
+                    owner: BPP
+                    usage: true
+                    description: Describes a form can be re-submited again or not.
+                  multiple_sumbissions:
                     required: mandatory
                     type: boolean
                     owner: BPP
@@ -9057,6 +9835,35 @@ x-attributes:
                 owner: BPP
                 usage: 3bd4ea25
                 description: Unique reference ID to the fulfillment of an order
+              customer:
+                contact:
+                  email:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: alice@example.com
+                    description: Email address of the cusotmer
+                  phone:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: 9999199991
+                    description: Phone number of the cusotmer
+                person:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Alice
+                    description: Name of the customer
+              state:
+                descriptor:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Mutual Fund Order Initialized
+                    description: Current state of the fulfillment
             quote:
               price:
                 value:
@@ -9072,273 +9879,38 @@ x-attributes:
                   usage: INR
                   description: Describes the currency of a product or service
               breakup:
-                price:
-                  value:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: 80
-                    description: Describes the value of a product or service
-                  currency:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: INR
-                    description: Describes the currency of a product or service
                 item:
+                  price:
+                    value:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: 80
+                      description: Describes the value of a product or service
+                    currency:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: INR
+                      description: Describes the currency of a product or service
                   quantity:
                     allocated:
                       measure:
                         value:
-                          required: mandatory
+                          required: optional
                           type: string
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
-                        unit:
-                          required: mandatory
-                          type: string
-                          owner: BPP
-                          usage: units
-                          description: Describes allocated units of quantity
-      init:
-        message:
-          order:
-            items:
-              id:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: b2400168
-                description: 'Unique ID of the order. '
-              quantity:
-                selected:
-                  count:
-                    required: mandatory
-                    type: integer
-                    owner: BPP
-                    usage: 1
-                    description: >-
-                      This represents the quantity selected for purchase of the
-                      item
-              xinput:
-                form_response:
-                  submission_id:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: ebff9b95
-                    description: Describes the submission ID of the form
-            provider:
-              id:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: db1928f9
-                description: Id of the provider
-            fulfillments:
-              customer:
-                contact:
-                  email:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: alice@example.com
-                    description: Email address of the cusotmer
-                  phone:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: 9999199991
-                    description: Phone number of the cusotmer
-                person:
-                  name:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: Alice
-                    description: Name of the customer
-      on_init:
-        message:
-          order:
-            items:
-              id:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: b2400168
-                description: ID of the item.
-              descriptor:
-                name:
-                  required: mandatory
-                  type: string
-                  owner: BPP
-                  usage: HDFC Midcap Opportunities Fund - SIP
-                  description: Physical description of something.
-              price:
-                currency:
-                  required: mandatory
-                  type: string
-                  owner: BPP
-                  usage: INR
-                  description: Price of the selected item.
-                value:
-                  required: mandatory
-                  type: integer
-                  owner: BPP
-                  usage: 60
-                  description: Describes a numerical value in decimal form
-              quantity:
-                selected:
-                  count:
-                    required: mandatory
-                    type: integer
-                    owner: BPP
-                    usage: 2
-                    description: >-
-                      This represents the quantity selected for purchase of the
-                      item
-              fulfillment_ids:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: 3bd4ea25
-                description: Unique reference ID to the fulfillment of an order
-              xinput:
-                head:
-                  index:
-                    min:
-                      required: mandatory
-                      type: number
-                      owner: BPP
-                      usage: false
-                      description: Describes the min indexvalue
-                    max:
-                      required: mandatory
-                      type: number
-                      owner: BPP
-                      usage: 1
-                      description: Describes the max index value
-                    cur:
-                      required: mandatory
-                      type: number
-                      owner: BPP
-                      usage: 1
-                      description: Describes the current index value
-                  descriptor:
-                    name:
-                      required: mandatory
-                      type: string
-                      owner: BPP
-                      usage: Set up SIP
-                      description: Physical description name of something.
-                form:
-                  mime_type:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: text/html
-                    description: ' Describes the mime of the document'
-                  url:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: >-
-                      https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
-                    description: ' Describes the url of the document'
-                  resubmit:
-                    required: mandatory
-                    type: boolean
-                    owner: BPP
-                    usage: true
-                    description: Describes a form can be re-submited again or not.
-                  'multiple_sumbissions                                                                                                                                                                                       ':
-                    required: mandatory
-                    type: boolean
-                    owner: BPP
-                    usage: false
-                    description: Describes a form supports multiple sumbissions or not.
-            provider:
-              id:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: db1928f9
-                description: Id of the provider
-              descriptor:
-                name:
-                  required: mandatory
-                  type: string
-                  owner: BPP
-                  usage: HDFC Midcap Opportunities Fund
-                  description: Physical description of something.
-                images:
-                  url:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: >-
-                      https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-                    description: URL to the image. This can be a data url or an remote url
-            fulfillments:
-              id:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: 3bd4ea25
-                description: Unique reference ID to the fulfillment of an order
-              customer:
-                contact:
-                  email:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: alice@example.com
-                    description: Email address of the cusotmer
-                  phone:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: 9999199991
-                    description: Phone number of the cusotmer
-                person:
-                  name:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: Alice
-                    description: Name of the customer
-            quote:
-              price:
-                value:
-                  required: mandatory
-                  type: string
-                  owner: BPP
-                  usage: 60
-                  description: Describes the price of a product or service
-              breakup:
-                price:
-                  value:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: 80
-                    description: Describes the value of a product or service
-                  currency:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: INR
-                    description: Describes the currency of a product or service
             billing:
               name:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: Charles D'Souza
                 description: Describes the name of billing entity
               email:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: charles@equitygrow.in
@@ -9354,18 +9926,110 @@ x-attributes:
                     description: Describes the name of the descriptor
               external_ref:
                 mimetype:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: text/html
                   description: Describes the mime type of external ref
                 url:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: https://abcmutalfunds.com/mf/tnc.html
                   description: Describes the url of external ref
       confirm:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: confirm
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             items:
@@ -9374,11 +10038,11 @@ x-attributes:
                 type: string
                 owner: BPP
                 usage: b2400168
-                description: Unique ID of the order
+                description: 'Unique ID of the order. '
               quantity:
                 selected:
                   count:
-                    required: mandatory
+                    required: optional
                     type: integer
                     owner: BPP
                     usage: 1
@@ -9404,40 +10068,53 @@ x-attributes:
               customer:
                 contact:
                   email:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: alice@example.com
                     description: Email address of the cusotmer
                   phone:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: 9999199991
                     description: Phone number of the cusotmer
                 person:
                   name:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
               stops:
                 type:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: start
                   description: Describes the start of the fulfillment
+                authorization:
+                  type:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: OTP
+                    description: Describes the type of the authorization scheme
+                  token:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: 535346
+                    description: Describes the token of the authorization scheme
             billing:
               name:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: Charles D'Souza
                 description: Describes the name of billing entity
               email:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: charles@equitygrow.in
@@ -9456,6 +10133,98 @@ x-attributes:
                 usage: ON-FULFILLMENT
                 description: Describes the type of payment collection
       on_confirm:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: on_confirm
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             id:
@@ -9480,13 +10249,13 @@ x-attributes:
                   description: Physical description of something.
               price:
                 currency:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: INR
                   description: Price of the selected item.
                 value:
-                  required: mandatory
+                  required: optional
                   type: integer
                   owner: BPP
                   usage: 60
@@ -9494,7 +10263,7 @@ x-attributes:
               quantity:
                 selected:
                   count:
-                    required: mandatory
+                    required: optional
                     type: integer
                     owner: BPP
                     usage: 2
@@ -9539,20 +10308,20 @@ x-attributes:
               customer:
                 contact:
                   email:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: alice@example.com
                     description: Email address of the cusotmer
                   phone:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: 9999199991
                     description: Phone number of the cusotmer
                 person:
                   name:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: Alice
@@ -9573,45 +10342,45 @@ x-attributes:
                   owner: BPP
                   usage: 60
                   description: Describes the price of a product or service
+                currency:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Describes the currency of a product or service
               breakup:
-                price:
-                  value:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: 80
-                    description: Describes the value of a product or service
-                  currency:
-                    required: mandatory
-                    type: string
-                    owner: BPP
-                    usage: INR
-                    description: Describes the currency of a product or service
                 item:
+                  price:
+                    value:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: 80
+                      description: Describes the value of a product or service
+                    currency:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: INR
+                      description: Describes the currency of a product or service
                   quantity:
                     allocated:
                       measure:
                         value:
-                          required: mandatory
+                          required: optional
                           type: string
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
-                        unit:
-                          required: mandatory
-                          type: string
-                          owner: BPP
-                          usage: units
-                          description: Describes allocated units of quantity
             billing:
               name:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: Charles D'Souza
                 description: Describes the name of billing entity
               email:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: charles@equitygrow.in
@@ -9627,13 +10396,13 @@ x-attributes:
                     description: Describes the name of the descriptor
               external_ref:
                 mimetype:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: text/html
                   description: Describes the mime type of external ref
                 url:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: https://abcmutalfunds.com/mf/tnc.html
@@ -9653,19 +10422,19 @@ x-attributes:
                 description: Describes the type of payment collection
               params:
                 amount:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: 500
                   description: Describes a numerical value in decimal form
                 currency:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: INR
                   description: Describes the currency of a product or service
                 transaction_id:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: bh767iygx65u76iyg
