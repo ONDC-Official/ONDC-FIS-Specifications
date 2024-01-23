@@ -117,19 +117,19 @@ steps:
       - description: Lender platform sends the form for Invoice based loan to get all the relevant details like UDYAM, contact, GSTIN profile, GSTR1, GSTRA2, GSTR3B.
         mermaid: >-
           sequenceDiagram
-            title  Invoice Based Loan Discovery
+            title  Selection
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             participant Lender Form Service
-            rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Form Service: Get Form
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
             end
-            Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
@@ -137,91 +137,6 @@ steps:
         $ref: ../../examples/invoice-based-loans/forms/invoice-based-loans-org-info.html
 
    #second select form
-  - summary: Find suitable invoice based loan services.
-    api: search
-    details:
-      - description: Explore available invoice based loan options by conducting search.
-        mermaid: >-
-          sequenceDiagram
-            title  Invoice Based Loan Discovery
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Borrower Platform (BAP)->>Lender Form Service: Form Submission
-            Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/invoice-based-loans/search/search_request_1.yaml"
-  - summary: Provides a catalog of different loan products offered by a single lender for invoice based loans.
-    api: on_search
-    details:
-      - description: The lender platform provides a comprehensive catalog of various loan types including invoice based loans.
-        mermaid: >-
-          sequenceDiagram
-            title  Invoice Based Loan Discovery
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Borrower Platform (BAP)->>Lender Form Service: Form Submission
-            Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/invoice-based-loans/on_search/on_search-request_1.yaml"
-  - summary: Find suitable invoice based loan services.
-    api: search
-    details:
-      - description: Explore available invoice based loan options by conducting search.
-        mermaid: >-
-          sequenceDiagram
-            title  Invoice Based Loan Discovery
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Platform (BPP): search
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/invoice-based-loans/search/search_request_2.yaml"
-  - summary: Provides a catalog of different loan products offered by a single lender for invoice based loans.
-    api: on_search
-    details:
-      - description: The lender platform provides a comprehensive catalog of various loan types including invoice based loans.
-        mermaid: >-
-          sequenceDiagram
-            title  Invoice Based Loan Discovery
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            Borrower Platform (BAP)->>Lender Platform (BPP): search
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-            end
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/invoice-based-loans/on_search/on_search-request_2.yaml"
-  
   - summary: The borrower chooses the invoice based loan service
     api: select
     details:
@@ -246,7 +161,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/invoice-based-loans/select/select-request-multi-offer.yaml"
+        $ref: "../../examples/invoice-based-loans/select/select-request-financial-info.yaml"
   - summary: The lender sends available loan offers for the chosen invoice based loan service
     api: on_select
     details:
@@ -272,7 +187,46 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/invoice-based-loans/on_select/on_select-request-multi-offer-set-loan-amount.yaml" 
+        $ref: "../../examples/invoice-based-loans/on_select/on_select-request-consent-created.yaml" 
+  - summary: Approval of consent request
+    api: select
+    details:
+      - description: The BAP approves the consent request and sends the loan product, the loan provider, and the customer's identity to the BPP.
+        mermaid: >-
+          sequenceDiagram
+            title Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/select/select-request-consent-approved.yaml"
+  - summary: Returns the consent request with additional details about the loan product 
+    api: on_select
+    details:
+      - description: The Lender Platform updates the consent request, and an XInput form may expect other details pertaining to the borrower's business like Tax ID. Company registration address, Ownership Details etc, depending on the type of loan.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/on_select/on_select-request-set-loan-amount.yaml" 
+   #third select form
   - summary: The borrower can change the form provided by lender
     api: form
     details:
@@ -321,7 +275,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/invoice-based-loans/select/select-request-multi-offer-set-loan-amount.yaml"
+        $ref: "../../examples/invoice-based-loans/select/select-request-set-loan-amount.yaml"
   - summary: The lender sends available loan offers for the chosen invoice based loan service.
     api: on_select
     details:
@@ -342,10 +296,11 @@ steps:
             Lender Platform (BPP)->>Borrower Platform (BAP):on_select
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
+
     reference: if any
     example:
       value:
-        $ref: "../../examples/invoice-based-loans/on_select/on_select-request-kyc-form.yaml" 
+        $ref: "../../examples/invoice-based-loans/on_select/on_select-request-individual-kyc-form.yaml" 
   - summary: The lender invoked the relevant forms like links for KYC, bank details, UDYAM, e-mandate etc.
     api: form
     details:
@@ -393,7 +348,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/invoice-based-loans/init/init-request-multi-offer-individual-kyc-approved.yaml"
+        $ref: "../../examples/invoice-based-loans/init/init-request-individual-kyc-approved.yaml"
   - summary: The lender accepts the invoice based loan request and displays loan status details and requests for loan dispach account details.
     api: on_init
     details:
@@ -417,8 +372,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/invoice-based-loans/on_init/on_init-request-multi-offer-entity-kyc-form.yaml" 
-    
+        $ref: "../../examples/invoice-based-loans/on_init/on_init-request-entity-kyc-form.yaml" 
   - summary: Get the Entity Kyc Info based loan form
     api: form
     details:
