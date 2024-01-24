@@ -299,7 +299,7 @@ async function getSwaggerYaml(example_set, outputPath) {
         paths[path]?.post?.requestBody?.content?.["application/json"]?.schema;
       schemaMap[path.substring(1)] = pathSchema;
     }
-
+    
     if (!process.argv.includes(SKIP_VALIDATION.flows)) {
       hasTrueResult = await validateFlows(flows, schemaMap);
     }
@@ -408,8 +408,7 @@ function findMandatoryRequiredKeys(obj, result, parentKeys = []) {
     if (obj.hasOwnProperty(key)) {
       if (typeof obj[key] === "object") {
         findMandatoryRequiredKeys(obj[key], result, [...parentKeys, key]);
-        //&& obj[key] === "string" 
-      } else if (key === "required"  &&  obj[key]?.toLowerCase() == "mandatory") {
+      } else if (key === "required" && obj[key] === "string" && obj[key]?.toLowerCase() == "mandatory") {
         result.push([...parentKeys]);
       }
     }
@@ -443,7 +442,6 @@ async function validateExamplesAttributes(exampleSets, attributes) {
         const { attribute_set } = attributes[exampleSet] || {};
         for (const example_sets of Object.keys(example_set)) {
           const { examples } = example_set[example_sets] || []
-         
           for (const example of examples) {
               //sending only matched examples=attribute set like search=search
               if(attribute_set[example_sets]){
@@ -455,8 +453,8 @@ async function validateExamplesAttributes(exampleSets, attributes) {
               
           }
           
+        }
       }
-    }
     }
   } catch (error) {
     console.log("Error validating examples with attributes", error);
@@ -502,7 +500,7 @@ function addEnumTag(base, layer) {
   base["x-tlc"] = layer["tlc"];
   base["x-featureui"] = layer["feature-ui"]
   base["x-sandboxui"] = layer["sandbox-ui"]
-
+  base["x-testcasesui"] = layer["testcases-ui"]
 }
 
 function GenerateYaml(base, layer, output_yaml) {
