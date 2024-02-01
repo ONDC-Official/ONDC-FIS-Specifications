@@ -372,6 +372,9 @@ const checkKeysExistence = (example, mandatoryRequiredKeys, endPoint) => {
     let currentIndex = 0;
     let currentKeys = [];
 
+    if(keys.includes("_description")){
+      continue;
+    }
     for (let key of keys) {
       if (Array.isArray(currentObj)) {
         isArray = true;
@@ -406,11 +409,12 @@ function handleIfObjectIsArray(keys, currentObj, endPoint) {
 }
 
 function findMandatoryRequiredKeys(obj, result, parentKeys = []) {
+  //&& obj[key] === "string"
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
       if (typeof obj[key] === "object") {
         findMandatoryRequiredKeys(obj[key], result, [...parentKeys, key]);
-      } else if (key === "required" && obj[key] === "string" && obj[key]?.toLowerCase() == "mandatory") {
+      } else if (key === "required" && obj[key]?.toLowerCase() == "mandatory") {
         result.push([...parentKeys]);
       }
     }
