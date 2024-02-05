@@ -499,13 +499,13 @@ async function checkAttributes(exampleSets, attributes) {
 
 async function comapreObjects(examples, attributes, example_sets) {
   for (const key in examples) {
+    //un-commnet this if key is not found
+    //console.log('key', key)
     if (key !== "tags")
       if (
         typeof examples[key] === "object" &&
         typeof attributes[key] === "object"
       ) {
-        // console.log('key',key)
-        // console.log('typeof examples[key]', typeof examples[key], typeof attributes[key])
         if (!attributes[key]) {
           console.log(`null value found for, ${key} in  ${example_sets}`);
         } else if (Array.isArray(examples[key])) {
