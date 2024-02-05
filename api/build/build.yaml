@@ -193,8 +193,6 @@ paths:
                   properties:
                     ref_id:
                       $ref: '#/components/schemas/Order/properties/id'
-                    order_id:
-                      $ref: '#/components/schemas/Order/properties/id'
               required:
                 - context
                 - message
@@ -1184,6 +1182,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        organization:
+          $ref: '#/components/schemas/Organization'
         person:
           $ref: '#/components/schemas/Person'
         contact:
@@ -1207,7 +1207,6 @@ components:
           type: string
         additional_desc:
           type: object
-          additionalProperties: false
           properties:
             url:
               type: string
@@ -1534,7 +1533,6 @@ components:
             This represents the exact quantity allocated for purchase of the
             item.
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1546,7 +1544,6 @@ components:
             This represents the exact quantity available for purchase of the
             item. The buyer can only purchase multiples of this
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1558,7 +1555,6 @@ components:
             This represents the maximum quantity allowed for purchase of the
             item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1570,7 +1566,6 @@ components:
             This represents the minimum quantity allowed for purchase of the
             item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1580,7 +1575,6 @@ components:
         selected:
           description: This represents the quantity selected for purchase of the item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1590,7 +1584,6 @@ components:
         unitized:
           description: This represents the quantity available in a single unit of the item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1870,6 +1863,10 @@ components:
             Status of the order. Allowed values can be defined by the network
             policy
           type: string
+          enum:
+            - ACTIVE
+            - COMPLETE
+            - CANCELLED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2048,11 +2045,8 @@ components:
             will be sent as url params. Two url param values,
             ```$transaction_id``` and ```$amount``` are mandatory.
           format: uri
-        tl_method:
-          type: string
         params:
           type: object
-          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2078,6 +2072,7 @@ components:
           enum:
             - PRE-ORDER
             - PRE-FULFILLMENT
+            - PRE_FULFILLMENT
             - ON-FULFILLMENT
             - POST-FULFILLMENT
             - ON-ORDER
@@ -2179,7 +2174,6 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -2244,7 +2238,6 @@ components:
         id:
           description: ID of the quote.
           type: string
-          format: uuid
         price:
           description: The total quoted price
           allOf:
@@ -2254,7 +2247,6 @@ components:
           type: array
           items:
             type: object
-            additionalProperties: false
             properties:
               item:
                 $ref: '#/components/schemas/Item'
@@ -2403,7 +2395,6 @@ components:
           $ref: '#/components/schemas/DecimalValue'
         range:
           type: object
-          additionalProperties: false
           properties:
             min:
               $ref: '#/components/schemas/DecimalValue'
@@ -2488,14 +2479,14 @@ components:
       type: object
       additionalProperties: false
       properties:
+        order_id:
+          type: string
         ref_id:
           type: string
         callback_phone:
           type: string
-          format: phone
         phone:
           type: string
-          format: phone
         email:
           type: string
           format: email
@@ -2583,7 +2574,6 @@ components:
           $ref: '#/components/schemas/Duration'
         range:
           type: object
-          additionalProperties: false
           properties:
             start:
               type: string
@@ -2727,6 +2717,7 @@ components:
               type: string
             submission_id:
               type: string
+              format: uuid
             errors:
               type: array
               items:
@@ -4019,7 +4010,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_15
             context:
               domain: ONDC:FIS14
               location:
@@ -4087,7 +4078,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value:
+          value: &ref_12
             context:
               domain: ONDC:FIS14
               location:
@@ -4415,7 +4406,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value:
+          value: &ref_13
             context:
               domain: ONDC:FIS14
               location:
@@ -4488,7 +4479,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_11
             context:
               domain: ONDC:FIS14
               location:
@@ -4529,7 +4520,7 @@ x-flows:
                     xinput:
                       head:
                         descriptor:
-                          name: Set up SIP
+                          name: Payment Information
                         index:
                           min: 0
                           cur: 1
@@ -4760,7 +4751,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_16
             context:
               domain: ONDC:FIS14
               location:
@@ -4789,7 +4780,10 @@ x-flows:
                     fulfillment_ids:
                       - F1
                     xinput:
+                      form:
+                        id: F02
                       form_response:
+                        status: SUCCESS
                         submission_id: c844d5f4-29c3-4398-b594-8b4716ef5dbf
                 fulfillments:
                   - id: F1
@@ -4873,7 +4867,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_17
             context:
               domain: ONDC:FIS14
               location:
@@ -5178,7 +5172,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_18
             context:
               domain: ONDC:FIS14
               location:
@@ -5288,7 +5282,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_19
             context:
               domain: ONDC:FIS14
               location:
@@ -5569,7 +5563,7 @@ x-flows:
                 Investment Platform ->> Fund Aggregator / Direct Fund: status
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         example:
-          value: &ref_17
+          value: &ref_20
             context:
               domain: ONDC:FIS14
               location:
@@ -7984,6 +7978,826 @@ x-flows:
                               name: ARN Of Sub Broker
                               code: ARN_SUB_BROKER
                             value: AA0802
+  - summary: Form Status for application/html
+    details:
+      - description: >-
+          Detailed process form responses flows in case if mime type is
+          application/html.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform(BPP)
+            participant Lender Form Service
+            Lender Platform(BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+            Borrower Platform (BAP)->>Lender Form Service: Get Form
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID 
+            Borrower Platform (BAP)->>Lender Platform(BPP): status
+            Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+            Lender Platform(BPP)->> Borrower Platform (BAP): on_status(unsolicated)
+            Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+    references: if any
+    steps:
+      - summary: >-
+          Seller app returns the response to selected mutual fund with xinput
+          forms.
+        api: on_select
+        details:
+          - description: >-
+              Seller app returns the response to selected mutual fund with
+              payment information forms.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+                end
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID 
+        reference: if any
+        example:
+          value: *ref_11
+      - summary: Get the Payment Info form(Redirection)
+        api: form
+        details:
+          - description: Provider platform sends the Payment Info From.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                Lender Platform(BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID 
+                end
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The borrower seeks the most recent form status update.
+        api: status
+        details:
+          - description: >-
+              Borrower platform request the latest form status updates with the
+              formID
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform(BPP): status
+                Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
+                end
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+        reference: if any
+        example:
+          value: &ref_21
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: df43147d-2091-41d5-bc36-8d7b9ca428b2
+              action: status
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              ttl: PT10M
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              ref_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+      - summary: The lender shares the latest form status with the borrower.
+        api: on_status
+        details:
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the mutual-fund application including installment
+              details.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                
+                Borrower Platform (BAP)->>Lender Platform(BPP): status
+                Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                end
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+        reference: if any
+        example:
+          value: &ref_22
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.0
+              action: on_status
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: df43147d-2091-41d5-bc36-8d7b9ca428b2
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.943Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    xinput:
+                      form_response:
+                        status: PENDING
+                        submission_id: 9b5714e2-ed2e-48c9-aa7f-cf7ec281de9c
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Scheme Name
+                              code: SCHEME_NAME
+                            value: Liquid Funds
+                          - descriptor:
+                              name: AMFI ID
+                              code: AMFI_ID
+                            value: AMFI_ID_VALUE
+                          - descriptor:
+                              name: Scheme Code
+                              code: SCHEME_CODE
+                            value: 4b9a22f512
+                          - descriptor:
+                              name: Fund Code
+                              code: FUND_CODE
+                            value: 4b9a22
+                          - descriptor:
+                              name: Plan Name
+                              code: PLAN_NAME
+                            value: PLAN NAME
+                          - descriptor:
+                              name: Scheme Type
+                              code: SCHEME_TYPE
+                            value: OE
+                          - descriptor:
+                              name: Plan Type
+                              code: PLAN_TYPE
+                            value: DIR
+                          - descriptor:
+                              name: Plan Opt
+                              code: PLAN_OPT
+                            value: GR
+                          - descriptor:
+                              name: Div Opt
+                              code: DIV_OPT
+                            value: PAYOUT
+                          - descriptor:
+                              name: Pri Isin
+                              code: PRI_ISIN
+                            value: PRI_VALUE
+                          - descriptor:
+                              name: Sec Isin
+                              code: SEC_ISIN
+                            value: SEC_VALUE
+                          - descriptor:
+                              name: Nfo Start
+                              code: NFO_START
+                            value: 17/011/2023
+                          - descriptor:
+                              name: Nfo End
+                              code: NFO_END
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Allot Date
+                              code: ALLOT_DATE
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Reopen Date
+                              code: REOPEN_DATE
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Maturity Date
+                              code: MATURITY_DATE
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Entry Load
+                              code: ENTRY_LOAD
+                            value: ENTRY_LOAD_VALUE
+                          - descriptor:
+                              name: Exit Load
+                              code: EXIT_LOAD
+                            value: EXIT_LOAD_VALUE
+                          - descriptor:
+                              name: Pur Allowed
+                              code: PUR_ALLOWED
+                            value: 'Y'
+                          - descriptor:
+                              name: NFO Allowed
+                              code: NFO_ALLOWED
+                            value: 'Y'
+                          - descriptor:
+                              name: Redeem_Allowed
+                              code: REDEEM_ALLOWED
+                            value: 'Y'
+                          - descriptor:
+                              name: Category ID
+                              code: CATG_ID
+                            value: '1'
+                          - descriptor:
+                              name: Sub Category ID
+                              code: SUB_CATG_ID
+                            value: '1'
+                          - descriptor:
+                              name: Scheme Flag
+                              code: SCHEME_FLAG
+                            value: AC
+                          - descriptor:
+                              name: Sys Freq
+                              code: SYS_FREQ
+                            value: D
+                          - descriptor:
+                              name: Sys Freq Opt
+                              code: SYS_FREQ_OPT
+                            value: A
+                          - descriptor:
+                              name: Min_Amt
+                              code: MIN_AMT
+                            value: '4534'
+                          - descriptor:
+                              name: Max_Amt
+                              code: MAX_AMT
+                            value: '4534'
+                          - descriptor:
+                              name: Multiple_Amt
+                              code: MULTIPLE_AMT
+                            value: '4534'
+                          - descriptor:
+                              name: Min_Units
+                              code: MIN_UNITS
+                            value: '3'
+                          - descriptor:
+                              name: Multiple Units
+                              code: MULTIPLE_UNITS
+                            value: '12'
+                          - descriptor:
+                              name: Min_Inst
+                              code: MIN_INST
+                            value: '7'
+                          - descriptor:
+                              name: Max_Inst
+                              code: MAX_INST
+                            value: '20'
+                          - descriptor:
+                              name: Min Cum Amt
+                              code: MIN_CUM_AMT
+                            value: '2000'
+                        display: true
+                fulfillments:
+                  - id: F1
+                    type: SIP
+                    customer:
+                      person:
+                        id: PAN:EKLZS12E
+                    agent:
+                      person:
+                        id: EUIN:1234
+                    tags:
+                      - descriptor:
+                          name: ARN info
+                          code: ARN_INFO
+                        list:
+                          - descriptor:
+                              name: ARN Of Organization
+                              code: ARN_ORGANIZATION
+                            value: AA0802
+                          - descriptor:
+                              name: ARN Of Sub Broker
+                              code: ARN_SUB_BROKER
+                            value: AA0802
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - title: Price
+                      item:
+                        id: I1
+      - summary: The lender shares the latest form status with the borrower.
+        api: on_status
+        details:
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the mutual-fund application including installment
+              details.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+
+                Borrower Platform (BAP)->>Lender Platform(BPP): status
+                Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK            
+                rect rgb(191, 223, 255) 
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_14
+            context:
+              domain: ONDC:FIS14
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.0
+              action: on_status
+              bap_id: mutual-fund-protocol.becknprotocol.io
+              bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.943Z'
+              bpp_id: stockwiz.com
+              bpp_uri: https://stockwiz.com
+            message:
+              order:
+                provider:
+                  id: P1
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: HDFC Midcap Opportunities Fund
+                    short_desc: HDFC Midcap Opportunities Fund
+                items:
+                  - id: I1
+                    descriptor:
+                      name: HDFC Midcap Opportunities Fund - SIP
+                      code: SIP
+                    category_ids:
+                      - C1
+                    fulfillment_ids:
+                      - F1
+                    xinput:
+                      form_response:
+                        status: APPROVED
+                        submission_id: 9b5714e2-ed2e-48c9-aa7f-cf7ec281de9c
+                    tags:
+                      - descriptor:
+                          name: Fund Information
+                          code: FUND_INFO
+                        list:
+                          - descriptor:
+                              name: Type
+                              code: TYPE
+                            value: Equity
+                          - descriptor:
+                              name: Fund Manager
+                              code: FUND_MANAGER
+                            value: HDFC Asset Management Company
+                          - descriptor:
+                              name: Scheme Name
+                              code: SCHEME_NAME
+                            value: Liquid Funds
+                          - descriptor:
+                              name: AMFI ID
+                              code: AMFI_ID
+                            value: AMFI_ID_VALUE
+                          - descriptor:
+                              name: Scheme Code
+                              code: SCHEME_CODE
+                            value: 4b9a22f512
+                          - descriptor:
+                              name: Fund Code
+                              code: FUND_CODE
+                            value: 4b9a22
+                          - descriptor:
+                              name: Plan Name
+                              code: PLAN_NAME
+                            value: PLAN NAME
+                          - descriptor:
+                              name: Scheme Type
+                              code: SCHEME_TYPE
+                            value: OE
+                          - descriptor:
+                              name: Plan Type
+                              code: PLAN_TYPE
+                            value: DIR
+                          - descriptor:
+                              name: Plan Opt
+                              code: PLAN_OPT
+                            value: GR
+                          - descriptor:
+                              name: Div Opt
+                              code: DIV_OPT
+                            value: PAYOUT
+                          - descriptor:
+                              name: Pri Isin
+                              code: PRI_ISIN
+                            value: PRI_VALUE
+                          - descriptor:
+                              name: Sec Isin
+                              code: SEC_ISIN
+                            value: SEC_VALUE
+                          - descriptor:
+                              name: Nfo Start
+                              code: NFO_START
+                            value: 17/011/2023
+                          - descriptor:
+                              name: Nfo End
+                              code: NFO_END
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Allot Date
+                              code: ALLOT_DATE
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Reopen Date
+                              code: REOPEN_DATE
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Maturity Date
+                              code: MATURITY_DATE
+                            value: 17/011/2098
+                          - descriptor:
+                              name: Entry Load
+                              code: ENTRY_LOAD
+                            value: ENTRY_LOAD_VALUE
+                          - descriptor:
+                              name: Exit Load
+                              code: EXIT_LOAD
+                            value: EXIT_LOAD_VALUE
+                          - descriptor:
+                              name: Pur Allowed
+                              code: PUR_ALLOWED
+                            value: 'Y'
+                          - descriptor:
+                              name: NFO Allowed
+                              code: NFO_ALLOWED
+                            value: 'Y'
+                          - descriptor:
+                              name: Redeem_Allowed
+                              code: REDEEM_ALLOWED
+                            value: 'Y'
+                          - descriptor:
+                              name: Category ID
+                              code: CATG_ID
+                            value: '1'
+                          - descriptor:
+                              name: Sub Category ID
+                              code: SUB_CATG_ID
+                            value: '1'
+                          - descriptor:
+                              name: Scheme Flag
+                              code: SCHEME_FLAG
+                            value: AC
+                          - descriptor:
+                              name: Sys Freq
+                              code: SYS_FREQ
+                            value: D
+                          - descriptor:
+                              name: Sys Freq Opt
+                              code: SYS_FREQ_OPT
+                            value: A
+                          - descriptor:
+                              name: Min_Amt
+                              code: MIN_AMT
+                            value: '4534'
+                          - descriptor:
+                              name: Max_Amt
+                              code: MAX_AMT
+                            value: '4534'
+                          - descriptor:
+                              name: Multiple_Amt
+                              code: MULTIPLE_AMT
+                            value: '4534'
+                          - descriptor:
+                              name: Min_Units
+                              code: MIN_UNITS
+                            value: '3'
+                          - descriptor:
+                              name: Multiple Units
+                              code: MULTIPLE_UNITS
+                            value: '12'
+                          - descriptor:
+                              name: Min_Inst
+                              code: MIN_INST
+                            value: '7'
+                          - descriptor:
+                              name: Max_Inst
+                              code: MAX_INST
+                            value: '20'
+                          - descriptor:
+                              name: Min Cum Amt
+                              code: MIN_CUM_AMT
+                            value: '2000'
+                        display: true
+                fulfillments:
+                  - id: F1
+                    type: SIP
+                    customer:
+                      person:
+                        id: PAN:EKLZS12E
+                    agent:
+                      person:
+                        id: EUIN:1234
+                    tags:
+                      - descriptor:
+                          name: ARN info
+                          code: ARN_INFO
+                        list:
+                          - descriptor:
+                              name: ARN Of Organization
+                              code: ARN_ORGANIZATION
+                            value: AA0802
+                          - descriptor:
+                              name: ARN Of Sub Broker
+                              code: ARN_SUB_BROKER
+                            value: AA0802
+                quote:
+                  price:
+                    currency: INR
+                    value: '500'
+                  breakup:
+                    - title: Price
+                      item:
+                        id: I1
+  - summary: Form Status for text/html
+    details:
+      - description: >-
+          Detailed process form responses flows in case if mime type is
+          text/html.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform(BPP)
+            participant Lender Form Service
+            Lender Platform(BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+            Borrower Platform (BAP)->>Lender Form Service: Get Form (SIP & Lumpsum)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            # Borrower Platform (BAP)->>Lender Platform(BPP): status
+            # Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
+            # Lender Platform(BPP)->> Borrower Platform (BAP): on_status
+            # Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+            Borrower Platform (BAP)->>Lender Platform(BPP): select
+            Lender Platform(BPP)-->>Borrower Platform (BAP): Ack
+            Lender Platform(BPP)->> Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+            Borrower Platform (BAP)->>Lender Form Service: Get Form (Payment Info)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Lender Platform(BPP)->> Borrower Platform (BAP): on_status(unsolicated)
+            Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+    references: if any
+    steps:
+      - summary: >-
+          Seller app returns the response to selected mutual fund with xinput
+          forms.
+        api: on_select
+        details:
+          - description: >-
+              Seller app returns the response to selected mutual fund with SIP
+              setup & payment information forms.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform(BPP): select
+                Lender Platform(BPP)-->>Borrower Platform (BAP): Ack
+                end
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                Borrower Platform (BAP)->>Lender Form Service: Get Form (Payment Info)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+        reference: if any
+        example:
+          value: *ref_12
+      - summary: Get the SIP setup form
+        api: form
+        details:
+          - description: Provider platform sends the form for SIP setup.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                Lender Platform(BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form (SIP & Lumpsum)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                end
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID 
+        reference: if any
+        example:
+          value: |
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Document</title>
+              </head>
+
+              <body>
+                <form action="/form/submission/sip-setup" ondc-template="financial-services:sip-set-up">
+                  <label for="registertion-id">Registration ID: </label>
+                  <input type="text" name="registertion-id" />
+                  <label for="sip-start-date">SIP Start Date: </label>
+                  <input type="date" name="sip-start-date" />
+                  <label for="sip-end-date">SIP End Date: </label>
+                  <input type="date" name="sip-end-date" />
+                  <label for="sip-frequency">SIP Frequency</label>
+                  <select name="sip-frequency">
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                  </select>
+                  <label for="sip-amount">SIP Amount</label>
+                  <input type="text" name="sip-amount" />
+                  
+                  <input type="hidden" id="formId" name="formId" value="FO1">
+                  <input type="submit" value="Submit">
+                </form>
+              </body>
+            </html>
+      - summary: Get the Lumpsum setup form
+        api: form
+        details:
+          - description: Provider platform sends the form for Lumpsum setup.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                Lender Platform(BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK 
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form (SIP & Lumpsum)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                end
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID 
+        reference: if any
+        example:
+          value: |
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Document</title>
+              </head>
+
+              <body>
+                <form action="/form/submission/lumpsum-setup" ondc-template="financial-services:lumpsum-set-up">
+                  <label for="registertion-id">Registration ID: </label>
+                  <input type="text" name="registertion-id" />
+                  <label for="lumpsum-amount">lumpsum Amount</label>
+                  <input type="text" name="lumpsum-amount" />
+                  
+                  <input type="hidden" id="formId" name="formId" value="FO1">
+                  <input type="submit" value="Submit">
+                </form>
+              </body>
+            </html>
+      - summary: Buyer app submit the SIP setup form.
+        api: select
+        details:
+          - description: Submit the SIP setup form with submissionId.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform(BPP): select
+                Lender Platform(BPP)-->>Borrower Platform (BAP): Ack
+                end
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                Borrower Platform (BAP)->>Lender Form Service: Get Form (Payment Info)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+        reference: if any
+        example:
+          value: *ref_13
+      - summary: >-
+          Seller app returns the response with updated quote & xinput form
+          index.
+        api: on_select
+        details:
+          - description: >-
+              Seller app returns the response with updated quote & xinput form
+              index.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Platform(BPP): select
+                Lender Platform(BPP)-->>Borrower Platform (BAP): Ack
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                end
+                Borrower Platform (BAP)->>Lender Form Service: Get Form (Payment Info)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+        reference: if any
+        example:
+          value: *ref_11
+      - summary: Get the Payment Info form(Redirection)
+        api: form
+        details:
+          - description: Provider platform sends the Payment Info From.
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform(BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Platform(BPP): select
+                Lender Platform(BPP)-->>Borrower Platform (BAP): Ack
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_select
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form (Payment Info)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                end
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The lender shares the latest form status with the borrower.
+        api: on_status
+        details:
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the mutual-fund application including sip details.
+            mermaid: |-
+              sequenceDiagram
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->> Borrower Platform (BAP): on_status(unsolicated)
+                Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_14
 x-examples:
   mutual-funds:
     summary: mutual-funds
@@ -8065,7 +8879,7 @@ x-examples:
         examples:
           - summary: select-request-sip
             description: TBD
-            value: *ref_11
+            value: *ref_15
       on_select:
         examples:
           - summary: on_select-request-sip
@@ -8195,27 +9009,27 @@ x-examples:
                           display: true
           - summary: on_select-request-sip
             description: TBD
-            value: *ref_12
+            value: *ref_11
       init:
         examples:
           - summary: init-request-sip
             description: TBD
-            value: *ref_13
+            value: *ref_16
       on_init:
         examples:
           - summary: on_init-request-sip-account-info
             description: TBD
-            value: *ref_14
+            value: *ref_17
       confirm:
         examples:
           - summary: confirm-request-sip
             description: TBD
-            value: *ref_15
+            value: *ref_18
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_16
+            value: *ref_19
       update:
         examples:
           - summary: update
@@ -8258,12 +9072,15 @@ x-examples:
         examples:
           - summary: on_update
             description: TBD
-            value: *ref_17
+            value: *ref_20
       status:
         examples:
           - summary: status
             description: TBD
             value: *ref_9
+          - summary: status-request-payment
+            description: TBD
+            value: *ref_21
       on_status:
         examples:
           - summary: on_status-request-sip-withdraw
@@ -8558,6 +9375,12 @@ x-examples:
                           url
                       mime_type: application/html
                       url: https://abcinsurance.com/withdraw-funds/
+          - summary: on_status-request-payment-pending
+            description: TBD
+            value: *ref_22
+          - summary: on_status-request-payment-approved
+            description: TBD
+            value: *ref_14
       support:
         examples:
           - summary: support
