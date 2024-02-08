@@ -75,6 +75,18 @@ search:
       description: >-
         Describes the duration in ISO8601 format after timestamp for which this
         message holds valid
+    bpp_id:
+      required: optional
+      type: string
+      owner: BPP
+      usage: fis.test.bpp.io
+      description: Describes subscriber ID of the BPP
+    bpp_uri:
+      required: optional
+      type: string
+      owner: BPP
+      usage: https://fis.test.bpp.io/
+      description: Describes subscriber URL of the BPP for accepting calls from BAPs.
   message:
     intent:
       category:
@@ -85,6 +97,51 @@ search:
             owner: BAP
             usage: MOTOR_INSURANCE
             description: Type of insurance (health, marine, motor)
+      provider:
+        id:
+          required: optional
+          type: string
+          owner: BAP
+          usage: PROVIDER_ID
+          description: Describes unique id of provider
+        items:
+          id:
+            required: optional
+            type: string
+            owner: BAP
+            usage: ITEM_ID_INVOICE_LOAN
+            description: Describes unique id of item
+          xinput:
+            form:
+              id:
+                required: optional
+                type: string
+                owner: BPP
+                usage: d097c2f5-cb8d-42fe-900e-dfecdede16fb
+                description: Describes unique form id.
+            form_response:
+              status:
+                required: optional
+                type: string
+                owner: BAP
+                usage: SUCCESS
+                description: |
+                  Describes the status of form 
+              submission_id:
+                required: optional
+                type: string
+                owner: BAP
+                usage: cb8d-42fe-900e-dfecdede16fb
+                description: >-
+                  Unique submission id which a borrower got as a reponse after
+                  successful submission of form 
+      payment:
+        collected_by:
+          required: optional
+          type: string
+          owner: BAP
+          usage: BPP
+          description: 'This field indicates who is the collector of payment. '
 on_search:
   context:
     location:
@@ -204,6 +261,13 @@ on_search:
               owner: BPP
               usage: COMPRIHENSIVE_INSURANCE
               description: Category code of insurance
+          id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 7cd4ea25
+            description: |
+              Describes the unique category id.
         descriptor:
           name:
             required: Mandatory
@@ -282,67 +346,75 @@ on_search:
             head:
               descriptor:
                 name:
-                  required: Mandatory
+                  required: Optional
                   type: string
                   owner: BPP
                   usage: Vehicle Details
                   description: Headings of form
               index:
                 min:
-                  required: Mandatory
+                  required: Optional
                   type: number
                   owner: BPP
                   usage: false
                   description: Minimum number of pages in a form
                 cur:
-                  required: Mandatory
+                  required: Optional
                   type: number
                   owner: BPP
                   usage: false
                   description: Current page to be filled in a form
                 max:
-                  required: Mandatory
+                  required: Optional
                   type: number
                   owner: BPP
                   usage: false
                   description: Maximum number of pages in a form
               headings:
-                required: Mandatory
+                required: Optional
                 type: string
                 owner: BPP
                 usage: Vehicle Details
                 description: Heading of form
             form:
               url:
-                required: Mandatory
+                required: Optional
                 type: string
                 owner: BPP
                 usage: https://fis.test.bpp.io/form/vehicle_dtls_new?formid=FO1
                 description: Form url from where we can get it
               mime_type:
-                required: Mandatory
+                required: Optional
                 type: string
                 owner: BPP
                 usage: text/html
                 description: Describes the type of form
               resubmit:
-                required: Mandatory
+                required: Optional
                 type: boolean
                 owner: BPP
                 usage: true
                 description: Whether form has been resubmitted or not
               multiple_sumbissions:
-                required: Mandatory
+                required: Optional
                 type: boolean
                 owner: BPP
                 usage: false
                 description: Whether form can be submitted multiple times or not
               id:
-                required: Mandatory
+                required: Optional
                 type: string
                 owner: BPP
-                usage: FO1
+                usage: xd2344Re
                 description: Unique id of form
+            required:
+              required: optional
+              type: boolean
+              owner: BPP
+              usage: true
+              description: >-
+                Indicates whether the form data is mandatorily required by the
+                BPP to confirm the order.
           add_ons:
             id:
               required: Optional
@@ -366,18 +438,69 @@ on_search:
                   usage: 1
                   description: Describes the count of maximum quantity for add_on item
             descriptor:
-              'name                                                                                                                                                   ':
+              name:
                 required: Optional
                 type: string
                 owner: BPP
                 usage: Consumables Cover
                 description: Describes the name of the add_on item
-              'code                                                                                                                                                   ':
+              code:
                 required: Optional
                 type: string
                 owner: BPP
                 usage: CONSUMABLES_COVER
                 description: Describes the code of the add_on item
+            price:
+              currency:
+                required: optional
+                type: number
+                owner: BPP
+                usage: INR
+                description: Describes the currency of the selected add_on
+              value:
+                required: optional
+                type: number
+                owner: BPP
+                usage: 850
+                description: Describes the value of the selected add_on
+          category_ids:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 9bd4Ka25
+            description: Unique category ids of product in list
+          price:
+            currency:
+              required: optional
+              type: string
+              owner: BPP
+              usage: INR
+              description: Describes the currency of the selected item.
+            value:
+              required: optional
+              type: string
+              owner: BPP
+              usage: 900
+              description: Describes the amount of the selected item
+          parent_item_id:
+            required: optional
+            type: string
+            owner: BPP
+            usage: 1xd4ea25
+            description: Describes the unique id parent ID of the item.
+          id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 1cd4ea25
+            description: Unique id of the item
+        payments:
+          collected_by:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: BPP
+            description: 'This field indicates who is the collector of payment. '
 select:
   context:
     location:
@@ -472,7 +595,7 @@ select:
       items:
         add_ons:
           id:
-            required: Mandatory
+            required: optional
             type: string
             owner: BAP
             usage: A1
@@ -480,7 +603,7 @@ select:
           quantity:
             selected:
               count:
-                required: Mandatory
+                required: optional
                 type: number
                 owner: BAP
                 usage: 1
@@ -494,7 +617,7 @@ select:
         xinput:
           form_response:
             submission_id:
-              required: Mandatory
+              required: optional
               type: string
               owner: BAP
               usage: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -502,11 +625,33 @@ select:
                 Unique submission id which a buyer got as a reponse after
                 successful submission of form 
             status:
-              required: Mandatory
+              required: optional
               type: string
               owner: BAP
               usage: SUCCESS
               description: Describes the status of form
+          form:
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xd2344Re
+              description: |
+                Describes the unique form id.
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
+        category_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: bpd4ea25
+          description: |
+            Unique id of category
       provider:
         id:
           required: Mandatory
@@ -715,6 +860,12 @@ on_select:
                 owner: BPP
                 usage: 1
                 description: Current page to be filled in a form
+            headings:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: Vehicle Details
+              description: Heading of form
           form:
             mime_type:
               required: Mandatory
@@ -740,6 +891,21 @@ on_select:
               owner: BPP
               usage: false
               description: Whether form can be submitted multiple times or not
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xd2344Re
+              description: |
+                Describes the unique form id.
+          required:
+            required: mandatory
+            type: boolean
+            owner: BPP
+            usage: true
+            description: >-
+              Indicates whether the form data is mandatorily required by the BPP
+              to confirm the order.
         add_ons:
           id:
             required: Mandatory
@@ -768,6 +934,39 @@ on_select:
               owner: BPP
               usage: CONSUMABLES_COVER
               description: Describes the code of the add_on item
+          price:
+            currency:
+              required: optional
+              type: number
+              owner: BPP
+              usage: INR
+              description: Describes the currency of the selected add_on
+            value:
+              required: optional
+              type: number
+              owner: BPP
+              usage: 850
+              description: Describes the value of the selected add_on
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
+        price:
+          value:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 900
+            description: Describes the item's amount
+          currency:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: INR
+            description: Describes the item's currency
       quote:
         id:
           required: Mandatory
@@ -795,6 +994,13 @@ on_select:
             owner: BPP
             usage: Basic OD
             description: Describes the title of breakup
+          item:
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xv2344Re
+              description: Describes the item associated to breakup
         price:
           value:
             required: Mandatory
@@ -944,6 +1150,34 @@ init:
               owner: BAP
               usage: SUCCESS
               description: Describes the status of form
+          form:
+            id:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: xd2344Re
+              description: |
+                Describes the unique form id.
+        category_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: bpd4ea25
+          description: |
+            Unique id of category
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
+        fulfillment_ids:
+          required: optional
+          type: string
+          owner: BPP
+          usage: ce423Erf
+          description: Describes the fulfillment ID's associated to an Item
       fulfillments:
         customer:
           contact:
@@ -966,6 +1200,12 @@ init:
               owner: BAP
               usage: Joe Adam
               description: Name of the customer
+        id:
+          required: optional
+          type: string
+          owner: BPP
+          usage: F1
+          description: Describes the unique id of the fulfillment
       payments:
         collected_by:
           required: Mandatory
@@ -1138,6 +1378,25 @@ on_init:
               owner: BPP
               usage: CONSUMABLES_COVER
               description: Describes the code of the add_on item
+            name:
+              required: Mandatory
+              type: string
+              owner: BPP
+              usage: Cosumables Cover
+              description: Describes the name of the add_on item
+          price:
+            currency:
+              required: optional
+              type: number
+              owner: BPP
+              usage: INR
+              description: Describes the currency of the selected add_on
+            value:
+              required: optional
+              type: number
+              owner: BPP
+              usage: 850
+              description: Describes the value of the selected add_on
         id:
           required: Mandatory
           type: string
@@ -1185,6 +1444,12 @@ on_init:
                 owner: BPP
                 usage: 1
                 description: Current page to be filled in a form
+            headings:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: Vehicle Details
+              description: Heading of form
           form:
             mime_type:
               required: Mandatory
@@ -1210,6 +1475,81 @@ on_init:
               owner: BPP
               usage: false
               description: Whether form can be submitted multiple times or not
+            id:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: xd2344Re
+              description: |
+                Describes the unique form id.
+          required:
+            required: mandatory
+            type: boolean
+            owner: BPP
+            usage: true
+            description: >-
+              Indicates whether the form data is mandatorily required by the BPP
+              to confirm the order.
+        fulfillment_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: ce423Erf
+          description: Describes the fulfillment ID's associated to an Item
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
+        category_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: bpd4ea25
+          description: |
+            Unique id of category
+        descriptor:
+          name:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: 2-Wheeler 3rd Party Motor Insurance
+            description: Type of insurance for the particular category
+          short_desc:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: 2-Wheeler 3rd Party Motor Insurance by ABC Insurance Provider
+            description: Short description about the insurance type
+          images:
+            url:
+              required: optional
+              type: string
+              owner: BPP
+              usage: >-
+                https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+              description: Describes the images url for provider
+            size_type:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xs
+              description: Describes the images type for provider
+        price:
+          value:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 900
+            description: Describes the item's amount
+          currency:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: INR
+            description: Describes the item's currency
       fulfillments:
         customer:
           contact:
@@ -1232,6 +1572,20 @@ on_init:
               owner: BAP
               usage: Joe Adam
               description: Name of the customer
+        id:
+          required: Mandatory
+          type: string
+          owner: BPP
+          usage: ce423Erf
+          description: Describes the fulfillment ID
+        state:
+          descriptor:
+            name:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: Insurance Initiated
+              description: Describes the fulfillments state
       payments:
         collected_by:
           required: Mandatory
@@ -1310,6 +1664,13 @@ on_init:
             owner: BPP
             usage: Basic OD
             description: Describes the title of breakup
+          item:
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xv2344Re
+              description: Describes the item associated to breakup
         price:
           value:
             required: Mandatory
@@ -1459,6 +1820,28 @@ confirm:
               owner: BPP
               usage: SUCCESS
               description: Describes the status of form
+          form:
+            id:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: xd2344Re
+              description: |
+                Describes the unique form id.
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
+        category_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: bpd4ea25
+          description: |
+            Unique id of category
       fulfillments:
         customer:
           contact:
@@ -1707,6 +2090,52 @@ on_confirm:
             owner: BPP
             usage: TENURE
             description: Label value of the time
+        descriptor:
+          name:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: 2-Wheeler 3rd Party Motor Insurance
+            description: Type of insurance for the particular category
+          short_desc:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: 2-Wheeler 3rd Party Motor Insurance by ABC Insurance Provider
+            description: Short description about the insurance type
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
+        category_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: bpd4ea25
+          description: |
+            Unique id of category
+        price:
+          value:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 900
+            description: Describes the item's amount
+          currency:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: INR
+            description: Describes the item's currency
+        fulfillment_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: ce423Erf
+          description: Describes the fulfillment ID's associated to an Item
       fulfillments:
         customer:
           contact:
@@ -1716,6 +2145,12 @@ on_confirm:
               owner: BAP
               usage: 91-9999999999
               description: Phone number of the customer
+            email:
+              required: mandatory
+              type: string
+              owner: BAP
+              usage: joe.adam@abc.org
+              description: Email address of the cusotmer
         id:
           required: Mandatory
           type: string
@@ -1762,6 +2197,12 @@ on_confirm:
             owner: BPP
             usage: INR
             description: Currency in which payment has to be paid
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 079c071b-8972-4f0f-b553-12e894617860
+            description: Describes the transaction id of the payment
         status:
           required: Mandatory
           type: string
@@ -1808,6 +2249,13 @@ on_confirm:
             owner: BPP
             usage: Basic OD
             description: Describes the title of breakup
+          item:
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xv2344Re
+              description: Describes the item associated to breakup
         price:
           value:
             required: Mandatory
@@ -1821,6 +2269,56 @@ on_confirm:
             owner: BPP
             usage: INR
             description: Currency of the price
+      id:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: vOff9b99
+        description: Describes the order id
+      status:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: ACTIVE
+        description: Describes the order status
+      documents:
+        descriptor:
+          code:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: POLICY_DOC
+            description: Describes the code of document
+          name:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: Insurance Policy Document
+            description: Describes the name of document
+          short_desc:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: Download your digitally signed policy document here
+            description: Describes the short description of document
+          long_desc:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: Download you digitally signed policy document here
+            description: Describes the long description of document
+        mime_type:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: application/pdf
+          description: Describes the mime type of document
+        url:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: https://abcinsurance.com/policies/O1.pdf
+          description: Describes the url of document
 update:
   context:
     location:
@@ -2115,6 +2613,52 @@ on_update:
             owner: BPP
             usage: TENURE
             description: Label value of the time
+        descriptor:
+          name:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: 2-Wheeler 3rd Party Motor Insurance
+            description: Type of insurance for the particular category
+          short_desc:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: 2-Wheeler 3rd Party Motor Insurance by ABC Insurance Provider
+            description: Short description about the insurance type
+        category_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: bpd4ea25
+          description: |
+            Unique id of category
+        price:
+          value:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 900
+            description: Describes the item's amount
+          currency:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: INR
+            description: Describes the item's currency
+        fulfillment_ids:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: ce423Erf
+          description: Describes the fulfillment ID's associated to an Item
+        parent_item_id:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: 1xd4ea25
+          description: |
+            Unique id of item
       fulfillments:
         customer:
           contact:
@@ -2124,6 +2668,12 @@ on_update:
               owner: BAP
               usage: 91-9999999999
               description: Phone number of the customer
+            email:
+              required: mandatory
+              type: string
+              owner: BAP
+              usage: joe.adam@abc.org
+              description: Email address of the cusotmer
         id:
           required: Mandatory
           type: string
@@ -2170,6 +2720,12 @@ on_update:
             owner: BPP
             usage: INR
             description: Currency in which payment has to be paid
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: 079c071b-8972-4f0f-b553-12e894617860
+            description: Describes the transaction id of the payment
         status:
           required: Mandatory
           type: string
@@ -2216,6 +2772,13 @@ on_update:
             owner: BPP
             usage: Basic OD
             description: Describes the title of breakup
+          item:
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: xv2344Re
+              description: Describes the item associated to breakup
         price:
           value:
             required: Mandatory
@@ -2229,3 +2792,53 @@ on_update:
             owner: BPP
             usage: INR
             description: Currency of the price
+      id:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: vOff9b99
+        description: Describes the order id
+      status:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: ACTIVE
+        description: Describes the order status
+      documents:
+        descriptor:
+          code:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: POLICY_DOC
+            description: Describes the code of document
+          name:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: Insurance Policy Document
+            description: Describes the name of document
+          short_desc:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: Download your digitally signed policy document here
+            description: Describes the short description of document
+          long_desc:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: Download you digitally signed policy document here
+            description: Describes the long description of document
+        mime_type:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: application/pdf
+          description: Describes the mime type of document
+        url:
+          required: mandatory
+          type: string
+          owner: BPP
+          usage: https://abcinsurance.com/policies/O1.pdf
+          description: Describes the url of document

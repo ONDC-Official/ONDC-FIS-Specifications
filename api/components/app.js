@@ -500,7 +500,7 @@ async function checkAttributes(exampleSets, attributes) {
 async function comapreObjects(examples, attributes, example_sets) {
   for (const key in examples) {
     //un-commnet this if key is not found
-    //console.log('key', key)
+    //console.log('key', key, examples[key])
     if (key !== "tags")
       if (
         typeof examples[key] === "object" &&
