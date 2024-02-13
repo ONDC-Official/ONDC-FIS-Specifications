@@ -29,6 +29,7 @@ paths:
                             - search
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     intent:
                       $ref: '#/components/schemas/Intent'
@@ -63,6 +64,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -97,6 +99,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -156,6 +159,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -190,6 +194,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     ref_id:
                       $ref: '#/components/schemas/Order/properties/id'
@@ -224,6 +229,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order_id:
                       $ref: '#/components/schemas/Order/properties/id'
@@ -261,6 +267,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order_id:
                       $ref: '#/components/schemas/Order/properties/id'
@@ -299,6 +306,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     update_target:
                       description: >-
@@ -443,6 +451,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -476,6 +485,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -511,6 +521,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -583,6 +594,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -618,6 +630,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -653,6 +666,7 @@ paths:
                         - action
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     order:
                       $ref: '#/components/schemas/Order'
@@ -1184,6 +1198,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        organization:
+          $ref: '#/components/schemas/Organization'
         person:
           $ref: '#/components/schemas/Person'
         contact:
@@ -1207,7 +1223,6 @@ components:
           type: string
         additional_desc:
           type: object
-          additionalProperties: false
           properties:
             url:
               type: string
@@ -1534,7 +1549,6 @@ components:
             This represents the exact quantity allocated for purchase of the
             item.
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1546,7 +1560,6 @@ components:
             This represents the exact quantity available for purchase of the
             item. The buyer can only purchase multiples of this
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1558,7 +1571,6 @@ components:
             This represents the maximum quantity allowed for purchase of the
             item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1570,7 +1582,6 @@ components:
             This represents the minimum quantity allowed for purchase of the
             item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1580,7 +1591,6 @@ components:
         selected:
           description: This represents the quantity selected for purchase of the item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1590,7 +1600,6 @@ components:
         unitized:
           description: This represents the quantity available in a single unit of the item
           type: object
-          additionalProperties: false
           properties:
             count:
               type: integer
@@ -1870,6 +1879,10 @@ components:
             Status of the order. Allowed values can be defined by the network
             policy
           type: string
+          enum:
+            - ACTIVE
+            - COMPLETE
+            - CANCELLED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2048,11 +2061,8 @@ components:
             will be sent as url params. Two url param values,
             ```$transaction_id``` and ```$amount``` are mandatory.
           format: uri
-        tl_method:
-          type: string
         params:
           type: object
-          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2081,11 +2091,18 @@ components:
             - ON-FULFILLMENT
             - POST-FULFILLMENT
             - ON-ORDER
+            - PRE_ORDER
+            - PRE_FULFILLMENT
+            - ON_FULFILLMENT
+            - POST_FULFILLMENT
+            - ON_ORDER
         status:
           type: string
           enum:
             - PAID
             - NOT-PAID
+            - DELAYED
+            - DEFERRED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -2179,7 +2196,6 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -2244,7 +2260,6 @@ components:
         id:
           description: ID of the quote.
           type: string
-          format: uuid
         price:
           description: The total quoted price
           allOf:
@@ -2403,7 +2418,6 @@ components:
           $ref: '#/components/schemas/DecimalValue'
         range:
           type: object
-          additionalProperties: false
           properties:
             min:
               $ref: '#/components/schemas/DecimalValue'
@@ -2488,14 +2502,14 @@ components:
       type: object
       additionalProperties: false
       properties:
+        order_id:
+          type: string
         ref_id:
           type: string
         callback_phone:
           type: string
-          format: phone
         phone:
           type: string
-          format: phone
         email:
           type: string
           format: email
@@ -2583,7 +2597,6 @@ components:
           $ref: '#/components/schemas/Duration'
         range:
           type: object
-          additionalProperties: false
           properties:
             start:
               type: string
@@ -2825,6 +2838,14 @@ x-enum:
               - code: MUTUAL_FUNDS
                 description: represents the category
                 reference: <PR/Issue/Discussion Links md format text
+        descriptor:
+          code:
+            - code: FULL_PULL
+              description: represents the intent descriptor
+              reference: <PR/Issue/Discussion Links md format text
+            - code: INCREMENTAL_PULL
+              description: represents the intent descriptor
+              reference: <PR/Issue/Discussion Links md format text
   on_search:
     context: *ref_0
     message:
@@ -2927,6 +2948,19 @@ x-enum:
                   - code: WITHDRAWAL
                     description: Describes, the process fo taking money out of an account.
                     reference: <PR/Issue/Discussion Links md format text
+            type:
+              - code: SIP
+                description: Describes the type of fulfillment.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: LUMPSUMP
+                description: Describes the type of fulfillment.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: WITHDRAWAL
+                description: Describes the type of fulfillment.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: EMANDATE
+                description: Describes the type of fulfillment.
+                reference: <PR/Issue/Discussion Links md format text
           payments: &ref_3
             type:
               - code: ON-ORDER
@@ -3011,6 +3045,51 @@ x-tags:
   search:
     message:
       intent:
+        payment: &ref_5
+          tags:
+            - code: BUYER_FINDER_FEES
+              description: Describes the finder fees for buyer
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: BUYER_FINDER_FEES_TYPE
+                  description: Buyer finder fee type
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_PERCENTAGE
+                  description: Buyer finder fee in percentage
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: BUYER_FINDER_FEES_AMOUNT
+                  description: Buyer finder fee in amount
+                  reference: <PR/Issue/Discussion Links md format text>
+            - code: SETTLEMENT_TERMS
+              description: Describes the settlement terms
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: SETTLEMENT_WINDOW
+                  description: Time window to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_BASIS
+                  description: Basis required to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_TYPE
+                  description: Payment method to complete settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: MANDATORY_ARBITRATION
+                  description: >-
+                    Flag to denote if dispute can be resolved through
+                    arbitration
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: COURT_JURISDICTION
+                  description: Denotes court that will have jurisdiction for the case
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: DELAY_INTEREST
+                  description: Denotes interest to be paid as a delay charge
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: STATIC_TERMS
+                  description: Terms for settlement
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: SETTLEMENT_AMOUNT
+                  description: Denotes settlement amount
+                  reference: <PR/Issue/Discussion Links md format text>
         tags:
           - code: INCREMENTAL_PULL
             description: Describes the infomration about incremental pull
@@ -3028,7 +3107,7 @@ x-tags:
               - code: FUND_INFO
                 description: describes the general fund Information
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_5
+                list: &ref_6
                   - code: TYPE
                     description: Describes, Mutual funds type.
                     reference: <PR/Issue/Discussion Links md format text>
@@ -3387,15 +3466,16 @@ x-tags:
                       - code: '7'
                         description: Describes, FUND OF FUNDS - INVESTING value.
                         reference: <PR/Issue/Discussion Links md format text>
-  select: &ref_6
+          payments: *ref_5
+  select: &ref_7
     message:
       order:
         items:
           tags:
             - code: FUND_INFO
-              description: describes the general Information of the loan
+              description: describes the general Information of the funds
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_5
+              list: *ref_6
         fulfillments:
           tags:
             - code: WITHDRAWAL_INFO
@@ -3408,13 +3488,24 @@ x-tags:
                 - code: UNITS
                   description: Describes, the units to be withdrawn.
                   reference: <PR/Issue/Discussion Links md format text>
-  on_select: *ref_6
-  init: *ref_6
-  on_init: *ref_6
-  confirm: *ref_6
-  on_confirm: *ref_6
-  on_status: *ref_6
-  on_update: *ref_6
+            - code: BROKER_INFO
+              description: describes the broker information
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: ARN_ORGANIZATION
+                  description: Describes, Application reference number.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: ARN_SUB_BROKER
+                  description: Describes Application reference number for sub broker.
+                  reference: <PR/Issue/Discussion Links md format text>
+        payments: *ref_5
+  on_select: *ref_7
+  init: *ref_7
+  on_init: *ref_7
+  confirm: *ref_7
+  on_confirm: *ref_7
+  on_status: *ref_7
+  on_update: *ref_7
 x-flows:
   - summary: Mutual funds
     details:
@@ -3491,7 +3582,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: &ref_7
+          value: &ref_8
             context:
               domain: ONDC:FIS14
               location:
@@ -3514,8 +3605,7 @@ x-flows:
                     code: MUTUAL_FUNDS
                 descriptor:
                   code: FULL_PULL
-              payments:
-                - collected_by: BPP
+                payment:
                   tags:
                     - descriptor:
                         code: BUYER_FINDER_FEES
@@ -3563,7 +3653,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_8
+          value: &ref_9
             context:
               domain: ONDC:FIS14
               location:
@@ -4019,7 +4109,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_11
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -4415,7 +4505,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value:
+          value: &ref_12
             context:
               domain: ONDC:FIS14
               location:
@@ -4488,7 +4578,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_14
             context:
               domain: ONDC:FIS14
               location:
@@ -4760,7 +4850,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_15
             context:
               domain: ONDC:FIS14
               location:
@@ -4824,6 +4914,7 @@ x-flows:
                 payments:
                   - collected_by: BPP
                     type: PRE_FULFILLMENT
+                    status: NOT-PAID
                     tags:
                       - descriptor:
                           code: BUYER_FINDER_FEES
@@ -4873,7 +4964,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_16
             context:
               domain: ONDC:FIS14
               location:
@@ -5083,6 +5174,7 @@ x-flows:
                   - customer:
                       person:
                         id: PAN:EKLZS12E
+                    type: SIP
                     agent:
                       person:
                         id: EUIN:1234
@@ -5178,7 +5270,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_18
             context:
               domain: ONDC:FIS14
               location:
@@ -5288,7 +5380,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_19
             context:
               domain: ONDC:FIS14
               location:
@@ -5481,6 +5573,7 @@ x-flows:
                   - customer:
                       person:
                         id: PAN:EKLZS12E
+                    type: SIP
                     agent:
                       person:
                         id: EUIN:1234
@@ -5569,7 +5662,7 @@ x-flows:
                 Investment Platform ->> Fund Aggregator / Direct Fund: status
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         example:
-          value: &ref_17
+          value: &ref_21
             context:
               domain: ONDC:FIS14
               location:
@@ -5869,7 +5962,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_10
             context:
               domain: ONDC:FIS14
               location:
@@ -5908,7 +6001,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
                 end
         example:
-          value:
+          value: &ref_22
             context:
               domain: ONDC:FIS14
               location:
@@ -6109,6 +6202,7 @@ x-flows:
                       descriptor:
                         name: RTA Processed
                         code: RTA_PROCESSED
+                    type: SIP
                     stops:
                       - type: SIP_INVESTMENT_PERIOD
                         time:
@@ -6264,7 +6358,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: *ref_7
+          value: *ref_8
       - summary: >-
           Receive a catalog of different Mutual Fund products offered by
           providers.
@@ -6290,7 +6384,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_9
       - summary: Buyer selects the item for withdrawal transaction
         api: select
         details:
@@ -6309,7 +6403,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value:
+          value: &ref_13
             context:
               domain: ONDC:FIS14
               location:
@@ -6557,7 +6651,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value:
+          value: &ref_17
             context:
               domain: ONDC:FIS14
               location:
@@ -6673,7 +6767,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_11
             context:
               domain: ONDC:FIS14
               location:
@@ -6862,7 +6956,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value:
+          value: &ref_20
             context:
               domain: ONDC:FIS14
               location:
@@ -6882,6 +6976,7 @@ x-flows:
               bpp_uri: https://stockwiz.com
             message:
               order:
+                id: O1
                 provider:
                   id: P2
                   descriptor:
@@ -6947,7 +7042,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Receive real-time updates on your Withdrawal after each milestone.
         api: on_status
         details:
@@ -7049,7 +7144,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Receive real-time updates on your Withdrawal after each milestone.
         api: on_status
         details:
@@ -7210,7 +7305,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: *ref_7
+          value: *ref_8
       - summary: >-
           Receive a catalog of different Mutual Fund products offered by
           providers.
@@ -7236,7 +7331,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_9
       - summary: Buyer selects the item for Emandate transaction
         api: select
         details:
@@ -7576,7 +7671,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_11
       - summary: Receive real-time updates on your Emandate after each milestone.
         api: on_status
         details:
@@ -7594,7 +7689,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
                 end
         example:
-          value:
+          value: &ref_23
             context:
               domain: ONDC:FIS14
               location:
@@ -7755,6 +7850,7 @@ x-flows:
               bpp_uri: https://stockwiz.com
             message:
               order:
+                id: O1
                 provider:
                   id: P2
                   descriptor:
@@ -7812,7 +7908,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Receive real-time updates on your Emandate after each milestone.
         api: on_status
         details:
@@ -7829,7 +7925,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
                 end
         example:
-          value:
+          value: &ref_24
             context:
               domain: ONDC:FIS14
               location:
@@ -7906,7 +8002,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Receive real-time updates on your Emandate after each milestone.
         api: on_status
         details:
@@ -7923,7 +8019,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
                 end
         example:
-          value:
+          value: &ref_25
             context:
               domain: ONDC:FIS14
               location:
@@ -7993,7 +8089,7 @@ x-examples:
         examples:
           - summary: search for mutual funds Full Pull
             description: TBD
-            value: *ref_7
+            value: *ref_8
           - summary: search for mutual funds incremental from given time
             description: TBD
             value:
@@ -8060,15 +8156,81 @@ x-examples:
         examples:
           - summary: mutual funds catalog
             description: TBD
-            value: *ref_8
+            value: *ref_9
       select:
         examples:
           - summary: select-request-sip
             description: TBD
-            value: *ref_11
+            value: *ref_12
+          - summary: select-request-emandate
+            description: TBD
+            value:
+              context:
+                domain: ONDC:FIS14
+                location:
+                  country:
+                    code: IND
+                  city:
+                    code: '*'
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                action: select
+                timestamp: '2023-05-25T05:23:03.443Z'
+                version: 2.0.0
+                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
+                bap_id: mutual-fund-protocol.becknprotocol.io
+                ttl: PT10M
+                bpp_id: stockwiz.com
+                bpp_uri: https://stockwiz.com
+              message:
+                order:
+                  provider:
+                    id: P2
+                  items:
+                    - id: I3
+                      fulfillment_ids:
+                        - F2
+                  fulfillments:
+                    - id: F2
+                      type: EMANDATE
+                      customer:
+                        person:
+                          id: PAN:EKLZS12E
+                      agent:
+                        person:
+                          id: EUIN:1234
+                      tags:
+                        - descriptor:
+                            name: Broker Info
+                            code: BROKER_INFO
+                          list:
+                            - descriptor:
+                                name: ARN Of Organization
+                                code: ARN_ORGANIZATION
+                              value: AA0802
+                            - descriptor:
+                                name: ARN Of Sub Broker
+                                code: ARN_SUB_BROKER
+                              value: AA0802
+          - summary: select-withdrawal-1.2
+            description: TBD
+            value: *ref_13
       on_select:
         examples:
           - summary: on_select-request-sip
+            description: TBD
+            value: *ref_14
+      init:
+        examples:
+          - summary: init-request-sip
+            description: TBD
+            value: *ref_15
+      on_init:
+        examples:
+          - summary: on_init-request-sip-account-info
+            description: TBD
+            value: *ref_16
+          - summary: on_init-request-emandate-1.2
             description: TBD
             value:
               context:
@@ -8079,7 +8241,7 @@ x-examples:
                   city:
                     code: '*'
                 version: 2.0.0
-                action: on_select
+                action: on_init
                 bap_id: mutual-fund-protocol.becknprotocol.io
                 bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
                 transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
@@ -8091,131 +8253,58 @@ x-examples:
               message:
                 order:
                   provider:
-                    id: P1
+                    id: P2
                     descriptor:
                       images:
-                        - url: >-
-                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                        - url: https://www.mfuindia.com//images/header/logo.png
                           size_type: sm
-                      name: HDFC Midcap Opportunities Fund
-                      short_desc: HDFC Midcap Opportunities Fund
+                      name: MFU
+                      short_desc: Mutual Fund Utility
                   items:
-                    - id: I1
+                    - id: I3
                       descriptor:
-                        name: HDFC Midcap Opportunities Fund - SIP
-                        code: SIP
-                      category_ids:
-                        - C1
+                        name: Fund Emandate
+                        code: EMANDATE
                       fulfillment_ids:
-                        - F1
-                      xinput:
-                        head:
-                          descriptor:
-                            name: Set up SIP
-                          index:
-                            min: 0
-                            cur: 0
-                            max: 1
-                          headings:
-                            - Sip Setup
-                            - Know Your Customer/Registration Form
-                        form:
-                          id: FO1
-                          mime_type: text/html
-                          url: >-
-                            https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/FO1
-                          resubmit: false
-                          multiple_sumbissions: false
-                        required: true
+                        - F2
+                  fulfillments:
+                    - id: F2
+                      type: EMANDATE
+                      customer:
+                        person:
+                          id: PAN:EKLZS12E
+                      agent:
+                        person:
+                          id: EUIN:1234
                       tags:
                         - descriptor:
-                            name: Fund Information
-                            code: FUND_INFO
+                            name: ARN info
+                            code: ARN_INFO
                           list:
                             - descriptor:
-                                name: Type
-                                code: TYPE
-                              value: Equity
+                                name: ARN Of Organization
+                                code: ARN_ORGANIZATION
+                              value: AA0802
                             - descriptor:
-                                name: Fund Manager
-                                code: FUND_MANAGER
-                              value: HDFC Asset Management Company
-                            - descriptor:
-                                name: Fund Rating
-                                code: FUND_RATING
-                              value: '4.5'
-                            - descriptor:
-                                name: Inception Date
-                                code: INCEPTION_DATE
-                              value: ' 2020-01-15'
-                            - descriptor:
-                                name: AUM
-                                code: AUM
-                              value: 250,000,000
-                            - descriptor:
-                                name: Expense Ratio
-                                code: EXPENSE_RATIO
-                              value: 1.25%
-                            - descriptor:
-                                name: 1 month returns
-                                code: ONE_MONTH_RETURNS
-                              value: 2.25%
-                            - descriptor:
-                                name: 3 month returns
-                                code: THREE_MONTH_RETURNS
-                              value: 6%
-                            - descriptor:
-                                name: 6 month returns
-                                code: SIX_MONTH_RETURNS
-                              value: 7%
-                            - descriptor:
-                                name: 1 year returns
-                                code: ONE_YEAR_RETURNS
-                              value: 15.25%
-                            - descriptor:
-                                name: 3 year returns
-                                code: THREE_YEAR_RETURNS
-                              value: 45%
-                            - descriptor:
-                                name: 5 year returns
-                                code: FIVE_YEAR_RETURNS
-                              value: 60%
-                            - descriptor:
-                                name: Lock-in Period
-                                code: LOCK_IN_PERIOD
-                              value: P4M
-                            - descriptor:
-                                name: Max Withdrawal Percentage
-                                code: MAX_WITHDRAWAL_PERCENTAGE
-                              value: 100%
-                            - descriptor:
-                                name: Net Asset Value
-                                code: NET_ASSET_VALUE
-                              value: '100.50'
-                          display: true
-          - summary: on_select-request-sip
+                                name: ARN Of Sub Broker
+                                code: ARN_SUB_BROKER
+                              value: AA0802
+          - summary: on_init-request-emandate-1.2
             description: TBD
-            value: *ref_12
-      init:
-        examples:
-          - summary: init-request-sip
-            description: TBD
-            value: *ref_13
-      on_init:
-        examples:
-          - summary: on_init-request-sip-account-info
-            description: TBD
-            value: *ref_14
+            value: *ref_17
       confirm:
         examples:
           - summary: confirm-request-sip
             description: TBD
-            value: *ref_15
+            value: *ref_18
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_16
+            value: *ref_19
+          - summary: on_confirm-request-withdrawal-1.2
+            description: TBD
+            value: *ref_20
       update:
         examples:
           - summary: update
@@ -8258,306 +8347,29 @@ x-examples:
         examples:
           - summary: on_update
             description: TBD
-            value: *ref_17
+            value: *ref_21
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_9
+            value: *ref_10
+          - summary: on_status
+            description: TBD
+            value: *ref_11
       on_status:
         examples:
           - summary: on_status-request-sip-withdraw
             description: TBD
-            value:
-              context:
-                domain: ONDC:FIS14
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                version: 2.0.0
-                action: on_status
-                bap_id: mutual-fund-protocol.becknprotocol.io
-                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-                ttl: PT30M
-                timestamp: '2023-05-25T05:23:03.443Z'
-                bpp_id: stockwiz.com
-                bpp_uri: https://stockwiz.com
-              message:
-                order:
-                  id: O1
-                  provider:
-                    id: P1
-                    descriptor:
-                      images:
-                        - url: >-
-                            https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-                          size_type: sm
-                      name: HDFC Midcap Opportunities Fund
-                      short_desc: HDFC Midcap Opportunities Fund
-                  items:
-                    - id: I1
-                      descriptor:
-                        name: HDFC Midcap Opportunities Fund - SIP
-                        code: SIP
-                      category_ids:
-                        - C1
-                      fulfillment_ids:
-                        - F1
-                        - F2
-                      tags:
-                        - descriptor:
-                            name: Fund Information
-                            code: FUND_INFO
-                          list:
-                            - descriptor:
-                                name: Type
-                                code: TYPE
-                              value: Equity
-                            - descriptor:
-                                name: Fund Manager
-                                code: FUND_MANAGER
-                              value: HDFC Asset Management Company
-                            - descriptor:
-                                name: Fund Rating
-                                code: FUND_RATING
-                              value: '4.5'
-                            - descriptor:
-                                name: Inception Date
-                                code: INCEPTION_DATE
-                              value: ' 2020-01-15'
-                            - descriptor:
-                                name: AUM
-                                code: AUM
-                              value: 250,000,000
-                            - descriptor:
-                                name: Expense Ratio
-                                code: EXPENSE_RATIO
-                              value: 1.25%
-                            - descriptor:
-                                name: 1 month returns
-                                code: ONE_MONTH_RETURNS
-                              value: 2.25%
-                            - descriptor:
-                                name: 3 month returns
-                                code: THREE_MONTH_RETURNS
-                              value: 6%
-                            - descriptor:
-                                name: 6 month returns
-                                code: SIX_MONTH_RETURNS
-                              value: 7%
-                            - descriptor:
-                                name: 1 year returns
-                                code: ONE_YEAR_RETURNS
-                              value: 15.25%
-                            - descriptor:
-                                name: 3 year returns
-                                code: THREE_YEAR_RETURNS
-                              value: 45%
-                            - descriptor:
-                                name: 5 year returns
-                                code: FIVE_YEAR_RETURNS
-                              value: 60%
-                            - descriptor:
-                                name: Lock-in Period
-                                code: LOCK_IN_PERIOD
-                              value: P4M
-                            - descriptor:
-                                name: Max Withdrawal Percentage
-                                code: MAX_WITHDRAWAL_PERCENTAGE
-                              value: 100%
-                            - descriptor:
-                                name: Net Asset Value
-                                code: NET_ASSET_VALUE
-                              value: '100.50'
-                            - descriptor:
-                                name: Lock-in end Date
-                                code: LOCK_IN_END_DATE
-                              value: '2023-05-01T23:59:59.999Z'
-                          display: true
-                  fulfillments:
-                    - customer:
-                        contact:
-                          phone: +91-9999199991
-                          email: alice@example.com
-                      id: F1
-                      state:
-                        descriptor:
-                          name: Order placed
-                          code: ORDER_PLACED
-                      stops:
-                        - type: SIP_INVESTMENT_PERIOD
-                          time:
-                            range:
-                              start: '2023-01-01T00:00:00.000Z'
-                              end: '2023-04-30T23:59:59.999Z'
-                    - id: F2
-                      type: WITHDRAWAL
-                      state:
-                        descriptor:
-                          name: withdrawal
-                          code: WITHDRAWAL_PROCESSED
-                      tags:
-                        - descriptor:
-                            name: Withdrawal Info
-                            code: WITHDRAWAL_INFO
-                          list:
-                            - descriptor:
-                                name: Amount
-                              value: '2000'
-                            - descriptor:
-                                name: Units
-                              value: '30'
-                  quote:
-                    price:
-                      currency: INR
-                      value: '500'
-                    breakup:
-                      - title: First SIP Investment
-                        item:
-                          id: I1
-                          time:
-                            schedule:
-                              frequency: P1M
-                            range:
-                              start: '2023-01-01T00:00:00.000Z'
-                              end: '2023-01-31T23:59:59.999Z'
-                          descriptor:
-                            name: Unit price
-                          price:
-                            value: '100'
-                            currency: INR
-                          quantity:
-                            allocated:
-                              measure:
-                                value: '5'
-                                unit: units
-                      - title: Second SIP Investment
-                        item:
-                          id: I1
-                          time:
-                            schedule:
-                              frequency: P1M
-                            range:
-                              start: '2023-02-01T00:00:00.000Z'
-                              end: '2023-02-28T23:59:59.999Z'
-                          descriptor:
-                            name: Unit price
-                          price:
-                            value: '50'
-                            currency: INR
-                          quantity:
-                            allocated:
-                              measure:
-                                value: '10'
-                                unit: units
-                      - title: Third SIP Investment
-                        item:
-                          id: I1
-                          time:
-                            schedule:
-                              frequency: P1M
-                            range:
-                              start: '2023-03-01T00:00:00.000Z'
-                              end: '2023-03-31T23:59:59.999Z'
-                          descriptor:
-                            name: Unit price
-                          price:
-                            value: '100'
-                            currency: INR
-                          quantity:
-                            allocated:
-                              measure:
-                                value: '5'
-                                unit: units
-                      - title: Fourth SIP Investment
-                        item:
-                          id: I1
-                          time:
-                            schedule:
-                              frequency: P1M
-                            range:
-                              start: '2023-04-01T00:00:00.000Z'
-                              end: '2023-04-30T23:59:59.999Z'
-                          descriptor:
-                            name: Unit price
-                          price:
-                            value: '50'
-                            currency: INR
-                          quantity:
-                            allocated:
-                              measure:
-                                value: '10'
-                                unit: units
-                  billing:
-                    name: Charles D'Souza
-                    email: charles@equitygrow.in
-                  payments:
-                    - type: ON-ORDER
-                      params:
-                        amount: '500'
-                        currency: INR
-                        transaction_id: 6df78641-874c-48a9-898a-1ba7666cab61
-                      status: PAID
-                      time:
-                        label: SIP 1
-                        range:
-                          start: '2023-01-01T00:00:00.000Z'
-                          end: '2023-01-31T23:59:59.999Z'
-                      collected_by: BPP
-                    - type: ON-ORDER
-                      params:
-                        amount: '500'
-                        currency: INR
-                        transaction_id: 5cf78641-874c-48a9-898a-1ba7666cab61
-                      status: PAID
-                      time:
-                        label: SIP 2
-                        range:
-                          start: '2023-02-01T00:00:00.000Z'
-                          end: '2023-02-28T23:59:59.999Z'
-                      collected_by: BPP
-                    - type: ON-ORDER
-                      params:
-                        amount: '500'
-                        currency: INR
-                        transaction_id: 1rf78641-874c-48a9-898a-1ba7666cab61
-                      status: PAID
-                      time:
-                        label: SIP 3
-                        range:
-                          start: '2023-03-01T00:00:00.000Z'
-                          end: '2023-03-31T23:59:59.999Z'
-                    - type: ON-ORDER
-                      params:
-                        amount: '500'
-                        currency: INR
-                        transaction_id: 4d5f78641-874c-48a9-898a-1ba7666cab61
-                      status: PAID
-                      time:
-                        label: SIP 4
-                        range:
-                          start: '2023-04-01T00:00:00.000Z'
-                          end: '2023-04-30T23:59:59.999Z'
-                  cancellation_terms:
-                    - external_ref:
-                        mimetype: text/html
-                        url: https://abcmutalfunds.com/mf/tnc.html
-                  documents:
-                    - descriptor:
-                        code: WITHDRAWAL_DOC
-                        name: Withdraw Funds
-                        short_desc: >-
-                          Buyer can withdraw their funds by visiting the below
-                          url
-                        long_desc: >-
-                          Buyer can withdraw their funds by visiting the below
-                          url
-                      mime_type: application/html
-                      url: https://abcinsurance.com/withdraw-funds/
+            value: *ref_22
+          - summary: on_status_request-Emandate-initiated-1.2
+            description: TBD
+            value: *ref_23
+          - summary: on_status_request-Emandate-processing-1.2
+            description: TBD
+            value: *ref_24
+          - summary: on_status_request-Emandate-processed-1.2
+            description: TBD
+            value: *ref_25
       support:
         examples:
           - summary: support
@@ -8854,7 +8666,35 @@ x-attributes:
                   type: string
                   owner: BAP
                   usage: MUTUAL_FUNDS
-                  description: Physical description of code value for something
+                  description: Describes  of code value for category
+              time:
+                range:
+                  start:
+                    required: optional
+                    type: string
+                    owner: BAP
+                    usage: '2023-11-23T05:23:03.443Z'
+                    description: Describes  the time range start
+            descriptor:
+              code:
+                required: optional
+                type: string
+                owner: BAP
+                usage: FULL_PULL
+                description: >-
+                  Describes raw description of the search intent. Free text
+                  search strings, raw audio, etc can be sent in this object.
+            payment:
+              collected_by:
+                required: optional
+                type: string
+                owner: BAP
+                usage: BAP
+                description: >-
+                  This field indicates the payment collector. If set to 'bap,'
+                  BAP collects first and settles with BPP. If BPP agrees, no
+                  payment link is sent. If set to 'bpp,' BPP collects payment
+                  directly.
       on_search:
         context:
           location:
@@ -9063,6 +8903,111 @@ x-attributes:
                   owner: BPP
                   usage: 3bd4ea25
                   description: Unique reference ID to the fulfillment of an order
+                category_ids:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 4bd4ea25
+                  description: Describes the category id
+                matched:
+                  required: optional
+                  type: boolean
+                  owner: BPP
+                  usage: true
+                  description: Whether this item is an exact match of the request
+                xinput:
+                  head:
+                    descriptor:
+                      name:
+                        required: optional
+                        type: Customer Information
+                        owner: BPP
+                        usage: Customer Information
+                        description: >-
+                          This describes the heading of the form where we are
+                          taking additioal information from the customer to
+                          purchase / avail this item.
+                    index:
+                      min:
+                        required: Optional
+                        type: number
+                        owner: BPP
+                        usage: false
+                        description: >-
+                          This refers to the minimum integer value of the xinput
+                          header which describes the additional information
+                          required from the customer to purchase/avail the item.
+                      max:
+                        required: Optional
+                        type: number
+                        owner: BPP
+                        usage: false
+                        description: >-
+                          This refers to the maximum integer value of the xinput
+                          header which describes the additional information
+                          required from the customer to purchase/avail the item.
+                      cur:
+                        required: Optional
+                        type: number
+                        owner: BPP
+                        usage: false
+                        description: >-
+                          This refers to the current integer value of the xinput
+                          header which describes the additional information
+                          required from the customer to purchase/avail the item.
+                    headings:
+                      required: Optional
+                      type: string
+                      owner: BPP
+                      usage: Registration URL
+                      description: Describes the heading of xinput form
+                  form:
+                    url:
+                      required: Optional
+                      type: string
+                      owner: BPP
+                      usage: >-
+                        https://6vs8xnx5i7.icicibank.co.in/loans/xinput/formid/a23f2fdfbbb8ac402bf259d75
+                      description: >-
+                        This refers to the current integer value of the xinput
+                        header which describes the additional information
+                        required from the customer to purchase/avail the item.
+                    mime_type:
+                      required: Optional
+                      type: string
+                      owner: BPP
+                      usage: text/html
+                      description: This describes the type of the form generated.
+                    resubmit:
+                      required: Optional
+                      type: boolean
+                      owner: BPP
+                      usage: false
+                      description: >-
+                        After reopening the form, this attribute keeps in check
+                        whether the form has been resubmitted or not
+                    multiple_sumbissions:
+                      required: Optional
+                      type: boolean
+                      owner: BPP
+                      usage: false
+                      description: >-
+                        This attribute defines if the form can be submitted
+                        multiple times or not.
+                    id:
+                      required: Optional
+                      type: string
+                      owner: BPP
+                      usage: d097c2f5-cb8d-42fe-900e-dfecdede16fb
+                      description: This refers to the unique system id of the form
+                  required:
+                    required: Optional
+                    type: boolean
+                    owner: BPP
+                    usage: true
+                    description: >-
+                      Indicates whether the form data is mandatorily required by
+                      the BPP to confirm the order.
               fulfillments:
                 id:
                   required: mandatory
@@ -9087,6 +9032,17 @@ x-attributes:
                       owner: BPP
                       usage: John Doe
                       description: Describes the agent name
+              payments:
+                collected_by:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: BPP
+                  description: >-
+                    This field indicates the payment collector. If set to 'bap,'
+                    BAP collects first and settles with BPP. If BPP agrees, no
+                    payment link is sent. If set to 'bpp,' BPP collects payment
+                    directly.
       select:
         context:
           location:
@@ -9199,6 +9155,26 @@ x-attributes:
                     description: >-
                       This represents the quantity selected for purchase of the
                       item
+              fulfillment_ids:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
+              category_ids:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
+              xinput:
+                form_response:
+                  submission_id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: ebff9b95
+                    description: Describes the submission ID of the form
             provider:
               id:
                 required: mandatory
@@ -9206,6 +9182,35 @@ x-attributes:
                 owner: BPP
                 usage: db1928f9
                 description: Id of the provider
+            fulfillments:
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: EMANDATE
+                description: Describe the fulfillment type
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 8bd4ea25
+                description: Describe the fulfillment id
+              customer:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
       on_select:
         context:
           location:
@@ -9315,6 +9320,12 @@ x-attributes:
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund - SIP
                   description: Physical description of something.
+                code:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: SIP
+                  description: Describes the items code.
               price:
                 currency:
                   required: optional
@@ -9372,6 +9383,12 @@ x-attributes:
                       owner: BPP
                       usage: Set up SIP
                       description: Physical description name of something.
+                  headings:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: Emandate Info
+                    description: Describes the headings of the form.
                 form:
                   mime_type:
                     required: mandatory
@@ -9398,6 +9415,26 @@ x-attributes:
                     owner: BPP
                     usage: false
                     description: Describes a form supports multiple sumbissions or not.
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: d097c2f5
+                    description: This refers to the unique id of the form
+                required:
+                  required: mandatory
+                  type: boolean
+                  owner: BPP
+                  usage: true
+                  description: >-
+                    Indicates whether the form data is mandatorily required by
+                    the BPP to confirm the order.
+              category_ids:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
             provider:
               id:
                 required: mandatory
@@ -9420,6 +9457,18 @@ x-attributes:
                     usage: >-
                       https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
                     description: URL to the image. This can be a data url or an remote url
+                  size_type:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: sm
+                    description: Describes the size type of the image
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Short description of the provider
             fulfillments:
               id:
                 required: optional
@@ -9427,6 +9476,50 @@ x-attributes:
                 owner: BPP
                 usage: 3bd4ea25
                 description: Unique reference ID to the fulfillment of an order
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: SIP
+                description: >-
+                  A code that describes the mode of fulfillment. This is
+                  typically set when there are multiple ways an order can be
+                  fulfilled. 
+              customer:
+                contact:
+                  email:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: alice@example.com
+                    description: Email address of the cusotmer
+                  phone:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: 9999199991
+                    description: Phone number of the cusotmer
+                person:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Alice
+                    description: Name of the customer
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
             quote:
               price:
                 value:
@@ -9465,6 +9558,18 @@ x-attributes:
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: o097c2f5
+                    description: Describes the breakup item id
+                title:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Price
+                  description: Describes the breakup title
       init:
         context:
           location:
@@ -9580,11 +9685,23 @@ x-attributes:
               xinput:
                 form_response:
                   submission_id:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: ebff9b95
                     description: Describes the submission ID of the form
+              category_ids:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
+              fulfillment_ids:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
             provider:
               id:
                 required: mandatory
@@ -9614,6 +9731,83 @@ x-attributes:
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 8bd4ea25
+                description: Describe the fulfillment id
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: EMANDATE
+                description: Describe the fulfillment type
+            payments:
+              collected_by:
+                required: optional
+                type: string
+                owner: BAP
+                usage: BAP
+                description: >-
+                  This field indicates the payment collector. If set to 'bap,'
+                  BAP collects first and settles with BPP. If BPP agrees, no
+                  payment link is sent. If set to 'bpp,' BPP collects payment
+                  directly.
+              type:
+                required: optional
+                type: string
+                owner: BAP
+                usage: PRE_FULFILLMENT
+                description: Describes the payment type
+              status:
+                required: optional
+                type: string
+                owner: BAP
+                usage: PAID
+                description: Describes the payment status
+            quote:
+              price:
+                value:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 60
+                  description: Describes the price of a product or service
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Describes the currency of a product or service
+              breakup:
+                title:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Price
+                  description: Describes the breakup title
+                item:
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: o097c2f5
+                    description: Describes the breakup item id
       on_init:
         context:
           location:
@@ -9723,6 +9917,18 @@ x-attributes:
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund - SIP
                   description: Physical description of something.
+                code:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: SIP
+                  description: Describes the items code.
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Short description of the provider
               price:
                 currency:
                   required: optional
@@ -9756,56 +9962,82 @@ x-attributes:
                 head:
                   index:
                     min:
-                      required: mandatory
+                      required: optional
                       type: number
                       owner: BPP
                       usage: false
                       description: Describes the min indexvalue
                     max:
-                      required: mandatory
+                      required: optional
                       type: number
                       owner: BPP
                       usage: 1
                       description: Describes the max index value
                     cur:
-                      required: mandatory
+                      required: optional
                       type: number
                       owner: BPP
                       usage: 1
                       description: Describes the current index value
                   descriptor:
                     name:
-                      required: mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: Set up SIP
                       description: Physical description name of something.
+                  headings:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Emandate Info
+                    description: Describes the headings of the form.
                 form:
                   mime_type:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: text/html
                     description: ' Describes the mime of the document'
                   url:
-                    required: mandatory
+                    required: optional
                     type: string
                     owner: BPP
                     usage: >-
                       https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
                     description: ' Describes the url of the document'
                   resubmit:
-                    required: mandatory
+                    required: optional
                     type: boolean
                     owner: BPP
                     usage: true
                     description: Describes a form can be re-submited again or not.
                   multiple_sumbissions:
-                    required: mandatory
+                    required: optional
                     type: boolean
                     owner: BPP
                     usage: false
                     description: Describes a form supports multiple sumbissions or not.
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: d097c2f5
+                    description: This refers to the unique id of the form
+                required:
+                  required: optional
+                  type: boolean
+                  owner: BPP
+                  usage: true
+                  description: >-
+                    Indicates whether the form data is mandatorily required by
+                    the BPP to confirm the order.
+              category_ids:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
             provider:
               id:
                 required: mandatory
@@ -9828,6 +10060,18 @@ x-attributes:
                     usage: >-
                       https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
                     description: URL to the image. This can be a data url or an remote url
+                  size_type:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: sm
+                    description: Describes the size type of the image
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Short description of the provider
             fulfillments:
               id:
                 required: mandatory
@@ -9856,6 +10100,12 @@ x-attributes:
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
               state:
                 descriptor:
                   name:
@@ -9864,16 +10114,54 @@ x-attributes:
                     owner: BPP
                     usage: Mutual Fund Order Initialized
                     description: Current state of the fulfillment
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
+              stops:
+                type:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: SIP_INVESTMENT_PERIOD
+                  description: Describes the stop type for fulfillment
+                time:
+                  range:
+                    start:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-01-01T00:00:00.000Z'
+                      description: Describes the range start for fulfillment
+                    end:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-04-30T23:59:59.999Z'
+                      description: Describes the range end for fulfillment
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: SIP
+                description: >-
+                  A code that describes the mode of fulfillment. This is
+                  typically set when there are multiple ways an order can be
+                  fulfilled. 
             quote:
               price:
                 value:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: 60
                   description: Describes the price of a product or service
                 currency:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: INR
@@ -9902,6 +10190,18 @@ x-attributes:
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: o097c2f5
+                    description: Describes the breakup item id
+                title:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Price
+                  description: Describes the breakup title
             billing:
               name:
                 required: optional
@@ -9937,6 +10237,29 @@ x-attributes:
                   owner: BPP
                   usage: https://abcmutalfunds.com/mf/tnc.html
                   description: Describes the url of external ref
+            payments:
+              collected_by:
+                required: optional
+                type: string
+                owner: BAP
+                usage: BAP
+                description: >-
+                  This field indicates the payment collector. If set to 'bap,'
+                  BAP collects first and settles with BPP. If BPP agrees, no
+                  payment link is sent. If set to 'bpp,' BPP collects payment
+                  directly.
+              type:
+                required: optional
+                type: string
+                owner: BAP
+                usage: PRE_FULFILLMENT
+                description: Describes the payment type
+              status:
+                required: optional
+                type: string
+                owner: BAP
+                usage: PAID
+                description: Describes the payment status
       confirm:
         context:
           location:
@@ -10057,6 +10380,18 @@ x-attributes:
                     owner: BPP
                     usage: ebff9b95
                     description: Describes the submission ID of the form
+              category_ids:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
+              fulfillment_ids:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
             provider:
               id:
                 required: mandatory
@@ -10086,6 +10421,12 @@ x-attributes:
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
               stops:
                 type:
                   required: optional
@@ -10106,6 +10447,26 @@ x-attributes:
                     owner: BPP
                     usage: 535346
                     description: Describes the token of the authorization scheme
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 8bd4ea25
+                description: Describe the fulfillment id
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: EMANDATE
+                description: Describe the fulfillment type
             billing:
               name:
                 required: optional
@@ -10132,6 +10493,34 @@ x-attributes:
                 owner: BPP
                 usage: ON-FULFILLMENT
                 description: Describes the type of payment collection
+            quote:
+              price:
+                value:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 60
+                  description: Describes the price of a product or service
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Describes the currency of a product or service
+              breakup:
+                title:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Price
+                  description: Describes the breakup title
+                item:
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: o097c2f5
+                    description: Describes the breakup item id
       on_confirm:
         context:
           location:
@@ -10247,6 +10636,12 @@ x-attributes:
                   owner: BPP
                   usage: HDFC Midcap Opportunities Fund - SIP
                   description: Physical description of something.
+                code:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: SIP
+                  description: Describes the items code.
               price:
                 currency:
                   required: optional
@@ -10276,6 +10671,12 @@ x-attributes:
                 owner: BPP
                 usage: 3bd4ea25
                 description: Unique reference ID to the fulfillment of an order
+              category_ids:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
             provider:
               id:
                 required: mandatory
@@ -10298,6 +10699,18 @@ x-attributes:
                     usage: >-
                       https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
                     description: URL to the image. This can be a data url or an remote url
+                  size_type:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: sm
+                    description: Describes the size type of the image
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Short description of the provider
             fulfillments:
               id:
                 required: mandatory
@@ -10326,6 +10739,12 @@ x-attributes:
                     owner: BPP
                     usage: Alice
                     description: Name of the customer
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
               state:
                 descriptor:
                   name:
@@ -10334,16 +10753,60 @@ x-attributes:
                     owner: BPP
                     usage: Mutual Fund Order Initialized
                     description: Current state of the fulfillment
+                  code:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: ORDER_REQUESTED
+                    description: Describes the fulfillment state's code
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
+              stops:
+                type:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: SIP_INVESTMENT_PERIOD
+                  description: Describes the stop type for fulfillment
+                time:
+                  range:
+                    start:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-01-01T00:00:00.000Z'
+                      description: Describes the range start for fulfillment
+                    end:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-04-30T23:59:59.999Z'
+                      description: Describes the range end for fulfillment
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: SIP
+                description: >-
+                  A code that describes the mode of fulfillment. This is
+                  typically set when there are multiple ways an order can be
+                  fulfilled. 
             quote:
               price:
                 value:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: 60
                   description: Describes the price of a product or service
                 currency:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: INR
@@ -10372,6 +10835,18 @@ x-attributes:
                           owner: BPP
                           usage: 2.5
                           description: Describes allocated quantity
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: o097c2f5
+                    description: Describes the breakup item id
+                title:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Price
+                  description: Describes the breakup title
             billing:
               name:
                 required: optional
@@ -10409,13 +10884,13 @@ x-attributes:
                   description: Describes the url of external ref
             payments:
               collected_by:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: BPP
                 description: Describes the source of payment collection
               type:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: ON-FULFILLMENT
@@ -10440,11 +10915,657 @@ x-attributes:
                   usage: bh767iygx65u76iyg
                   description: Describes the transaction id of the payment
               status:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: PAID
                 description: Describes the payment status
+              url:
+                required: optional
+                type: string
+                owner: BPP
+                usage: >-
+                  https://www.abcinsurance.com/pg-gateway/payment?amount=500&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
+                description: Describes the payment url
+            documents:
+              descriptor:
+                code:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: LOAN_AGREEMENT
+                  description: >-
+                    It refers to the unique descriptor identifier used for the
+                    document
+                name:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Loan Agreement Document
+                  description: It refers to the specific name of the document
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Download your Loan Agreement document here
+                  description: This refers to the concised description of the document
+                long_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: >-
+                    A Loan Agreement Document is a legal contract outlining
+                    terms
+                  description: This refers to the brief description of the document
+              mime_type:
+                required: optional
+                type: string
+                owner: BPP
+                usage: application/pdf
+                description: >-
+                  It refers to the categorization of the document based on its
+                  file format and content type.
+              url:
+                required: optional
+                type: string
+                owner: BPP
+                usage: https://lender.com/loan/loan-agreement/O1.pdf
+                description: This describes the url from where the document can be accessed
+      status:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: status
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
+        message:
+          ref_id:
+            required: optional
+            type: string
+            owner: BAP
+            usage: a9aaecca-10b7-4d19-b640-b047a7c62196
+            description: >-
+              Unique id for reference, pre-order this will be transaction
+              ID.This identifier serves as a distinctive reference, particularly
+              functioning as a transaction ID in the case of pre-orders. It acts
+              as a unique code or number assigned to facilitate tracking and
+              referencing throughout the pre-order process, ensuring a seamless
+              and organized handling of transactions.
+          order_id:
+            required: optional
+            type: string
+            owner: BAP
+            usage: a9aaecca-10b7-4d19-b640-b047a7c62196
+            description: This refers to the distinctive identifier associated to a order
+      on_status:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS14
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: mutual-fund-protocol.becknprotocol.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: on_status
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://mutual-fund-protocol-network.becknprotocol.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: stockwiz.com
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: ' https://stockwiz.com'
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
+        message:
+          order:
+            id:
+              required: optional
+              type: string
+              owner: BPP
+              usage: 66B7AED
+              description: ID of the order.
+            items:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: b2400168
+                description: ID of the item.
+              descriptor:
+                name:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund - SIP
+                  description: Physical description of something.
+                code:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: SIP
+                  description: Describes the items code.
+              price:
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Price of the selected item.
+                value:
+                  required: optional
+                  type: integer
+                  owner: BPP
+                  usage: 60
+                  description: Describes a numerical value in decimal form
+              quantity:
+                selected:
+                  count:
+                    required: optional
+                    type: integer
+                    owner: BPP
+                    usage: 2
+                    description: >-
+                      This represents the quantity selected for purchase of the
+                      item
+              fulfillment_ids:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
+              category_ids:
+                required: optional
+                type: string
+                owner: BPP
+                usage: 4bd4ea25
+                description: Describes the category id
+            provider:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: db1928f9
+                description: Id of the provider
+              descriptor:
+                name:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Physical description of something.
+                images:
+                  url:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
+                    description: URL to the image. This can be a data url or an remote url
+                  size_type:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: sm
+                    description: Describes the size type of the image
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: HDFC Midcap Opportunities Fund
+                  description: Short description of the provider
+            fulfillments:
+              id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
+              customer:
+                contact:
+                  email:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: alice@example.com
+                    description: Email address of the cusotmer
+                  phone:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: 9999199991
+                    description: Phone number of the cusotmer
+                person:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Alice
+                    description: Name of the customer
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: PAN:EKLZS12E
+                    description: Describe the person id
+              state:
+                descriptor:
+                  name:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: Mutual Fund Order Initialized
+                    description: Current state of the fulfillment
+                  code:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: ORDER_REQUESTED
+                    description: Describes the fulfillment state's code
+              agent:
+                person:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: EUIN:1234
+                    description: Describe the person id
+              stops:
+                type:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: SIP_INVESTMENT_PERIOD
+                  description: Describes the stop type for fulfillment
+                time:
+                  range:
+                    start:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-01-01T00:00:00.000Z'
+                      description: Describes the range start for fulfillment
+                    end:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-04-30T23:59:59.999Z'
+                      description: Describes the range end for fulfillment
+              type:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: SIP
+                description: >-
+                  A code that describes the mode of fulfillment. This is
+                  typically set when there are multiple ways an order can be
+                  fulfilled. 
+            quote:
+              price:
+                value:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 60
+                  description: Describes the price of a product or service
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Describes the currency of a product or service
+              breakup:
+                item:
+                  price:
+                    value:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: 80
+                      description: Describes the value of a product or service
+                    currency:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: INR
+                      description: Describes the currency of a product or service
+                  quantity:
+                    allocated:
+                      measure:
+                        value:
+                          required: optional
+                          type: string
+                          owner: BPP
+                          usage: 2.5
+                          description: Describes allocated quantity
+                    unitized:
+                      measure:
+                        estimated_value:
+                          required: optional
+                          type: string
+                          owner: BPP
+                          usage: 5
+                          description: Describes a numerical value in decimal form
+                        computed_value:
+                          required: optional
+                          type: string
+                          owner: BPP
+                          usage: 5
+                          description: Describes a numerical value in decimal form
+                        unit:
+                          required: optional
+                          type: string
+                          owner: BPP
+                          usage: units
+                          description: Describes the unit type of allocated quantity
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: o097c2f5
+                    description: Describes the breakup item id
+                  time:
+                    label:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: NAV last updated at
+                      description: Describes the label for breakup item
+                    timestamp:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: '2023-01-25T05:23:03.443Z'
+                      description: Describes the timestamp for breakup item
+                title:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Price
+                  description: Describes the breakup title
+            billing:
+              name:
+                required: optional
+                type: string
+                owner: BPP
+                usage: Charles D'Souza
+                description: Describes the name of billing entity
+              email:
+                required: optional
+                type: string
+                owner: BPP
+                usage: charles@equitygrow.in
+                description: Describes the email of billing entity
+            cancellation_terms:
+              fulfillment_state:
+                descriptor:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Terms
+                    description: Describes the name of the descriptor
+              external_ref:
+                mimetype:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the mime type of external ref
+                url:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: https://abcmutalfunds.com/mf/tnc.html
+                  description: Describes the url of external ref
+            payments:
+              collected_by:
+                required: optional
+                type: string
+                owner: BPP
+                usage: BPP
+                description: Describes the source of payment collection
+              type:
+                required: optional
+                type: string
+                owner: BPP
+                usage: ON-FULFILLMENT
+                description: Describes the type of payment collection
+              params:
+                amount:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 500
+                  description: Describes a numerical value in decimal form
+                currency:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Describes the currency of a product or service
+                transaction_id:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: bh767iygx65u76iyg
+                  description: Describes the transaction id of the payment
+              status:
+                required: optional
+                type: string
+                owner: BPP
+                usage: PAID
+                description: Describes the payment status
+              url:
+                required: optional
+                type: string
+                owner: BPP
+                usage: >-
+                  https://www.abcinsurance.com/pg-gateway/payment?amount=500&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
+                description: Describes the payment url
+            documents:
+              descriptor:
+                code:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: LOAN_AGREEMENT
+                  description: >-
+                    It refers to the unique descriptor identifier used for the
+                    document
+                name:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Loan Agreement Document
+                  description: It refers to the specific name of the document
+                short_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: Download your Loan Agreement document here
+                  description: This refers to the concised description of the document
+                long_desc:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: >-
+                    A Loan Agreement Document is a legal contract outlining
+                    terms
+                  description: This refers to the brief description of the document
+              mime_type:
+                required: optional
+                type: string
+                owner: BPP
+                usage: application/pdf
+                description: >-
+                  It refers to the categorization of the document based on its
+                  file format and content type.
+              url:
+                required: optional
+                type: string
+                owner: BPP
+                usage: https://lender.com/loan/loan-agreement/O1.pdf
+                description: This describes the url from where the document can be accessed
 x-featureui:
   filenames: []
 x-sandboxui:
