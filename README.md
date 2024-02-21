@@ -10,12 +10,11 @@ ONDC Financial Services developer guide [link](https://ondc-official.github.io/O
 
 ## Latest Version
 
-
 ## Earlier Versions
 
-| Version | Release Date    | beckn Version                               | Comments                                                            |
-| ------- | --------------- | ------------------------------------------- | ------------------------------------------------------------------- |
-| v2.0.0  | TBD             | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Credit use cases enabled |
+| Version | Release Date | beckn Version                               | Comments                                                                                         |
+| ------- | ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| v2.0.0  | 21 Feb 2024  | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Base version of credit for personal loan is completed |
 
 ## Introduction
 
@@ -33,7 +32,12 @@ This would be possible in the financial service domain by making sure all financ
 
 ## Enabled/Supported use cases on network
 
-* Credit use case: Personal loan and Invoice based loan
+* Complete credit use case for Personal-loan.
+* Loan Foreclosure
+* Pre-Part Payment
+* Missed-EMI Payment
+* Form Status for application/html
+* Form Status for text/html
 
 ## Working with Protocol
 
