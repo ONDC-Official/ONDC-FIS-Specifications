@@ -18,10 +18,19 @@ function renderMarkdown(branchName,file) {
     `https://raw.githubusercontent.com/ONDC-Official/ONDC-FIS-Specifications/${branchName}/api/components/docs/${file}.md`
   )
     .then((response) => response.text())
-    .then((text) => {
-      const textWithBranchName = text.replace(/branchName/g, branchName);
-      const html = marked.parse(textWithBranchName);
-      document.getElementById("markdown-container").innerHTML = html;
+    .then(async (text) => {
+      const result =  await extractTextBetweenBackticks(text)
+      //if mermaid diagram exist
+      let createMermaid;
+      if(result?.length){
+        const modifiedText = result[0].replace(/mermaid/g, '');
+        createMermaid = await mermaid.render(`main-summary1`, modifiedText)
+      }
+      const removedMermaidData = text.replace(/```mermaid[\s\S]+?```/g, '');
+      const textWithBranchName = removedMermaidData.replace(/branchName/g, branchName);
+      const textData = marked.parse(textWithBranchName);
+
+      document.getElementById("markdown-container").innerHTML = textData + (createMermaid?.svg ? createMermaid?.svg : '');
     });
 }
 
@@ -29,4 +38,15 @@ function updateFeature() {
   var example_set = document.getElementById("feature-sets-dropdown");
   const selectedOption = document.getElementById("contract-dropdown")?.value;
   renderMarkdown(selectedOption,example_set.value);
+}
+
+function extractTextBetweenBackticks(inputString) {
+  const regex = /```([\s\S]*?)```/g;
+  const matches = inputString.match(regex);
+  
+  if (matches) {
+      return matches.map(match => match.replace(/```/g, ''));
+  } else {
+      return [];
+  }
 }
