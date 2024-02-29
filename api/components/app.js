@@ -372,6 +372,10 @@ const checkKeysExistence = (example, mandatoryRequiredKeys, endPoint) => {
     let currentIndex = 0;
     let currentKeys = [];
 
+    if(keys.includes("_description")){
+      continue;
+    }
+
     for (let key of keys) {
       if (Array.isArray(currentObj)) {
         isArray = true;
