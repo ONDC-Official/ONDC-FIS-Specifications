@@ -56,5 +56,6 @@ function extractTextBetweenBackticks(inputString) {
     return matches
   } else {
     console.log("No mermaid data found.");
+    return []
   }
 }
