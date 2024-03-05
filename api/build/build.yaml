@@ -29,6 +29,7 @@ paths:
                             - search
                 message:
                   type: object
+                  additionalProperties: false
                   properties:
                     intent:
                       $ref: '#/components/schemas/Intent'
@@ -3806,13 +3807,335 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
                 end
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): search(with submissionID)
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_search
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK  
         reference: if any
         example:
           value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Personal Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/personal-info\">\r\n    <label for=\"email\">Email</label>\r\n    <input type=\"text\" id=\"email\" name=\"email\" />\r\n    <label for=\"phone\">Phone</label>\r\n    <input type=\"text\" id=\"phone\" name=\"phone\" />\r\n    <label for =\"commodityType\">Commodity type</label>\r\n    <select name=\"commodityType\" id=\"commodityType\">\r\n      <option value=\"commodity_1000\">New machinery machine tools and spares in closed ISO containers</option>\r\n      <option value=\"commodity_1001\">New Machinery or mechanical/electrical/electronic equipment for industrial use</option>\r\n      <option value=\"commodity_1002\">Solar panel</option>\r\n      <option value=\"commodity_1003\">Machinery machine tools spares duly packed/lashed</option>\r\n      <option value=\"commodity_1004\">Electronic and white goods</option>\r\n      <option value=\"commodity_1005\">All types of FMCG commodities</option>\r\n      <option value=\"commodity_1006\">All kinds of food like oils essence flavours and other various packed items</option>\r\n      <option value=\"commodity_1006\">Automobiles</option>\r\n      <option value=\"commodity_1007\">Iron & steel rods, metal pipes, tubes</option>\r\n      <option value=\"commodity_1008\">Stationery items</option>\r\n      <option value=\"commodity_1009\">Timber and wood products</option>\r\n      <option value=\"commodity_1010\">Edible oil in tanker</option>\r\n      <option value=\"commodity_1011\">Garments,apparel,fabrics or textiles</option>\r\n      <option value=\"commodity_1012\">All types of containers</option>\r\n      <option value=\"commodity_1013\">All types of paints duly packed</option>\r\n      <option value=\"commodity_1014\">Auto spare parts</option>\r\n      <option value=\"commodity_1015\">Cables and wires</option>\r\n      <option value=\"commodity_1016\">Ceramic products and tiles</option>\r\n      <option value=\"commodity_1017\">Edible vegetables or fruits and nuts or peel of citrus fruits</option>\r\n      <option value=\"commodity_1018\">Granite and marble</option>\r\n      <option value=\"commodity_1019\">Household items-new and old</option>\r\n      <option value=\"commodity_1020\">Leather and leather goods</option>\r\n      <option value=\"commodity_1021\">Metal hand tools</option>\r\n      <option value=\"commodity_1022\">Metal handicrafts and brasswares</option>\r\n      <option value=\"commodity_1023\">Metal scrap in ISO container</option>\r\n      <option value=\"commodity_1024\">Metals of all types excluding precious metals</option>\r\n      <option value=\"commodity_1025\">Milk and ghee packaged or in tankers</option>\r\n      <option value=\"commodity_1026\">New CPM equipment</option>\r\n      <option value=\"commodity_1027\">Non hazardous chemicals in bags</option>\r\n      <option value=\"commodity_1028\">Pharmaceuticals and bulk drugs</option>\r\n      <option value=\"commodity_1029\">Plastics and articles thereof</option>\r\n      <option value=\"commodity_1030\">Rough marble in blocks</option>\r\n      <option value=\"commodity_1031\">Rubber and articles thereof</option>\r\n      <option value=\"commodity_1032\">Soap, cosmetics, toiletries</option>\r\n      <option value=\"commodity_1033\">Toys, games and sports equipment</option>\r\n      <option value=\"commodity_1034\">Used CPM machines and equipments</option>\r\n      <option value=\"commodity_1035\">Used machinery machine tools and spares in closed ISO container</option>\r\n    </select>\r\n    <input type =\"text\" id= \"commodity type\" name = \"commodity type\"/>\r\n    <label for=\"sum_issured\">Sum insured</label>\r\n    <input type=\"text\" id=\"Sum insured\" name=\"Sum insured\" />\r\n    <label for=\"Mode of conveyance\">Mode of conveyance</label>\r\n    <input type=\"text\" id=\"Mode of conveyance\" name=\"Mode of conveyance\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\" FO1\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: Buyer app search for available marine insurance providers
+        api: search
+        details:
+          - description: >-
+              Buyer app explore marine insurance options by searching for
+              insurers over the network.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                participant Insurer Form Service
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+                Insurer Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): search(with submissionID)
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_search
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+        reference: if any
+        example:
+          value:
+            context:
+              action: search
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: 818bab0a-5599-4acc-9783-7b28dd5a5ae0
+              timestamp: '2023-07-22T15:01:07.785Z'
+              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              intent:
+                category:
+                  descriptor:
+                    code: MARINE_INSURANCE
+                provider:
+                  id: P1
+                  items:
+                    - id: I1
+                      xinput:
+                        form:
+                          id: F01
+                        form_response:
+                          status: SUCCESS
+                          submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
+                payment:
+                  collected_by: BPP
+                  tags:
+                    - descriptor:
+                        code: BUYER_FINDER_FEES
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: percent-annualized
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: PT60M
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+      - summary: >-
+          Insurer provides a catalog of different insurance products offered by
+          a single lender
+        api: on_search
+        details:
+          - description: >-
+              Insurer sends a comprehensive catalog of various insurance
+              products specifically tailored for marine insurance all of which
+              are offered by a single lender with personal info form.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                participant Insurer Form Service
+                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
+                Insurer Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+                Buyer Platform (BAP)->>Insurer Platform (BPP): search(with submissionID)
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_search
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_search
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              message_id: 2c65fbd8-31c6-45c1-8cf8-522fbd548c7d
+              timestamp: '2023-07-22T15:01:17.694Z'
+              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
+              ttl: PT24M
+              version: 2.0.0
+            message:
+              catalog:
+                descriptor:
+                  name: ABC Insurance Ltd
+                providers:
+                  - categories:
+                      - descriptor:
+                          name: Individual Insurance
+                          code: INDIVIDUAL_INSURANCE
+                        id: C1
+                    id: P1
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.abcinsurance.com/content/dam/abcinsurance/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: ABC Insurance Ltd
+                      short_desc: ABC Insurance Ltd
+                      long_desc: ABC Insurance Ltd
+                    items:
+                      - category_ids:
+                          - C1
+                        id: I1
+                        tags:
+                          - descriptor:
+                              name: General Information
+                              code: GENERAL_INFO
+                            list:
+                              - descriptor:
+                                  name: Co-Payment
+                                  code: CO_PAYMENT
+                                value: 'Yes'
+                              - descriptor:
+                                  name: Liability Coverage
+                                  code: LIABILITY_COVERAGE
+                                value: '100000'
+                              - descriptor:
+                                  name: Protection and Indemnity
+                                  code: PROTECTION_AND_INDEMNITY
+                                value: '50000'
+                              - descriptor:
+                                  name: Extended Coverage`u`
+                                  code: EXTENDED_COVERAGE
+                                value: '20000'
+                              - descriptor:
+                                  name: Deductibles and Excess
+                                  code: DEDUCTIBLES_AND_EXCESS
+                                value: '2000'
+                              - descriptor:
+                                  name: Institute Cargo Clauses
+                                  code: INSTITUTE_CARGO_CLAUSE
+                                value: '200000 '
+                      - category_ids:
+                          - C1
+                        id: CHILD_ITEM_ID_1
+                        parent_item_id: I1
+                        price:
+                          currency: INR
+                          value: '900'
+                        tags:
+                          - descriptor:
+                              name: Policy Details
+                              code: POLICY_DETAILS
+                            list:
+                              - descriptor:
+                                  name: Commodity type
+                                  code: COMMODITY_TYPE
+                                value: FOOD
+                              - descriptor:
+                                  name: Sum insured
+                                  code: SUM_INSURED
+                                value: '100000'
+                              - descriptor:
+                                  name: Mode of conveyance
+                                  code: MODE_OF_CONVEYANCE
+                                value: Cargo
+                              - descriptor:
+                                  name: Basis of valuation
+                                  code: BASIS_OF_VALUATION
+                                value: '5'
+                              - descriptor:
+                                  name: Policy start date
+                                  code: POLICY_START_DATE
+                                value: '2023-07-01'
+                              - descriptor:
+                                  name: Invoice number
+                                  code: INVOICE_NUMBER
+                                value: 08790dd7
+                              - descriptor:
+                                  name: Invoice date
+                                  code: INVOICE_DATE
+                                value: '2023-06-21'
+                              - descriptor:
+                                  name: Base Price
+                                  code: BASE_PRICE
+                                value: '900'
+                              - descriptor:
+                                  name: tax
+                                  code: TAX
+                                value: '50'
+                              - descriptor:
+                                  name: Processing Fee
+                                  code: PROCESSING_FEE
+                                value: '50'
+                              - descriptor:
+                                  code: OFFER_VALIDITY
+                                  name: Offer validity
+                                  short_desc: Describes the offer validity
+                                value: PT15D
+                      - category_ids:
+                          - C1
+                        id: CHILD_ITEM_ID_2
+                        parent_item_id: I1
+                        price:
+                          currency: INR
+                          value: '1200'
+                        tags:
+                          - descriptor:
+                              name: Policy Details
+                              code: POLICY_DETAILS
+                            list:
+                              - descriptor:
+                                  name: Commodity type
+                                  code: COMMODITY_TYPE
+                                value: FOOD
+                              - descriptor:
+                                  name: Sum insured
+                                  code: SUM_INSURED
+                                value: '100000'
+                              - descriptor:
+                                  name: Mode of conveyance
+                                  code: MODE_OF_CONVEYANCE
+                                value: Cargo
+                              - descriptor:
+                                  name: Basis of valuation
+                                  code: BASIS_OF_VALUATION
+                                value: '5'
+                              - descriptor:
+                                  name: Policy start date
+                                  code: POLICY_START_DATE
+                                value: '2023-07-01'
+                              - descriptor:
+                                  name: Invoice number
+                                  code: INVOICE_NUMBER
+                                value: 08790dd7
+                              - descriptor:
+                                  name: Invoice date
+                                  code: INVOICE_DATE
+                                value: '2023-06-21'
+                              - descriptor:
+                                  name: Base Price
+                                  code: BASE_PRICE
+                                value: '1200'
+                              - descriptor:
+                                  name: tax
+                                  code: TAX
+                                value: '50'
+                              - descriptor:
+                                  name: Processing Fee
+                                  code: PROCESSING_FEE
+                                value: '50'
+                              - descriptor:
+                                  code: OFFER_VALIDITY
+                                  name: Offer validity
+                                  short_desc: Describes the offer validity
+                                value: PT15D
+                    payments:
+                      - collected_by: BPP
+                        tags:
+                          - descriptor:
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT60M
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: Delivery
+                              - descriptor:
+                                  code: DELAY_INTEREST
+                                value: '2.5'
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Buyer app selects a marine insurance for more details
         api: select
         details:
@@ -3822,21 +4145,15 @@ x-flows:
               it.
             mermaid: |-
               sequenceDiagram
-                title  Selection
+                title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                rect rgb(191, 223, 255
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
                 end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
           value: &ref_43
@@ -3860,13 +4177,8 @@ x-flows:
             message:
               order:
                 items:
-                  - id: I1
-                    xinput:
-                      form:
-                        id: F01
-                      form_response:
-                        status: SUCCESS
-                        submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
+                  - id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
                 provider:
                   id: P1
       - summary: Insurer returns the response to selected marine insurance plan
@@ -3877,19 +4189,12 @@ x-flows:
               additional info form.
             mermaid: |-
               sequenceDiagram
-                title  Selection
+                title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                rect rgb(191, 223, 255)
+                rect rgb(191, 223, 255
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
@@ -3921,7 +4226,11 @@ x-flows:
                     descriptor:
                       name: ABC Marine Insurance Policy
                       short_desc: ABC Marine Insurance Class A
-                    id: I1
+                    id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
+                    price:
+                      currency: INR
+                      value: '900'
                     tags:
                       - descriptor:
                           name: Policy Details
@@ -3998,6 +4307,7 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
+                  ttl: PT15D
       - summary: Buyer app fetches the additional information based form
         api: form
         details:
@@ -4069,7 +4379,8 @@ x-flows:
             message:
               order:
                 items:
-                  - id: I1
+                  - id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
                     xinput:
                       form:
                         id: F02
@@ -4128,6 +4439,9 @@ x-flows:
                     descriptor:
                       name: ABC Marine Insurance Policy
                       short_desc: ABC Marine Insurance Class A
+                    price:
+                      currency: INR
+                      value: '900'
                     tags:
                       - descriptor:
                           name: Policy Details
@@ -4161,7 +4475,8 @@ x-flows:
                               name: Invoice date
                               code: INVOICE_DATE
                             value: '2023-06-21'
-                    id: I1
+                    id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
                     xinput:
                       head:
                         descriptor:
@@ -4205,6 +4520,7 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
+                  ttl: PT15D
       - summary: Buyer app fetches the adhar KYC details form
         api: form
         details:
@@ -4283,7 +4599,8 @@ x-flows:
                       person:
                         name: Joe Adam
                 items:
-                  - id: I1
+                  - id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
                     time:
                       label: Coverage Time
                       range:
@@ -4303,7 +4620,7 @@ x-flows:
                       bank_code: SBIN0001234
                       currency: INR
                     status: NOT-PAID
-                    type: PRE-FULFILLMENT
+                    type: PRE-ORDER
                     tags:
                       - descriptor:
                           code: SETTLEMENT_TERMS
@@ -4350,6 +4667,7 @@ x-flows:
                   price:
                     currency: INR
                     value: '100000'
+                  ttl: PT15D
       - summary: Insurer returns the response to initailized marine insurance plan
         api: on_init
         details:
@@ -4412,7 +4730,11 @@ x-flows:
                     descriptor:
                       name: ABC Marine Insurance Policy
                       short_desc: ABC Marine Insurance Class A
-                    id: I1
+                    id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
+                    price:
+                      currency: INR
+                      value: '900'
                     time:
                       label: Coverage Time
                       range:
@@ -4520,6 +4842,23 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
+                  ttl: PT15D
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        name: Insurance processing
+                        code: INSURANCE_PROCESSING
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://icicibank.com/loan/tnc.html
+                  - fulfillment_state:
+                      descriptor:
+                        name: Insurance_granted
+                        code: INSURANCE_GRANTED
+                    cancellation_fee:
+                      percentage: 5%
       - summary: Buyer app confirms the marine insurance request
         api: confirm
         details:
@@ -4584,7 +4923,8 @@ x-flows:
                                 value: 20JDVIEHVJDSN
                     id: F1
                 items:
-                  - id: I1
+                  - id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
                     price:
                       value: '1000'
                     time:
@@ -4651,6 +4991,7 @@ x-flows:
                   price:
                     currency: INR
                     value: '1000'
+                  ttl: PT15D
       - summary: Insurer confirms the marine insurance order
         api: on_confirm
         details:
@@ -4692,6 +5033,7 @@ x-flows:
             message:
               order:
                 status: ACTIVE
+                id: O1
                 fulfillments:
                   - customer:
                       contact:
@@ -4717,9 +5059,11 @@ x-flows:
                         address: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
                     id: FULFILMENT_ID
                 items:
-                  - id: '1'
+                  - id: CHILD_ITEM_ID_1
+                    parent_item_id: I1
                     price:
-                      value: '100000'
+                      currency: INR
+                      value: '900'
                     time:
                       label: Coverage Time
                       range:
@@ -4761,12 +5105,13 @@ x-flows:
                 payments:
                   - collected_by: BPP
                     params:
-                      amount: '100000'
+                      amount: '1000'
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
                       transaction_id: 079c071b-8972-4f0f-b553-12e894617860
                     status: PAID
+                    type: PRE-ORDER
                     time:
                       range:
                         end: '2023-07-30T15:44:19.166Z'
@@ -4786,17 +5131,18 @@ x-flows:
                 quote:
                   breakup:
                     - price:
-                        value: '90000'
+                        value: '900'
                       title: BASE_PRICE
                     - price:
-                        value: '5000'
+                        value: '50'
                       title: TAX
                     - price:
-                        value: '5000'
+                        value: '50'
                       title: PROCESSING_FEE
                   price:
                     currency: INR
-                    value: '10000'
+                    value: '1000'
+                  ttl: PT15D
                 cancellation_terms:
                   - fulfillment_state:
                       descriptor:
@@ -4804,7 +5150,7 @@ x-flows:
                         code: INSURANCE_PROCESSING
                     cancellation_fee:
                       percentage: 3%
-                    external_ref:
+                  - external_ref:
                       mimetype: text/html
                       url: https://icicibank.com/loan/tnc.html
                   - fulfillment_state:
@@ -4813,9 +5159,6 @@ x-flows:
                         code: INSURANCE_GRANTED
                     cancellation_fee:
                       percentage: 5%
-                    external_ref:
-                      mimetype: text/html
-                      url: https://icicibank.com/loan/tnc.html
   - summary: Health Insurance Application
     details:
       - description: Discovery of health insurance .
@@ -14868,7 +15211,7 @@ x-examples:
                 ttl: PT24M
                 version: 2.0.0
               message:
-                order_id: '01'
+                order_id: O1
       on_status:
         examples:
           - summary: on_status
@@ -14893,13 +15236,13 @@ x-examples:
                 version: 2.0.0
               message:
                 order:
-                  id: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
+                  id: O1
                   status: ACTIVE
                   fulfillments:
                     - state:
                         descriptor:
                           code: GRANTED
-                    - customer:
+                      customer:
                         contact:
                           email: joe.adam@abc.org
                           phone: +91-9999999999
@@ -14927,9 +15270,11 @@ x-examples:
                         short_desc: ABC Marine Insurance Class A
                       fulfillment_ids:
                         - FULFILMENT_ID
-                      id: I1
+                      id: CHILD_ITEM_ID_1
+                      parent_item_id: I1
                       price:
-                        value: '1000'
+                        value: '900'
+                        currency: INR
                       time:
                         label: Coverage Time
                         range:
@@ -15008,6 +15353,7 @@ x-examples:
                     price:
                       currency: INR
                       value: '1000'
+                    ttl: PT15D
       cancel:
         examples:
           - summary: cancel
@@ -15092,6 +15438,7 @@ x-examples:
                       id: I1
                       price:
                         value: '1000'
+                        currency: INR
                       time:
                         label: Coverage Time
                         range:
@@ -22265,6 +22612,110 @@ x-attributes:
   marine-insurance:
     attribute_set:
       search:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
         message:
           intent:
             category:
@@ -22275,7 +22726,226 @@ x-attributes:
                   owner: BAP
                   usage: MARINE_INSURANCE
                   description: Type of insurance (health, marine, motor)
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    It refers to providing additional details about the
+                    characteristics, features and attributes of products.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute explains what personal loan or invoice based
+                  loans are and how they function. It can provide the details
+                  into the nature of choosen loan
+            payment:
+              collected_by:
+                required: optional
+                type: string
+                owner: BAP
+                usage: BPP
+                description: >-
+                  This field indicates the payment collector. If set to 'bap,'
+                  BAP collects first and settles with BPP. If BPP agrees, no
+                  payment link is sent. If set to 'bpp,' BPP collects payment
+                  directly.
+              _description:
+                required: optional
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  The terms of settlement for this order. It describes that how
+                  the customer wants to pay for the order.
+            provider:
+              items:
+                xinput:
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BAP/BPP
+                    usage: '--'
+                    description: >-
+                      Additional input required from the customer to purchase /
+                      avail this item
+                  form:
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: Describes a form
+                    id:
+                      required: optional
+                      type: string
+                      owner: BPP
+                      usage: 42c7-b888
+                      description: Unique id of form
+                  form_response:
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BAP
+                      usage: '--'
+                      description: Describes the response to a form submission
+                    status:
+                      required: optional
+                      type: string
+                      owner: BAP
+                      usage: SUCCESS
+                      description: Describes the status of form
+                    submission_id:
+                      required: optional
+                      type: string
+                      owner: BAP
+                      usage: e9a3b4a5
+                      description: >-
+                        Unique submission id which a buyer got as a reponse
+                        after successful submission of form 
+                _description:
+                  required: optional
+                  type: object
+                  owner: BAP/BPP
+                  usage: false
+                  description: >-
+                    The provider from which the customer wants to place to the
+                    order from
+              _description:
+                required: optional
+                type: object
+                owner: BAP/BPP
+                usage: false
+                description: >-
+                  The provider from which the customer wants to place to the
+                  order from
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: Describe the intent to buy or avail a product or a service.
       on_search:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           catalog:
             descriptor:
@@ -22285,6 +22955,15 @@ x-attributes:
                 owner: BPP
                 usage: Individual Insurance
                 description: Category of Insurance
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This attribute amplifies the product details. It includes
+                  presenting a detailed description about the characteristics,
+                  features, and unique qualities of that particular product.
             providers:
               id:
                 required: Mandatory
@@ -22295,7 +22974,7 @@ x-attributes:
               descriptor:
                 images:
                   url:
-                    required: Mandatory
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: >-
@@ -22307,6 +22986,14 @@ x-attributes:
                     owner: BPP
                     usage: sm
                     description: Size type of image
+                  _description:
+                    required: Optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the detailed description of the financial
+                      institution that is providing the loan.
                 name:
                   required: Mandatory
                   type: string
@@ -22325,6 +23012,49 @@ x-attributes:
                   owner: BPP
                   usage: 'ABC Insurance Ltd '
                   description: Long description about insurer
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This describes the detailed description of the financial
+                    institution that is providing the loan.
+              categories:
+                id:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: C1
+                  description: Unique id of category
+                descriptor:
+                  code:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: INDIVIDUAL_INSURANCE
+                    description: 'Type of insurance category '
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Individual Insurance
+                    description: 'Type of insurance category '
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This refers to a label that can serve as a categorization
+                      tag for groupiing together a collection of items for
+                      easier identification and management.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Describes the list of categoreies provided by the seller app
               items:
                 category_ids:
                   required: Mandatory
@@ -22336,98 +23066,288 @@ x-attributes:
                   head:
                     descriptor:
                       name:
-                        required: Mandatory
+                        required: optional
                         type: string
                         owner: BPP
                         usage: Customer Information
                         description: Headings of form
+                      _description:
+                        required: optional
+                        type: object
+                        owner: BPP
+                        usage: '--'
+                        description: Describes the information about the xinput head
                     index:
                       min:
-                        required: Mandatory
+                        required: optional
                         type: number
                         owner: BPP
                         usage: false
                         description: Minimum number of pages in a form
                       max:
-                        required: Mandatory
+                        required: optional
                         type: number
                         owner: BPP
                         usage: false
                         description: Maximum number of pages in a form
                       cur:
-                        required: Mandatory
+                        required: optional
                         type: number
                         owner: BPP
                         usage: false
                         description: Current page to be filled in a form
+                      _description:
+                        required: Optional
+                        type: object
+                        owner: BPP
+                        usage: '--'
+                        description: >-
+                          It refers to the integer value of the index number of
+                          required additional input.
                     headings:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: Individual Information
                       description: More specific headings of form
+                    _description:
+                      required: Optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: >-
+                        This refers to the header information of the input of
+                        additional information required from the customer to
+                        avail this item.
                   form:
                     id:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: F01
                       description: Unique id of form
                     mime_type:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: text/html
                       description: Describes the type of form
                     url:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
-                      usage: 'https://fis.test.bpp.io/form/marine_dtls?formId=F01  '
+                      usage: https://fis.test.bpp.io/form/add_info?formId=F01
                       description: Form url from where we can get it
                     resubmit:
-                      required: Mandatory
+                      required: optional
                       type: boolean
                       owner: BPP
                       usage: false
                       description: Whether form has been resubmitted or not
-                    multiple_submission:
-                      required: Mandatory
+                    multiple_sumbissions:
+                      required: optional
                       type: boolean
                       owner: BPP
                       usage: false
                       description: Whether form can be submitted multiple times or not
+                    _description:
+                      required: Optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: >-
+                        It refers to the detailed description of the used form
+                        for information of the user.
                   required:
-                    required: Mandatory
+                    required: optional
                     type: boolean
                     owner: BPP
                     usage: true
                     description: Whether form is required or not
+                  _description:
+                    required: Optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      It refers to those information columns that requires
+                      additional input from the customer to avail a particular
+                      product or item.
+                id:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: I1
+                  description: Unique id of the item
+                parent_item_id:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                  description: Unique item id of the parent item
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: >-
+                    The provider from which the customer wants to place to the
+                    order from
+              payments:
+                collected_by:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: BPP
+                  description: >-
+                    This field indicates the payment collector. If set to 'bap,'
+                    BAP collects first and settles with BPP. If BPP agrees, no
+                    payment link is sent. If set to 'bpp,' BPP collects payment
+                    directly.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: >-
+                    The terms of settlement for this order. It describes that
+                    how the customer wants to pay for the order.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This attribute describes a more detailed and comprehensive
+                  information that showcases the diverse range of products or
+                  services offered by the business.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BPP
+              usage: '--'
+              description: >-
+                This attribute describes the products or services that are sent
+                as the response to the search done by BAP.
       select:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
-            fulfillments:
-              customer:
-                contact:
-                  email:
-                    required: Mandatory
-                    type: string
-                    owner: BAP
-                    usage: joe.adam@abc.org
-                    description: Email of contact
-                  phone:
-                    required: Mandatory
-                    type: string
-                    owner: BAP
-                    usage: 91-9999999999
-                    description: Phone number of contact
-                person:
-                  name:
-                    required: Mandatory
-                    type: string
-                    owner: BAP
-                    usage: Joe Adam
-                    description: Name of the contact
             items:
               id:
                 required: Mandatory
@@ -22438,19 +23358,66 @@ x-attributes:
               xinput:
                 form_response:
                   status:
-                    required: Mandatory
+                    required: optional
                     type: string
                     owner: BAP
                     usage: SUCCESS
                     description: Describes the status of form
                   submission_id:
-                    required: Mandatory
+                    required: optional
                     type: string
                     owner: BAP
                     usage: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
                     description: >-
                       Unique submission id which a buyer got as a reponse after
                       successful submission of form 
+                  _description:
+                    required: Optional
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This description outlines the feedback or system's
+                      reaction to the information provided following the
+                      submission of a form.
+                form:
+                  id:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: ca063dc9d321
+                    description: Unique id of the form
+                  _description:
+                    required: Optional
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                _description:
+                  required: Optional
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+              parent_item_id:
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
             provider:
               id:
                 required: Mandatory
@@ -22458,7 +23425,139 @@ x-attributes:
                 owner: BAP
                 usage: P1
                 description: Unique id of provider
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
       on_select:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             items:
@@ -22475,12 +23574,21 @@ x-attributes:
                   owner: BPP
                   usage: ABC Marine Insurance Policy
                   description: Name of the insurance item
-                short_des:
-                  required: Mandatory
+                short_desc:
+                  required: Optional
                   type: string
                   owner: BPP
                   usage: ABC Marine Insurance Class A
                   description: Short description about the item
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This include the details about the distinctive features,
+                    benefits, or unique aspects of the products or service that
+                    has been offered to the end customer.
               id:
                 required: Mandatory
                 type: string
@@ -22496,6 +23604,12 @@ x-attributes:
                       owner: BPP
                       usage: information form
                       description: Headings of form
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: Describes the information about the xinput head
                   index:
                     min:
                       required: Mandatory
@@ -22515,14 +23629,31 @@ x-attributes:
                       owner: BPP
                       usage: false
                       description: Current page to be filled in a form
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: >-
+                        It refers to the integer value of the index number of
+                        required additional input.
                   headings:
                     required: Mandatory
                     type: string
                     owner: BPP
                     usage: additional information form
                     description: More specific headings of form
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This refers to the header information of the input of
+                      additional information required from the customer to avail
+                      this item.
                 form:
-                  mine_type:
+                  mime_type:
                     required: Mandatory
                     type: string
                     owner: BPP
@@ -22540,18 +23671,76 @@ x-attributes:
                     owner: BPP
                     usage: true
                     description: Whether form has been resubmitted or not
-                  multiple_resubmission:
+                  multiple_sumbissions:
                     required: Mandatory
                     type: boolean
                     owner: BPP
                     usage: false
                     description: Whether form can be submitted multiple times or not
-                  required:
+                  id:
                     required: Mandatory
-                    type: boolean
+                    type: string
                     owner: BPP
-                    usage: true
-                    description: Whether form is required or not
+                    usage: ca063dc9d321
+                    description: Unique id of the form
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                required:
+                  required: Mandatory
+                  type: boolean
+                  owner: BPP
+                  usage: true
+                  description: Whether form is required or not
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+              price:
+                value:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: 232800
+                  description: >-
+                    Describes the price for item. It is a numerical value in
+                    decimal form.
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: This attribute specifies the currency for the item.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Describes the price for item.
+              parent_item_id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
             provider:
               descriptor:
                 long_desc:
@@ -22577,18 +23766,42 @@ x-attributes:
                   description: Short description about insurer
                 images:
                   url:
-                    required: Mandatory
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: >-
                       https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
                     description: Logo of insurer
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      It encapsulates the detailed description of the used
+                      image.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This describes the detailed description of the financial
+                    institution that is providing the loan.
               id:
                 required: Mandatory
                 type: string
                 owner: BPP
                 usage: P1
                 description: Unique id of provider
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
             quote:
               breakup:
                 price:
@@ -22598,13 +23811,180 @@ x-attributes:
                     owner: BPP
                     usage: 900
                     description: Describes price value for that particular breakup
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
                 title:
                   required: Mandatory
                   type: string
                   owner: BPP
                   usage: Base Price
                   description: Describes the title of breakup
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
+              price:
+                value:
+                  required: Mandatory
+                  type: integer
+                  owner: BPP
+                  usage: 1000
+                  description: Value of the order price
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency of the order price
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
       init:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             fulfillments:
@@ -22622,6 +24002,12 @@ x-attributes:
                     owner: BAP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: This refers to the details of the customer contacts
                 person:
                   name:
                     required: Mandatory
@@ -22629,6 +24015,30 @@ x-attributes:
                     owner: BAP
                     usage: Joe Adam
                     description: Name of the contact
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This refers to the description of the associated person as
+                      an individual entity.
+                _description:
+                  required: Mandatory
+                  type: '--'
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the person that will
+                    ulitmately receive the order.
+              _description:
+                required: Mandatory
+                type: '--'
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This refers to the decription as to how that order will
+                  rendered/fulfilled to the end-customers.
             items:
               id:
                 required: Mandatory
@@ -22656,6 +24066,12 @@ x-attributes:
                     owner: BAP
                     usage: '2023-07-30T07:12:47.419Z'
                     description: End time of insurance policy
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Label value of the time
               xinput:
                 form_response:
                   status:
@@ -22664,12 +24080,6 @@ x-attributes:
                     owner: BAP
                     usage: SUCCESS
                     description: Describes the status of form
-                  url:
-                    required: Mandatory
-                    type: string
-                    owner: BAP
-                    usage: https://fis.test.bpp.io/form/ekyc
-                    description: Url to be redirected after getting a response
                   submission_id:
                     required: Mandatory
                     type: string
@@ -22678,6 +24088,53 @@ x-attributes:
                     description: >-
                       Unique submission id which a buyer got as a reponse after
                       successful submission of form 
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This description outlines the feedback or system's
+                      reaction to the information provided following the
+                      submission of a form.
+                form:
+                  id:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: ca063dc9d321
+                    description: Unique id of the form
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+              parent_item_id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
             payments:
               collected_by:
                 required: Mandatory
@@ -22710,6 +24167,34 @@ x-attributes:
                   owner: BAP
                   usage: INR
                   description: Currency in whcih payment has to be paid
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: This attribute defines the payment params for this order.
+              status:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
+              type:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: 'PRE-FULFILLMENT  '
+                description: Describes when a payment has to be paid
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute refers to the terms of settlement that a BAP
+                  insinuates to the BPP for a single transaction. These terms
+                  includes the amount, payment destination, time of settlement
+                  and a transaction reference ID.
             provider:
               id:
                 required: Mandatory
@@ -22717,6 +24202,14 @@ x-attributes:
                 owner: BAP
                 usage: P1
                 description: Unique id of provider
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
             quote:
               breakup:
                 price:
@@ -22726,12 +24219,28 @@ x-attributes:
                     owner: BAP
                     usage: 90000
                     description: Describes price value for that particular breakup
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
                 title:
                   required: Mandatory
                   type: string
                   owner: BAP
                   usage: Base Price
                   description: Describes the title of breakup
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
               price:
                 currency:
                   required: Mandatory
@@ -22745,7 +24254,145 @@ x-attributes:
                   owner: BAP
                   usage: 100000
                   description: Value of the order price
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
       on_init:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             fulfillments:
@@ -22763,6 +24410,12 @@ x-attributes:
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: This refers to the details of the customer contacts
                 person:
                   name:
                     required: Mandatory
@@ -22782,6 +24435,14 @@ x-attributes:
                     owner: BPP
                     usage: male
                     description: Gender of the person
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This refers to the description of the associated person as
+                      an individual entity.
                 organization:
                   address:
                     required: Mandatory
@@ -22789,6 +24450,34 @@ x-attributes:
                     owner: BPP
                     usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
                     description: Address of the organization
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: Describes the address of the organization
+                _description:
+                  required: Mandatory
+                  type: '--'
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the person that will
+                    ulitmately receive the order.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: F1
+                description: Describes the uqniue id of the fulfillment
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This refers to the decription as to how that order will
+                  rendered/fulfilled to the end-customers.
             items:
               category_ids:
                 required: Mandatory
@@ -22796,6 +24485,133 @@ x-attributes:
                 owner: BPP
                 usage: C1
                 description: Unique id of category
+              descriptor:
+                name:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: ABC Marine Insurance Policy
+                  description: Name of the insurance item
+                short_desc:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: ABC Marine Insurance Class A
+                  description: Short description about the item
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This include the details about the distinctive features,
+                    benefits, or unique aspects of the products or service that
+                    has been offered to the end customer.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: I1
+                description: Unique id of item
+              parent_item_id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              price:
+                value:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: 232800
+                  description: >-
+                    Describes the price for item. It is a numerical value in
+                    decimal form.
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: This attribute specifies the currency for the item.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Describes the price for item.
+              time:
+                label:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: Coverage Time
+                  description: Describes the time label
+                range:
+                  start:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-01T07:12:29.429Z'
+                    description: Describes the start range
+                  end:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-01T07:12:29.429Z'
+                    description: Describes the end range
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Label value of the time
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
+              xinput:
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+                form:
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                head:
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This refers to the header information of the input of
+                      additional information required from the customer to avail
+                      this item.
+                  index:
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: >-
+                        It refers to the integer value of the index number of
+                        required additional input.
             provider:
               id:
                 required: Mandatory
@@ -22803,6 +24619,60 @@ x-attributes:
                 owner: BPP
                 usage: e5585415-bce5-46b5-aeba-9f6b83df5ffa
                 description: Unique id of provider
+              descriptor:
+                long_desc:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: >-
+                    ABC Insurance Ltd. Deals in multiple Insurance Services like
+                    Health,
+                              Motor, Marine etc
+                  description: Long description about insurer
+                name:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: ABC Insurance Ltd.
+                  description: Insurer name
+                short_desc:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: ABC Insurance Ltd. India
+                  description: Short description about insurer
+                images:
+                  url:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                    description: Logo of insurer
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      It encapsulates the detailed description of the used
+                      image.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This describes the detailed description of the financial
+                    institution that is providing the loan.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
             quote:
               price:
                 value:
@@ -22817,6 +24687,12 @@ x-attributes:
                   owner: BPP
                   usage: INR
                   description: Currency of the order price
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
               breakup:
                 title:
                   required: Mandatory
@@ -22831,6 +24707,30 @@ x-attributes:
                     owner: BPP
                     usage: 900
                     description: Describes price value for that particular breakup
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
             payments:
               collected_by:
                 required: Mandatory
@@ -22863,7 +24763,250 @@ x-attributes:
                   owner: BPP
                   usage: INR
                   description: Currency in whcih payment has to be paid
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: This attribute defines the payment params for this order.
+              status:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
+              type:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: PRE-ORDER
+                description: Describes when a payment has to be paid
+              url:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: https://payment.fis.test.bpp.io
+                description: Url for payment to be paid
+              time:
+                range:
+                  start:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: Start time of insurance policy
+                  end:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: End time of insurance policy
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute refers to the terms of settlement that a BAP
+                  insinuates to the BPP for a single transaction. These terms
+                  includes the amount, payment destination, time of settlement
+                  and a transaction reference ID.
+            cancellation_terms:
+              fulfillment_state:
+                descriptor:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Insurance processing
+                    description: Describes the name for fulfilment state.
+                  code:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: INSURANCE_PROCESSING
+                    description: Describes the code for fulfilment state.
+                  _description:
+                    required: optional
+                    type: '--'
+                    owner: BPP
+                    usage: '--'
+                    description: This refers to the descriptor of fulfillment state
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the fulfillment state of cancellation terms
+                    file.
+              cancellation_fee:
+                percentage:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 0.03
+                  description: Describes the percentage value.
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the applied fee on a
+                    particular entity.
+              external_ref:
+                mimetype:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the mimetype value.
+                url:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the url value.
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the url of cancellation terms file.
+              _description:
+                required: Mandatory
+                type: '--'
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refer to the set of terms for cancellation for an item or
+                  an order.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
       confirm:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             fulfillments:
@@ -22881,6 +25024,12 @@ x-attributes:
                     owner: BAP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: This refers to the details of the customer contacts
                 person:
                   name:
                     required: Mandatory
@@ -22894,6 +25043,42 @@ x-attributes:
                     owner: BAP
                     usage: male
                     description: Gender of the person
+                  dob:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: 32894
+                    description: Date of birth of the person
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This refers to the description of the associated person as
+                      an individual entity.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the person that will
+                    ulitmately receive the order.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: F1
+                description: Describes the uqniue id of the fulfillment
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This refers to the decription as to how that order will
+                  rendered/fulfilled to the end-customers.
             items:
               id:
                 required: Mandatory
@@ -22921,6 +25106,70 @@ x-attributes:
                     owner: BAP
                     usage: '2023-07-30T07:12:47.419Z'
                     description: End time of insurance policy
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Label value of the time
+              parent_item_id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              price:
+                value:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: 232800
+                  description: >-
+                    Describes the price for item. It is a numerical value in
+                    decimal form.
+                currency:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: This attribute specifies the currency for the item.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
+              xinput:
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+                form_response:
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This description outlines the feedback or system's
+                      reaction to the information provided following the
+                      submission of a form.
+                form:
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
             payments:
               collected_by:
                 required: Mandatory
@@ -22953,6 +25202,40 @@ x-attributes:
                   owner: BAP
                   usage: INR
                   description: Currency in whcih payment has to be paid
+                transaction_id:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency in whcih payment has to be paid
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: This attribute defines the payment params for this order.
+              status:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
+              type:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: PRE-ORDER
+                description: Describes when a payment has to be paid
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute refers to the terms of settlement that a BAP
+                  insinuates to the BPP for a single transaction. These terms
+                  includes the amount, payment destination, time of settlement
+                  and a transaction reference ID.
             provider:
               id:
                 required: Mandatory
@@ -22960,6 +25243,14 @@ x-attributes:
                 owner: BAP
                 usage: e5585415-bce5-46b5-aeba-9f6b83df5ffa
                 description: Unique id of provider
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
             quote:
               price:
                 value:
@@ -22974,6 +25265,12 @@ x-attributes:
                   owner: BAP
                   usage: INR
                   description: Currency of the price
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
               breakup:
                 title:
                   required: Mandatory
@@ -22988,7 +25285,155 @@ x-attributes:
                     owner: BAP
                     usage: 900
                     description: Describes price value for that particular breakup
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
       on_confirm:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             id:
@@ -23018,6 +25463,12 @@ x-attributes:
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: This refers to the details of the customer contacts
                 person:
                   name:
                     required: Mandatory
@@ -23037,6 +25488,14 @@ x-attributes:
                     owner: BPP
                     usage: male
                     description: Gender of the person
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This refers to the description of the associated person as
+                      an individual entity.
                 organization:
                   address:
                     required: Mandatory
@@ -23044,6 +25503,20 @@ x-attributes:
                     owner: BPP
                     usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
                     description: Address of the organization
+                _description:
+                  required: Mandatory
+                  type: '--'
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the person that will
+                    ulitmately receive the order.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: F1
+                description: Describes the uqniue id of the fulfillment
             items:
               id:
                 required: Mandatory
@@ -23071,6 +25544,95 @@ x-attributes:
                     owner: BPP
                     usage: '2023-07-30T07:12:47.419Z'
                     description: End time of insurance policy
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Label value of the time
+              parent_item_id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              price:
+                value:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: 232800
+                  description: >-
+                    Describes the price for item. It is a numerical value in
+                    decimal form.
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: This attribute specifies the currency for the item.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Describes the price for item.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
+              xinput:
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+                form:
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                head:
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This refers to the header information of the input of
+                      additional information required from the customer to avail
+                      this item.
+                  index:
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: >-
+                        It refers to the integer value of the index number of
+                        required additional input.
+              descriptor:
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This include the details about the distinctive features,
+                    benefits, or unique aspects of the products or service that
+                    has been offered to the end customer.
             payments:
               collected_by:
                 required: Mandatory
@@ -23103,12 +25665,60 @@ x-attributes:
                   owner: BPP
                   usage: INR
                   description: Currency in whcih payment has to be paid
+                transaction_id:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency in whcih payment has to be paid
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: This attribute defines the payment params for this order.
+              status:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
               url:
                 required: Mandatory
                 type: string
                 owner: BPP
                 usage: https://payment.fis.test.bpp.io
                 description: Url for payment to be paid
+              type:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: PRE-ORDER
+                description: Describes when a payment has to be paid
+              time:
+                range:
+                  start:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: Start time of insurance policy
+                  end:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: End time of insurance policy
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute refers to the terms of settlement that a BAP
+                  insinuates to the BPP for a single transaction. These terms
+                  includes the amount, payment destination, time of settlement
+                  and a transaction reference ID.
             provider:
               descriptor:
                 long_desc:
@@ -23132,7 +25742,298 @@ x-attributes:
                   owner: BPP
                   usage: ABC Insurance Ltd. India
                   description: Short description about insurer
+                images:
+                  url:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                    description: Logo of insurer
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      It encapsulates the detailed description of the used
+                      image.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This describes the detailed description of the financial
+                    institution that is providing the loan.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: e5585415-bce5-46b5-aeba-9f6b83df5ffa
+                description: Unique id of provider
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
+            quote:
+              price:
+                value:
+                  required: Mandatory
+                  type: integer
+                  owner: BPP
+                  usage: 1000
+                  description: Value of the order price
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency of the order price
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
+              breakup:
+                title:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: Base Price
+                  description: Describes the title of breakup
+                price:
+                  value:
+                    required: Mandatory
+                    type: integer
+                    owner: BPP
+                    usage: 900
+                    description: Describes price value for that particular breakup
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
+            cancellation_terms:
+              fulfillment_state:
+                descriptor:
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Insurance processing
+                    description: Describes the name for fulfilment state.
+                  code:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: INSURANCE_PROCESSING
+                    description: Describes the code for fulfilment state.
+                  _description:
+                    required: optional
+                    type: '--'
+                    owner: BPP
+                    usage: '--'
+                    description: This refers to the descriptor of fulfillment state
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the fulfillment state of cancellation terms
+                    file.
+              cancellation_fee:
+                percentage:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 0.03
+                  description: Describes the percentage value.
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the applied fee on a
+                    particular entity.
+              external_ref:
+                mimetype:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the mimetype value.
+                url:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the url value.
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the url of cancellation terms file.
+              _description:
+                required: Mandatory
+                type: '--'
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refer to the set of terms for cancellation for an item or
+                  an order.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
       status:
+        context:
+          location:
+            country:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: Mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: Mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: Mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: Mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order_id:
             required: Mandatory
@@ -23141,16 +26042,132 @@ x-attributes:
             usage: 1
             description: Unique id of order
       on_status:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             id:
-              required: Mandatory
+              required: Optional
               type: string
               owner: BPP
               usage: 5adadc9a-48a0-4ff6-8779-084272d9d2bc
               description: Unique id of order
             status:
-              required: Mandatory
+              required: Optional
               type: string
               owner: BPP
               usage: ACTIVE
@@ -23159,36 +26176,50 @@ x-attributes:
               customer:
                 contact:
                   phone:
-                    required: Mandatory
+                    required: Optional
                     type: integer
                     owner: BPP
                     usage: 91-9999999999
                     description: Email of contact
                   email:
-                    required: Mandatory
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of contact
+                  _description:
+                    required: optional
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: This refers to the details of the customer contacts
                 person:
                   name:
-                    required: Mandatory
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: Joe Adam
                     description: Name of the contact
                   dob:
-                    required: Mandatory
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: 32894
                     description: Date of birth of person
                   gender:
-                    required: Mandatory
+                    required: Optional
                     type: string
                     owner: BPP
                     usage: male
                     description: Gender of the person
+                  _description:
+                    required: optional
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This refers to the description of the associated person as
+                      an individual entity.
                 organization:
                   address:
                     required: Mandatory
@@ -23196,6 +26227,22 @@ x-attributes:
                     owner: BPP
                     usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
                     description: Address of the organization
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the person that will
+                    ulitmately receive the order.
+              state:
+                descriptor:
+                  code:
+                    required: Optional
+                    type: integer
+                    owner: BPP
+                    usage: GRANTED
+                    description: Describes the state of the fulfillment
             items:
               fulfillment_ids:
                 required: Mandatory
@@ -23223,6 +26270,124 @@ x-attributes:
                     owner: BPP
                     usage: '2023-07-30T07:12:47.419Z'
                     description: End time of insurance policy
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Label value of the time
+              descriptor:
+                name:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: ABC Marine Insurance Policy
+                  description: Name of the insurance item
+                short_desc:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: ABC Marine Insurance Class A
+                  description: Short description about the item
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This include the details about the distinctive features,
+                    benefits, or unique aspects of the products or service that
+                    has been offered to the end customer.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: I1
+                description: Unique id of item
+              parent_item_id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: 77b7b9bad166-4a3f-ada6-ca063dc9d321
+                description: Unique item id of the parent item
+              price:
+                value:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: 232800
+                  description: >-
+                    Describes the price for item. It is a numerical value in
+                    decimal form.
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: This attribute specifies the currency for the item.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Describes the price for item.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
+              xinput:
+                form_response:
+                  status:
+                    required: optional
+                    type: string
+                    owner: BAP
+                    usage: SUCCESS
+                    description: Describes the status of form
+                  submission_id:
+                    required: optional
+                    type: string
+                    owner: BAP
+                    usage: aae9ece0-3733-4875-8cd3-3e8600f5c7f3
+                    description: >-
+                      Unique submission id which a buyer got as a reponse after
+                      successful submission of form 
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This description outlines the feedback or system's
+                      reaction to the information provided following the
+                      submission of a form.
+                form:
+                  id:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: ca063dc9d321
+                    description: Unique id of the form
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
             provider:
               id:
                 required: Mandatory
@@ -23252,34 +26417,96 @@ x-attributes:
                   owner: BPP
                   usage: ABC Insurance Ltd. India
                   description: Short description about insurer
+                images:
+                  url:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                    description: Logo of insurer
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      It encapsulates the detailed description of the used
+                      image.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This describes the detailed description of the financial
+                    institution that is providing the loan.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
             quote:
               price:
                 value:
-                  required: Mandatory
+                  required: Optional
                   type: integer
                   owner: BPP
                   usage: 1000
                   description: Value of the price
                 currency:
-                  required: Mandatory
+                  required: Optional
                   type: string
                   owner: BPP
                   usage: INR
                   description: Currency of the price
+                _description:
+                  required: optional
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
               breakup:
                 title:
-                  required: Mandatory
+                  required: Optional
                   type: string
                   owner: BPP
                   usage: Base Price
                   description: Describes the title of breakup
                 price:
                   value:
-                    required: Mandatory
+                    required: Optional
                     type: integer
                     owner: BPP
                     usage: 900
                     description: Describes price value for that particular breakup
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
+                _description:
+                  required: optional
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
+              _description:
+                required: optional
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
             payments:
               collected_by:
                 required: Mandatory
@@ -23289,36 +26516,279 @@ x-attributes:
                 description: Describes who will collect the payment
               params:
                 amount:
-                  required: Mandatory
+                  required: Optional
                   type: integer
                   owner: BPP
                   usage: 100000
                   description: Amount to be collected
                 bank_account_number:
-                  required: Mandatory
+                  required: Optional
                   type: String
                   owner: BPP
                   usage: 1800002341
                   description: Accout number in which payment has to be collected
                 bank_code:
-                  required: Mandatory
+                  required: Optional
                   type: string
                   owner: BPP
                   usage: SBIN0001234
                   description: 'Code of the bank '
                 currency:
-                  required: Mandatory
+                  required: Optional
                   type: string
                   owner: BPP
                   usage: INR
                   description: Currency in whcih payment has to be paid
+                transaction_id:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency in whcih payment has to be paid
+                _description:
+                  required: optional
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: This attribute defines the payment params for this order.
+              status:
+                required: Optional
+                type: string
+                owner: BPP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
               url:
-                required: Mandatory
+                required: Optional
                 type: string
                 owner: BPP
                 usage: https://payment.fis.test.bpp.io
                 description: Url for payment to be paid
+              time:
+                range:
+                  start:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: Start time of insurance policy
+                  end:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: End time of insurance policy
+              type:
+                required: Optional
+                type: string
+                owner: BPP
+                usage: PRE-ORDER
+                description: Describes when a payment has to be paid
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute refers to the terms of settlement that a BAP
+                  insinuates to the BPP for a single transaction. These terms
+                  includes the amount, payment destination, time of settlement
+                  and a transaction reference ID.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
+            cancellation_terms:
+              _description:
+                required: optional
+                type: '--'
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refer to the set of terms for cancellation for an item or
+                  an order.
+              cancellation_fee:
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the applied fee on a
+                    particular entity.
+                percentage:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: 0.03
+                  description: Describes the percentage value.
+              external_ref:
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the url of cancellation terms file.
+                mimetype:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the mimetype value.
+                url:
+                  required: optional
+                  type: string
+                  owner: BPP
+                  usage: text/html
+                  description: Describes the url value.
+              fulfillment_state:
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the fulfillment state of cancellation terms
+                    file.
+                descriptor:
+                  _description:
+                    required: optional
+                    type: '--'
+                    owner: BPP
+                    usage: '--'
+                    description: This refers to the descriptor of fulfillment state
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Insurance processing
+                    description: Describes the name for fulfilment state.
+                  code:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: INSURANCE_PROCESSING
+                    description: Describes the code for fulfilment state.
       cancel:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order_id:
             required: Mandatory
@@ -23332,7 +26802,136 @@ x-attributes:
             owner: BAP
             usage: 5
             description: Unique id of cancellation reason
+          descriptor:
+            short_desc:
+              required: optional
+              type: string
+              owner: BAP
+              usage: User bought other policy
+              description: Describes the short desc.
+            _description:
+              required: optional
+              type: object
+              owner: BAP
+              usage: '--'
+              description: Describes the descriptor's details
       on_cancel:
+        context:
+          location:
+            country:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: IND
+                description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the country of location where the
+                  transaction is meant to be completed.
+            city:
+              code:
+                required: mandatory
+                type: string
+                owner: BAP
+                usage: '*'
+                description: Describes the city code this location is, or is located within
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute defines the city of location where the
+                  transaction is meant to be completed.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP
+              usage: '--'
+              description: >-
+                This attribute defines the location where the transaction is
+                meant to be completed.
+          domain:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: ONDC:FIS13
+            description: Describes domain code that is relevant to this transaction context
+          timestamp:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: '2023-03-23T04:41:16Z'
+            description: Describes tme of request generation in RFC3339 format
+          bap_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: fis.test.bap.io
+            description: Describes subscriber ID of the BAP
+          transaction_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 6743e9e2
+            description: Describes  a unique value which persists across all API calls
+          message_id:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: 13ba8018f176
+            description: >-
+              Describes a unique value which persists during a request /
+              callback cycle.
+          version:
+            required: mandatory
+            type: integer
+            owner: BAP
+            usage: 2.0.0
+            description: >-
+              Describes the version of transaction protocol being used by the
+              sender.
+          action:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: search
+            description: >-
+              Describes the Beckn protocol method being called by the sender and
+              executed at the receiver.
+          bap_uri:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: https://fis.test.bap.io/
+            description: >-
+              Describes subscriber URL of the BAP for accepting callbacks from
+              BPPs.
+          ttl:
+            required: mandatory
+            type: string
+            owner: BAP
+            usage: PT30S
+            description: >-
+              Describes the duration in ISO8601 format after timestamp for which
+              this message holds valid
+          bpp_id:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: fis.test.bpp.io
+            description: Describes subscriber ID of the BPP
+          bpp_uri:
+            required: mandatory
+            type: string
+            owner: BPP
+            usage: https://fis.test.bpp.io/
+            description: Describes subscriber URL of the BPP for accepting calls from BAPs.
         message:
           order:
             id:
@@ -23362,6 +26961,12 @@ x-attributes:
                     owner: BPP
                     usage: joe.adam@abc.org
                     description: Phone number of the contact
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: This refers to the details of the customer contacts
                 person:
                   name:
                     required: Mandatory
@@ -23381,6 +26986,14 @@ x-attributes:
                     owner: BPP
                     usage: male
                     description: Gender of the person
+                  _description:
+                    required: Mandatory
+                    type: '--'
+                    owner: BAP
+                    usage: '--'
+                    description: >-
+                      This refers to the description of the associated person as
+                      an individual entity.
                 organization:
                   address:
                     required: Mandatory
@@ -23388,6 +27001,20 @@ x-attributes:
                     owner: BPP
                     usage: 1/4 ABC Society, XYZ Locality, Bangalore, Karnataka
                     description: Address of the organization
+                _description:
+                  required: Mandatory
+                  type: '--'
+                  owner: BAP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the person that will
+                    ulitmately receive the order.
+              id:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: F1
+                description: Describes the uqniue id of the fulfillment
             provider:
               id:
                 required: Mandatory
@@ -23417,6 +27044,38 @@ x-attributes:
                   owner: BPP
                   usage: ABC Insurance Ltd. India
                   description: Short description about insurer
+                images:
+                  url:
+                    required: Optional
+                    type: string
+                    owner: BPP
+                    usage: >-
+                      https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                    description: Logo of insurer
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      It encapsulates the detailed description of the used
+                      image.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This describes the detailed description of the financial
+                    institution that is providing the loan.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This describes the complete formulated description of the loan
+                  provider whose catalog items have been selected.
             quote:
               breakup:
                 title:
@@ -23432,6 +27091,37 @@ x-attributes:
                     owner: BPP
                     usage: false
                     description: Describes price value for that particular breakup
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This describes the decimal value of the price of a product
+                      or service.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This attribute describes the breakup of the total quoted
+                    price.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refers to the complete description of the mutully agreed
+                  upon quotation for this order.
+              price:
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the value of used currency of quoted price.
             items:
               time:
                 label:
@@ -23453,6 +27143,101 @@ x-attributes:
                     owner: BPP
                     usage: '2023-07-30T07:12:47.419Z'
                     description: End time of insurance policy
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Label value of the time
+              descriptor:
+                name:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: ABC Marine Insurance Policy
+                  description: Name of the insurance item
+                short_desc:
+                  required: Optional
+                  type: string
+                  owner: BPP
+                  usage: ABC Marine Insurance Class A
+                  description: Short description about the item
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This include the details about the distinctive features,
+                    benefits, or unique aspects of the products or service that
+                    has been offered to the end customer.
+              price:
+                value:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: 232800
+                  description: >-
+                    Describes the price for item. It is a numerical value in
+                    decimal form.
+                currency:
+                  required: Mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: This attribute specifies the currency for the item.
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BPP
+                  usage: '--'
+                  description: Describes the price for item.
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP/BPP
+                usage: '--'
+                description: >-
+                  This decription refers to the comprehensive list of the
+                  products or services selected and obtained within the
+                  specified order.
+              xinput:
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: >-
+                    This attribute refers to the information about additional
+                    input required from the customer to confirm this order.
+                form:
+                  _description:
+                    required: Mandatory
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This attribute refers to the information about additional
+                      input form generated from the system.
+                head:
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BPP
+                    usage: '--'
+                    description: >-
+                      This refers to the header information of the input of
+                      additional information required from the customer to avail
+                      this item.
+                  index:
+                    _description:
+                      required: optional
+                      type: object
+                      owner: BPP
+                      usage: '--'
+                      description: >-
+                        It refers to the integer value of the index number of
+                        required additional input.
             payments:
               collected_by:
                 required: Mandatory
@@ -23485,12 +27270,109 @@ x-attributes:
                   owner: BPP
                   usage: INR
                   description: Currency in which payment has to be paid
+                transaction_id:
+                  required: mandatory
+                  type: string
+                  owner: BPP
+                  usage: INR
+                  description: Currency in whcih payment has to be paid
+                _description:
+                  required: Mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: This attribute defines the payment params for this order.
+              status:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: NOT-PAID
+                description: Status of payment whether paid or not
               url:
                 required: Mandatory
                 type: string
                 owner: BPP
                 usage: https://payment.fis.test.bpp.io
                 description: Url for payment to be paid
+              time:
+                range:
+                  start:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: Start time of insurance policy
+                  end:
+                    required: Mandatory
+                    type: string
+                    owner: BPP
+                    usage: '2023-07-30T07:12:47.419Z'
+                    description: End time of insurance policy
+              type:
+                required: Mandatory
+                type: string
+                owner: BPP
+                usage: PRE-ORDER
+                description: Describes when a payment has to be paid
+              _description:
+                required: Mandatory
+                type: object
+                owner: BAP
+                usage: '--'
+                description: >-
+                  This attribute refers to the terms of settlement that a BAP
+                  insinuates to the BPP for a single transaction. These terms
+                  includes the amount, payment destination, time of settlement
+                  and a transaction reference ID.
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
+            cancellation_terms:
+              _description:
+                required: Mandatory
+                type: '--'
+                owner: BPP
+                usage: '--'
+                description: >-
+                  This refer to the set of terms for cancellation for an item or
+                  an order.
+              cancellation_fee:
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the description of the applied fee on a
+                    particular entity.
+              external_ref:
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: This refers to the url of cancellation terms file.
+              fulfillment_state:
+                _description:
+                  required: optional
+                  type: '--'
+                  owner: BPP
+                  usage: '--'
+                  description: >-
+                    This refers to the fulfillment state of cancellation terms
+                    file.
+                descriptor:
+                  _description:
+                    required: optional
+                    type: '--'
+                    owner: BPP
+                    usage: '--'
+                    description: This refers to the descriptor of fulfillment state
 x-errorcodes:
   code:
     - Event: 'Customer Information Submission failure '
