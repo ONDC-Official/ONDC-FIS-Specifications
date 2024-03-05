@@ -6,7 +6,7 @@ The differentiation in MIME types and additional settings, such as resubmit and 
 
 ## Seller-Side Form:
 
-```shell
+```
 {
   "xinput": {
     "head": {
