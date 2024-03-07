@@ -11560,22 +11560,6 @@ x-flows:
                         time:
                           duration: P1Y
                           label: TENURE
-                        xinput:
-                          head:
-                            descriptor:
-                              name: Manual Review
-                            index:
-                              min: 0
-                              cur: 0
-                              max: 0
-                            headings:
-                              - Manual Review
-                          form:
-                            id: FO3
-                            mime_type: text/html
-                            url: https://fis.test.bpp.io/form/review?formid=FO3
-                            multiple_sumbissions: false
-                          required: true
                         add_ons:
                           - id: A1
                             price:
@@ -11907,21 +11891,6 @@ x-flows:
                         time:
                           duration: P1Y
                           label: TENURE
-                        xinput:
-                          head:
-                            descriptor:
-                              name: Manual Review
-                            index:
-                              min: 0
-                              cur: 0
-                              max: 0
-                            headings:
-                              - Manual Review
-                          form:
-                            id: FO2
-                            mime_type: text/html
-                            url: https://fis.test.bpp.io/form/review?formid=FO3
-                          required: true
                         add_ons:
                           - id: A1
                             price:
@@ -12059,6 +12028,235 @@ x-flows:
                                   code: STATIC_TERMS
                                 value: >-
                                   https://www.icicibank.com/personal-banking/loans/personal-loan
+      - summary: Buyer app selects a vehicle insurance for more details
+        api: select
+        details:
+          - description: >-
+              Buyer app selects a specific motor insurance plan that suits their
+              needs and links the vehicle details submission with it.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+        reference: if any
+        example:
+          value: &ref_21
+            context:
+              action: select
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
+              timestamp: '2023-07-22T15:03:03.335Z'
+              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                items:
+                  - id: CHILD_ITEM_CI1
+                    parent_item_id: I1
+                    add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                provider:
+                  id: P1
+      - summary: Insurer returns the response to selected motor insurance plan
+        api: on_select
+        details:
+          - description: >-
+              Insurer responds to the buyer app requests by sending the manual
+              review form.
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select
+                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end 
+        reference: if any
+        example:
+          value: &ref_25
+            context:
+              action: on_select
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
+              timestamp: '2023-07-22T15:03:18.179Z'
+              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                items:
+                  - id: CHILD_ITEM_CI1
+                    parent_item_id: I1
+                    category_ids:
+                      - C3
+                      - C4
+                      - C5
+                      - C6
+                    descriptor:
+                      name: 2-Wheeler 3rd Party Motor Insurance
+                      short_desc: >-
+                        2-Wheeler 3rd Party Motor Insurance by ABC Insurance
+                        Provider
+                    price:
+                      value: '11531'
+                      currency: INR
+                    tags:
+                      - descriptor:
+                          code: GENERAL_INFO
+                        list:
+                          - value: PERSONAL_ACCIDENT_COVER
+                          - value: DEPRECIATION_COVER
+                          - value: ROAD_SIDE_ASSISTANCE
+                          - value: CONSUMABLES_COVER
+                          - value: ELECTRICAL_ACCESSORIES_COVER
+                          - value: NON_ELECTRICAL_ACCESSORIES_COVER
+                          - value: ENGINE_COVER
+                          - value: EXTERNAL_CNG_OR_LPG_COVER
+                          - value: KEY_COVER
+                          - value: PERSONAL_BAGGAGE_COVER
+                          - value: TYRE_COVER
+                          - value: RETURN_TO_INVOICE
+                          - value: PER_DAY_CASH
+                      - descriptor:
+                          code: VAHAN_DETAILS
+                          name: Vahan Details
+                        list:
+                          - descriptor:
+                              code: MODEL
+                            value: X100
+                          - descriptor:
+                              code: MAKE
+                            value: BMX
+                          - descriptor:
+                              code: FUEL_TYPE
+                            value: Petrol
+                          - descriptor:
+                              code: VARIANT
+                            value: ZX
+                          - descriptor:
+                              code: REGISTERED_CITY
+                            value: Bangalore
+                          - descriptor:
+                              code: REGISTERED_DATE
+                            value: '2022-01-13'
+                          - descriptor:
+                              code: CHASSIS_NUMBER
+                            value: nvuwi3n23io90
+                          - descriptor:
+                              code: ENGINE_NUMBER
+                            value: 98vd98e32
+                          - descriptor:
+                              code: PREVIOUS_POLICY_NUMBER
+                            value: f5f90d6e8f924
+                          - descriptor:
+                              code: PREVIOUS_INSURER
+                            value: XYZ
+                          - descriptor:
+                              code: PREVIOUS_POLICY_END_DATE
+                            value: '2022-01-02'
+                    time:
+                      duration: P1Y
+                      label: TENURE
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Manual Review
+                        index:
+                          min: 0
+                          cur: 0
+                          max: 2
+                        headings:
+                          - Manual Review
+                          - PAN & DOB
+                          - Know your Customer
+                      form:
+                        id: FO3
+                        mime_type: application/html
+                        url: https://fis.test.bpp.io/form/ekyc?formid=FO3
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                    add_ons:
+                      - id: A1
+                        price:
+                          currency: INR
+                          value: '900'
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: Consumables Cover
+                          code: CONSUMABLES_COVER
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                  id: P1
+                quote:
+                  id: Q1
+                  price:
+                    currency: INR
+                    value: '12505'
+                  breakup:
+                    - price:
+                        value: '11531'
+                        currency: INR
+                      title: BASE_PRICE
+                    - price:
+                        value: '50'
+                        currency: INR
+                      title: CONVIENCE_FEE
+                    - price:
+                        value: '30'
+                        currency: INR
+                      title: TAX
+                    - price:
+                        value: '20'
+                        currency: INR
+                      title: PROCESSING_FEE
+                    - title: ADD_ONS
+                      item:
+                        id: A1
+                      price:
+                        value: '900'
+                        currency: INR
       - summary: Buyer app fetches the manual review form
         api: form
         details:
@@ -12077,7 +12275,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Form Service: Form Submission
                 Insurer Form Service-->>Buyer Platform (BAP): Submission ID
                 end
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status(with submissionID)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): status
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
@@ -12107,7 +12305,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_34
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -12150,7 +12348,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_35
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -12185,6 +12383,7 @@ x-flows:
                         Provider
                     price:
                       value: '11531'
+                      currency: INR
                     tags:
                       - descriptor:
                           code: GENERAL_INFO
@@ -12300,13 +12499,32 @@ x-flows:
                       price:
                         value: '900'
                         currency: INR
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: INSPECTION_SUCCESSFUL
-                        name: Inspection Successful
-                        short_desc: Insepction for motor insurance is successful
-                    id: F1
+                payments:
+                  - collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'TRUE'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
       - summary: Buyer app selects a vehicle insurance for more details
         api: select
         details:
@@ -12315,24 +12533,17 @@ x-flows:
               needs and links the vehicle details submission with it.
             mermaid: |-
               sequenceDiagram
-                title  Selection
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
                 rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+                Buyer Platform (BAP)->>Insurer Platform (BPP): select
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
                 end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value:
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -12355,16 +12566,17 @@ x-flows:
                 items:
                   - id: CHILD_ITEM_CI1
                     parent_item_id: I1
-                    category_ids:
-                      - C3
-                      - C4
-                      - C5
-                      - C6
                     add_ons:
                       - id: A1
                         quantity:
                           selected:
                             count: 1
+                    xinput:
+                      form:
+                        id: F03
+                      form_response:
+                        status: SUCCESS
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
                 provider:
                   id: P1
       - summary: Insurer returns the response to selected motor insurance plan
@@ -12375,22 +12587,14 @@ x-flows:
               form like PAN & DOB.
             mermaid: |-
               sequenceDiagram
-                title  Selection
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                
-                participant Insurer Form Service
-                Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
-                Insurer Form Service-->>Buyer Platform (BAP): Form Received
-                Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-                Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-                
-                Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end
+                 participant Buyer Platform (BAP)
+                 participant Insurer Platform (BPP)
+                 Buyer Platform (BAP)->>Insurer Platform (BPP): select
+                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                 rect rgb(191, 223, 255)
+                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                 end
         reference: if any
         example:
           value: &ref_23
@@ -12492,9 +12696,10 @@ x-flows:
                           name: PAN & DOB
                         index:
                           min: 0
-                          cur: 0
-                          max: 1
+                          cur: 1
+                          max: 2
                         headings:
+                          - Manual Review
                           - PAN & DOB
                           - Know your Customer
                       form:
@@ -12648,11 +12853,6 @@ x-flows:
                 items:
                   - id: CHILD_ITEM_CI1
                     parent_item_id: I1
-                    category_ids:
-                      - C3
-                      - C4
-                      - C5
-                      - C6
                     add_ons:
                       - id: A1
                         quantity:
@@ -12660,7 +12860,7 @@ x-flows:
                             count: 1
                     xinput:
                       form:
-                        id: F05
+                        id: F04
                       form_response:
                         status: SUCCESS
                         submission_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
@@ -12788,12 +12988,13 @@ x-flows:
                     xinput:
                       head:
                         descriptor:
-                          name: PAN & DOB
+                          name: Know your Customer
                         index:
                           min: 0
-                          cur: 1
-                          max: 1
+                          cur: 2
+                          max: 2
                         headings:
+                          - Manual Review
                           - PAN & DOB
                           - Know your Customer
                       form:
@@ -12924,7 +13125,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_27
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -13035,7 +13236,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_29
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -13329,7 +13530,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_26
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -13442,7 +13643,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_28
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -13731,7 +13932,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_30
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -13816,7 +14017,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_31
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -14062,7 +14263,7 @@ x-flows:
                  Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_32
             context:
               action: update
               bap_id: fis.test.bap.io
@@ -14105,7 +14306,7 @@ x-flows:
                  end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_33
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -14371,214 +14572,53 @@ x-examples:
             value: *ref_24
           - summary: on_select-request-manual-review
             description: TBD
-            value:
-              context:
-                action: on_select
-                bap_id: fis.test.bap.io
-                bap_uri: https://fis.test.bap.io/
-                bpp_id: fis.test.bpp.io
-                bpp_uri: https://fis.test.bpp.io/
-                domain: ONDC:FIS13
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                message_id: bfa97ac4-0c6f-4fa7-a287-be61f2aa1c1d
-                timestamp: '2023-07-22T15:03:18.179Z'
-                transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-                ttl: PT24H
-                version: 2.0.0
-              message:
-                order:
-                  items:
-                    - id: CHILD_ITEM_CI1
-                      parent_item_id: I1
-                      category_ids:
-                        - C3
-                        - C4
-                        - C5
-                        - C6
-                      descriptor:
-                        name: 2-Wheeler 3rd Party Motor Insurance
-                        short_desc: >-
-                          2-Wheeler 3rd Party Motor Insurance by ABC Insurance
-                          Provider
-                      price:
-                        value: '11531'
-                        currency: INR
-                      tags:
-                        - descriptor:
-                            code: GENERAL_INFO
-                          list:
-                            - value: PERSONAL_ACCIDENT_COVER
-                            - value: DEPRECIATION_COVER
-                            - value: ROAD_SIDE_ASSISTANCE
-                            - value: CONSUMABLES_COVER
-                            - value: ELECTRICAL_ACCESSORIES_COVER
-                            - value: NON_ELECTRICAL_ACCESSORIES_COVER
-                            - value: ENGINE_COVER
-                            - value: EXTERNAL_CNG_OR_LPG_COVER
-                            - value: KEY_COVER
-                            - value: PERSONAL_BAGGAGE_COVER
-                            - value: TYRE_COVER
-                            - value: RETURN_TO_INVOICE
-                            - value: PER_DAY_CASH
-                        - descriptor:
-                            code: VAHAN_DETAILS
-                            name: Vahan Details
-                          list:
-                            - descriptor:
-                                code: MODEL
-                              value: X100
-                            - descriptor:
-                                code: MAKE
-                              value: BMX
-                            - descriptor:
-                                code: FUEL_TYPE
-                              value: Petrol
-                            - descriptor:
-                                code: VARIANT
-                              value: ZX
-                            - descriptor:
-                                code: REGISTERED_CITY
-                              value: Bangalore
-                            - descriptor:
-                                code: REGISTERED_DATE
-                              value: '2022-01-13'
-                            - descriptor:
-                                code: CHASSIS_NUMBER
-                              value: nvuwi3n23io90
-                            - descriptor:
-                                code: ENGINE_NUMBER
-                              value: 98vd98e32
-                            - descriptor:
-                                code: PREVIOUS_POLICY_NUMBER
-                              value: f5f90d6e8f924
-                            - descriptor:
-                                code: PREVIOUS_INSURER
-                              value: XYZ
-                            - descriptor:
-                                code: PREVIOUS_POLICY_END_DATE
-                              value: '2022-01-02'
-                      time:
-                        duration: P1Y
-                        label: TENURE
-                      xinput:
-                        head:
-                          descriptor:
-                            name: PAN & DOB
-                          index:
-                            min: 0
-                            cur: 0
-                            max: 2
-                          headings:
-                            - Manual Review
-                            - PAN & DOB
-                            - Know your Customer
-                        form:
-                          id: FO3
-                          mime_type: application/html
-                          url: https://fis.test.bpp.io/form/ekyc?formid=FO3
-                          resubmit: false
-                          multiple_sumbissions: false
-                        required: true
-                      add_ons:
-                        - id: A1
-                          price:
-                            currency: INR
-                            value: '900'
-                          quantity:
-                            selected:
-                              count: 1
-                          descriptor:
-                            name: Consumables Cover
-                            code: CONSUMABLES_COVER
-                  provider:
-                    descriptor:
-                      long_desc: >-
-                        ABC Insurance Ltd. Deals in multiple Insurance Services
-                        like Health, Motor, Marine etc
-                      name: ABC Insurance Ltd.
-                      short_desc: 'ABC Insurance Ltd. India '
-                      images:
-                        - url: >-
-                            https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                    id: P1
-                  quote:
-                    id: Q1
-                    price:
-                      currency: INR
-                      value: '12505'
-                    breakup:
-                      - price:
-                          value: '11531'
-                          currency: INR
-                        title: BASE_PRICE
-                      - price:
-                          value: '50'
-                          currency: INR
-                        title: CONVIENCE_FEE
-                      - price:
-                          value: '30'
-                          currency: INR
-                        title: TAX
-                      - price:
-                          value: '20'
-                          currency: INR
-                        title: PROCESSING_FEE
-                      - title: ADD_ONS
-                        item:
-                          id: A1
-                        price:
-                          value: '900'
-                          currency: INR
+            value: *ref_25
       init:
         examples:
           - summary: init-request-personal
             description: TBD
-            value: *ref_25
+            value: *ref_26
           - summary: init-request-vehicle-nominee
             description: TBD
-            value: *ref_26
+            value: *ref_27
       on_init:
         examples:
           - summary: on_init-request-personal-info
             description: TBD
-            value: *ref_27
+            value: *ref_28
           - summary: on_init-request-vehicle-info
             description: TBD
-            value: *ref_28
+            value: *ref_29
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_29
+            value: *ref_30
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_30
+            value: *ref_31
       update:
         examples:
           - summary: update
             description: TBD
-            value: *ref_31
+            value: *ref_32
       on_update:
         examples:
           - summary: on_update_fulfilment
             description: TBD
-            value: *ref_32
+            value: *ref_33
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_33
+            value: *ref_34
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_34
+            value: *ref_35
 x-attributes:
   motor-insurance:
     attribute_set:
@@ -15598,7 +15638,7 @@ x-attributes:
                 description: |
                   Unique id of item
               category_ids:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: bpd4ea25
@@ -16446,7 +16486,7 @@ x-attributes:
                     This attribute refers to the information about additional
                     input required from the customer to confirm this order.
               category_ids:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: bpd4ea25
@@ -17522,7 +17562,7 @@ x-attributes:
                 description: |
                   Unique id of item
               category_ids:
-                required: mandatory
+                required: optional
                 type: string
                 owner: BPP
                 usage: bpd4ea25
@@ -19252,7 +19292,7 @@ x-attributes:
           order:
             provider:
               id:
-                required: Optional
+                required: Mandatory
                 type: string
                 owner: BAP
                 usage: P1
@@ -19296,7 +19336,7 @@ x-attributes:
             items:
               add_ons:
                 id:
-                  required: optional
+                  required: Mandatory
                   type: string
                   owner: BAP
                   usage: A1
@@ -19304,7 +19344,7 @@ x-attributes:
                 quantity:
                   selected:
                     count:
-                      required: optional
+                      required: Mandatory
                       type: number
                       owner: BAP
                       usage: 1
@@ -19322,34 +19362,47 @@ x-attributes:
                     owner: BPP
                     usage: CONSUMABLES_COVER
                     description: Describes the code of the add_on item
+                price:
+                  currency:
+                    required: optional
+                    type: number
+                    owner: BPP
+                    usage: INR
+                    description: Describes the currency of the selected add_on
+                  value:
+                    required: optional
+                    type: number
+                    owner: BPP
+                    usage: 850
+                    description: Describes the value of the selected add_on
               id:
-                required: optional
+                required: Mandatory
                 type: string
                 owner: BAP
                 usage: I1
                 description: Unique id of item
               time:
                 duration:
-                  required: optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: P1Y
                   description: Describes duration as per ISO8601 format
                 label:
-                  required: optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: TENURE
                   description: Label value of the time
               descriptor:
                 name:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: 2-Wheeler 3rd Party Motor Insurance
                   description: Type of insurance for the particular category
                 short_desc:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: >-
@@ -19357,7 +19410,7 @@ x-attributes:
                     Provider
                   description: Short description about the insurance type
               parent_item_id:
-                required: Optional
+                required: Mandatory
                 type: string
                 owner: BPP
                 usage: 1xd4ea25
@@ -19372,23 +19425,47 @@ x-attributes:
                   Unique id of category
               price:
                 value:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: 900
                   description: Describes the item's amount
                 currency:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: INR
                   description: Describes the item's currency
               fulfillment_ids:
-                required: Optional
+                required: Mandatory
                 type: string
                 owner: BPP
                 usage: ce423Erf
                 description: Describes the fulfillment ID's associated to an Item
+              xinput:
+                form_response:
+                  submission_id:
+                    required: mandatory
+                    type: string
+                    owner: BAP
+                    usage: a4db048b-d07c-40e0-9c0b-b7f006c4df74
+                    description: >-
+                      Unique submission id which a buyer got as a reponse after
+                      successful submission of form 
+                  status:
+                    required: mandatory
+                    type: string
+                    owner: BAP
+                    usage: SUCCESS
+                    description: Describes the status of form
+                form:
+                  id:
+                    required: mandatory
+                    type: string
+                    owner: BPP
+                    usage: xd2344Re
+                    description: |
+                      Describes the unique form id.
             fulfillments:
               customer:
                 contact:
@@ -19418,9 +19495,21 @@ x-attributes:
                     owner: BPP
                     usage: GRANTED
                     description: Describes the current state of the fulfillment
+                  name:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Inspection Successful
+                    description: Describes the fulfillments state name
+                  short_desc:
+                    required: optional
+                    type: string
+                    owner: BPP
+                    usage: Insepction for motor insurance is successful
+                    description: Describes the fulfillments state short description
             payments:
               collected_by:
-                required: optional
+                required: Mandatory
                 type: string
                 owner: BPP
                 usage: BPP
@@ -19477,7 +19566,7 @@ x-attributes:
                 description: Describes payment url
             quote:
               id:
-                required: Optional
+                required: Mandatory
                 type: string
                 owner: BPP
                 usage: Q1
@@ -19485,19 +19574,19 @@ x-attributes:
               breakup:
                 price:
                   value:
-                    required: Optional
+                    required: Mandatory
                     type: string
                     owner: BPP
                     usage: 3634
                     description: Describes price value for that particular breakup
                   currency:
-                    required: Optional
+                    required: Mandatory
                     type: string
                     owner: BPP
                     usage: INR
                     description: Describes the currency of breakup
                 title:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: Basic OD
@@ -19517,13 +19606,13 @@ x-attributes:
                     description: Describes the item for quotes breakup
               price:
                 value:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: 12505
                   description: Value of order price
                 currency:
-                  required: Optional
+                  required: Mandatory
                   type: string
                   owner: BPP
                   usage: INR
