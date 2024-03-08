@@ -210,6 +210,44 @@ steps:
     example:
       value:
         $ref: "../../examples/motor-insurance/on_search/on_search-request-multi-offer.yaml"  
+  
+  - summary: Buyer app selects a vehicle insurance for more details
+    api: select
+    details:
+      - description: Buyer app selects a specific motor insurance plan that suits their needs and links the vehicle details submission with it.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/select/select-request-vehicle-info.yaml"
+  - summary: Insurer returns the response to selected motor insurance plan
+    api: on_select
+    details:
+      - description: Insurer responds to the buyer app requests by sending the manual review form.
+        mermaid: >-
+          sequenceDiagram
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end 
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_select/on_select-request-manual-review.yaml"
   - summary: Buyer app fetches the manual review form
     api: form
     details:
@@ -226,7 +264,7 @@ steps:
             Buyer Platform (BAP)->>Insurer Form Service: Form Submission
             Insurer Form Service-->>Buyer Platform (BAP): Submission ID
             end
-            Buyer Platform (BAP)->>Insurer Platform (BPP): status(with submissionID)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status
             Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
@@ -234,58 +272,7 @@ steps:
     example:
       value: 
         $ref: "../../examples/motor-insurance/form/manual-review.html"
-  # - summary: Buyer app selects a vehicle insurance for more details
-  #   api: select
-  #   details:
-  #     - description: Buyer app selects a specific motor insurance plan that suits their needs and links the vehicle details submission with it.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Selection
-  #           participant Buyer Platform (BAP)
-  #           participant Insurer Platform (BPP)
-            
-  #           participant Insurer Form Service
-  #           Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
-  #           Insurer Form Service-->>Buyer Platform (BAP): Form Received
-  #           Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-  #           Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-  #           rect rgb(191, 223, 255)
-  #           Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-  #           Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-  #           end
-  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-  #   reference: if any
-  #   example:
-  #     value:
-  #       $ref: "../../examples/motor-insurance/select/select-request-vehicle-info.yaml"
-  # - summary: Insurer returns the response to selected motor insurance plan
-  #   api: on_select
-  #   details:
-  #     - description: Insurer responds to the buyer app requests by sending the manual review form.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Selection
-  #           participant Buyer Platform (BAP)
-  #           participant Insurer Platform (BPP)
-            
-  #           participant Insurer Form Service
-  #           Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
-  #           Insurer Form Service-->>Buyer Platform (BAP): Form Received
-  #           Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-  #           Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-            
-  #           Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
-  #           Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-  #           rect rgb(191, 223, 255)
-  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
-  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-  #           end
-  #   reference: if any
-  #   example:
-  #     value:
-  #       $ref: "../../examples/motor-insurance/on_select/on_select-request-manual-review.yaml"
-
+ 
   - summary: Buyer app seeks the most recent manual review status update
     api: status
     details:
@@ -338,17 +325,10 @@ steps:
       - description: Buyer app selects a specific motor insurance plan that suits their needs and links the vehicle details submission with it.
         mermaid: >-
           sequenceDiagram
-            title  Selection
             participant Buyer Platform (BAP)
             participant Insurer Platform (BPP)
-            
-            participant Insurer Form Service
-            Buyer Platform (BAP)->> Insurer Form Service: Get Form(personal information)
-            Insurer Form Service-->>Buyer Platform (BAP): Form Received
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
             rect rgb(191, 223, 255)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select
             Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
             end
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
@@ -356,24 +336,16 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/motor-insurance/select/select-request-vehicle-info.yaml"
+        $ref: "../../examples/motor-insurance/select/select-request-manual-review.yaml"
   - summary: Insurer returns the response to selected motor insurance plan
     api: on_select
     details:
       - description: Insurer responds to the buyer app requests by sending the details form like PAN & DOB.
         mermaid: >-
-          sequenceDiagram
-            title  Selection
+         sequenceDiagram
             participant Buyer Platform (BAP)
             participant Insurer Platform (BPP)
-            
-            participant Insurer Form Service
-            Buyer Platform (BAP)->> Insurer Form Service:  Get Form(personal information)
-            Insurer Form Service-->>Buyer Platform (BAP): Form Received
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
-            
-            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select
             Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
             rect rgb(191, 223, 255)
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
