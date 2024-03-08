@@ -14,7 +14,7 @@ ONDC Financial Services developer guide [link](https://ondc-official.github.io/O
 
 | Version | Release Date | beckn Version                               | Comments                                                                                         |
 | ------- | ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| v2.0.0  | 21 Feb 2024  | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Base version of credit for personal loan is completed |
+| v2.0.0  | 8 Mar 2024  | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Base version of credit for personal loan is completed |
 
 ## Introduction
 
