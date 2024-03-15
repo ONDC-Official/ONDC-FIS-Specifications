@@ -97,7 +97,7 @@ steps:
       value:
         $ref: "../../examples/mutual-funds/on_search/on_search-request_1.2.yaml"
 
-# sip select on_select
+ # select on_select
   - summary: Buyer selects the item for ECAN Registration transaction 
     api: select
     details:
@@ -116,8 +116,8 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/select/select-ECAN Registration-1.2.yaml"
-  - summary: Seller app returns the response to selected mutual fund with xinput forms.
+        $ref: "../../examples/mutual-funds/select/ecan-registration_1.yaml"
+  - summary: Seller app returns the response to selected item with xinput forms.
     api: on_select
     details:
       - description: Seller app returns the response to selected mutual fund with ECAN Registration info form.
@@ -135,7 +135,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_select/on_select-request-ECAN Registration_1.2.yaml"      
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-ecan_1.yaml"      
  
   - summary: Get the ECAN Registration form
     api: form
@@ -175,7 +175,87 @@ steps:
             end
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_status/on_status_request-ECAN Registration-on_select-1.2.yaml" 
+        $ref: "../../examples/mutual-funds/on_status/on_status_request_registration_on_select_1.yaml" 
+ 
+  - summary: Buyer selects the item for ECAN Registration transaction 
+    api: select
+    details:
+      - description: Buyer selects the item for ECAN Registration transaction with pan & other details.
+        mermaid: &select >-
+          sequenceDiagram
+            title MF Ordering - Selection
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            rect rgb(191, 223, 255)
+            Investment Platform ->> Fund Aggregator / Direct Fund: select
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/select/ecan-registration_2.yaml"
+  - summary: Seller app returns the response to selected mutual fund with xinput forms.
+    api: on_select
+    details:
+      - description: Seller app returns the response to selected mutual fund with ECAN Registration info form.
+        mermaid: &onSelect >-
+          sequenceDiagram
+            title MF Ordering - Selection
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: select
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+            end
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form
+           Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_select/on_select-request-ecan_2.yaml"      
+ 
+  - summary: Get Bank Details Form
+    api: form
+    details:
+      - description: Provider platform sends the form for Bank Details.
+        mermaid: &selectForm >-
+            sequenceDiagram
+              title MF Ordering - Selection
+              Participant Investment Platform
+              Participant Fund Aggregator / Direct Fund
+              Investment Platform ->> Fund Aggregator / Direct Fund: select
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+              rect rgb(191, 223, 255)
+              Fund Aggregator / Direct Fund ->>  Investment Platform : form
+              end
+              Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
+
+  
+  - summary: The Fund Aggregator shares the latest status with the Buyer.
+    api: on_status
+    details:
+      - description: Provider sends timely updates about your ECAN Registration after significant milestones, ensuring you're informed throughout the ECAN Registration journey.
+        mermaid: >-
+          sequenceDiagram
+            title MF Ordering - Selection
+            Participant Investment Platform
+            Participant Fund Aggregator / Direct Fund
+            Investment Platform ->> Fund Aggregator / Direct Fund: select
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_select
+            Fund Aggregator / Direct Fund ->>  Investment Platform : form
+            rect rgb(191, 223, 255)
+            Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
+            end
+    example:
+      value:
+        $ref: "../../examples/mutual-funds/on_status/on_status_request_registration_on_select_2.yaml" 
+ 
  
  
 
@@ -198,7 +278,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/mutual-funds/init/init_request_ECAN Registration_1.2.yaml"
+        $ref: "../../examples/mutual-funds/init/init_request_registration.yaml"
 
   - summary: Receive the final investment offer and terms after submitting additional information.
     api: on_init
@@ -218,11 +298,11 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_init/on_init-request-ECAN Registration-1.2.yaml" 
-  - summary: Get the Mutual fund agreement form(Redirection)
+        $ref: "../../examples/mutual-funds/on_init/on_init-request-registration.yaml" 
+  - summary: Get the Regisration agreement Form
     api: form
     details:
-      - description: Provider platform sends the form for Mutual fund Agreement.
+      - description: Provider platform sends the form for Regisration agreement.
         mermaid: >-
           sequenceDiagram
             title MF Ordering - Initializing Order
@@ -239,41 +319,6 @@ steps:
       value: 
         $ref: ../../examples/mutual-funds/forms/mutual-funds-payment-info.html
 
-  # check ECAN Registration status(Initiated) 
-  # - summary: Request real-time updates on the status of ECAN Registration.
-  #   api: status
-  #   details:
-  #     - description: Request the most recent updates regarding the status of your ECAN Registration, ensuring you stay informed about its progress.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           Participant Investment Platform
-  #           Participant Fund Aggregator / Direct Fund
-  #           rect rgb(191, 223, 255)
-  #           Investment Platform ->> Fund Aggregator / Direct Fund: status
-  #           end
-  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-  #   reference: if any
-  #   example:
-  #     value:
-  #       $ref: "../../examples/mutual-funds/status/status-request-withdrawal-1.2.yaml" 
-
-  # - summary: Receive real-time updates on your ECAN Registration after each milestone.
-  #   api: on_status
-  #   details:
-  #     - description: Provider sends timely updates about your ECAN Registration after significant milestones, ensuring you're informed throughout the ECAN Registration journey.
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           Participant Investment Platform
-  #           Participant Fund Aggregator / Direct Fund
-  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_update
-  #           Investment Platform ->> Fund Aggregator / Direct Fund: status
-  #           rect rgb(191, 223, 255)
-  #           Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
-  #           end
-  #   example:
-  #     value:
-  #       $ref: "../../examples/mutual-funds/on_status/on_status_request-ECAN Registration-initiated-1.2.yaml" 
- 
   - summary: The Fund Aggregator shares the latest status with the Buyer.
     api: on_status
     details:
@@ -291,7 +336,7 @@ steps:
             end
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_status/on_status_request-ECAN Registration-on_init-1.2.yaml" 
+        $ref: "../../examples/mutual-funds/on_status/on_status_request_registration_on_init_1.yaml" 
  
  
 
@@ -310,7 +355,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/confirm/confirm-request-ECAN Registration-1.2.yaml"         
+        $ref: "../../examples/mutual-funds/confirm/confirm-request-registration.yaml"         
 
   - summary: Seller app validate and approve the Mutual Fund investment application.
     api: on_confirm
@@ -327,4 +372,4 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-ECAN Registration-1.2.yaml" 
+        $ref: "../../examples/mutual-funds/on_confirm/on_confirm-request-registration.yaml" 
