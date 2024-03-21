@@ -3,7 +3,7 @@ const yaml = require("js-yaml");
 const fs = require("fs");
 
 async function buildTlc() {
-  const workSheetsFromBuffer = xlsx.parse(`../../tlc.xlsx`);
+  const workSheetsFromBuffer = xlsx.parse(`./TLC Contract - Credit_Loan.xlsx`);
   const outputObject = workSheetsFromBuffer[0]?.data.filter((item,index)=>item.length>0 && index!==0).map((item) => {
     return {'Term':item[0],
     'Api':item[1],
