@@ -1,4 +1,4 @@
-## Log submission Scenarios for Insuarance
+## Log submission Scenarios for Insuarance & Igm
 
 #### Instructions
 
@@ -8,6 +8,7 @@
 - Create PR with a label denoting the domain name.
 - Once submitted, please refer to the comments on logs submitted and update the PR based on the comments provided.
 - Once the reviews are done, the PR will be merged and the logs shall be considered as approved on pr merge
+- For IGM logs, create a folder with name igm under your entity named folder.
 
 ### File Naming conventions:
 
@@ -31,7 +32,7 @@ These naming conventions ensure clear identification and organization of files b
 
 ### Log Verification
 
-To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis](https://log-validation.ondc.org/api/validate/fis) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
+#### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis](https://log-validation.ondc.org/api/validate/fis) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
 
 Available flows are:
 - HEALTH
@@ -85,7 +86,7 @@ Marine:
     "init": {},
     "on_init": {},
     "confirm": {},
-    "on_confirm": {},
+    "on_confirm": {}
   }
 }
 ```
@@ -122,5 +123,24 @@ Motor:
 ```
 
 The api call sequence inside the payload object might differ based on different flows
+
+#### For Igm logs, use POST api exposed at [https://log-validation.ondc.org/api/validate/igm](https://log-validation.ondc.org/api/validate/igm)
+
+The body structure for igm logs:
+
+```json
+{
+  "domain": "",
+  "version": "1.0.0",
+  "payload": {
+    "ret_issue": {},
+    "ret_issue_close": {},
+    "ret_on_issue": {},
+    "ret_issue_status": {},
+    "ret_on_issue_status": {},
+    "ret_on_issue_status_unsolicited": {}
+  }
+}
+```
 
 _Note: Log verification will follow a FIFO model with a TAT of 4 days_
