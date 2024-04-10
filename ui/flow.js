@@ -28,14 +28,14 @@ async function loadSteps(steps) {
     
     if (details && details?.length) {
       for (const [innerIndex, detail] of details.entries()) {
-        var mermaidPane = document.createElement("description-mermaid");
+        var mermaidPane = document.createElement("div");
         const { description, mermaid: mermaidGraph } = detail;
         let result;
         if (mermaidGraph) {
           let removeBacktick = mermaidGraph?.replace(/`/g, "");
           result = await mermaid.render(`summary${index}`, removeBacktick);
         }
-        const {svg} = result || ''
+        const { svg } = result || ''
         mermaidPane.innerHTML =
           "<p>" +
           `${innerIndex + 1}) ${description}` +
@@ -80,6 +80,8 @@ async function loadSteps(steps) {
     content.appendChild(yamlDiv);
     yamlDiv.appendChild(copyButton);
 
+    yamlDiv.appendChild(copyButton);
+
     link.addEventListener("click", function (event) {
       event.preventDefault();
       document.querySelectorAll(".step-item").forEach(function (item) {
@@ -95,6 +97,12 @@ async function loadSteps(steps) {
     contentPane.appendChild(content);
   }
 }
+
+
+
+
+
+
 
 function updateFlow() {
   var flowDropdown = document.getElementById("flow-dropdown");
@@ -122,9 +130,9 @@ async function loadFlow(flowName) {
         let removeBacktick = mermaidGraph?.replace(/`/g, "");
         result = await mermaid.render(`main-summary${index}`, removeBacktick);
       }
-      const {svg} = result || ''
+      const { svg } = result || ''
       mermaidPane.innerHTML =
-        "<p>" + `${index + 1}) ${description}` + "<p>" + "<p>" + (svg|| '') + "<p>";
+        "<p>" + `${index + 1}) ${description}` + "<p>" + "<p>" + (svg || '') + "<p>";
 
       mermaidDiv.appendChild(mermaidPane);
     }
