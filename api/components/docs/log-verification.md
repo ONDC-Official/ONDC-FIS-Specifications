@@ -1,4 +1,4 @@
-## Log submission Scenarios for Personal Loan
+## Log submission Scenarios for Personal Loan & Igm
 
 #### Instructions
 
@@ -8,6 +8,7 @@
 - Create PR and label it with your domain name.
 - Once submitted, please refer to the comments on logs submitted and update the PR based on the comments provided.
 - Once the reviews are done, the PR will be merged and the logs shall be considered as approved on pr merge
+- For IGM logs, create a folder with name igm under your entity named folder.
 
 ### File Naming conventions:
 
@@ -61,7 +62,7 @@ These naming conventions ensure clear identification and organization of files b
 
 ### Log Verification
 
-To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis/fis12](https://log-validation.ondc.org/api/validate/fis/fis12) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
+#### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis/fis12](https://log-validation.ondc.org/api/validate/fis/fis12) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
 
 Available flows are:
 
@@ -98,6 +99,26 @@ The payload structure for validation is as follows:
     "on_status": {},
     "update": {},
     "on_update": {}
+  }
+}
+```
+
+
+#### For Igm logs, use POST api exposed at [https://log-validation.ondc.org/api/validate/igm](https://log-validation.ondc.org/api/validate/igm)
+
+The body structure for igm logs:
+
+```json
+{
+  "domain": "",
+  "version": "1.0.0",
+  "payload": {
+    "ret_issue": {},
+    "ret_issue_close": {},
+    "ret_on_issue": {},
+    "ret_issue_status": {},
+    "ret_on_issue_status": {},
+    "ret_on_issue_status_unsolicited": {}
   }
 }
 ```
