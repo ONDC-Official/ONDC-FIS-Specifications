@@ -49,7 +49,6 @@ async function loadSteps(steps) {
     }
 
     const copyButton = document.createElement("div");
-    copyButton.textContent = "";
     copyButton.classList.add("copy-code-button");
     copyButton.style.backgroundImage = 'url("icons/icon-copy.png")';
 
