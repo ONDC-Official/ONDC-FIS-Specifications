@@ -52,7 +52,7 @@ async function loadSteps(steps) {
     const copyButton = document.createElement("div");
     copyButton.textContent = "";
     copyButton.classList.add("copy-code-button");
-    copyButton.style.backgroundImage = 'url("../icons/icon-copy.png")';
+    copyButton.style.backgroundImage = 'url("https://ref-logistics-app-pre-prod-bucket.s3.ap-south-1.amazonaws.com/pdfs/icon-copy.png")';
 
     copyButton.addEventListener("click", function (event) {
       event.preventDefault();
@@ -62,9 +62,9 @@ async function loadSteps(steps) {
       textArea.select();
       document.execCommand("copy");
       document.body.removeChild(textArea);
-      copyButton.style.backgroundImage = 'url("../icons/icon-tick.png")';
+      copyButton.style.backgroundImage = 'url("https://ref-logistics-app-pre-prod-bucket.s3.ap-south-1.amazonaws.com/pdfs/icon-tick.png")';
       setTimeout(() => {
-        copyButton.style.backgroundImage = 'url("../icons/icon-copy.png")';
+        copyButton.style.backgroundImage = 'url("https://ref-logistics-app-pre-prod-bucket.s3.ap-south-1.amazonaws.com/pdfs/icon-copy.png")';
       }, 2000)
     });
 
