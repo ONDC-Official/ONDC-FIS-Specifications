@@ -1,6 +1,6 @@
 The following data points cover all the information about the investor, BPPs can ask for, in xinput. It is used for new folio opening. BPPs can ask for all this or a subset of this from the BAP.
 
-```json
+```jsonc
 {
     "new_folio": [
         "pan",
