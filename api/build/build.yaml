@@ -1883,6 +1883,9 @@ components:
             - ACTIVE
             - COMPLETE
             - CANCELLED
+            - CREATED
+            - ACCEPTED
+            - REJECTED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -1895,6 +1898,7 @@ components:
           enum:
             - DRAFT
             - DEFAULT
+            - PURCHASE
         provider:
           description: Details of the provider whose catalog items have been selected.
           allOf:
@@ -2096,6 +2100,9 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
+            - EXISTING_MANDATE
+            - NEW_MANDATE_REGISTRATION
+            - MANDATE_DEBIT
         status:
           type: string
           enum:
@@ -2103,6 +2110,7 @@ components:
             - NOT-PAID
             - DELAYED
             - DEFERRED
+            - FAILED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -3000,11 +3008,31 @@ x-enum:
   init:
     context: *ref_0
     message:
-      order: *ref_4
+      order:
+        items: *ref_1
+        fulfillments: *ref_2
+        payments: *ref_3
+        type:
+          - code: PURCHASE
+            description: Its a purchase order
+            reference: <PR/Issue/Discussion Links md format text
   on_init:
     context: *ref_0
     message:
-      order: *ref_4
+      order:
+        items: *ref_1
+        fulfillments: *ref_2
+        payments: *ref_3
+        status: &ref_5
+          - code: CANCELLED
+            description: Reflects current order status
+            reference: <PR/Issue/Discussion Links md format text
+          - code: CREATED
+            description: Reflects current order status
+            reference: <PR/Issue/Discussion Links md format text
+          - code: ACCEPTED
+            description: Reflects current order status
+            reference: <PR/Issue/Discussion Links md format text
   confirm:
     context: *ref_0
     message:
@@ -3016,12 +3044,17 @@ x-enum:
         items: *ref_1
         fulfillments: *ref_2
         payments: *ref_3
+        status: *ref_5
   status:
     context: *ref_0
   on_status:
     context: *ref_0
     message:
-      order: *ref_4
+      order:
+        items: *ref_1
+        fulfillments: *ref_2
+        payments: *ref_3
+        status: *ref_5
   cancel:
     context: *ref_0
   on_cancel:
@@ -3031,15 +3064,12 @@ x-enum:
         items: *ref_1
         fulfillments: *ref_2
         payments: *ref_3
-        status:
-          - code: CANCELLED
-            description: Reflects current order status
-            reference: <PR/Issue/Discussion Links md format text
+        status: *ref_5
 x-tags:
   search:
     message:
       intent:
-        payment: &ref_5
+        payment: &ref_6
           tags:
             - code: BUYER_FINDER_FEES
               description: Describes the finder fees for buyer
@@ -3110,7 +3140,7 @@ x-tags:
               - code: SCHEME_INFO
                 description: describes the general fund Information
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_6
+                list: &ref_7
                   - code: SCHEME_NAME
                     description: Describes, the scheme name.
                     reference: <PR/Issue/Discussion Links md format text>
@@ -3329,8 +3359,8 @@ x-tags:
                       Describes, indicate the Sub-category type within the main
                       category for the scheme Plan.
                     reference: <PR/Issue/Discussion Links md format text>
-          payments: *ref_5
-  select: &ref_7
+          payments: *ref_6
+  select: &ref_8
     message:
       order:
         items:
@@ -3338,7 +3368,7 @@ x-tags:
             - code: SCHEME_INFO
               description: describes the general Information of the funds
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_6
+              list: *ref_7
         fulfillments:
           tags:
             - code: WITHDRAWAL_INFO
@@ -3483,14 +3513,14 @@ x-tags:
                     Describes, The permissible dates for systematic transactions
                     by the Fund.
                   reference: <PR/Issue/Discussion Links md format text>
-        payments: *ref_5
-  on_select: *ref_7
-  init: *ref_7
-  on_init: *ref_7
-  confirm: *ref_7
-  on_confirm: *ref_7
-  on_status: *ref_7
-  on_update: *ref_7
+        payments: *ref_6
+  on_select: *ref_8
+  init: *ref_8
+  on_init: *ref_8
+  confirm: *ref_8
+  on_confirm: *ref_8
+  on_status: *ref_8
+  on_update: *ref_8
 x-flows:
   - summary: Mutual funds
     details:
@@ -3567,7 +3597,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: &ref_8
+          value: &ref_9
             context:
               domain: ONDC:FIS14
               location:
@@ -3644,7 +3674,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_9
+          value: &ref_10
             context:
               domain: ONDC:FIS14
               location:
@@ -4365,7 +4395,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_19
             context:
               domain: ONDC:FIS14
               location:
@@ -4438,7 +4468,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_21
             context:
               domain: ONDC:FIS14
               location:
@@ -4560,7 +4590,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_14
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -4682,7 +4712,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_15
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -4857,7 +4887,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_confirm
         reference: if any
         example:
-          value: &ref_17
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -4973,7 +5003,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_18
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -5119,7 +5149,7 @@ x-flows:
                 Investment Platform ->> Fund Aggregator / Direct Fund: status
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         example:
-          value: &ref_20
+          value: &ref_26
             context:
               domain: ONDC:FIS14
               location:
@@ -5283,7 +5313,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: &ref_10
+          value: &ref_11
             context:
               domain: ONDC:FIS14
               location:
@@ -5322,7 +5352,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
                 end
         example:
-          value: &ref_22
+          value: &ref_28
             context:
               domain: ONDC:FIS14
               location:
@@ -5540,7 +5570,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_9
       - summary: >-
           Receive a catalog of different Mutual Fund products offered by
           providers.
@@ -5566,7 +5596,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Buyer selects the item for withdrawal transaction
         api: select
         details:
@@ -5585,7 +5615,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_20
             context:
               domain: ONDC:FIS14
               location:
@@ -5831,7 +5861,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : form
         reference: if any
         example:
-          value: &ref_16
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -5947,7 +5977,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_27
             context:
               domain: ONDC:FIS14
               location:
@@ -6136,7 +6166,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value:
             context:
               domain: ONDC:FIS14
               location:
@@ -6222,7 +6252,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_11
       - summary: Receive real-time updates on your Withdrawal after each milestone.
         api: on_status
         details:
@@ -6324,7 +6354,7 @@ x-flows:
                 Fund Aggregator / Direct Fund ->>  Investment Platform : on_status
         reference: if any
         example:
-          value: *ref_10
+          value: *ref_11
       - summary: Receive real-time updates on your Withdrawal after each milestone.
         api: on_status
         details:
@@ -6485,7 +6515,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_9
       - summary: >-
           Receive a catalog of different Mutual Fund products offered by
           providers.
@@ -6511,7 +6541,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Buyer selects the item for Emandate transaction
         api: select
         details:
@@ -7259,7 +7289,7 @@ x-flows:
                 Direct Fund 1 ->>  Investment Platform : on_search
         reference: if any
         example:
-          value: *ref_8
+          value: *ref_9
       - summary: >-
           Receive a catalog of different Mutual Fund products offered by
           providers.
@@ -7285,7 +7315,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_9
+          value: *ref_10
       - summary: Buyer selects the item for ECAN Registration transaction
         api: select
         details:
@@ -8232,6 +8262,1624 @@ x-flows:
                               name: ARN Of Sub Broker
                               code: ARN_SUB_BROKER
                             value: AA0802
+  - summary: SIP in Existing Folio (End to End)
+    details:
+      - description: TBD
+    references: if any
+    steps:
+      - summary: Search for schemes
+        api: search
+        details:
+          - description: Search for all mutual fund schemes
+        reference: if any
+        example:
+          value: &ref_12
+            context:
+              action: search
+            message:
+              intent:
+                category:
+                  descriptor:
+                    code: MUTUAL_FUNDS
+      - summary: Respond with the catalog
+        api: on_search
+        details:
+          - description: Returns the schemes on offer
+        reference: if any
+        example:
+          value: &ref_13
+            context:
+              action: on_search
+            message:
+              catalog:
+                providers:
+                  - id: amc_1
+                    descriptor:
+                      name: ABC Mutual Fund
+                      code: ABC_MF
+                    categories:
+                      - id: '0'
+                        descriptor:
+                          name: Mutual Funds
+                          code: MUTUAL_FUNDS
+                      - id: '1'
+                        descriptor:
+                          name: Open Ended
+                          code: OPEN_ENDED
+                        parent_category_id: '0'
+                      - id: '11'
+                        descriptor:
+                          name: Equity
+                          code: OPEN_ENDED_EQUITY
+                        parent_category_id: '1'
+                      - id: '1101'
+                        descriptor:
+                          name: Mid Cap Fund
+                          code: OPEN_ENDED_EQUITY_MIDCAP
+                        parent_category_id: '11'
+                    items:
+                      - id: '12391'
+                        descriptor:
+                          name: ABC Mid Cap Fund - Regular - Growth
+                        category_ids:
+                          - '1101'
+                        matched: true
+                        tags:
+                          - display: true
+                            descriptor:
+                              name: Identifiers
+                              code: IDENTIFIERS
+                            list:
+                              - descriptor:
+                                  name: ISIN
+                                  code: ISIN
+                                value: IN123214324
+                              - descriptor:
+                                  name: RTA Identifier
+                                  code: RTA_IDENTIFIER
+                                value: 02BZ
+                              - descriptor:
+                                  name: AMFI Identifier
+                                  code: AMFI_IDENTIFIER
+                                value: '125487'
+                          - display: true
+                            descriptor:
+                              name: Options
+                              code: OPTIONS
+                            list:
+                              - descriptor:
+                                  name: Plan
+                                  code: PLAN
+                                value: ''
+                              - descriptor:
+                                  name: Option
+                                  code: OPTION
+                                value: ''
+                              - descriptor:
+                                  name: IDCW Option
+                                  code: IDCW_OPTION
+                                value: ''
+                          - display: false
+                            descriptor:
+                              name: Transaction Flags
+                              code: TRANSACTION_FLAGS
+                            list:
+                              - descriptor:
+                                  name: Status
+                                  code: status
+                                value: active
+                              - descriptor:
+                                  name: Purchase Allowed
+                                  code: PURCHASE_ALLOWED
+                                value: 'TRUE'
+                              - descriptor:
+                                  name: Redemption Allowed
+                                  code: REDEMPTION_ALLOWED
+                                value: 'TRUE'
+                              - descriptor:
+                                  name: SIP Allowed
+                                  code: SIP_ALLOWED
+                                value: 'TRUE'
+                          - display: true
+                            descriptor:
+                              name: Purchase Thresholds
+                              code: PURCHASE_ALLOWED
+                            list:
+                              - descriptor:
+                                  name: Amount Minimum
+                                  code: AMOUNT_MIN
+                                value: '1000'
+                              - descriptor:
+                                  name: Amount Maximum
+                                  code: AMOUNT_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Amount Multiples
+                                  code: AMOUNT_MULTIPLES
+                                value: ''
+                          - display: true
+                            descriptor:
+                              name: Redemption Thresholds
+                              code: REDEMPTION_ALLOWED
+                            list:
+                              - descriptor:
+                                  name: Amount Minimum
+                                  code: AMOUNT_MIN
+                                value: '1000'
+                              - descriptor:
+                                  name: Amount Maximum
+                                  code: AMOUNT_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Amount Multiples
+                                  code: AMOUNT_MULTIPLES
+                                value: '1'
+                              - descriptor:
+                                  name: Units Minimum
+                                  code: UNITS_MIN
+                                value: ''
+                              - descriptor:
+                                  name: Units Maximum
+                                  code: UNITS_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Units Multiples
+                                  code: UNITS_MULTIPLES
+                                value: '1'
+                          - display: true
+                            descriptor:
+                              name: Daily SIP Thresholds
+                              code: SIP_ALLOWED
+                            list:
+                              - descriptor:
+                                  name: Frequency
+                                  code: FREQUENCY
+                                value: daily
+                              - descriptor:
+                                  name: Frequency Dates
+                                  code: FREQUENCY_DATES
+                                value: ''
+                              - descriptor:
+                                  name: Amount Minimum
+                                  code: AMOUNT_MIN
+                                value: '1000'
+                              - descriptor:
+                                  name: Amount Maximum
+                                  code: AMOUNT_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Amount Multiples
+                                  code: AMOUNT_MULTIPLES
+                                value: '1'
+                              - descriptor:
+                                  name: Installments Count Minimum
+                                  code: INSTALMENTS_COUNT_MIN
+                                value: '30'
+                              - descriptor:
+                                  name: Installments Count Maximum
+                                  code: INSTALMENTS_COUNT_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Cumulative Amount Minimum
+                                  code: CUMULATIVE_AMOUNT_MIN
+                                value: '30000'
+                          - display: true
+                            descriptor:
+                              name: Monthly SIP Thresholds
+                              code: SIP_ALLOWED
+                            list:
+                              - descriptor:
+                                  name: Frequency
+                                  code: FREQUENCY
+                                value: monthly
+                              - descriptor:
+                                  name: Frequency Dates
+                                  code: FREQUENCY_DATES
+                                value: ''
+                              - descriptor:
+                                  name: Amount Minimum
+                                  code: AMOUNT_MIN
+                                value: '5000'
+                              - descriptor:
+                                  name: Amount Maximum
+                                  code: AMOUNT_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Amount Multiples
+                                  code: AMOUNT_MULTIPLES
+                                value: '1'
+                              - descriptor:
+                                  name: Installments Count Minimum
+                                  code: INSTALMENTS_COUNT_MIN
+                                value: '6'
+                              - descriptor:
+                                  name: Installments Count Maximum
+                                  code: INSTALMENTS_COUNT_MAX
+                                value: ''
+                              - descriptor:
+                                  name: Cumulative Amount Minimum
+                                  code: CUMULATIVE_AMOUNT_MIN
+                                value: '30000'
+      - summary: Select
+        api: select
+        details:
+          - description: Scheme selection
+        reference: if any
+        example:
+          value: &ref_14
+            context:
+              action: select
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                fulfillments:
+                  - customer:
+                      person:
+                        id: pan:arrpp7771n
+      - summary: On Select
+        api: on_select
+        details:
+          - description: Send back fulfillment options
+        reference: if any
+        example:
+          value: &ref_15
+            context:
+              action: on_select
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                  - id: ff_789
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+      - summary: Initialize the SIP order
+        api: init
+        details:
+          - description: Send order details and fulfillment option chosen
+        reference: if any
+        example:
+          value: &ref_22
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_789
+                fulfillments:
+                  - id: ff_789
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Draft order is sent back with payment options
+        reference: if any
+        example:
+          value: &ref_23
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                status: CREATED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_789
+                fulfillments:
+                  - id: ff_789
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                  - id: pmt_456
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                    type: EXISTING_MANDATE
+                    tags:
+                      - descriptor:
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: ENACH_MANDATE
+                          - descriptor:
+                              code: MASKED_BANK_ACCOUNT_NUMBER
+                            value: '********3111'
+                          - descriptor:
+                              code: BANK_ACCOUNT_NAME
+                            value: Harish Gupta
+                          - descriptor:
+                              code: BANK_NAME
+                            value: ICICI Bank
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: Confirm
+        api: confirm
+        details:
+          - description: Send the chosen payment option
+        reference: if any
+        example:
+          value: &ref_24
+            context:
+              action: confirm
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_789
+                    payment_ids:
+                      - pmt_123
+                fulfillments:
+                  - id: ff_789
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                      contact:
+                        phone: '9916599123'
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: On Confirm
+        api: on_confirm
+        details:
+          - description: Send the mandate registration link
+        reference: if any
+        example:
+          value: &ref_25
+            context:
+              action: on_confirm
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                status: CREATED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_789
+                    payment_ids:
+                      - pmt_123
+                fulfillments:
+                  - id: ff_789
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                      contact:
+                        phone: '9916599123'
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    url: https://poa.cybrilla.com/payment?k=abdafaf
+                    status: NOT-PAID
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: On Status
+        api: on_status
+        details:
+          - description: Send order accepted notification
+        reference: if any
+        example:
+          value: &ref_16
+            context:
+              action: on_status
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                status: ACCEPTED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_789
+                    payment_ids:
+                      - pmt_123
+                fulfillments:
+                  - id: ff_789
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                      contact:
+                        phone: '9916599123'
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    status: PAID
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: On Status (successful instalment)
+        api: on_status
+        details:
+          - description: Successful sip instalment notification
+        reference: if any
+        example:
+          value: &ref_17
+            context:
+              action: on_status
+            message:
+              order:
+                type: PURCHASE
+                id: mfp_3454dfadssf435345
+                ref_order_ids:
+                  - mfpp_213adf123af
+                status: ACCEPTED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_008
+                    payment_ids:
+                      - pmt_567
+                fulfillments:
+                  - id: ff_008
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                    state:
+                      descriptor:
+                        name: Successful
+                        code: successful
+                    tags:
+                      - descriptor:
+                          name: Information
+                        list:
+                          - descriptor:
+                              name: Allotted Units
+                              code: allotted_units
+                            value: '12.3124'
+                          - descriptor:
+                              name: Purchased Price
+                              code: purchased_price
+                            value: '213.123'
+                          - descriptor:
+                              name: Purchased Amount
+                              code: purchased_amount
+                            value: '5000'
+                payments:
+                  - id: pmt_567
+                    collected_by: bpp
+                    status: PAID
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: MANDATE_DEBIT
+      - summary: On Status (failed instalment)
+        api: on_status
+        details:
+          - description: Failed sip instalment notification
+        reference: if any
+        example:
+          value: &ref_18
+            context:
+              action: on_status
+            message:
+              order:
+                type: PURCHASE
+                id: mfp_7657EFDFHF2342
+                ref_order_ids:
+                  - mfpp_213adf123af
+                status: REJECTED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_009
+                    payment_ids:
+                      - pmt_234
+                fulfillments:
+                  - id: ff_009
+                    type: EXISTING_FOLIO
+                    customer:
+                      person:
+                        id: folio:*****3432/32
+                payments:
+                  - id: pmt_234
+                    collected_by: bpp
+                    status: FAILED
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: MANDATE_DEBIT
+                    tags:
+                      - descriptor:
+                          name: Failure Reasons
+                        list:
+                          - descriptor:
+                              name: Failure Code
+                              code: failure_code
+                            value: insufficient_balance
+                          - descriptor:
+                              name: Failure Message
+                              code: failure_message
+                            value: >-
+                              Investor bank account doesn't have sufficient
+                              balance to debit
+  - summary: SIP in New Folio (End to End)
+    details:
+      - description: TBD
+    references: if any
+    steps:
+      - summary: Search for schemes
+        api: search
+        details:
+          - description: Search for all mutual fund schemes
+        reference: if any
+        example:
+          value: *ref_12
+      - summary: Respond with the catalog
+        api: on_search
+        details:
+          - description: Returns the schemes on offer
+        reference: if any
+        example:
+          value: *ref_13
+      - summary: Select
+        api: select
+        details:
+          - description: Scheme selection
+        reference: if any
+        example:
+          value: *ref_14
+      - summary: On Select
+        api: on_select
+        details:
+          - description: Send back fulfillment options
+        reference: if any
+        example:
+          value: *ref_15
+      - summary: Initialize the SIP order
+        api: init
+        details:
+          - description: Send order details and fulfillment option chosen
+        reference: if any
+        example:
+          value:
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Ask for data needed to open a new folio
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  required: true
+                  head:
+                    index:
+                      min: 0
+                      cur: 0
+                      max: 0
+                    headings:
+                      - New Folio
+                  form:
+                    url: https://poa.cybrilla.com/account-opening?k=234sadf234
+                    mime_type: text/html
+      - summary: Get Form
+        api: form
+        details:
+          - description: Get the form for folio opening
+        reference: if any
+        example:
+          value: |-
+            <html>
+                <body>
+                    <form>
+                        <label for="investor_pan">Investor Pan</label>
+                        <input id="investor_pan" type="text" name="pan" />
+                        
+                        <br />
+                        <label for="investor_name">Investor Name</label>
+                        <input id="investor_name" type="text" name="name" />
+                        
+                        <br />
+                        <label for="investor_dob">Investor Date of Birth</label>
+                        <input id="investor_dob" type="text" name="dob" />
+                        
+                        <br />
+                        <label for="investor_gender">Investor Gender</label>
+                        <select id="investor_gender" type="select" name="gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="transgender">Transgender</option>
+                        </select>
+
+                        <br />
+                        <label for="investor_cob">Investor Country of Birth</label>
+                        <select id="investor_cob" type="select" name="cob">
+                            <option value="in">India</option>
+                            <option value="us">USA</option>
+                        </select>
+
+                        <br />
+                        <label for="investor_pob">Investor Place of Birth</label>
+                        <input id="investor_pob" type="text" name="pob" />
+
+                        <br />
+                        <label for="investor_occupation">Investor Occupation</label>
+                        <select id="investor_occupation" type="select" name="occupation">
+                            <option value="business">Business</option>
+                            <option value="professional">Professional</option>
+                        </select>
+
+                        <br />
+                        <label for="folio_mode_of_holding">Folio Mode of Holding</label>
+                        <select id="folio_mode_of_holding" type="select" name="mode_of_holding">
+                            <option value="single">Single</option>
+                        </select>
+
+                        <!-- Include all other input elements needed -->
+                    </form>
+                </body>
+            </html>
+      - summary: Submit Form
+        api: init
+        details:
+          - description: Send folio information as form submission
+        reference: if any
+        example:
+          value:
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  form_response:
+                    submission_id: 6547-7456-7235-4386
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Draft order is sent back with payment options
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                status: CREATED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                  - id: pmt_456
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                    type: EXISTING_MANDATE
+                    tags:
+                      - descriptor:
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: ENACH_MANDATE
+                          - descriptor:
+                              code: MASKED_BANK_ACCOUNT_NUMBER
+                            value: '********3111'
+                          - descriptor:
+                              code: BANK_ACCOUNT_NAME
+                            value: Harish Gupta
+                          - descriptor:
+                              code: BANK_NAME
+                            value: ICICI Bank
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: Confirm
+        api: confirm
+        details:
+          - description: Send the chosen payment option
+        reference: if any
+        example:
+          value:
+            context:
+              action: confirm
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                    payment_ids:
+                      - pmt_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                      contact:
+                        phone: '9916599123'
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: On Confirm
+        api: on_confirm
+        details:
+          - description: Send the mandate registration link
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_confirm
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                status: CREATED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                    payment_ids:
+                      - pmt_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                      contact:
+                        phone: '9916599123'
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    url: https://poa.cybrilla.com/payment?k=abdafaf
+                    status: NOT-PAID
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
+      - summary: On Status
+        api: on_status
+        details:
+          - description: Send order accepted notification
+        reference: if any
+        example:
+          value: *ref_16
+      - summary: On Status (successful instalment)
+        api: on_status
+        details:
+          - description: Successful sip instalment notification
+        reference: if any
+        example:
+          value: *ref_17
+      - summary: On Status (failed instalment)
+        api: on_status
+        details:
+          - description: Failed sip instalment notification
+        reference: if any
+        example:
+          value: *ref_18
+  - summary: SIP in New Folio and KYC
+    details:
+      - description: Showing only init calls as remaining ones stay the same
+    references: if any
+    steps:
+      - summary: Initialize the SIP order
+        api: init
+        details:
+          - description: Send order details and fulfillment option chosen
+        reference: if any
+        example:
+          value:
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Ask for data needed to perform kyc
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  required: true
+                  head:
+                    index:
+                      min: 0
+                      cur: 0
+                      max: 2
+                    headings:
+                      - New Folio With KYC
+                      - Digilocker Fetch
+                      - Esign
+                  form:
+                    url: >-
+                      https://poa.cybrilla.com/account-opening-kyc/data?k=234sadf234
+                    mime_type: text/html
+      - summary: Get Form
+        api: form
+        details:
+          - description: Get the form for kyc
+        reference: if any
+        example:
+          value: |-
+            <html>
+                <body>
+                    <form>
+                        <label for="investor_pan">Investor Pan</label>
+                        <input id="investor_pan" type="text" name="pan" />
+                        
+                        <br />
+                        <label for="investor_name">Investor Name</label>
+                        <input id="investor_name" type="text" name="name" />
+                        
+                        <br />
+                        <label for="investor_dob">Investor Date of Birth</label>
+                        <input id="investor_dob" type="text" name="dob" />
+                        
+                        <br />
+                        <label for="investor_gender">Investor Gender</label>
+                        <select id="investor_gender" type="select" name="gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="transgender">Transgender</option>
+                        </select>
+
+                        <br />
+                        <label for="investor_cob">Investor Country of Birth</label>
+                        <select id="investor_cob" type="select" name="cob">
+                            <option value="in">India</option>
+                            <option value="us">USA</option>
+                        </select>
+
+                        <br />
+                        <label for="investor_pob">Investor Place of Birth</label>
+                        <input id="investor_pob" type="text" name="pob" />
+
+                        <br />
+                        <label for="investor_occupation">Investor Occupation</label>
+                        <select id="investor_occupation" type="select" name="occupation">
+                            <option value="business">Business</option>
+                            <option value="professional">Professional</option>
+                        </select>
+
+                        <br />
+                        <label for="folio_mode_of_holding">Folio Mode of Holding</label>
+                        <select id="folio_mode_of_holding" type="select" name="mode_of_holding">
+                            <option value="single">Single</option>
+                        </select>
+
+                        <!-- Include all other input elements needed -->
+                    </form>
+                </body>
+            </html>
+      - summary: Submit Form
+        api: init
+        details:
+          - description: Send kyc information as form submission
+        reference: if any
+        example:
+          value:
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  form_response:
+                    submission_id: 6547-7456-7235-4386
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Ask for digilocker fetch
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  required: true
+                  head:
+                    index:
+                      min: 0
+                      cur: 1
+                      max: 2
+                    headings:
+                      - New Folio With KYC
+                      - Digilocker Fetch
+                      - Esign
+                  form:
+                    url: >-
+                      https://poa.cybrilla.com/account-opening-kyc/digilocker?k=234sadf234
+                    mime_type: text/html
+      - summary: Get Form
+        api: form
+        details:
+          - description: Get the form for digilocker fetch
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: Submit Form
+        api: init
+        details:
+          - description: Send digilocker fetch as form submission
+        reference: if any
+        example:
+          value:
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  form_response:
+                    submission_id: 3658-8765-1257-6847
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Ask for esign
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  required: true
+                  head:
+                    index:
+                      min: 0
+                      cur: 2
+                      max: 2
+                    headings:
+                      - New Folio With KYC
+                      - Digilocker Fetch
+                      - Esign
+                  form:
+                    url: >-
+                      https://poa.cybrilla.com/account-opening-kyc/esign?k=234sadf234
+                    mime_type: text/html
+      - summary: Get Form
+        api: form
+        details:
+          - description: Get the form for esign
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: Submit Form
+        api: init
+        details:
+          - description: Send esign status as form submission
+        reference: if any
+        example:
+          value:
+            context:
+              action: init
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                xinput:
+                  form_response:
+                    submission_id: 5745-6571-3254-9172
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Send draft order with payment options
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_init
+            message:
+              order:
+                type: PURCHASE
+                id: mfpp_213adf123af
+                status: CREATED
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: amount
+                    time:
+                      schedule:
+                        frequency: R6/2024-05-15/P1M
+                    fulfillment_ids:
+                      - ff_123
+                fulfillments:
+                  - id: ff_123
+                    type: NEW_FOLIO_WITH_KYC
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                payments:
+                  - id: pmt_123
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: NEW_MANDATE_REGISTRATION
+                  - id: pmt_456
+                    collected_by: bpp
+                    params:
+                      amount: '3000'
+                      currency: inr
+                    type: EXISTING_MANDATE
+                    tags:
+                      - descriptor:
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: ENACH_MANDATE
+                          - descriptor:
+                              code: MASKED_BANK_ACCOUNT_NUMBER
+                            value: '********3111'
+                          - descriptor:
+                              code: BANK_ACCOUNT_NAME
+                            value: Harish Gupta
+                          - descriptor:
+                              code: BANK_NAME
+                            value: ICICI Bank
+                documents:
+                  - descriptor:
+                      name: Terms & Conditions
+                      code: TERMS
+                    url: https://poa.cybrilla.com/tnc?id=214werw3w4
+                    mime_type: text/html
 x-examples:
   mutual-funds:
     summary: mutual-funds
@@ -8241,7 +9889,7 @@ x-examples:
         examples:
           - summary: search for mutual funds Full Pull
             description: TBD
-            value: *ref_8
+            value: *ref_9
           - summary: search for mutual funds incremental from given time
             description: TBD
             value:
@@ -8308,12 +9956,12 @@ x-examples:
         examples:
           - summary: mutual funds catalog
             description: TBD
-            value: *ref_9
+            value: *ref_10
       select:
         examples:
           - summary: select-request-sip
             description: TBD
-            value: *ref_11
+            value: *ref_19
           - summary: select-request-emandate
             description: TBD
             value:
@@ -8362,115 +10010,32 @@ x-examples:
                               value: AA0802
           - summary: select-withdrawal-1.2
             description: TBD
-            value: *ref_12
+            value: *ref_20
       on_select:
         examples:
           - summary: on_select-request-sip
             description: TBD
-            value: *ref_13
+            value: *ref_21
       init:
         examples:
-          - summary: init-request-sip
+          - summary: init-sip-existing-folio
             description: TBD
-            value: *ref_14
+            value: *ref_22
       on_init:
         examples:
-          - summary: on_init-request-sip-account-info
+          - summary: on_init-sip-existing-folio
             description: TBD
-            value: *ref_15
-          - summary: on_init-request-emandate-1.2
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS14
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                version: 2.0.0
-                action: on_init
-                bap_id: mutual-fund-protocol.becknprotocol.io
-                bap_uri: https://mutual-fund-protocol-network.becknprotocol.io/
-                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-                ttl: PT30M
-                timestamp: '2023-05-25T05:23:03.443Z'
-                bpp_id: stockwiz.com
-                bpp_uri: https://stockwiz.com
-              message:
-                order:
-                  provider:
-                    id: P2
-                    descriptor:
-                      images:
-                        - url: https://www.mfuindia.com//images/header/logo.png
-                          size_type: sm
-                      name: MFU
-                      short_desc: Mutual Fund Utility
-                  items:
-                    - id: I3
-                      descriptor:
-                        name: Fund Emandate
-                        code: EMANDATE
-                      fulfillment_ids:
-                        - F2
-                      xinput:
-                        head:
-                          descriptor:
-                            name: E mandate bank verification
-                          index:
-                            min: 0
-                            cur: 0
-                            max: 0
-                          headings:
-                            - Bank verification
-                        form:
-                          id: F10
-                          mime_type: application/html
-                          url: >-
-                            https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/F10
-                          resubmit: false
-                          multiple_sumbissions: false
-                        required: true
-                  fulfillments:
-                    - id: F2
-                      type: EMANDATE
-                      customer:
-                        person:
-                          id: PAN:EKLZS12E
-                      agent:
-                        person:
-                          id: EUIN:1234
-                      tags:
-                        - descriptor:
-                            name: Broker Info
-                            code: BROKER_INFO
-                          list:
-                            - descriptor:
-                                name: ARN Of Organization
-                                code: ARN_ORGANIZATION
-                              value: AA0802
-                            - descriptor:
-                                name: ARN Of Sub Broker
-                                code: ARN_SUB_BROKER
-                              value: AA0802
-          - summary: on_init-request-emandate-1.2
-            description: TBD
-            value: *ref_16
+            value: *ref_23
       confirm:
         examples:
-          - summary: confirm-request-sip
+          - summary: SIP in Existing Folio
             description: TBD
-            value: *ref_17
+            value: *ref_24
       on_confirm:
         examples:
-          - summary: on_confirm
+          - summary: SIP in Existing Folio (asking for payment)
             description: TBD
-            value: *ref_18
-          - summary: on_confirm-request-withdrawal-1.2
-            description: TBD
-            value: *ref_19
+            value: *ref_25
       update:
         examples:
           - summary: update
@@ -8513,20 +10078,20 @@ x-examples:
         examples:
           - summary: on_update
             description: TBD
-            value: *ref_20
+            value: *ref_26
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_10
+            value: *ref_11
           - summary: on_status
             description: TBD
-            value: *ref_21
+            value: *ref_27
       on_status:
         examples:
           - summary: on_status-request-sip-withdraw
             description: TBD
-            value: *ref_22
+            value: *ref_28
           - summary: on_status_request-Emandate-initiated-1.2
             description: TBD
             value:
@@ -13082,7 +14647,10 @@ x-attributes:
                 usage: https://lender.com/loan/loan-agreement/O1.pdf
                 description: This describes the url from where the document can be accessed
 x-featureui:
-  filenames: []
+  filenames:
+    - account-opening-laundry-list.md
+    - buyer-app-responsibilities.md
+    - end-to-end-workflow.md
 x-sandboxui:
   dropdown:
     - environment-name: staging
