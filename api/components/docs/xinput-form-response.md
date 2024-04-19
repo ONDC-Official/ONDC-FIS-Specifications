@@ -102,7 +102,7 @@ This form is sent by the seller app.
   <label for="panValue">PAN Number</label>
   <input type="text" id="panValue" name="panValue" />
   <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
-  <input type="button" value="Submit" />
+  <input type="submit" value="Submit" />
 </form>
 ````
 The buyer app can dynamically add multiple form fields as needed.
@@ -123,7 +123,7 @@ For example:
 
 
   <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
-  <input type="button" value="Submit" />
+  <input type="submit" value="Submit" />
 </form>
 ````
 When submitting the form, make sure that the payload follows this required format, values for dynamically added fields like dob and panValue positioned at the first index. The seller app will use this same structure to extract the values.
