@@ -93,8 +93,7 @@ Note: While submitting text/html form, API headers will contain [Content-Type:"m
 On the other hand, if the mime_type is set to application/html, the seller provides a link to an external HTML page where the buyer can submit the required information.
 
   - **text/html-multi**:
-If the form type is text/html-multi, the buyer app can include multiple form fields similar to the original form, allowing for the addition of extra details. 
-This form is sent by the seller app.
+If the form type is text/html-multi, the buyer app can include multiple form fields similar to the original form, allowing for the addition of extra details.
 ````html
 <form action="/form/submission-path" method="POST" >
   <label for="dob">Date of Birth</label>
@@ -104,29 +103,8 @@ This form is sent by the seller app.
   <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
   <input type="submit" value="Submit" />
 </form>
-````
-The buyer app can dynamically add multiple form fields as needed.
-For example:
 
-````html
-<form action="/form/submission-path" method="POST" >
-  <label for="dob">Date of Birth</label>
-  <input type="date" id="dob" name="dob" />
-  <label for="panValue">PAN Number</label>
-  <input type="text" id="panValue" name="panValue" />
-
-  <!-- dynamically added fields -->
-  <label for="dob">Date of Birth</label>
-  <input type="date" id="dob1" name="dob1" />
-  <label for="panValue">PAN Number</label>
-  <input type="text" id="panValue1" name="panValue1" />
-
-
-  <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
-  <input type="submit" value="Submit" />
-</form>
-````
-When submitting the form, make sure that the payload follows this required format, values for dynamically added fields like dob and panValue positioned at the first index. The seller app will use this same structure to extract the values.
+Buyer app needs to follow the below construct while submitting the form by capturing the multiple instances of the same form.
 ```
   {
       "dob": ["17/11/2021", "19/12/2003"],
