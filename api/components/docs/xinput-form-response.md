@@ -48,7 +48,7 @@ The differentiation in MIME types and additional settings, such as resubmit and 
   - `multiple_sumbissions`: Indicates whether multiple submissions are allowed.
 
  ### mime_type: 
- Describes the type of MIME.It can take one of two possible values: application/html or text/html. 
+ Describes the type of MIME.It can be one of the thee possible values: application/html or text/html or text/html-multi. 
   - **text/html**: If the value of mime_type is text/html, then the buyer app renders a form presented in HTML format. The rendered HTML-based form structure looks like this:
 
 ````html
@@ -91,6 +91,51 @@ Note: While submitting text/html form, API headers will contain [Content-Type:"m
   - **application/html**:
 
 On the other hand, if the mime_type is set to application/html, the seller provides a link to an external HTML page where the buyer can submit the required information.
+
+  - **text/html-multi**:
+If the form type is text/html-multi, the buyer app can include multiple form fields similar to the original form, allowing for the addition of extra details. 
+This form is sent by the seller app.
+````html
+<form action="/form/submission-path" method="POST" >
+  <label for="dob">Date of Birth</label>
+  <input type="date" id="dob" name="dob" />
+  <label for="panValue">PAN Number</label>
+  <input type="text" id="panValue" name="panValue" />
+  <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
+  <input type="button" value="Submit" />
+</form>
+````
+The buyer app can dynamically add multiple form fields as needed.
+For example:
+
+````html
+<form action="/form/submission-path" method="POST" >
+  <label for="dob">Date of Birth</label>
+  <input type="date" id="dob" name="dob" />
+  <label for="panValue">PAN Number</label>
+  <input type="text" id="panValue" name="panValue" />
+
+  <!-- dynamically added fields -->
+  <label for="dob">Date of Birth</label>
+  <input type="date" id="dob1" name="dob1" />
+  <label for="panValue">PAN Number</label>
+  <input type="text" id="panValue1" name="panValue1" />
+
+
+  <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
+  <input type="button" value="Submit" />
+</form>
+````
+When submitting the form, make sure that the payload follows this required format, values for dynamically added fields like dob and panValue positioned at the first index. The seller app will use this same structure to extract the values.
+```
+  {
+      "dob": ["17/11/2021", "19/12/2003"],
+      "panValue": ["RKPUS3413T", "SKPUS3413L"]
+  }
+  
+```
+
+   
 
 ## Form response
 
