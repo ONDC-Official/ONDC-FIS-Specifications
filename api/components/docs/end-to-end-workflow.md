@@ -1,3 +1,36 @@
+### Purchase Flow
+
+```mermaid
+flowchart LR
+    scheme[Select scheme] --> order[Select lumpsum/sip]
+
+    order -- existing folio --> existing_folio[Choose folio]
+    order -- new folio --> folio_form[Fill folio details]
+    order -- new folio w/ kyc --> kyc_form[Fill kyc details] --> digilocker[Fetch docs from digilocker] --> esign[Esign the application form]
+
+    existing_folio -----> 2fa[Accept TnC & 2fa]
+    folio_form -----> 2fa
+    esign ---> 2fa
+
+    2fa -- existing mandate --> choose_mandate[Choose mandate]
+    2fa -- new mandate --> mandate_reg[Register mandate]
+    2fa -- other pmt --> pmt[Complete payment]
+
+    choose_mandate ---> finish[Finish]
+    mandate_reg ---> finish
+    pmt ---> finish
+```
+
+### Redemption Flow
+```mermaid
+flowchart LR
+    scheme[Select scheme] --> order[Select redemption/swp]
+    order ---> choose_folio[Choose folio]
+    choose_folio -----------> 2fa[Accept TnC & 2fa]
+    2fa --------> finish[Finish]
+```
+---
+
 ### Selection
 
 ```mermaid
