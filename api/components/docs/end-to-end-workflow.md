@@ -47,12 +47,14 @@ Investor identifier can be folio number, pan number.
 
 ##### Fulfillment Options
 
-1. `EXISTING_FOLIO`  
-Investor has existing folios and the seller app wants to give an option to choose from these
-2. `NEW_FOLIO`  
-Investor is kyc compliant and doesn't have any existing folios/seller-app doesn't want to share existing folios
-3. `NEW_FOLIO_WITH_KYC`  
-Investor is not kyc compliant and the seller app chose to facilitate kyc
+1. `LUMPSUM`  
+Investor can make a one time lumpsum purchase
+2. `SIP`  
+Investor can make a recurring purchase
+3. `REDEMPTION`  
+Investor can make a one time redemption
+4. `SWP`  
+Investor can make a recurring redemption
 ---
 
 ### Initiation
@@ -60,7 +62,7 @@ Buyer app makes an `init` call with the details of the investor, order and the f
 
 Seller app checks if all the details are available and correct. If any additional input is needed, seller app responds with the list of required information (one or multiple steps).
 
-3 fulfillment options
+3 possible workflows
 1. Existing folio  
 Seller app checks for the folio validity
 
@@ -101,9 +103,9 @@ sequenceDiagram
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
     bap ->> bpp: `/init` w/ order details & fulfillment choice
-    alt fulfillment = existing folio
+    alt flow = existing folio
         Note over bap, bpp: No additional steps
-    else fulfillment = new folio
+    else flow = new folio
         rect rgb(191, 223, 255)
             bpp ->> bap: `/on_init` with xinput for folio opening
             create participant fs AS AMC Form System
@@ -111,12 +113,18 @@ sequenceDiagram
             fs ->> bap: form submission response
             bap ->> bpp: `/init` w/ form submission id
         end
-    else fulfillment = new folio w/ kyc
+    else flow = new folio w/ kyc
         rect rgb(102,179,255)
-            bpp ->> bap: `/on_init` with xinput for kyc
+            bpp ->> bap: `/on_init` with xinput for kyc (1st step)
             bap ->> fs: form submission
             fs ->> bap: form submission response
             bap ->> bpp: `/init` w/ form submission id
+            bpp ->> bap: `/on_init` with xinput for digilocker fetch (2nd step)
+            bap ->> bap: redirect the investor to complete fetch
+            bpp ->> bap: `/on_status` with form submission id
+            bpp ->> bap: `/on_init` with xinput for esign (3rd step)
+            bap ->> bap: redirect the investor to complete esign
+            bpp ->> bap: `/on_status` with form submission id
         end
     end
     bpp ->> bap: `/on_init` w/ payment options & order in `CREATED` state
