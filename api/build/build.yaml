@@ -1274,6 +1274,7 @@ components:
             - text/html
             - application/html
             - application/xml
+            - text/html-multi
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -3005,7 +3006,7 @@ x-tags:
   search:
     message:
       intent:
-        payment:
+        payment: &ref_8
           tags:
             - code: BUYER_FINDER_FEES
               description: Describes the finder fees for buyer
@@ -3023,7 +3024,7 @@ x-tags:
             - code: SETTLEMENT_TERMS
               description: Describes the settlement terms
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_8
+              list:
                 - code: SETTLEMENT_WINDOW
                   description: Time window to complete settlement
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3124,7 +3125,7 @@ x-tags:
                     description: Date when invoice has been generated
                     reference: <PR/Issue/Discussion Links md format text>
           payments: *ref_8
-  on_select: &ref_11
+  on_select: &ref_12
     message:
       order:
         items: *ref_9
@@ -3132,16 +3133,12 @@ x-tags:
     message:
       order:
         payments: *ref_8
-  on_init:
+  on_init: &ref_11
     message:
       order:
         items: *ref_9
         payments: *ref_8
-  confirm: &ref_10
-    message:
-      order:
-        items: *ref_9
-        fulfillments:
+        fulfillments: &ref_10
           customer:
             person:
               tags:
@@ -3163,10 +3160,15 @@ x-tags:
                         assigned to businesses and individuals registered under
                         the Goods and Services Tax (GST) system in India
                       reference: <PR/Issue/Discussion Links md format text>
-  on_confirm: *ref_10
-  on_status: *ref_10
-  on_cancel: *ref_11
-  on_update: *ref_11
+  confirm:
+    message:
+      order:
+        items: *ref_9
+        fulfillments: *ref_10
+  on_confirm: *ref_11
+  on_status: *ref_11
+  on_cancel: *ref_12
+  on_update: *ref_12
 x-flows:
   - summary: Marine Insurance Application
     details:
@@ -3262,7 +3264,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_13
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3340,7 +3342,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_14
             context:
               domain: ONDC:FIS13
               location:
@@ -3518,7 +3520,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_15
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -3574,7 +3576,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_18
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -3721,7 +3723,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_16
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -3775,7 +3777,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_17
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -3934,7 +3936,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_19
             context:
               domain: ONDC:FIS13
               location:
@@ -4069,7 +4071,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_20
             context:
               domain: ONDC:FIS13
               location:
@@ -4254,7 +4256,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_21
             context:
               domain: ONDC:FIS13
               location:
@@ -4431,7 +4433,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_22
             context:
               domain: ONDC:FIS13
               location:
@@ -4647,48 +4649,48 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_12
+            value: *ref_13
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_13
+            value: *ref_14
       select:
         examples:
           - summary: select-request-aadhar-kyc info
             description: TBD
-            value: *ref_14
+            value: *ref_15
           - summary: select-request-additional-info
             description: TBD
-            value: *ref_15
+            value: *ref_16
       on_select:
         examples:
           - summary: on_select-request-aadhar-kyc
             description: TBD
-            value: *ref_16
+            value: *ref_17
           - summary: on_select-additional-info
             description: TBD
-            value: *ref_17
+            value: *ref_18
       init:
         examples:
           - summary: init-request info
             description: TBD
-            value: *ref_18
+            value: *ref_19
       on_init:
         examples:
           - summary: on_init-request
             description: TBD
-            value: *ref_19
+            value: *ref_20
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_20
+            value: *ref_21
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_21
+            value: *ref_22
       status:
         examples:
           - summary: status
@@ -7607,6 +7609,87 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
+              tags:
+                BUYER_FINDER_FEES:
+                  required: Mandatory
+                  type: string
+                  owner: BAP
+                  usage: '--'
+                  description: Describes Buyer finder fee
+                  list:
+                    BUYER_FINDER_FEES_TYPE:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes Buyer finder fee type
+                    BUYER_FINDER_FEES_PERCENTAGE:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes Buyer finder fee percentage
+                SETTLEMENT_TERMS:
+                  required: Mandatory
+                  type: string
+                  owner: BAP
+                  usage: '--'
+                  description: Describes settlement terms
+                  list:
+                    SETTLEMENT_WINDOW:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes settlement window
+                    SETTLEMENT_BASIS:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes settlement basis
+                    DELAY_INTEREST:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes delay interest
+                    STATIC_TERMS:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes static terms
+                    OFFLINE_CONTRACT:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes offline contract
+                    SETTLEMENT_AMOUNT:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes settlement amount to counter-party
+                    SETTLEMENT_TYPE:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes settlement type
+                    COURT_JURISDICTION:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes court jurisdriction
+                    MANDATORY_ARBITRATION:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes mandatory arbitration
             cancellation_terms:
               fulfillment_state:
                 descriptor:
@@ -8683,6 +8766,18 @@ x-attributes:
                       owner: BAP
                       usage: '--'
                       description: Describes settlement type
+                    COURT_JURISDICTION:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes court jurisdriction
+                    MANDATORY_ARBITRATION:
+                      required: Mandatory
+                      type: string
+                      owner: BAP
+                      usage: '--'
+                      description: Describes mandatory arbitration
             provider:
               descriptor:
                 long_desc:
@@ -9424,32 +9519,32 @@ x-attributes:
                     input required from the customer to confirm this order.
               tags:
                 POLICY_DETAILS:
-                  required: Mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: '--'
                   description: Describes the policy details
                   list:
                     COMMODITY_TYPE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
                       description: Describes the type of commodity
                     SUM_INSURED:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
                       description: Describes the amount which has been insured
                     MODE_OF_CONVEYANCE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
                       description: Describes the Mode of conveyance
                     BASIS_OF_VALUATION:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
@@ -9457,13 +9552,13 @@ x-attributes:
                         Describes the criteria used to determine the value of an
                         asset
                     POLICY_START_DATE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
                       description: Describes the start date of a policy
                     INVOICE_NUMBER:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
@@ -9471,7 +9566,7 @@ x-attributes:
                         Describes the unique randomly generated number of the
                         invoice
                     INVOICE_DATE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BPP
                       usage: '--'
@@ -9683,69 +9778,69 @@ x-attributes:
                   and a transaction reference ID.
               tags:
                 BUYER_FINDER_FEES:
-                  required: Mandatory
+                  required: optional
                   type: string
                   owner: BAP
                   usage: '--'
                   description: Describes Buyer finder fee
                   list:
                     BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes Buyer finder fee type
                     BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes Buyer finder fee percentage
                 SETTLEMENT_TERMS:
-                  required: Mandatory
+                  required: optional
                   type: string
                   owner: BAP
                   usage: '--'
                   description: Describes settlement terms
                   list:
                     SETTLEMENT_WINDOW:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes settlement window
                     SETTLEMENT_BASIS:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes settlement basis
                     DELAY_INTEREST:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes delay interest
                     STATIC_TERMS:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes static terms
                     OFFLINE_CONTRACT:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes offline contract
                     SETTLEMENT_AMOUNT:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Describes settlement amount to counter-party
                     SETTLEMENT_TYPE:
-                      required: Mandatory
+                      required: optional
                       type: string
                       owner: BAP
                       usage: '--'
