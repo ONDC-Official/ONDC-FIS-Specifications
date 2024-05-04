@@ -3804,156 +3804,10 @@ x-flows:
                                   name: Units Multiples
                                   code: UNITS_MULTIPLES
                                 value: '1'
-      - summary: Select
-        api: select
-        details:
-          - description: Scheme selection
-        reference: if any
-        example:
-          value: &ref_11
-            context:
-              action: select
-            message:
-              order:
-                type: PURCHASE
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                fulfillments:
-                  - customer:
-                      person:
-                        id: pan:arrpp7771n
-      - summary: On Select
-        api: on_select
-        details:
-          - description: Send back fulfillment options
-        reference: if any
-        example:
-          value: &ref_12
-            context:
-              action: on_select
-            message:
-              order:
-                type: PURCHASE
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                fulfillments:
-                  - id: ff_122
-                    type: LUMPSUM
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                    tags:
-                      - display: true
-                        descriptor:
-                          name: Thresholds
-                          code: THRESHOLDS
-                        list:
-                          - descriptor:
-                              name: Amount Minimum
-                              code: AMOUNT_MIN
-                            value: '1000'
-                          - descriptor:
-                              name: Amount Maximum
-                              code: AMOUNT_MAX
-                            value: ''
-                          - descriptor:
-                              name: Amount Multiples
-                              code: AMOUNT_MULTIPLES
-                            value: ''
-                  - id: ff_123
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                    tags:
-                      - display: true
-                        descriptor:
-                          name: Thresholds
-                          code: THRESHOLDS
-                        list:
-                          - descriptor:
-                              name: Frequency
-                              code: FREQUENCY
-                            value: monthly
-                          - descriptor:
-                              name: Frequency Dates
-                              code: FREQUENCY_DATES
-                            value: ''
-                          - descriptor:
-                              name: Amount Minimum
-                              code: AMOUNT_MIN
-                            value: '5000'
-                          - descriptor:
-                              name: Amount Maximum
-                              code: AMOUNT_MAX
-                            value: ''
-                          - descriptor:
-                              name: Amount Multiples
-                              code: AMOUNT_MULTIPLES
-                            value: '1'
-                          - descriptor:
-                              name: Installments Count Minimum
-                              code: INSTALMENTS_COUNT_MIN
-                            value: '6'
-                          - descriptor:
-                              name: Installments Count Maximum
-                              code: INSTALMENTS_COUNT_MAX
-                            value: ''
-                          - descriptor:
-                              name: Cumulative Amount Minimum
-                              code: CUMULATIVE_AMOUNT_MIN
-                            value: '30000'
-                  - id: ff_124
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                    tags:
-                      - display: true
-                        descriptor:
-                          name: Thresholds
-                          code: THRESHOLDS
-                        list:
-                          - descriptor:
-                              name: Frequency
-                              code: FREQUENCY
-                            value: daily
-                          - descriptor:
-                              name: Frequency Dates
-                              code: FREQUENCY_DATES
-                            value: ''
-                          - descriptor:
-                              name: Amount Minimum
-                              code: AMOUNT_MIN
-                            value: '1000'
-                          - descriptor:
-                              name: Amount Maximum
-                              code: AMOUNT_MAX
-                            value: ''
-                          - descriptor:
-                              name: Amount Multiples
-                              code: AMOUNT_MULTIPLES
-                            value: '1'
-                          - descriptor:
-                              name: Installments Count Minimum
-                              code: INSTALMENTS_COUNT_MIN
-                            value: '30'
-                          - descriptor:
-                              name: Installments Count Maximum
-                              code: INSTALMENTS_COUNT_MAX
-                            value: ''
-                          - descriptor:
-                              name: Cumulative Amount Minimum
-                              code: CUMULATIVE_AMOUNT_MIN
-                            value: '30000'
       - summary: Initialize the SIP order
         api: init
         details:
-          - description: Send order details and fulfillment option chosen
+          - description: Send order details and folio details
         reference: if any
         example:
           value:
@@ -4177,7 +4031,7 @@ x-flows:
           - description: Send order accepted notification
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_11
             context:
               action: on_status
             message:
@@ -4232,7 +4086,7 @@ x-flows:
           - description: Successful sip instalment notification
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_12
             context:
               action: on_status
             message:
@@ -4305,7 +4159,7 @@ x-flows:
           - description: Failed sip instalment notification
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_13
             context:
               action: on_status
             message:
@@ -4387,23 +4241,30 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_11
+          value: &ref_14
+            context:
+              action: select
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                fulfillments:
+                  - type: SIP
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
       - summary: On Select
         api: on_select
         details:
-          - description: Send back fulfillment options
-        reference: if any
-        example:
-          value: *ref_12
-      - summary: Initialize the SIP order
-        api: init
-        details:
-          - description: Send order details and fulfillment option chosen
+          - description: Send back new folio input required
         reference: if any
         example:
           value:
             context:
-              action: init
+              action: on_select
             message:
               order:
                 type: PURCHASE
@@ -4411,70 +4272,10 @@ x-flows:
                   id: amc_1
                 items:
                   - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
                 fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
+                  - customer:
                       person:
                         id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
-      - summary: On Init
-        api: on_init
-        details:
-          - description: Ask for data needed to open a new folio
-        reference: if any
-        example:
-          value:
-            context:
-              action: on_init
-            message:
-              order:
-                type: PURCHASE
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
-                fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
                 xinput:
                   required: true
                   head:
@@ -4544,13 +4345,13 @@ x-flows:
                     </form>
                 </body>
             </html>
-      - summary: Submit Form
+      - summary: Initialize the SIP order
         api: init
         details:
-          - description: Send folio information as form submission
+          - description: Send order details and folio details as form submission
         reference: if any
         example:
-          value:
+          value: &ref_15
             context:
               action: init
             message:
@@ -4576,6 +4377,9 @@ x-flows:
                     customer:
                       person:
                         id: pan:arrpp7771n
+                xinput:
+                  form_response:
+                    submission_id: 6547-7456-7235-4386
                 payments:
                   - collected_by: bpp
                     params:
@@ -4584,16 +4388,13 @@ x-flows:
                       source_bank_code: icic0000047
                       source_bank_account_number: '004701563111'
                       source_bank_account_name: harish gupta
-                xinput:
-                  form_response:
-                    submission_id: 6547-7456-7235-4386
       - summary: On Init
         api: on_init
         details:
-          - description: Draft order is sent back with payment options
+          - description: Draft order is sent back with TnC and payment options
         reference: if any
         example:
-          value:
+          value: &ref_16
             context:
               action: on_init
             message:
@@ -4621,6 +4422,9 @@ x-flows:
                     customer:
                       person:
                         id: pan:arrpp7771n
+                xinput:
+                  form_response:
+                    submission_id: 6547-7456-7235-4386
                 payments:
                   - id: pmt_123
                     collected_by: bpp
@@ -4665,7 +4469,7 @@ x-flows:
           - description: Send the chosen payment option
         reference: if any
         example:
-          value:
+          value: &ref_17
             context:
               action: confirm
             message:
@@ -4718,7 +4522,7 @@ x-flows:
           - description: Send the mandate registration link
         reference: if any
         example:
-          value:
+          value: &ref_18
             context:
               action: on_confirm
             message:
@@ -4774,35 +4578,56 @@ x-flows:
           - description: Send order accepted notification
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_11
       - summary: On Status (successful instalment)
         api: on_status
         details:
           - description: Successful sip instalment notification
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_12
       - summary: On Status (failed instalment)
         api: on_status
         details:
           - description: Failed sip instalment notification
         reference: if any
         example:
-          value: *ref_15
-  - summary: SIP in New Folio and KYC
+          value: *ref_13
+  - summary: SIP in New Folio and KYC (End to End)
     details:
-      - description: Showing only init calls as remaining ones stay the same
+      - description: TBD
     references: if any
     steps:
-      - summary: Initialize the SIP order
-        api: init
+      - summary: Search for schemes
+        api: search
         details:
-          - description: Send order details and fulfillment option chosen
+          - description: Search for all mutual fund schemes
+        reference: if any
+        example:
+          value: *ref_9
+      - summary: Respond with the catalog
+        api: on_search
+        details:
+          - description: Returns the schemes on offer
+        reference: if any
+        example:
+          value: *ref_10
+      - summary: Select
+        api: select
+        details:
+          - description: Scheme selection
+        reference: if any
+        example:
+          value: *ref_14
+      - summary: On Select
+        api: on_select
+        details:
+          - description: Send back new folio + kyc input required
         reference: if any
         example:
           value:
             context:
-              action: init
+              action: on_select
             message:
               order:
                 type: PURCHASE
@@ -4810,70 +4635,10 @@ x-flows:
                   id: amc_1
                 items:
                   - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
                 fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
+                  - customer:
                       person:
                         id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
-      - summary: On Init
-        api: on_init
-        details:
-          - description: Ask for data needed to perform kyc
-        reference: if any
-        example:
-          value:
-            context:
-              action: on_init
-            message:
-              order:
-                type: PURCHASE
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
-                fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
                 xinput:
                   required: true
                   head:
@@ -4892,7 +4657,7 @@ x-flows:
       - summary: Get Form
         api: form
         details:
-          - description: Get the form for kyc
+          - description: Get the form for folio+kyc
         reference: if any
         example:
           value: |-
@@ -4947,14 +4712,14 @@ x-flows:
                 </body>
             </html>
       - summary: Submit Form
-        api: init
+        api: select
         details:
-          - description: Send kyc information as form submission
+          - description: Send folio information as form submission
         reference: if any
         example:
           value:
             context:
-              action: init
+              action: select
             message:
               order:
                 type: PURCHASE
@@ -4962,42 +4727,23 @@ x-flows:
                   id: amc_1
                 items:
                   - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
                 fulfillments:
-                  - id: ff_123
-                    type: SIP
+                  - type: SIP
                     customer:
                       person:
                         id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
                 xinput:
                   form_response:
                     submission_id: 6547-7456-7235-4386
-      - summary: On Init
-        api: on_init
+      - summary: On Select
+        api: on_select
         details:
           - description: Ask for digilocker fetch
         reference: if any
         example:
           value:
             context:
-              action: on_init
+              action: on_select
             message:
               order:
                 type: PURCHASE
@@ -5005,30 +4751,10 @@ x-flows:
                   id: amc_1
                 items:
                   - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
                 fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
+                  - customer:
                       person:
                         id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
                 xinput:
                   required: true
                   head:
@@ -5052,14 +4778,14 @@ x-flows:
         example:
           value: This will redirected to different html page
       - summary: Submit Form
-        api: init
+        api: select
         details:
           - description: Send digilocker fetch as form submission
         reference: if any
         example:
           value:
             context:
-              action: init
+              action: select
             message:
               order:
                 type: PURCHASE
@@ -5067,42 +4793,23 @@ x-flows:
                   id: amc_1
                 items:
                   - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
                 fulfillments:
-                  - id: ff_123
-                    type: SIP
+                  - type: SIP
                     customer:
                       person:
                         id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
                 xinput:
                   form_response:
-                    submission_id: 3658-8765-1257-6847
-      - summary: On Init
-        api: on_init
+                    submission_id: 6547-7456-7235-4386
+      - summary: On Select
+        api: on_select
         details:
           - description: Ask for esign
         reference: if any
         example:
           value:
             context:
-              action: on_init
+              action: on_select
             message:
               order:
                 type: PURCHASE
@@ -5110,30 +4817,10 @@ x-flows:
                   id: amc_1
                 items:
                   - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
                 fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
+                  - customer:
                       person:
                         id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
                 xinput:
                   required: true
                   head:
@@ -5156,121 +4843,55 @@ x-flows:
         reference: if any
         example:
           value: This will redirected to different html page
-      - summary: Submit Form
+      - summary: Initialize the SIP order
         api: init
         details:
-          - description: Send esign status as form submission
+          - description: Send order details and folio details as form submission
         reference: if any
         example:
-          value:
-            context:
-              action: init
-            message:
-              order:
-                type: PURCHASE
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
-                fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                payments:
-                  - collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
-                xinput:
-                  form_response:
-                    submission_id: 5745-6571-3254-9172
+          value: *ref_15
       - summary: On Init
         api: on_init
         details:
-          - description: Send draft order with payment options
+          - description: Draft order is sent back with TnC and payment options
         reference: if any
         example:
-          value:
-            context:
-              action: on_init
-            message:
-              order:
-                type: PURCHASE
-                id: mfpp_213adf123af
-                status: CREATED
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: amount
-                    time:
-                      schedule:
-                        frequency: R6/2024-05-15/P1M
-                    fulfillment_ids:
-                      - ff_123
-                fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                payments:
-                  - id: pmt_123
-                    collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                      source_bank_code: icic0000047
-                      source_bank_account_number: '004701563111'
-                      source_bank_account_name: harish gupta
-                    type: NEW_MANDATE_REGISTRATION
-                  - id: pmt_456
-                    collected_by: bpp
-                    params:
-                      amount: '3000'
-                      currency: inr
-                    type: EXISTING_MANDATE
-                    tags:
-                      - descriptor:
-                          name: Information
-                        list:
-                          - descriptor:
-                              code: TYPE
-                            value: ENACH_MANDATE
-                          - descriptor:
-                              code: MASKED_BANK_ACCOUNT_NUMBER
-                            value: '********3111'
-                          - descriptor:
-                              code: BANK_ACCOUNT_NAME
-                            value: Harish Gupta
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                documents:
-                  - descriptor:
-                      name: Terms & Conditions
-                      code: TERMS
-                    url: https://api.cybrilla.com/tnc?id=214werw3w4
-                    mime_type: text/html
+          value: *ref_16
+      - summary: Confirm
+        api: confirm
+        details:
+          - description: Send the chosen payment option
+        reference: if any
+        example:
+          value: *ref_17
+      - summary: On Confirm
+        api: on_confirm
+        details:
+          - description: Send the mandate registration link
+        reference: if any
+        example:
+          value: *ref_18
+      - summary: On Status
+        api: on_status
+        details:
+          - description: Send order accepted notification
+        reference: if any
+        example:
+          value: *ref_11
+      - summary: On Status (successful instalment)
+        api: on_status
+        details:
+          - description: Successful sip instalment notification
+        reference: if any
+        example:
+          value: *ref_12
+      - summary: On Status (failed instalment)
+        api: on_status
+        details:
+          - description: Failed sip instalment notification
+        reference: if any
+        example:
+          value: *ref_13
 x-examples:
   mutual-funds:
     summary: mutual-funds

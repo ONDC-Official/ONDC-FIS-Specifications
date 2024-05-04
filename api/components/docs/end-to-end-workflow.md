@@ -32,18 +32,59 @@ flowchart LR
 ---
 
 ### Selection
+Buyer app makes a `select` call with the scheme and investor identifier (pan)
+
+Seller app checks the investor identifier to determine if he is kyc compliant and if he already has existing folios and if it can accept orders from that investor for the chosen scheme, it responds with the possible options of existing/new folio.
+
+Buyer app makes a `select` call with the chosen option of existing/new folio.
+
+Seller app checks if all the details are available and correct. If any additional input is needed, seller app responds with the list of required information (one or multiple steps).
+
+#### Possible Workflows
+1. Existing folio  
+Seller app checks for the folio validity
+
+2. New folio  
+Seller app responds with the details needed to open a new folio
+
+3. New folio with KYC  
+Seller app checks for kyc and respond with the details needed to perform kyc
+
+Seller app can choose to support all or any of the above scenarios. It will error out for cases it won't support.
 
 ```mermaid
 sequenceDiagram
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
     bap ->> bpp: `/select` w/ scheme, investor identifier
-    bpp ->> bap: `/on_select` w/ fulfillment options
+    bpp ->> bap: `/on_select` w/ existing/new folio options
+    bap ->> bpp: `/select` w/ the choice of existing/new folio
+    alt flow = existing folio
+        Note over bap, bpp: No additional steps
+    else flow = new folio
+        rect rgb(191, 223, 255)
+            bpp ->> bap: `/on_select` with xinput for folio opening
+            create participant fs AS AMC Form System
+            bap ->> fs: form submission
+            fs ->> bap: form submission response
+        end
+    else flow = new folio w/ kyc
+        rect rgb(102,179,255)
+            bpp ->> bap: `/on_select` with xinput for kyc (1st step)
+            bap ->> fs: form submission
+            fs ->> bap: form submission response
+            bap ->> bpp: `/select` w/ form submission id
+            bpp ->> bap: `/on_select` with xinput for digilocker fetch (2nd step)
+            bap ->> bap: redirect the investor to complete fetch
+            bpp ->> bap: `/on_status` with form submission id
+            bpp ->> bap: `/on_select` with xinput for esign (3rd step)
+            bap ->> bap: redirect the investor to complete esign
+            bpp ->> bap: `/on_status` with form submission id
+        end
+    end
 ```
 
-Seller app checks the investor identifier to determine if he is kyc compliant and if he already has existing folios and if it can accept orders from that investor for the given item, it responds with the possible fulfillment options. Each scheme can possibly support different fulfillment options.
-
-Investor identifier can be folio number, pan number.
+If everything is ready, seller app responds with different fulfillment options. Each scheme can possibly support different fulfillment options for the given investor/buyer app
 
 ##### Fulfillment Options
 
@@ -58,21 +99,7 @@ Investor can make a recurring redemption
 ---
 
 ### Initiation
-Buyer app makes an `init` call with the details of the investor, order and the fulfillment choice.
-
-Seller app checks if all the details are available and correct. If any additional input is needed, seller app responds with the list of required information (one or multiple steps).
-
-3 possible workflows
-1. Existing folio  
-Seller app checks for the folio validity
-
-2. New folio  
-Seller app responds with the details needed to open a new folio
-
-3. New folio with KYC  
-Seller app checks for kyc and respond with the details needed to perform kyc
-
-Seller app can choose to support all or any of the above scenarios. It will error out for cases it won't support.
+Buyer app makes an `init` call with the details of the investor, order, the fulfillment choice and the bank a/c from where the investor want to make the payment
 
 If everything is ready, seller app responds with different payment options through which the investor can make the payment to complete this order. And the order is created.
 
@@ -103,31 +130,7 @@ sequenceDiagram
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
     bap ->> bpp: `/init` w/ order details & fulfillment choice
-    alt flow = existing folio
-        Note over bap, bpp: No additional steps
-    else flow = new folio
-        rect rgb(191, 223, 255)
-            bpp ->> bap: `/on_init` with xinput for folio opening
-            create participant fs AS AMC Form System
-            bap ->> fs: form submission
-            fs ->> bap: form submission response
-            bap ->> bpp: `/init` w/ form submission id
-        end
-    else flow = new folio w/ kyc
-        rect rgb(102,179,255)
-            bpp ->> bap: `/on_init` with xinput for kyc (1st step)
-            bap ->> fs: form submission
-            fs ->> bap: form submission response
-            bap ->> bpp: `/init` w/ form submission id
-            bpp ->> bap: `/on_init` with xinput for digilocker fetch (2nd step)
-            bap ->> bap: redirect the investor to complete fetch
-            bpp ->> bap: `/on_status` with form submission id
-            bpp ->> bap: `/on_init` with xinput for esign (3rd step)
-            bap ->> bap: redirect the investor to complete esign
-            bpp ->> bap: `/on_status` with form submission id
-        end
-    end
-    bpp ->> bap: `/on_init` w/ payment options & order in `CREATED` state
+    bpp ->> bap: `/on_init` w/ payment options, TnC & order in `CREATED` state
 ```
 ---
 
