@@ -124,13 +124,24 @@ AMC will respond with details of the bank a/c into which the Investor has to mak
 
 Order in `CREATED` state marks the end of this stage.
 
+#### Initiating Purchase Order
 ```mermaid
 sequenceDiagram
     autonumber
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    bap ->> bpp: `/init` w/ order details & fulfillment choice
+    bap ->> bpp: `/init` w/ order details & fulfillment choice (onetime/sip)
     bpp ->> bap: `/on_init` w/ payment options, TnC & order in `CREATED` state
+```
+
+#### Initiating Redemption Order
+```mermaid
+sequenceDiagram
+    autonumber
+    participant bap AS Distributor
+    participant bpp AS AMC/Aggregator
+    bap ->> bpp: `/init` w/ order details & fulfillment choice (onetime/swp)
+    bpp ->> bap: `/on_init` w/ TnC & order in `CREATED` state
 ```
 ---
 
@@ -141,7 +152,11 @@ Depending on the selected payment option, seller app responds with either a paym
 
 Order in `ACCEPTED` or `REJECTED` state marks the end of this stage.
 
+#### Confirming Purchase Order
 ```mermaid
+---
+title: Confirming Purchase Order
+---
 sequenceDiagram
     participant Investor
     participant bap AS Distributor
@@ -149,17 +164,11 @@ sequenceDiagram
     Note over bap, bpp: Distributor performs 2fa before confirming. <br /> Static terms cover this
     Note over bap, bpp: Acceptance of TnC by the Investor is <br /> assumed w/ the `confirm` call
     bap ->> bpp: `/confirm` w/ selected payment & 2fa details
-    %% opt if seller does 2fa
-        %% bpp ->> bap: `/on_confirm` w/ xinput for 2fa
-        %% bap ->> bpp: form submission
-        %% bap ->> bpp: /confirm w/ form submission id
-    %% end
-    %% bpp ->> bap: `/on_confirm` w/ multiple payment options
     alt payment = existing mandate
         rect rgb(191, 223, 255)
             bpp ->> bap: `/on_confirm` w/ order in `ACCEPTED` state
         end
-    else payment = new mandate/ netbanking/ upi collect
+    else payment = new mandate/ netbanking/ upi
         rect rgb(102,179,255)
             bpp ->> bap: `/on_confirm` w/ payment url
             bap --) Investor: Redirect to url
@@ -172,25 +181,30 @@ sequenceDiagram
         end
     end
 ```
----
 
-### Fulfillment
-
-After the order is accepted, seller app performs the processing and responds with the state of order processing.
-
-Fulfillment in `SUCCESSFUL` or `FAILED` state marks the end of this stage
-
+#### Confirming Redemption Order
 ```mermaid
+---
+title: Confirming Redemption Order
+---
 sequenceDiagram
-    autonumber
+    participant Investor
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    alt order processing successful
-        bpp ->> bap: /on_status w/ fulfillment in `SUCCESSFUL` state
-    else order processing failed
-        bpp ->> bap: /on_status w/ fulfillment in `FAILED` state
+    Note over bap, bpp: Distributor performs 2fa before confirming. <br /> Static terms cover this
+    Note over bap, bpp: Acceptance of TnC by the Investor is <br /> assumed w/ the `confirm` call
+    bap ->> bpp: `/confirm` w/ 2fa details
+    alt all validations pass
+        rect rgb(191, 223, 255)
+            bpp ->> bap: `/on_confirm` w/ order in `ACCEPTED` state
+        end
+    else validations fail
+        rect rgb(191, 223, 255)
+            bpp ->> bap: `/on_confirm` w/ order in `REJECTED` state
+        end
     end
 ```
+
 ---
 
 ##### Multiple Items in an order
