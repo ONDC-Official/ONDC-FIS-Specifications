@@ -1,4 +1,4 @@
-# Order
+## Order
 
 ### Types
 
@@ -11,7 +11,7 @@
 - `ACCEPTED`: Order is accepted by BPP. For purchase orders, this means a successful payment.
 - `REJECTED`: Order is rejected by BPP. In most cases this is due to payment failures.
 
-# Fulfillment
+## Fulfillment
 
 Fulfillment is the order processing activity, which happens after the order is accepted.
 
@@ -25,6 +25,9 @@ Fulfillment is the order processing activity, which happens after the order is a
 
 ### States
 
+- `ONGOING`: For recurring orders (sip, swp), this means the instalments are ongoing as per the schedule
+- `COMPLETED`: For recurring orders (sip, swp), this means the instalments are completed as per the schedule and no new instalments will be generated
+- `CANCELLED`: For recurring orders (sip, swp), this means the order is cancelled by the seller app and no new instalments will be generated
 - `SUCCESSFUL`: Order is successfully processed. For purchase orders, this means units have been allotted.
 - `FAILED`: Order is not processed. Typically failed by the AMC/RTA due to invalid kyc/bank-account among other reasons.
 
@@ -66,35 +69,7 @@ stateDiagram-v2
     end note
 ```
 
-```mermaid
----
-title: Fulfillment States 1
----
-stateDiagram-v2
-    direction LR
-    [*] --> SUCCESSFUL
-    [*] --> FAILED
-    note left of [*]
-        ACCEPTED orders only
-    end note
-```
-
-```mermaid
----
-title: Fulfillment States 2
----
-stateDiagram-v2
-    direction LR
-    [*] --> ONGOING
-    [*] --> COMPLETED
-    [*] --> CANCELLED
-    note left of [*]
-        ACCEPTED orders only
-    end note
-```
-
-
-# Payment
+## Payment
 
 ### Types
 
