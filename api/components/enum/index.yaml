@@ -4,7 +4,9 @@ search:
   message:
     intent:
       category:
-          $ref: './category.yaml#/category'
+        descriptor:
+          code:
+            $ref: './provider.yaml#/category_codes'
       descriptor:
         $ref: './category.yaml#/intente_descriptor'
 
@@ -14,69 +16,66 @@ on_search:
   message:
     catalog:
       providers:
+        descriptor:
+          code:
+            $ref: "./provider.yaml#/provider_codes"
+        categories:
+          descriptor:
+            code:
+              $ref: "./provider.yaml#/category_codes"
         items: &item
-          $ref: "./item.yaml"
+          descriptor:
+            code:
+              $ref: "./item.yaml#/codes"
         fulfillments: &fulfillment
-          $ref: "./fulfillment.yaml"
-        payments: &payment
-          $ref: "./payment.yaml"
+          type:
+            $ref: "./fulfillment.yaml#/type"
+
 select:
   context: *context
   message:
     order: &order
+      type:
+        $ref: "./order.yaml#/type"
       items: *item
       fulfillments: *fulfillment
-      payments: *payment
+
 on_select:
   context: *context
   message:
     order: *order
+
 init:
   context: *context
   message:
-    order:
+    order: &order1
       <<: *order
-      type:
-        $ref: './order-types.yaml'
+      payments: &payment
+        $ref: "./payment.yaml"
 
 on_init:
   context: *context
   message:
-    order:
-      <<: *order
+    order: &order2
+      <<: *order1
       status:
         $ref: './order.yaml#/status'
+      documents:
+        descriptor:
+          code:
+            $ref: './document.yaml#/codes'
+
 confirm:
   context: *context
   message:
-    order: *order
+    order: *order2
+
 on_confirm:
   context: *context
   message:
-    order: &order_document
-      items: *item
-      fulfillments: *fulfillment
-      payments: *payment
-      status:
-        $ref: './order.yaml#/status'
-      # documents: &document
-      #   $ref: './documents.yaml'
-status:
-  context: *context
+    order: *order2
+
 on_status:
   context: *context
   message:
-    order:
-      <<: *order
-      status:
-        $ref: './order.yaml#/status'
-cancel:
-  context: *context
-on_cancel:
-  context: *context
-  message:
-    order: 
-      <<: *order
-      status: 
-        $ref: './order.yaml#/status'
-        
+    order: *order2
