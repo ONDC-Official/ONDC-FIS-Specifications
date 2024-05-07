@@ -1,38 +1,5 @@
-### Purchase Flow
-
-```mermaid
-flowchart LR
-    scheme[Select scheme] --> order[Select lumpsum/sip]
-
-    order -- existing folio --> existing_folio[Choose folio]
-    order -- new folio --> folio_form[Fill folio details]
-    order -- new folio w/ kyc --> kyc_form[Fill kyc details] --> digilocker[Fetch docs from digilocker] --> esign[Esign the application form]
-
-    existing_folio -----> 2fa[Accept TnC & 2fa]
-    folio_form -----> 2fa
-    esign ---> 2fa
-
-    2fa -- existing mandate --> choose_mandate[Choose mandate]
-    2fa -- new mandate --> mandate_reg[Register mandate]
-    2fa -- other pmt --> pmt[Complete payment]
-
-    choose_mandate ---> finish[Finish]
-    mandate_reg ---> finish
-    pmt ---> finish
-```
-
-### Redemption Flow
-```mermaid
-flowchart LR
-    scheme[Select scheme] --> order[Select redemption/swp]
-    order ---> choose_folio[Choose folio]
-    choose_folio -----------> 2fa[Accept TnC & 2fa]
-    2fa --------> finish[Finish]
-```
----
-
 ### Selection
-Buyer app makes a `select` call with the scheme and investor identifier (pan)
+Buyer app makes a `select` call with scheme, fulfillment and investor identifier (pan)
 
 Seller app checks the investor identifier to determine if he is kyc compliant and if he already has existing folios and if it can accept orders from that investor for the chosen scheme, it responds with the possible options of existing/new folio.
 
@@ -45,10 +12,10 @@ Seller app checks if all the details are available and correct. If any additiona
 Seller app checks for the folio validity
 
 2. New folio  
-Seller app responds with the details needed to open a new folio
+Seller app responds with the details needed to open a new folio (1-step xinput)
 
 3. New folio with KYC  
-Seller app checks for kyc and respond with the details needed to perform kyc
+Seller app responds with the details needed to perform kyc (3-step xinput)
 
 Seller app can choose to support all or any of the above scenarios. It will error out for cases it won't support.
 
@@ -77,6 +44,7 @@ sequenceDiagram
             bpp ->> bap: `/on_select` with xinput for digilocker fetch (2nd step)
             bap ->> bap: redirect the investor to complete fetch
             bpp ->> bap: `/on_status` with form submission id
+            bap ->> bpp: `/select` w/ form submission id
             bpp ->> bap: `/on_select` with xinput for esign (3rd step)
             bap ->> bap: redirect the investor to complete esign
             bpp ->> bap: `/on_status` with form submission id
@@ -84,24 +52,12 @@ sequenceDiagram
     end
 ```
 
-If everything is ready, seller app responds with different fulfillment options. Each scheme can possibly support different fulfillment options for the given investor/buyer app
-
-##### Fulfillment Options
-
-1. `LUMPSUM`  
-Investor can make a one time lumpsum purchase
-2. `SIP`  
-Investor can make a recurring purchase
-3. `REDEMPTION`  
-Investor can make a one time redemption
-4. `SWP`  
-Investor can make a recurring redemption
 ---
 
 ### Initiation
 Buyer app makes an `init` call with the details of the investor, order, the fulfillment choice and the bank a/c from where the investor want to make the payment
 
-If everything is ready, seller app responds with different payment options through which the investor can make the payment to complete this order. And the order is created.
+If everything is ready, seller app responds with different payment options through which the investor can make the payment to complete this order. And the order is created in draft state. The terms and conditions to be accepted by the investor is also sent in the response.
 
 ##### Payment Options
 **New Mandate Registration**  
@@ -115,12 +71,6 @@ For one time payment, if netbanking is supported for the given investor's bank a
 
 **UPI Collect**  
 For one time payment, if upi collect is supported for the given investor's bank a/c, AMC will respond with this option.
-
-**UPI Intent**  
-TBD
-
-**NEFT/RTGS**  
-AMC will respond with details of the bank a/c into which the Investor has to make payment through neft/rtgs. This can be useful for corporate investors.
 
 Order in `CREATED` state marks the end of this stage.
 
@@ -146,7 +96,7 @@ sequenceDiagram
 ---
 
 ### Confirmation
-Buyer app sends all the details of the investor and the transaction and the selected payment option along with all the negotiated terms in the previous step. Buyer app performs 2fa and sends those details.
+Buyer app sends all the details of the investor and the transaction and the selected payment option along with all the negotiated terms in the previous step. Buyer app takes a clickwrap consent from the investor on the TnC, performs 2fa and sends those details.
 
 Depending on the selected payment option, seller app responds with either a payment URL or order in accepted state.
 
