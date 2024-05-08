@@ -7,7 +7,6 @@ function onFirstLoad(build_spec) {
       const dropdown =  document.getElementById("contract-dropdown");
       const branch_name = dropdown.options[dropdown.selectedIndex].text;
       xProperties.forEach((xProperty) => {
-        console.log("dat>>>>>", data)
         if (data[xProperty]) {
           switch (xProperty) {
             case "x-enum":
