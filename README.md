@@ -1,222 +1,74 @@
-### Change Logs: Insurance API specs
+# ONDC-FIS-Specifications
 
-<table>
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 36%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Version</th>
-<th>FIS13_2.0.0_070524</th>
-</tr>
-<tr class="odd">
-<th>Updates in BRD</th>
-<th>6th May 2024</th>
-</tr>
-<tr class="header">
-<th>Updates in PRD/Change log</th>
-<th>7th May 2024</th>
-</tr>
-<tr class="odd">
-<th>Updates in API Specs on dev doc</th>
-<th>7th May 2024</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+These specifications are to enable ONDC Network Participants to expose or consume financial services on ONDC.
 
-##### Motor Insurance:
+ONDC mobility specification is an adaptation of [beckn financial specifications](https://github.com/beckn/financial-services).
 
-1.  Added manual review flag as part of on_search. This is added to
-    > allow the buyer app to improve the buyer journey by filtering
-    > policies where manual review is not required.
+These specifications will be released in multiple phases enabling different use case and enhancements.
 
-**Example Snippet:**
+ONDC Financial Services developer guide [link](https://ondc-official.github.io/mobility-specification/)
 
-<table>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>"tags": [<br />
-{<br />
-"descriptor": {<br />
-"name": "General Information",<br />
-"code": "GENERAL_INFO"<br />
-},<br />
-"list": [<br />
-{<br />
-"descriptor": {<br />
-"code": "MANUAL_REVIEW",<br />
-"name": "Manual Review",<br />
-"short_desc": "Describes manual review value”<br />
-},<br />
-"value": "true"<br />
-}<br />
-]<br />
-}<br />
-]</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+## Latest Version
 
-2.  Added following optional fields as part of renewal form. This is
-    > added to allow the seller app and buyer app to share previous
-    > policy details when the seller is unable to fetch data from the
-    > Vahan
-    > portal.<img src="media/image4.png" style="width:2.49479in;height:1.98395in" />
+[v1.0.0](https://github.com/ONDC-Official/mobility-specification/releases/tag/v1.0.0)
 
-    - <u>Case 1</u>: The buyer app choose to send optional details
-      > upfront to the seller app
+## Earlier Versions
 
-      - Here the seller app has previous policy details therefore even
-        > if the vahan portal is not returning the data seller app can
-        > use the data shared by the buyer app to generate offers.
+| Version | Release Date    | beckn Version                               | Comments                                                            |
+| ------- | --------------- | ------------------------------------------- | ------------------------------------------------------------------- |
+| v1.0.0  | non-git release | core - 1.1.0                                | Gift Card use case enabled doc link                                 |
+| v2.0.0  | TBD             | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Credit use cases enabled |
 
-    - <u>Case 2</u>: The buyer app chose not to send optional details
-      > upfront to the seller app
+## Introduction
 
-      - <u>Sub case 1</u> : Previous Policy details were not received
-        > from Vahan portal
+Open Network for Digital Commerce (ONDC) is a network based on beckn open protocol and will enable local commerce across segments, such as mobility, retail etc, to be discovered and engaged by any network-enabled application.
 
-        - The seller app will NACK the submission of the form with the
-          > error code “81208”, Event: “Previous Policy Details
-          > Required”. In this scenario the buyer app will collect the
-          > optional fields and submit the entire form again.
+ONDC financial services aims to build a nationwide multi-modal network that provides seamless experiences, supports growth & innovation by,
 
-      - <u>Sub case 2</u>: Previous Policy details were received from
-        > Vahan portal
+- bringing together a diverse set of financial services players who can engage with the open network on their own terms
+- fostering collaboration, sharing & new models
+- facilitating responsive policy by bringing onboard decision making authorities
 
-        - The seller app shares the submission ID for the form
-          > submission with the buyer app.
+In the financial service space, the intent is to enable seamless and truly interoperatable service options by bringing in diverse inventory onboard at scale that will serve the country’s population.
 
-3.  <span class="mark">Added IDV_VALUE, IDV_MIN_VALUE, and IDV_MAX_VALUE
-    > to the on_search feature. This is added to allow the seller to
-    > share the IDV range supported and for the buyer to share the IDV
-    > desired by the buyer which shall be within the range shared by the
-    > seller.</span>
+This would be possible in the financial service domain by making sure all financial services apps in the network are built in such a way as to enable them to communicate with each other in the same language.
 
-    - Based on IDV_MIN_VALUE & IDV_MAX_VALUE the buyer app will allow
-      > users to set custom IDV value.
+## Enabled/Supported use cases on network
 
-**Example Snippet:**
+- Purchase of Gift Card
+- Credit use case: Personal loan and Invoice based loan
 
-<table>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>"tags": [<br />
-{<br />
-"descriptor": {<br />
-"name": "General Information",<br />
-"code": "GENERAL_INFO"<br />
-},<br />
-"list": [<br />
-{<br />
-"descriptor": {<br />
-"code": "IDV_VALUE",<br />
-"name": "IDV Value",<br />
-"short_desc": "Describes the IDV value"<br />
-},<br />
-"value": "350000"<br />
-},<br />
-{<br />
-"descriptor": {<br />
-"code": "IDV_MIN_VALUE",<br />
-"name": "IDV Min Value",<br />
-"short_desc": "Describes the IDV's min value"<br />
-},<br />
-"value": "150000"<br />
-},<br />
-{<br />
-"descriptor": {<br />
-"code": "IDV_MAX_VALUE",<br />
-"name": "IDV Max Value",<br />
-"short_desc": "Describes the IDV' max value"<br />
-},<br />
-"value": "500000"<br />
-}<br />
-]</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+## Working with Protocol
 
-- IDV_SELECTED as part of the select call will be shared. The buyer app
-  > will send the selected IDV value as part of tags & in on_select the
-  > seller app will send the value as part of IDV_VALUE.
+Refer the [link](./Usage.md) for details regarding how to use this repository
 
-**Example snippet:**
+## Evolution
 
-<table>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>"tags": [<br />
-{<br />
-"descriptor": {<br />
-"name": "General Information",<br />
-"code": "GENERAL_INFO"<br />
-},<br />
-"list": [<br />
-{<br />
-"descriptor": {<br />
-"code": "IDV_SELECTED",<br />
-"name": "IDV Selected"<br />
-},<br />
-"value": "350000"<br />
-}<br />
-]<br />
-}<br />
-]</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+The evolution of ONDC FIS specification driven by 2 factors:
 
-4.  <span class="mark">Some of the information was changed from optional
-    > to mandatory and vice versa. Below are the snippets of
-    > changes.</span>
+1. The beckn financial services and/or core specification evolution.
+2. ONDC Network Participants recommendation and requirement for enhancing and expanding the network use cases & experience.
 
-    - <span class="mark">Please note that information could be either in
-      > tags or attributes or as part of the form as per the use
-      > case.</span>
+To know more about how the specification evolves, visit the Network GOVERNANCE document.
 
-<img src="media/image2.png" style="width:6.26772in;height:1.66667in" />
+To follow discussions related to the financial services specification please visit the [Discussions Forum](https://github.com/ONDC-Official/mobility-specification/discussions) on GitHub
 
-<img src="media/image1.png" style="width:6.26772in;height:0.22222in" />
+Each major release of ONDC financial service specification will be approved by ONDC financial service working group members for which are listed [here](./Committee.md)
 
-<img src="media/image3.png" style="width:6.26772in;height:0.54167in" />
+For minor releases for bug fix and cosmetic changes ONDC would make a minor release based on internal approval process and update the committee in the next scheduled discussion.
 
-##### 
+## Contribution
 
-##### Health Insurance:
+### Contribution to specifications
 
-- Added ROOM_CATEGORY tag as part of GENERAL_INFO tag group.
+Anyone can contribute to the specification. Please refer beckn contribution guidelines.
 
-- Updated mime type for family insurance form to **text/html-multi.**
-  > For more information, please refer to the [<u>Developer Guide
-  > page</u>](https://ondc-official.github.io/ONDC-FIS-Specifications/).
-  > Select the version "draft-FIS13-health," then navigate to
-  > "Feature-UI" and click on "xinput-form-response."
+### Contribution to network
 
-- Added protocol path references for tags in **Attribute-UI**.
+Anyone can contribute to the network enhancements. Contributors must follow the contribution guidelines.
 
-##### Marine Insurance:
+Each contribution will be peer-reviewed by the ONDC financial services committee members. If approved, this contribution will be merged with the applicable versions of the specification.
 
-- Added protocol path references for tags in **Attribute-UI**.
+#### What is Contribution to network
 
-#####   
-
-##### 
+Addition/Modification of examples, enum, policies which are very specific to the networks scope and purview.
