@@ -11,14 +11,9 @@ function renderChangeLogDropDown(branchname, filteredData) {
 }
 
 function renderDocument(branchName, file) {
-  console.log("file", file);
-  if (file.endsWith(".md")) {
-    console.log("inside if>>>>>");
-    renderMDFile(branchName, file);
-    return;
-  }
+  console.log("Calliung render");
   const documentDispalyArea = document.getElementById("change-log-container");
-  documentDispalyArea.innerHTML = "";
+  // documentDispalyArea.innerHTML = "";
   documentDispalyArea.innerHTML = `
   <iframe style="width: 100%; height: 500px;" id="something" src="https://docs.google.com/gview?url=https://github.com/ONDC-Official/ONDC-FIS-Specifications/raw/${branchName}/api/components/docs/changeLog/${file}.docx&embedded=true"></iframe>
   `;

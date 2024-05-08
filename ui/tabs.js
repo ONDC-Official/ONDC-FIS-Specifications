@@ -71,6 +71,8 @@ function onFirstLoad(build_spec) {
                 break;
               case "x-changeLog":
                 shouldDisplay([], "change-log-nav");
+                const swaggerTab = document.getElementById("swagger-tab")
+                swaggerTab.click()
                 break;
               default:
                 break;
