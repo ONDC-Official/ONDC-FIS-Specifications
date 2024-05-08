@@ -11,6 +11,12 @@ function renderChangeLogDropDown(branchname, filteredData) {
 }
 
 function renderDocument(branchName, file) {
+  console.log("file", file);
+  if (file.endsWith(".md")) {
+    console.log("inside if>>>>>");
+    renderMDFile(branchName, file);
+    return;
+  }
   const documentDispalyArea = document.getElementById("change-log-container");
   documentDispalyArea.innerHTML = "";
   documentDispalyArea.innerHTML = `
@@ -22,4 +28,20 @@ function updateChangeLog() {
   var example_set = document.getElementById("change-log-dropdown");
   const selectedOption = document.getElementById("contract-dropdown")?.value;
   renderDocument(selectedOption, example_set.value);
+}
+
+function renderMDFile(branchName, file) {
+  const url = `https://github.com/ONDC-Official/ONDC-FIS-Specifications/raw/${branchName}/api/components/docs/changeLog/${file}`;
+  console.log("url", url);
+  fetch(url)
+    .then((response) => {
+      console.log("response", response);
+      response.text();
+    })
+    .then(async (text) => {
+      console.log("text:::", text);
+    })
+    .catch((e) => {
+      console.log("eerror", e);
+    });
 }
