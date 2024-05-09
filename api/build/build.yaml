@@ -2786,6 +2786,12 @@ x-enum:
                   repayment capacity, income level, profession and credit
                   history
                 reference: <PR/Issue/Discussion Links md format text
+              - code: PURCHASE_FINANCE
+                description: >-
+                  Describes a digital journey where customers can discover the
+                  best "loan offers" on the buyer apps to buy the products on
+                  credit.
+                reference: <PR/Issue/Discussion Links md format text
   on_search:
     context: *ref_0
     message:
@@ -3208,6 +3214,9 @@ x-tags:
                     description: Describes the insurance Charges
                     reference: <PR/Issue/Discussion Links md format text>
                   - code: OFFER_VALIDITY
+                    description: Describes the offer validity
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: MINIMUM_DOWNPAYMENT_REQUIRED
                     description: Describes the offer validity
                     reference: <PR/Issue/Discussion Links md format text>
           tags:
@@ -12244,7 +12253,7 @@ x-flows:
       - description: Discovery of Funds
         mermaid: |-
           sequenceDiagram
-            title Personal Loan Discovery
+            title Purchase Loan Discovery
             Borrower Platform (BAP)->>Gateway (BG): search
             Gateway (BG) ->> Borrower Platform (BAP): ACK
             Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
@@ -12310,15 +12319,15 @@ x-flows:
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     references: if any
     steps:
-      - summary: User search for available personal loan services.
+      - summary: User search for available Purchase Loan services.
         api: search
         details:
           - description: >-
-              User explore loan options by searching for personal loan services
+              User explore loan options by searching for Purchase Loan services
               over the network
             mermaid: |-
               sequenceDiagram
-                title Personal Loan Discovery
+                title Purchase Loan Discovery
                 rect rgb(191, 223, 255)
                 Borrower Platform (BAP)->>Gateway (BG): search
                 Gateway (BG) ->> Borrower Platform (BAP): ACK
@@ -12352,17 +12361,44 @@ x-flows:
                 category:
                   descriptor:
                     code: PURCHASE_FINANCE
+                payment:
+                  collected_by: BPP
+                  tags:
+                    - descriptor:
+                        code: BUYER_FINDER_FEES
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: percent-annualized
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                    - descriptor:
+                        code: SETTLEMENT_TERMS
+                      display: false
+                      list:
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: '2.5'
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: >-
+                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                        - descriptor:
+                            code: OFFLINE_CONTRACT
+                          value: 'true'
       - summary: >-
-          The lender offers a static catalog details of loan types like personal
-          loans, gst-based loans etc.
+          The lender offers a static catalog details of loan types like Purchase
+          Loans.
         api: on_search
         details:
           - description: >-
               The lender platform provides a comprehensive catalog of various
-              loan types including personal loans.
+              loan types including Purchase Loans.
             mermaid: |-
               sequenceDiagram
-                title Personal Loan Discovery
+                title Purchase Loan Discovery
                 Borrower Platform (BAP)->>Gateway (BG): search
                 Gateway (BG) ->> Borrower Platform (BAP): ACK
                 Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
@@ -12396,7 +12432,7 @@ x-flows:
             message:
               catalog:
                 descriptor:
-                  name: ICICI Bank(Need to confirm)
+                  name: ICICI Bank
                 providers:
                   - id: PROVIDER_ID
                     descriptor:
@@ -12438,6 +12474,42 @@ x-flows:
                             resubmit: false
                             multiple_sumbissions: false
                           required: true
+                        tags:
+                          - descriptor:
+                              code: INFO
+                              name: Information
+                            list:
+                              - descriptor:
+                                  code: MIN_INTEREST_RATE
+                                  name: Minimum Interest Rate
+                                  short_desc: Loans starting from 9% (p.a)
+                                value: 9%
+                              - descriptor:
+                                  code: MAX_INTEREST_RATE
+                                  name: Maximum Interest Rate
+                                  short_desc: Loan Rate below from 15% (p.a)
+                                value: 15%
+                              - descriptor:
+                                  code: MIN_TENURE
+                                  name: Minimum Tenure
+                                  short_desc: Loan Tenure starting form 5 months
+                                value: 5 months
+                              - descriptor:
+                                  code: MAX_TENURE
+                                  name: Maximum Tenure
+                                  short_desc: Loan Tenure upto form 5 years
+                                value: 5 years
+                              - descriptor:
+                                  code: MIN_LOAN_AMOUNT
+                                  name: Minimum Loan Amount
+                                  short_desc: Loan Amount starting from 5,000
+                                value: '5000'
+                              - descriptor:
+                                  code: MAX_LOAN_AMOUNT
+                                  name: Minimum Loan Amount
+                                  short_desc: Loan Amount upto form 5,00,000
+                                value: '500000'
+                            display: true
                       - id: ITEM_ID_ELECTRONICS
                         descriptor:
                           code: PURCHASE_FINANCE
@@ -12463,15 +12535,101 @@ x-flows:
                             resubmit: false
                             multiple_sumbissions: false
                           required: true
-      - summary: >-
-          The borrower receives the personal loan application form from lender
-          after providing all details like PAN, mobile number, name, address,
-          date of birth, salary, employment type and company name.
+                    payments:
+                      - collected_by: BPP
+                        tags:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_TYPE
+                                value: PERCENT_ANNUALIZED
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_PERCENTAGE
+                                value: '1'
+                          - descriptor:
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT30D
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: INVOICE_RECEIPT
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                              - descriptor:
+                                  code: OFFLINE_CONTRACT
+                                value: 'true'
+                    tags:
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: ICICI
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: lifeline@iciciprulife.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: 1800 1080
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: customer.care@icicibank.com
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: ICICI_LSP
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: lsp@iciciprulife.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+      - summary: The borrower receives the Merchant & product details form
         api: form
         details:
           - description: >-
-              The lender platform sends the application form for the personal
-              loan to the borrower.
+              The lender platform sends the form for the Purchase Loan to the
+              borrower.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -12479,7 +12637,7 @@ x-flows:
                 participant Lender Platform (BPP)
                 participant Lender Form Service
                 rect rgb(191, 223, 255) 
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(personal loan)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Purchase Loan)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -12510,21 +12668,43 @@ x-flows:
               <label for="gst">GST</label>
               <input type="text" id="gst" name="gst" required />
 
-              <label for="isFinancing">Participate in Financing</label>
-              <input type="checkbox" id="isFinancing" name="isFinancing" />
+              <!-- <label for="isFinancing">Participate in Financing</label>
+              <input type="checkbox" id="isFinancing" name="isFinancing" /> -->
 
               <label for="accountDetails">Bank Account Details</label>
               <input type="text" id="accountDetails" name="accountDetails" required />
 
               <!-- Product Details -->
               <p>Product Details</p>
-              <label for="devices">Device</label>
-              <select name="devices" id="devices" required>
-                <option value="mobile">Mobile</option>
+              <label for="productCategory">Product Category</label>
+              <select name="productCategory" id="productCategory" required>
+                <option value="samrtphone">Smart Phone</option>
+                <option value="washingMachine">Washing Machine</option>
+                <option value="headphone">Headphone</option>
               </select>
 
-              <label for="emi">EMI</label>
-              <input type="text" id="emi" name="emi" required/>
+              <label for="brand">Brand</label>
+              <select name="productCategory" id="productCategory" required>
+                <option value="boat">Boat</option>
+                <option value="apple">Apple</option>
+              </select>
+
+              <label for="model">Model</label>
+              <select name="model" id="model" required>
+                <option value="iphone15">iphone15</option>
+              </select>
+
+              <label for="SKUID">SKUID</label>
+              <select name="SKUID" id="SKUID" required>
+                <option value="MU773HNA">MU773HNA</option>
+              </select>
+              <!-- <label for="devices">Device</label>
+              <select name="devices" id="devices" required>
+                <option value="mobile">Mobile</option>
+              </select> -->
+
+              <label for="downpayment">Downpayment</label>
+              <input type="text" id="downpayment" name="downpayment" required/>
              
 
               <input type="hidden" id="formId" name="formId" value="FO1">
@@ -12533,17 +12713,19 @@ x-flows:
             </body>
 
             </html>
-      - summary: Find suitable personal loan services.
+      - summary: The borrower submit the form with the submission-id
         api: search
         details:
-          - description: Explore available personal loan options by conducting search.
+          - description: >-
+              The borrower submit the merchant & product details form with the
+              submission-id
             mermaid: |-
               sequenceDiagram
                 title  Selection
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(personal loan)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Purchase Loan)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -12588,30 +12770,57 @@ x-flows:
                         form_response:
                           status: SUCCESS
                           submission_id: F01_SUBMISSION_ID
+                  payment:
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
       - summary: >-
-          Provides a catalog of different loan products offered by a single
-          lender for personal loans.
+          The lender offers a static catalog details of loan types like Purchase
+          Loans.
         api: on_search
         details:
           - description: >-
               The lender platform provides a comprehensive catalog of various
-              loan types including personal loans.
+              loan types including Purchase Loans.
             mermaid: |-
               sequenceDiagram
-                  title  Selection
-                  participant Borrower Platform (BAP)
-                  participant Lender Platform (BPP)
-                  participant Lender Form Service
-                  Borrower Platform (BAP)->>Lender Form Service: Get Form(personal loan)
-                  Lender Form Service-->>Borrower Platform (BAP): Form Received
-                  Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                  Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                  Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                  Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                  rect rgb(191, 223, 255) 
-                  Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                  end
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Purchase Loan)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -12635,7 +12844,7 @@ x-flows:
             message:
               catalog:
                 descriptor:
-                  name: ICICI Bank(Need to confirm)
+                  name: ICICI Bank
                 providers:
                   - id: PROVIDER_ID
                     descriptor:
@@ -12677,17 +12886,242 @@ x-flows:
                             resubmit: false
                             multiple_sumbissions: false
                           required: true
-      - summary: Find suitable personal loan services.
-        api: search
+                        tags:
+                          - descriptor:
+                              code: INFO
+                              name: Information
+                            list:
+                              - descriptor:
+                                  code: MIN_INTEREST_RATE
+                                  name: Minimum Interest Rate
+                                  short_desc: Loans starting from 9% (p.a)
+                                value: 9%
+                              - descriptor:
+                                  code: MAX_INTEREST_RATE
+                                  name: Maximum Interest Rate
+                                  short_desc: Loan Rate below from 15% (p.a)
+                                value: 15%
+                              - descriptor:
+                                  code: MIN_TENURE
+                                  name: Minimum Tenure
+                                  short_desc: Loan Tenure starting form 5 months
+                                value: 5 months
+                              - descriptor:
+                                  code: MAX_TENURE
+                                  name: Maximum Tenure
+                                  short_desc: Loan Tenure upto form 5 years
+                                value: 5 years
+                              - descriptor:
+                                  code: MIN_LOAN_AMOUNT
+                                  name: Minimum Loan Amount
+                                  short_desc: Loan Amount starting from 5,000
+                                value: '5000'
+                              - descriptor:
+                                  code: MAX_LOAN_AMOUNT
+                                  name: Minimum Loan Amount
+                                  short_desc: Loan Amount upto form 5,00,000
+                                value: '500000'
+                            display: true
+                    payments:
+                      - collected_by: BPP
+                        tags:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_TYPE
+                                value: PERCENT_ANNUALIZED
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_PERCENTAGE
+                                value: '1'
+                          - descriptor:
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT30D
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: INVOICE_RECEIPT
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                              - descriptor:
+                                  code: OFFLINE_CONTRACT
+                                value: 'true'
+                    tags:
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: ICICI
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: lifeline@iciciprulife.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: 1800 1080
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: customer.care@icicibank.com
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: ICICI_LSP
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: lsp@iciciprulife.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+      - summary: The borrower receives the Personal Info details form
+        api: form
         details:
-          - description: Explore available personal loan options by conducting search.
+          - description: >-
+              The lender platform sends the application form for the Purchase
+              Loan to the borrower.
             mermaid: |-
               sequenceDiagram
                 title  Selection
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
+                participant Lender Form Service
                 rect rgb(191, 223, 255) 
-                Borrower Platform (BAP)->>Lender Platform (BPP): search
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Purchase Loan)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: |-
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>User Details</title>
+            </head>
+
+            <body>
+              <form action="/form/submission/personal-details">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required />
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required />
+                <label for="personalemail">Personal Email</label>
+                <input type="text" id="email" name="personalemail" />
+                <label for="officialemail">Official Email</label>
+                <input type="text" id="officialEmail" name="officialemail" />
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required />
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
+                <label for="pan">PAN</label>
+                <input type="text" id="pan" name="pan" required />
+                <label for="contactNumber">contact number</label>
+                <input type="text" id="contactNumber" name="contactNumber" required />
+                <label for="employmentType">Employment type</label>
+                <select name="employmentType" id="employmentType" required>
+                  <option value="salaried">Salaried</option>
+                  <option value="selfEmployed">Self Employment</option>
+                </select>
+                <label for="income">Income</label>
+                <input type="number" id="income" name="income" required />
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" name="companyName" required />
+                <label for="udyamNumber">UDYAM Number</label>
+                <input type="text" id="udyamNumber" name="udyamNumber" />
+                <label for="addressL1">Address Line 1</label>
+                <input type="text" id="addressL1" name="addressL1" />
+                <label for="addressL2">Address Line 2</label>
+                <input type="text" id="addressL2" name="addressL2" />
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" />
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" />
+                <label for="pincode">Pin Code</label>
+                <input type="text" id="pincode" name="pincode" />
+                <label for="aa_id">Account Aggregator ID</label>
+                <input type="text" id="aa_id" name="aa_id" required/>
+                <label for="endUse">End Use</label>
+                <select name="endUse" id="endUse" required>
+                  <option value="consumerDurablePurchase">Purchase of Consumer Durables</option>
+                  <option value="education">Education</option>
+                  <option value="travel">Travel</option>
+                  <option value="health">Health</option>
+                  <option value="other">Other Consumption Purposes</option>
+                </select>
+                <label for="bureauConsent">Bureau Consent</label>
+                <input type="checkbox" id="bureauConsent" name="bureauConsent" required/>
+                <input type="hidden" id="formId" name="formId" value="FO2">
+                <input type="submit" value="Submit">
+              </form>
+            </body>
+
+            </html>
+      - summary: Find suitable Purchase Loan services.
+        api: search
+        details:
+          - description: Explore available Purchase Loan options by conducting search.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Purchase Loan)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_search
@@ -12727,14 +13161,322 @@ x-flows:
                         form_response:
                           status: SUCCESS
                           submission_id: F01_SUBMISSION_ID
+                  payment:
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
       - summary: >-
           Provides a catalog of different loan products offered by a single
-          lender for personal loans.
+          lender for Purchase Loans along with consent handler.
         api: on_search
         details:
           - description: >-
               The lender platform provides a comprehensive catalog of various
-              loan types including personal loans.
+              loan types including Purchase Loans.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Purchase Loan)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: de326ecb-b1fe-44aa-8f8c-4f0a4024069a
+              message_id: a864519e-ea12-43fa-b141-1639d226e174
+              action: on_search
+              timestamp: '2024-05-06T04:08:05.743Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              catalog:
+                descriptor:
+                  name: ICICI Bank
+                providers:
+                  - id: PROVIDER_ID
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: ICICI Bank
+                      short_desc: ICICI Bank Ltd
+                      long_desc: ICICI Bank Ltd, India.
+                    categories:
+                      - id: '101123'
+                        descriptor:
+                          code: PURCHASE_FINANCE
+                          name: Purchase Finance
+                    items:
+                      - id: ITEM_ID_ELECTRONICS
+                        descriptor:
+                          code: PURCHASE_FINANCE
+                          name: Purchase Finance
+                        category_ids:
+                          - '101123'
+                        tags:
+                          - descriptor:
+                              code: CONSENT_INFO
+                              name: Consent Information
+                            list:
+                              - descriptor:
+                                  code: CONSENT_HANDLER
+                                  name: Consent Handler
+                                value: d4cabdca-f621-43f7-9c8b-b5331d329e09
+                            display: false
+                          - descriptor:
+                              code: INFO
+                              name: Information
+                            list:
+                              - descriptor:
+                                  code: MIN_INTEREST_RATE
+                                  name: Minimum Interest Rate
+                                  short_desc: Loans starting from 9% (p.a)
+                                value: 9%
+                              - descriptor:
+                                  code: MAX_INTEREST_RATE
+                                  name: Maximum Interest Rate
+                                  short_desc: Loan Rate below from 15% (p.a)
+                                value: 15%
+                              - descriptor:
+                                  code: MIN_TENURE
+                                  name: Minimum Tenure
+                                  short_desc: Loan Tenure starting form 5 months
+                                value: 5 months
+                              - descriptor:
+                                  code: MAX_TENURE
+                                  name: Maximum Tenure
+                                  short_desc: Loan Tenure upto form 5 years
+                                value: 5 years
+                              - descriptor:
+                                  code: MIN_LOAN_AMOUNT
+                                  name: Minimum Loan Amount
+                                  short_desc: Loan Amount starting from 5,000
+                                value: '5000'
+                              - descriptor:
+                                  code: MAX_LOAN_AMOUNT
+                                  name: Minimum Loan Amount
+                                  short_desc: Loan Amount upto form 5,00,000
+                                value: '500000'
+                            display: true
+                    payments:
+                      - collected_by: BPP
+                        tags:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_TYPE
+                                value: PERCENT_ANNUALIZED
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_PERCENTAGE
+                                value: '1'
+                          - descriptor:
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT30D
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: INVOICE_RECEIPT
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                              - descriptor:
+                                  code: OFFLINE_CONTRACT
+                                value: 'true'
+                    tags:
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: ICICI
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: lifeline@iciciprulife.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: 1800 1080
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: customer.care@icicibank.com
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: ICICI_LSP
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: lsp@iciciprulife.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+      - summary: >-
+          The borrower submit the form with the submission-id & provides
+          consent.
+        api: search
+        details:
+          - description: Explore available Purchase Loan options by conducting search.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): search
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: de326ecb-b1fe-44aa-8f8c-4f0a4024069a
+              message_id: 916b8cc3-492a-474a-b742-be8aa785f5a8
+              action: search
+              timestamp: '2024-05-06T04:09:05.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              intent:
+                category:
+                  descriptor:
+                    code: PURCHASE_FINANCE
+                provider:
+                  id: PROVIDER_ID
+                  items:
+                    - id: ITEM_ID_ELECTRONICS
+                      xinput:
+                        form:
+                          id: F02
+                        form_response:
+                          status: APPROVED
+                          submission_id: F01_SUBMISSION_ID
+                  payment:
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+      - summary: Provides a catalog of different loan offers.
+        api: on_search
+        details:
+          - description: >-
+              The lender platform provides a comprehensive catalog of various
+              loan types including Purchase Loans.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -12769,7 +13511,7 @@ x-flows:
             message:
               catalog:
                 descriptor:
-                  name: ICICI Bank(Need to confirm)
+                  name: ICICI Bank
                 providers:
                   - id: PROVIDER_ID
                     descriptor:
@@ -12792,7 +13534,133 @@ x-flows:
                           name: Purchase Finance
                         category_ids:
                           - '101123'
+                        price:
+                          currency: INR
+                          value: '70000'
                         tags:
+                          - descriptor:
+                              code: INFO
+                              name: Information
+                            list:
+                              - descriptor:
+                                  code: INTEREST_RATE
+                                  name: Interest Rate
+                                  short_desc: Loans starting from 12% (p.a)
+                                value: 12%
+                              - descriptor:
+                                  code: TERM
+                                  name: Loan Term
+                                  short_desc: Loans Duration 5 months
+                                value: 5 months
+                              - descriptor:
+                                  code: INTEREST_RATE_TYPE
+                                  name: Interest rate type
+                                  short_desc: Fixed Interest type
+                                value: FIXED
+                              - descriptor:
+                                  code: APPLICATION_FEE
+                                  name: Application Fees
+                                value: 1000 INR
+                              - descriptor:
+                                  code: FORECLOSURE_FEE
+                                  name: Foreclosure Penalty
+                                  short_desc: Loan Foreclosure Penalty
+                                value: 0.5%
+                              - descriptor:
+                                  code: INTEREST_RATE_CONVERSION_CHARGE
+                                  name: interest rate conversion charges
+                                value: 1000 INR
+                              - descriptor:
+                                  code: DELAY_PENALTY_FEE
+                                  name: Delayed payments penalty
+                                  short_desc: Delayed payments penalty
+                                value: 5%
+                              - descriptor:
+                                  code: OTHER_PENALTY_FEE
+                                  name: Other Penal Charges
+                                  short_desc: Other Penal Charges
+                                value: 1%
+                              - descriptor:
+                                  code: ANNUAL_PERCENTAGE_RATE
+                                  name: Annual Percentage Rate
+                                  short_desc: >-
+                                    Effective annualized interest rate in
+                                    percentage computed on net disbursed amount
+                                    using IRR approach and reducing balance
+                                    method
+                                value: 5%
+                              - descriptor:
+                                  code: REPAYMENT_FREQUENCY
+                                  name: Repayment Frequency
+                                  short_desc: Repayment Frequency by borrower
+                                value: MONTHLY
+                              - descriptor:
+                                  code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                                  name: Number of installments of repayment
+                                  short_desc: >-
+                                    Number of installments borrower has to make
+                                    to payback the loan
+                                value: '7'
+                              - descriptor:
+                                  code: TNC_LINK
+                                  name: Terms & Conditions
+                                  short_desc: Terms and Conditions
+                                value: https://icicibank.com/loan/tnc.html
+                              - descriptor:
+                                  code: COOL_OFF_PERIOD
+                                  name: cool off period
+                                  short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                                value: PT30D
+                              - descriptor:
+                                  code: INSTALLMENT_AMOUNT
+                                  name: Installment amount
+                                  short_desc: Each installment amount of repayment
+                                value: '10000'
+                              - descriptor:
+                                  code: PRINCIPAL
+                                  name: Principal
+                                  short_desc: Loan Principal
+                                value: '65000'
+                              - descriptor:
+                                  code: INTEREST
+                                  name: Interest
+                                  short_desc: Loan Interest
+                                value: '4000'
+                              - descriptor:
+                                  code: PROCESSING_FEE
+                                  name: Processing Fee
+                                  short_desc: Processing Fee
+                                value: '500'
+                              - descriptor:
+                                  code: OTHER_UPFRONT_CHARGES
+                                  name: other upfront charges
+                                  short_desc: other upfront charges
+                                value: '0'
+                              - descriptor:
+                                  code: INSURANCE_CHARGES
+                                  name: Insurance Charges
+                                  short_desc: Insurance Charges
+                                value: '500'
+                              - descriptor:
+                                  code: NET_DISBURSED_AMOUNT
+                                  name: net disbursed amount
+                                  short_desc: net disbursed amount
+                                value: '64000'
+                              - descriptor:
+                                  code: OTHER_CHARGES
+                                  name: other charges
+                                  short_desc: other charges
+                                value: '0'
+                              - descriptor:
+                                  code: OFFER_VALIDITY
+                                  name: Offer validity
+                                  short_desc: Describes the offer validity
+                                value: PT15D
+                              - descriptor:
+                                  code: MINIMUM_DOWNPAYMENT_REQUIRED
+                                  name: Minimum Downpayment Required
+                                value: '0'
+                            display: true
                           - descriptor:
                               code: CONSENT_INFO
                               name: Consent Information
@@ -12802,6 +13670,2554 @@ x-flows:
                                   name: Consent Handler
                                 value: d4cabdca-f621-43f7-9c8b-b5331d329e09
                             display: false
+                    payments:
+                      - collected_by: BPP
+                        tags:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_TYPE
+                                value: PERCENT_ANNUALIZED
+                              - descriptor:
+                                  code: BUYER_FINDER_FEES_PERCENTAGE
+                                value: '1'
+                          - descriptor:
+                              code: SETTLEMENT_TERMS
+                            display: false
+                            list:
+                              - descriptor:
+                                  code: SETTLEMENT_WINDOW
+                                value: PT30D
+                              - descriptor:
+                                  code: SETTLEMENT_BASIS
+                                value: INVOICE_RECEIPT
+                              - descriptor:
+                                  code: MANDATORY_ARBITRATION
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: COURT_JURISDICTION
+                                value: New Delhi
+                              - descriptor:
+                                  code: STATIC_TERMS
+                                value: >-
+                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                              - descriptor:
+                                  code: OFFLINE_CONTRACT
+                                value: 'true'
+                    tags:
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: ICICI
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: lifeline@iciciprulife.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: 1800 1080
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: customer.care@icicibank.com
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: ICICI_LSP
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: lsp@iciciprulife.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+      - summary: The borrower chooses the Purchase Loan service.
+        api: select
+        details:
+          - description: >-
+              The borrower selects the specific Purchase Loan service they are
+              interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: 916b8cc3-492a-474a-b742-be8aa785f5a8
+              action: select
+              timestamp: '2024-05-06T04:10:05.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+      - summary: >-
+          The lender offers the required form for the chosen Purchase Loan
+          service.
+        api: on_select
+        details:
+          - description: >-
+              The lender platform responds with detailed information and the
+              necessary application form for the selected Purchase Loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: f5ca9e69-2b59-4c22-8e64-ada9e6343a83
+              action: on_select
+              timestamp: '2024-05-06T04:10:20.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    descriptor:
+                      code: PURCHASE_FINANCE
+                      name: Purchase Finance
+                    category_ids:
+                      - '101123'
+                    price:
+                      currency: INR
+                      value: '70000'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '7'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '10000'
+                        display: true
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Customer Information
+                        index:
+                          min: 0
+                          cur: 0
+                          max: 1
+                        headings:
+                          - Set Loan Amount
+                          - Know your Customer
+                      form:
+                        id: F03
+                        mime_type: text/html
+                        url: >-
+                          https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F03
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '70000'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '65000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '4000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '64000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                tags:
+                  - descriptor:
+                      code: CONTACT_INFO
+                      name: Contact Info
+                    list:
+                      - descriptor:
+                          code: GRO_NAME
+                          name: Gro name
+                        value: ICICI
+                      - descriptor:
+                          code: GRO_EMAIL
+                          name: Gro email
+                        value: lifeline@iciciprulife.com
+                      - descriptor:
+                          code: GRO_CONTACT_NUMBER
+                          name: Gro contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_LINK
+                          name: Customer support link
+                        value: >-
+                          https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          name: Customer support contact number
+                        value: 1800 1080
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_EMAIL
+                          name: Customer support email
+                        value: customer.care@icicibank.com
+                  - descriptor:
+                      code: LSP_INFO
+                      name: Lsp Info
+                    list:
+                      - descriptor:
+                          code: LSP_NAME
+                          name: Lsp name
+                        value: ICICI_LSP
+                      - descriptor:
+                          code: LSP_EMAIL
+                          name: Lsp email
+                        value: lsp@iciciprulife.com
+                      - descriptor:
+                          code: LSP_CONTACT_NUMBER
+                          name: Lsp contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: LSP_ADDRESS
+                          name: Lsp Address
+                        value: >-
+                          One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                          mill compound 841, Senapati Bapat Marg, Elphinstone
+                          Road, Mumbai 400013
+      - summary: The borrower adjusts the loan amount in the form by the lender.
+        api: form
+        details:
+          - description: >-
+              The borrower can reduce/change loan amount/term in the form
+              provided by lender.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(loan amount)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: |-
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Update Required Loan Value</title>
+            </head>
+
+            <body>
+              <form action="/form/submission/loan-amount">
+                <label for="requestAmount">Requested Loan Amount</label>
+                <input type="text" id="requestAmount" name="requestAmount" />
+                <input type="hidden" id="formId" name="formId" value="FO3">
+                <input type="submit" value="Submit">
+              </form>
+            </body>
+
+            </html>
+      - summary: The borrower chooses the Purchase Loan service.
+        api: select
+        details:
+          - description: >-
+              The borrower selects the specific Purchase Loan service they are
+              interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: f5ca9e69-2b59-4c22-8e64-ada9e6343a83
+              action: select
+              timestamp: '2024-05-06T04:10:10.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    xinput:
+                      form:
+                        id: F03
+                      form_response:
+                        status: SUCCESS
+                        submission_id: F03_SUBMISSION_ID
+      - summary: >-
+          The lender offers the required form for the chosen Purchase Loan
+          service.
+        api: on_select
+        details:
+          - description: >-
+              The lender platform responds with detailed information and the
+              necessary application form for the selected Purchase Loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: 916b8cc3-492a-474a-b742-be8aa785f5a8
+              action: on_select
+              timestamp: '2024-05-06T04:10:07.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    descriptor:
+                      code: PURCHASE_FINANCE
+                      name: Purchase Finance
+                    category_ids:
+                      - '101123'
+                    price:
+                      currency: INR
+                      value: '70000'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '7'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '10000'
+                        display: true
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Customer Information
+                        index:
+                          min: 0
+                          cur: 1
+                          max: 1
+                        headings:
+                          - Set Loan Amount
+                          - Know your Customer
+                      form:
+                        id: F04
+                        mime_type: text/html
+                        url: >-
+                          https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F04
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '70000'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '65000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '4000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '64000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                tags:
+                  - descriptor:
+                      code: CONTACT_INFO
+                      name: Contact Info
+                    list:
+                      - descriptor:
+                          code: GRO_NAME
+                          name: Gro name
+                        value: ICICI
+                      - descriptor:
+                          code: GRO_EMAIL
+                          name: Gro email
+                        value: lifeline@iciciprulife.com
+                      - descriptor:
+                          code: GRO_CONTACT_NUMBER
+                          name: Gro contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_LINK
+                          name: Customer support link
+                        value: >-
+                          https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          name: Customer support contact number
+                        value: 1800 1080
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_EMAIL
+                          name: Customer support email
+                        value: customer.care@icicibank.com
+                  - descriptor:
+                      code: LSP_INFO
+                      name: Lsp Info
+                    list:
+                      - descriptor:
+                          code: LSP_NAME
+                          name: Lsp name
+                        value: ICICI_LSP
+                      - descriptor:
+                          code: LSP_EMAIL
+                          name: Lsp email
+                        value: lsp@iciciprulife.com
+                      - descriptor:
+                          code: LSP_CONTACT_NUMBER
+                          name: Lsp contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: LSP_ADDRESS
+                          name: Lsp Address
+                        value: >-
+                          One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                          mill compound 841, Senapati Bapat Marg, Elphinstone
+                          Road, Mumbai 400013
+      - summary: The lender sends the relevant link for KYC.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to collect Know Your Customer
+              (KYC) details from the borrower.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The borrower initiates the Purchase Loan request by filling the form.
+        api: init
+        details:
+          - description: >-
+              The borrower platform initiates the Purchase Loan request by
+              filling the form such as KYC detals, bank details and e-madate.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: 3ce310ba-6b9f-4f84-9e2c-d01591f5f9a3
+              action: init
+              timestamp: '2024-05-06T04:15:10.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    xinput:
+                      form:
+                        id: F04
+                      form_response:
+                        status: SUCCESS
+                        submission_id: F04_SUBMISSION_ID
+                payments:
+                  - id: PAYMENT_ID_PERSONAL_LOAN
+                    collected_by: BPP
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    params:
+                      bank_code: XXXXXXXX
+                      bank_account_number: xxxxxxxxxxxxxx
+                      virtual_payment_address: 9988199772@okicic
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: neft
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+      - summary: >-
+          The lender accepts the Purchase Loan request and displays loan status
+          details and requests for loan dispach account details.
+        api: on_init
+        details:
+          - description: >-
+              The lender platform accepts the borrower's request terms and and
+              displays loan status details amd may include additional terms if
+              any.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: 916b8cc3-492a-474a-b742-be8aa785f5a8
+              action: on_init
+              timestamp: '2024-05-06T04:16:07.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    descriptor:
+                      code: PURCHASE_FINANCE
+                      name: Purchase Finance
+                    category_ids:
+                      - '101123'
+                    price:
+                      currency: INR
+                      value: '70000'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '7'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '10000'
+                        display: true
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Customer Information
+                        index:
+                          min: 0
+                          cur: 0
+                          max: 1
+                        headings:
+                          - Emandate
+                          - Esign
+                      form:
+                        id: F05
+                        mime_type: application/html
+                        url: >-
+                          https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F05
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                fulfillments:
+                  - customer:
+                      person:
+                        name: John Doe
+                      contact:
+                        phone: +91-9999999999
+                        email: john.doe@example.com
+                    state:
+                      descriptor:
+                        code: INITIATED
+                payments:
+                  - id: PAYMENT_ID_PURCHASE_FINANCE
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: INVOICE_RECEIPT
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'TRUE'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        code: SANCTIONED
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://bpp.credit.becknprotocol.org/tnc.html
+                  - fulfillment_state:
+                      descriptor:
+                        code: DISBURSED
+                    cancellation_fee:
+                      percentage: 5%
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '70000'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '65000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '4000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '64000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                tags:
+                  - descriptor:
+                      code: CONTACT_INFO
+                      name: Contact Info
+                    list:
+                      - descriptor:
+                          code: GRO_NAME
+                          name: Gro name
+                        value: ICICI
+                      - descriptor:
+                          code: GRO_EMAIL
+                          name: Gro email
+                        value: lifeline@iciciprulife.com
+                      - descriptor:
+                          code: GRO_CONTACT_NUMBER
+                          name: Gro contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_LINK
+                          name: Customer support link
+                        value: >-
+                          https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          name: Customer support contact number
+                        value: 1800 1080
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_EMAIL
+                          name: Customer support email
+                        value: customer.care@icicibank.com
+                  - descriptor:
+                      code: LSP_INFO
+                      name: Lsp Info
+                    list:
+                      - descriptor:
+                          code: LSP_NAME
+                          name: Lsp name
+                        value: ICICI_LSP
+                      - descriptor:
+                          code: LSP_EMAIL
+                          name: Lsp email
+                        value: lsp@iciciprulife.com
+                      - descriptor:
+                          code: LSP_CONTACT_NUMBER
+                          name: Lsp contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: LSP_ADDRESS
+                          name: Lsp Address
+                        value: >-
+                          One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                          mill compound 841, Senapati Bapat Marg, Elphinstone
+                          Road, Mumbai 400013
+      - summary: The borrower receives the bank account e-mandate form details form.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to get  e-mandate details from
+              the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account details)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The borrower initiates the Purchase Loan request by filling the form.
+        api: init
+        details:
+          - description: >-
+              The borrower platform initiates the Purchase Loan request by
+              filling the form such as KYC detals, bank details and e-madate.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account details)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: a9b64b7f-93c9-4059-bc89-e7f782dbe68d
+              action: init
+              timestamp: '2024-05-06T04:15:10.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    xinput:
+                      form:
+                        id: F05
+                      form_response:
+                        status: SUCCESS
+                        submission_id: F05_SUBMISSION_ID
+      - summary: >-
+          The lender accepts the Purchase Loan request and displays loan status
+          details and requests for loan dispach account details.
+        api: on_init
+        details:
+          - description: >-
+              The lender platform accepts the borrower's request terms and and
+              displays loan status details amd may include additional terms if
+              any.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account details)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: a9b64b7f-93c9-4059-bc89-e7f782dbe68d
+              action: on_init
+              timestamp: '2024-05-06T04:16:07.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    descriptor:
+                      code: PURCHASE_FINANCE
+                      name: Purchase Finance
+                    category_ids:
+                      - '101123'
+                    price:
+                      currency: INR
+                      value: '70000'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '7'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '10000'
+                        display: true
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Customer Information
+                        index:
+                          min: 0
+                          cur: 1
+                          max: 1
+                        headings:
+                          - Emandate
+                          - Esign
+                      form:
+                        id: F06
+                        mime_type: application/html
+                        url: >-
+                          https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F06
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                fulfillments:
+                  - customer:
+                      person:
+                        name: John Doe
+                      contact:
+                        phone: +91-9999999999
+                        email: john.doe@example.com
+                    state:
+                      descriptor:
+                        code: INITIATED
+                payments:
+                  - id: PAYMENT_ID_PURCHASE_FINANCE
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: INVOICE_RECEIPT
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'TRUE'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-06-01T04:00:00.000Z'
+                        end: '2023-06-30T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-07-01T04:00:00.000Z'
+                        end: '2023-07-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-08-01T04:00:00.000Z'
+                        end: '2023-08-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-09-01T04:00:00.000Z'
+                        end: '2023-09-30T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-10-01T04:00:00.000Z'
+                        end: '2023-10-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-11-01T04:00:00.000Z'
+                        end: '2023-11-30T23:59:59.999Z'
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        code: SANCTIONED
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://bpp.credit.becknprotocol.org/tnc.html
+                  - fulfillment_state:
+                      descriptor:
+                        code: DISBURSED
+                    cancellation_fee:
+                      percentage: 5%
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '70000'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '65000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '4000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '64000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                tags:
+                  - descriptor:
+                      code: CONTACT_INFO
+                      name: Contact Info
+                    list:
+                      - descriptor:
+                          code: GRO_NAME
+                          name: Gro name
+                        value: ICICI
+                      - descriptor:
+                          code: GRO_EMAIL
+                          name: Gro email
+                        value: lifeline@iciciprulife.com
+                      - descriptor:
+                          code: GRO_CONTACT_NUMBER
+                          name: Gro contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_LINK
+                          name: Customer support link
+                        value: >-
+                          https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          name: Customer support contact number
+                        value: 1800 1080
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_EMAIL
+                          name: Customer support email
+                        value: customer.care@icicibank.com
+                  - descriptor:
+                      code: LSP_INFO
+                      name: Lsp Info
+                    list:
+                      - descriptor:
+                          code: LSP_NAME
+                          name: Lsp name
+                        value: ICICI_LSP
+                      - descriptor:
+                          code: LSP_EMAIL
+                          name: Lsp email
+                        value: lsp@iciciprulife.com
+                      - descriptor:
+                          code: LSP_CONTACT_NUMBER
+                          name: Lsp contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: LSP_ADDRESS
+                          name: Lsp Address
+                        value: >-
+                          One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                          mill compound 841, Senapati Bapat Marg, Elphinstone
+                          Road, Mumbai 400013
+      - summary: The borrower receives the e-sign form.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to get e-sign details from the
+              consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(e-sign details)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The borrower confirms the Purchase Loan request.
+        api: confirm
+        details:
+          - description: >-
+              The borrower platform confirms the Purchase Loan request by
+              signing the agreement and provides all the necessary information
+              as per the terms.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(e-sign)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: 980f2214-8b3b-4388-a511-55e922010f37
+              action: confirm
+              timestamp: '2024-05-06T04:19:10.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    xinput:
+                      form:
+                        id: F06
+                      form_response:
+                        status: SUCCESS
+                        submission_id: F06_SUBMISSION_ID
+                payments:
+                  - id: PAYMENT_ID_PURCHASE_FINANCE
+                    collected_by: BPP
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    params:
+                      bank_code: XXXXXXXX
+                      bank_account_number: xxxxxxxxxxxxxx
+                      virtual_payment_address: 9988199772@okicic
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: neft
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+      - summary: The lender confirms the Purchase Loan order.
+        api: on_confirm
+        details:
+          - description: >-
+              The lender platform confirms the Purchase Loan order and provides
+              the final confirmation details.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(e-sign)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: 980f2214-8b3b-4388-a511-55e922010f37
+              action: on_confirm
+              timestamp: '2024-05-06T04:19:20.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    descriptor:
+                      code: PURCHASE_FINANCE
+                      name: Purchase Finance
+                    category_ids:
+                      - '101123'
+                    price:
+                      currency: INR
+                      value: '70000'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '7'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '10000'
+                        display: true
+                fulfillments:
+                  - customer:
+                      person:
+                        name: John Doe
+                      contact:
+                        phone: +91-9999999999
+                        email: john.doe@example.com
+                    state:
+                      descriptor:
+                        code: SANCTIONED
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '70000'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '65000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '4000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '64000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        code: SANCTIONED
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://bpp.credit.becknprotocol.org/tnc.html
+                  - fulfillment_state:
+                      descriptor:
+                        code: DISBURSED
+                    cancellation_fee:
+                      percentage: 5%
+                payments:
+                  - id: PAYMENT_ID_PURCHASE_FINANCE
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: INVOICE_RECEIPT
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'TRUE'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-06-01T04:00:00.000Z'
+                        end: '2023-06-30T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-07-01T04:00:00.000Z'
+                        end: '2023-07-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-08-01T04:00:00.000Z'
+                        end: '2023-08-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-09-01T04:00:00.000Z'
+                        end: '2023-09-30T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-10-01T04:00:00.000Z'
+                        end: '2023-10-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-11-01T04:00:00.000Z'
+                        end: '2023-11-30T23:59:59.999Z'
+                tags:
+                  - descriptor:
+                      code: CONTACT_INFO
+                      name: Contact Info
+                    list:
+                      - descriptor:
+                          code: GRO_NAME
+                          name: Gro name
+                        value: ICICI
+                      - descriptor:
+                          code: GRO_EMAIL
+                          name: Gro email
+                        value: lifeline@iciciprulife.com
+                      - descriptor:
+                          code: GRO_CONTACT_NUMBER
+                          name: Gro contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_LINK
+                          name: Customer support link
+                        value: >-
+                          https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          name: Customer support contact number
+                        value: 1800 1080
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_EMAIL
+                          name: Customer support email
+                        value: customer.care@icicibank.com
+                  - descriptor:
+                      code: LSP_INFO
+                      name: Lsp Info
+                    list:
+                      - descriptor:
+                          code: LSP_NAME
+                          name: Lsp name
+                        value: ICICI_LSP
+                      - descriptor:
+                          code: LSP_EMAIL
+                          name: Lsp email
+                        value: lsp@iciciprulife.com
+                      - descriptor:
+                          code: LSP_CONTACT_NUMBER
+                          name: Lsp contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: LSP_ADDRESS
+                          name: Lsp Address
+                        value: >-
+                          One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                          mill compound 841, Senapati Bapat Marg, Elphinstone
+                          Road, Mumbai 400013
+                documents:
+                  - descriptor:
+                      code: LOAN_AGREEMENT
+                      name: Loan Agreement Document
+                      short_desc: Download your Loan Agreement document here
+                      long_desc: >-
+                        A Loan Agreement Document is a legal contract outlining
+                        terms such as loan amount, interest rate, repayment
+                        schedule, and collateral, binding a lender and borrower
+                        in a formal financial arrangement.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-agreement/O1.pdf
+      - summary: The borrower (BAP) sends the update request by sending the order ID.
+        api: update
+        details:
+          - description: >-
+              The borrower (BAP) sends the update request by sending the order
+              ID to be updated along with the object in the order to be updated
+              as update_target.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK     
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: dfe0e7bb-61bc-4cfb-b5e1-a19a416d87e9
+              action: update
+              timestamp: '2024-05-07T07:19:10.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              update_target: fulfillments
+              order:
+                id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+                fulfillments:
+                  - state:
+                      descriptor:
+                        code: PRODUCT_DELIVERED
+      - summary: >-
+          The provider platform updates the order with updated fulfillment
+          state.
+        api: on_update
+        details:
+          - description: >-
+              The provider platform updates the consumer with on_update request
+              response.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+               
+        reference: if any
+        example:
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: dfe0e7bb-61bc-4cfb-b5e1-a19a416d87e9
+              action: on_update
+              timestamp: '2024-05-07T07:20:10.443Z'
+              version: 2.1.0
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                    descriptor:
+                      code: PURCHASE_FINANCE
+                      name: Purchase Finance
+                    category_ids:
+                      - '101123'
+                    price:
+                      currency: INR
+                      value: '70000'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '7'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '10000'
+                        display: true
+                fulfillments:
+                  - customer:
+                      person:
+                        name: John Doe
+                      contact:
+                        phone: +91-9999999999
+                        email: john.doe@example.com
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '70000'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '65000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '4000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '64000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        code: SANCTIONED
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://bpp.credit.becknprotocol.org/tnc.html
+                  - fulfillment_state:
+                      descriptor:
+                        code: DISBURSED
+                    cancellation_fee:
+                      percentage: 5%
+                payments:
+                  - id: PAYMENT_ID_PURCHASE_FINANCE
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    collected_by: BPP
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: INVOICE_RECEIPT
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'TRUE'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-06-01T04:00:00.000Z'
+                        end: '2023-06-30T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-07-01T04:00:00.000Z'
+                        end: '2023-07-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-08-01T04:00:00.000Z'
+                        end: '2023-08-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-09-01T04:00:00.000Z'
+                        end: '2023-09-30T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-10-01T04:00:00.000Z'
+                        end: '2023-10-31T23:59:59.999Z'
+                  - type: POST_FULFILLMENT
+                    id: INSTALLMENT_ID_PURCHASE_FINANCE
+                    params:
+                      amount: '10000'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2024-11-01T04:00:00.000Z'
+                        end: '2023-11-30T23:59:59.999Z'
+                tags:
+                  - descriptor:
+                      code: CONTACT_INFO
+                      name: Contact Info
+                    list:
+                      - descriptor:
+                          code: GRO_NAME
+                          name: Gro name
+                        value: ICICI
+                      - descriptor:
+                          code: GRO_EMAIL
+                          name: Gro email
+                        value: lifeline@iciciprulife.com
+                      - descriptor:
+                          code: GRO_CONTACT_NUMBER
+                          name: Gro contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_LINK
+                          name: Customer support link
+                        value: >-
+                          https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          name: Customer support contact number
+                        value: 1800 1080
+                      - descriptor:
+                          code: CUSTOMER_SUPPORT_EMAIL
+                          name: Customer support email
+                        value: customer.care@icicibank.com
+                  - descriptor:
+                      code: LSP_INFO
+                      name: Lsp Info
+                    list:
+                      - descriptor:
+                          code: LSP_NAME
+                          name: Lsp name
+                        value: ICICI_LSP
+                      - descriptor:
+                          code: LSP_EMAIL
+                          name: Lsp email
+                        value: lsp@iciciprulife.com
+                      - descriptor:
+                          code: LSP_CONTACT_NUMBER
+                          name: Lsp contact number
+                        value: 1860 266 7766
+                      - descriptor:
+                          code: LSP_ADDRESS
+                          name: Lsp Address
+                        value: >-
+                          One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                          mill compound 841, Senapati Bapat Marg, Elphinstone
+                          Road, Mumbai 400013
+                documents:
+                  - descriptor:
+                      code: LOAN_AGREEMENT
+                      name: Loan Agreement Document
+                      short_desc: Download your Loan Agreement document here
+                      long_desc: >-
+                        A Loan Agreement Document is a legal contract outlining
+                        terms such as loan amount, interest rate, repayment
+                        schedule, and collateral, binding a lender and borrower
+                        in a formal financial arrangement.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-agreement/O1.pdf
+                  - descriptor:
+                      code: LOAN_CANCELLATION
+                      name: Loan Cancellation Document
+                      short_desc: Download your Loan Cancellation document here
+                      long_desc: >-
+                        A Loan Cancellation Document is a formal agreement used
+                        to terminate an existing loan, releasing the borrower
+                        from repayment obligations and confirming the loan's
+                        cancellation.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-cancellation/O1.pdf
 x-examples:
   personal-loan:
     summary: personal-loan
