@@ -4,7 +4,7 @@ const fs = require("fs");
 
 async function buildAttribiutes() {
   let attributes = {};
-  const workSheetsFromBuffer = xlsx.parse(`./personal-loan_updated.xlsx`);
+  const workSheetsFromBuffer = xlsx.parse(`./purchase-finance.xlsx`);
   for (let i = 0; i < workSheetsFromBuffer.length; i++) {
     const array = workSheetsFromBuffer[i];
     const filterArray = array.data.filter((subArr) => subArr.length > 0);
@@ -16,7 +16,7 @@ async function buildAttribiutes() {
   }
   if (Object.keys(attributes)?.length) {
     const attributesYaml = yaml.dump(attributes);
-    fs.writeFileSync(`./attributes/personal-loans/index.yaml`, attributesYaml);
+    fs.writeFileSync(`./attributes/purchase-finance/index.yaml`, attributesYaml);
   }
 }
 function formObject(attributes) {
