@@ -55,8 +55,9 @@ flowchart LR
 ```mermaid
 flowchart LR
     scheme[Select scheme] --> order[Select redemption]
-    order ---> choose_folio[Choose/Enter folio]
-    choose_folio -----------> 2fa[Accept TnC & 2fa]
+    order --> choose_folio[Choose/Enter folio]
+    choose_folio --> select_bank[Select Payout Bank A/c]
+    select_bank -------> 2fa[Accept TnC & 2fa]
     2fa --------> finish[Finish]
 ```
 
