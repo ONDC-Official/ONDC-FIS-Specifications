@@ -33,21 +33,25 @@ sequenceDiagram
             bpp ->> bap: `/on_select` with xinput for folio opening
             create participant fs AS AMC Form System
             bap ->> fs: form submission
-            fs ->> bap: form submission response
+            fs -->> bap: form submission response w/ submission id
+            bap ->> bpp: `/select` with form submission id
+            bpp ->> bap: `/on_select` w/ form submission success
         end
     else flow = new folio w/ kyc
         rect rgb(102,179,255)
             bpp ->> bap: `/on_select` with xinput for kyc (1st step)
-            bap ->> fs: form submission
-            fs ->> bap: form submission response
-            bap ->> bpp: `/select` w/ form submission id
+            bap ->> fs: form 1 submission
+            fs -->> bap: form 1 submission response w/ submission id
+            bap ->> bpp: `/select` w/ form 1 submission id
             bpp ->> bap: `/on_select` with xinput for digilocker fetch (2nd step)
             bap ->> bap: redirect the investor to complete fetch
-            bpp ->> bap: `/on_status` with form submission id
-            bap ->> bpp: `/select` w/ form submission id
+            bpp ->> bap: `/on_status` with form 2 submission id
+            bap ->> bpp: `/select` w/ form 2 submission id
             bpp ->> bap: `/on_select` with xinput for esign (3rd step)
             bap ->> bap: redirect the investor to complete esign
-            bpp ->> bap: `/on_status` with form submission id
+            bpp ->> bap: `/on_status` with form 3 submission id
+            bap ->> bpp: `/select` w/ form 3 submission id
+            bpp ->> bap: `/on_select` w/ form 3 submission success
         end
     end
 ```
