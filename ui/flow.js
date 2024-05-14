@@ -110,6 +110,19 @@ async function loadFlow(flowName) {
     //flowDescription.textContent.appendChild(mermaidDiv)
   }
   flowDescription.append(mermaidDiv);
+
+  var referenceDiv = document.createElement("reference-div");
+  if (selectedFlow?.["reference"]) {
+    var aTag = document.createElement("a");
+    var link = document.createTextNode("Reference")
+
+    aTag.appendChild(link);
+    aTag.title = "Reference";
+    aTag.href = selectedFlow["reference"];
+
+    referenceDiv.appendChild(aTag);
+  }
+  flowDescription.append(referenceDiv);
   loadSteps(selectedFlow["steps"]);
 }
 
