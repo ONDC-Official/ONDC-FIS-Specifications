@@ -1,0 +1,72 @@
+### Change Logs: Insurance API specs
+
+<table>
+<colgroup>
+<col style="width: 63%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>FIS13_2.0.0_070524</th>
+</tr>
+<tr class="odd">
+<th>Updates in BRD</th>
+<th>6th May 2024</th>
+</tr>
+<tr class="header">
+<th>Updates in PRD/Change log</th>
+<th>7th May 2024</th>
+</tr>
+<tr class="odd">
+<th>Updates in API Specs on dev doc</th>
+<th>16th May 2024</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+##### 
+
+##### Health Insurance:
+
+- Added ROOM_CATEGORY tag as part of GENERAL_INFO tag group.
+
+- Updated mime type for family insurance form to **text/html-multi.**
+  For more information, please refer to the [Developer Guide page](https://ondc-official.github.io/ONDC-FIS-Specifications/).Select the version "draft-FIS13-health," then navigate to "Feature-UI" and click on "xinput-form-response."
+
+- Added protocol path references for tags in **Attribute-UI**.
+
+- Updated ID reference for add-ons in the quote object from I1 to CHILD_ITEM_ID_I1.
+
+- Updated MIME type for the KYC form to application/html.
+
+- Added cancellation_terms.
+
+- Added PROPOSAL_ID as part of the general-info tag group.
+
+**Example Snippet:**
+
+```
+"tags": [
+ {
+   "descriptor": {
+     "name": "General Information",
+     "code": "GENERAL_INFO"
+   },
+   "list": [
+     {
+       "descriptor": {
+         "code": "PROPOSAL_ID"
+       },
+       "value": "PROPOSAL_ID"
+     }
+   ]
+}
+]
+```
+
+#####   
+
+##### 
