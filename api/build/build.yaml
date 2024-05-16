@@ -3494,7 +3494,6 @@ x-flows:
                   - type: SIP
                     customer:
                       person:
-                        id: reference can(mfu), ucc(bse), folio(amc)
                         creds:
                           - id: arrpp7771n
                             type: PAN
@@ -3512,7 +3511,7 @@ x-flows:
           - description: Send back new account input required
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_21
             context:
               action: on_select
             message:
@@ -3901,7 +3900,7 @@ x-flows:
                       person:
                         creds:
                           - id: arrpp7771n
-                            type: pan
+                            type: PAN
                 xinput:
                   form:
                     id: form_1
@@ -4812,7 +4811,7 @@ x-flows:
         reference: if any
         example:
           value: *ref_15
-  - summary: SIP Creation (Existing Folio)
+  - summary: SIP Creation (Existing Folio - Investor enters folio number)
     reference: >-
       https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
@@ -4837,7 +4836,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value:
+          value: &ref_16
             context:
               action: init
             message:
@@ -4862,10 +4861,9 @@ x-flows:
                     type: SIP
                     customer:
                       person:
-                        id: folio:78953432/32; ucc:34234234; can:1243324324
                         creds:
                           - id: 78953432/32
-                            type: folio
+                            type: FOLIO
                 payments:
                   - collected_by: bpp
                     params:
@@ -4880,7 +4878,7 @@ x-flows:
           - description: Draft order is sent back with payment options
         reference: if any
         example:
-          value:
+          value: &ref_17
             context:
               action: on_init
             message:
@@ -4955,7 +4953,7 @@ x-flows:
           - description: Send the chosen payment option
         reference: if any
         example:
-          value:
+          value: &ref_18
             context:
               action: confirm
             message:
@@ -5011,7 +5009,7 @@ x-flows:
           - description: Send the mandate registration link
         reference: if any
         example:
-          value:
+          value: &ref_19
             context:
               action: on_confirm
             message:
@@ -5070,7 +5068,7 @@ x-flows:
           - description: Send order accepted notification
         reference: if any
         example:
-          value:
+          value: &ref_20
             context:
               action: on_status
             message:
@@ -5122,6 +5120,134 @@ x-flows:
                       code: TERMS
                     url: https://api.cybrilla.com/tnc?id=214werw3w4
                     mime_type: text/html
+  - summary: SIP Creation (Existing Folio - Investor selects a folio)
+    reference: >-
+      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
+    references: if any
+    steps:
+      - summary: Search for schemes
+        api: search
+        details:
+          - description: Search for all mutual fund schemes
+        reference: if any
+        example:
+          value: *ref_8
+      - summary: Respond with the catalog
+        api: on_search
+        details:
+          - description: Returns the schemes on offer
+        reference: if any
+        example:
+          value: *ref_9
+      - summary: Select
+        api: select
+        details:
+          - description: Scheme selection
+        reference: if any
+        example:
+          value: *ref_10
+      - summary: On Select
+        api: on_select
+        details:
+          - description: Send back the list of existing folios
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_select
+            message:
+              order:
+                type: PURCHASE
+                provider:
+                  id: amc_1
+                items:
+                  - id: '12391'
+                fulfillments:
+                  - id: ff_123
+                    type: SIP
+                    customer:
+                      person:
+                        creds:
+                          - id: arrpp7771n
+                            type: PAN
+                    tags:
+                      - display: true
+                        descriptor:
+                          name: Folio
+                          code: FOLIO_INFORMATION
+                        list:
+                          - descriptor:
+                              name: Folio Number
+                              code: FOLIO_NUMBER
+                            value: 25151234/87
+                          - descriptor:
+                              name: Holding Pattern
+                              code: HOLDING_PATTERN
+                            value: SINGLE
+                          - descriptor:
+                              name: Holder Name
+                              code: HOLDER_NAME
+                            value: Satish K Perala
+                          - descriptor:
+                              name: Created On
+                              code: CREATED_ON
+                            value: 25/11/2019
+                      - display: true
+                        descriptor:
+                          name: Folio
+                          code: FOLIO_INFORMATION
+                        list:
+                          - descriptor:
+                              name: Folio Number
+                              code: MASKED_FOLIO_NUMBER
+                            value: '******1564'
+                          - descriptor:
+                              name: Holding Pattern
+                              code: HOLDING_PATTERN
+                            value: SINGLE
+                          - descriptor:
+                              name: Holder Name
+                              code: HOLDER_NAME
+                            value: Satish K Perala
+                          - descriptor:
+                              name: Created On
+                              code: CREATED_ON
+                            value: 25/01/2021
+      - summary: Initialize the SIP order
+        api: init
+        details:
+          - description: Send order details and folio details
+        reference: if any
+        example:
+          value: *ref_16
+      - summary: On Init
+        api: on_init
+        details:
+          - description: Draft order is sent back with payment options
+        reference: if any
+        example:
+          value: *ref_17
+      - summary: Confirm
+        api: confirm
+        details:
+          - description: Send the chosen payment option
+        reference: if any
+        example:
+          value: *ref_18
+      - summary: On Confirm
+        api: on_confirm
+        details:
+          - description: Send the mandate registration link
+        reference: if any
+        example:
+          value: *ref_19
+      - summary: On Status
+        api: on_status
+        details:
+          - description: Send order accepted notification
+        reference: if any
+        example:
+          value: *ref_20
   - summary: SIP Creation (New Folio) - Rejection
     reference: >-
       https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
@@ -5154,7 +5280,7 @@ x-flows:
           - description: Send back new folio input required
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_21
       - summary: Get Form
         api: form
         details:
@@ -5581,7 +5707,7 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_22
             context:
               action: on_status
             message:
@@ -5660,7 +5786,7 @@ x-flows:
           - description: Send instalment order acceptance notification
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_23
             context:
               action: on_status
             message:
@@ -5795,7 +5921,7 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: On Status
         api: on_status
         details:
@@ -5870,14 +5996,14 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: On Status
         api: on_status
         details:
           - description: Send instalment order acceptance notification
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_23
       - summary: On Status (failed instalment)
         api: on_status
         details:
@@ -6118,7 +6244,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_24
             context:
               action: select
             message:
@@ -6145,7 +6271,7 @@ x-flows:
           - description: List of payout bank a/cs is sent
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_25
             context:
               action: on_select
             message:
@@ -6231,7 +6357,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_26
             context:
               action: init
             message:
@@ -6253,7 +6379,6 @@ x-flows:
                     type: REDEMPTION
                     customer:
                       person:
-                        id: 78953432/32
                         creds:
                           - id: 78953432/32
                             type: FOLIO
@@ -6272,7 +6397,7 @@ x-flows:
           - description: Draft order is sent back with tnc
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_27
             context:
               action: on_init
             message:
@@ -6321,7 +6446,7 @@ x-flows:
           - description: Send order confirmation w/ 2fa details
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_28
             context:
               action: confirm
             message:
@@ -6371,7 +6496,7 @@ x-flows:
           - description: Send accepted order
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_29
             context:
               action: on_confirm
             message:
@@ -6498,42 +6623,42 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: Get the redemption payout a/c details
         api: on_select
         details:
           - description: List of payout bank a/cs is sent
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_25
       - summary: Initialize the redemption order
         api: init
         details:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_26
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with tnc
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_27
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation w/ 2fa details
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_28
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send accepted order
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_29
       - summary: On Status
         api: on_status
         details:
