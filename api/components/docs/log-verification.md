@@ -28,7 +28,16 @@
 
 These naming conventions ensure clear identification and organization of files based on the corresponding API endpoints and their respective calls.
 
-<!-- ### Scenarios -->
+### Scenarios
+- **Flow 1(Health Insurance Application)**
+
+  The buyer initiates a search for "Health Insurance" on the Buyer App, compares the available offerings received from the seller app, and selects the desired option. Upon selection, the buyer can proceed to avail the insurance services by submitting all the relevant details/documents and subsequently receives the issued policy.
+- **Flow 2(Claim Health Insurance)**
+
+  The buyer intends to claim a health insurance policy against an existing one. The user journey involves selecting the existing policy for the claim process. Also showcase the changes in the status of the fulfillments once the claim is initiated & processed.
+- **Flow 3(Renew Health Insurance)**
+
+  Buyer wants to renew a health insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to renew health insurance. 
 
 ### Log Verification
 
