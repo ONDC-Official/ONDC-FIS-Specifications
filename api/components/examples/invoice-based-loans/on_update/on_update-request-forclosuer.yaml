@@ -22,12 +22,11 @@ message:
       id: PROVIDER_ID
       descriptor:
         images:
-          - url: >-
-              https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+          - url: https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
             size_type: sm
         name: ICICI Bank
         short_desc: ICICI Bank Ltd
-        long_desc: "ICICI Bank Ltd, India."
+        long_desc: ICICI Bank Ltd, India.
       tags:
         - descriptor:
             code: CONTACT_INFO
@@ -85,9 +84,9 @@ message:
                 code: LSP_ADDRESS
                 name: Lsp Address
               value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"
+
     items:
-      - id: CHILD_ITEM_ID_INVOICE_LOAN
-        parent_item_id: ITEM_ID_INVOICE_LOAN
+      - id: ITEM_ID_INVOICE_LOAN
         descriptor:
           code: INVOICE_BASED_LOAN
           name: "Invoice Based Loan Offer: INR 2,00,000"
@@ -96,8 +95,8 @@ message:
           value: "232800"
         tags:
           - descriptor:
-              code: INFO
-              name: Information
+              code: LOAN_INFO
+              name: Loan Information
             list:
               - descriptor:
                   code: INTEREST_RATE
@@ -126,7 +125,7 @@ message:
               - descriptor:
                   code: INTEREST_RATE_CONVERSION_CHARGE
                   name: interest rate conversion charges
-                value: NA
+                value: "1000 INR"
               - descriptor:
                   code: DELAY_PENALTY_FEE
                   name: Delayed payments penalty
@@ -138,15 +137,35 @@ message:
                   short_desc: Other Penal Charges
                 value: 1%
               - descriptor:
+                  code: ANNUAL_PERCENTAGE_RATE
+                  name: Annual Percentage Rate
+                  short_desc: Effective annualized interest rate in percentage computed on net disbursed amount using IRR approach and reducing balance method
+                value: 5%
+              - descriptor:
+                  code: REPAYMENT_FREQUENCY
+                  name: Repayment Frequency
+                  short_desc: Repayment Frequency by borrower
+                value: MONTHLY
+              - descriptor:
+                  code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                  name: Number of installments of repayment
+                  short_desc: Number of installments borrower has to make to payback the loan
+                value: "45"
+              - descriptor:
                   code: TNC_LINK
                   name: Terms & Conditions
                   short_desc: Terms and Conditions
-                value: "https://bpp.credit.becknprotocol.org/loan/tnc.html"
+                value: https://icicibank.com/loan/tnc.html
               - descriptor:
-                  code: INVOICE_NUMBER
-                  name: Invoice Number
-                  short_desc: Describes the invoice number
-                value: "INV-24-04-009"
+                  code: COOL_OFF_PERIOD
+                  name: cool off period
+                  short_desc: Cooling off/look-up period during which borrower shall not be	TAGS m jayega charged any penalty
+                value: PT30D
+              - descriptor:
+                  code: INSTALLMENT_AMOUNT
+                  name: Installment amount
+                  short_desc: Each installment amount of repayment
+                value: PT30D
             display: true
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
@@ -178,36 +197,46 @@ message:
           price:
             value: "0"
             currency: INR
-
+        - title: OUTSTANDING_PRINCIPAL
+          price:
+            value: "139080"
+            currency: INR
+        - title: FORCLOSUER_CHARGES
+          price:
+            value: "9536"
+            currency: INR
+        - title: OUTSTANDING_INTEREST
+          price:
+            value: "0"
+            currency: INR
       ttl: PT15D
     fulfillments:
       - customer:
-          organization:
-            address: "Industrial Park, Bangalore"
-            state:
-              name: Karnataka
-            city:
-              name: Bangalore
-              code: "560045"
-            contact:
-              phone: "+919876543210"
-              email: alpha.manufacturing@gmail.com
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
         state:
           descriptor:
             code: DISBURSED
     payments:
       - id: PAYMENT_ID_INVOICE_LOAN
-        type: ON_ORDER
+        url: https://pg.icici.com/?amount=148616&ref_id=b5487595-42c3-4e20-bd43-ae21400f60f0
+        params:
+          amount: "148616"
+          currency: INR
         status: NOT-PAID
-        collected_by: BPP
-        # params:
-        #   amount: '46360'
-        #   currency: INR
         time:
           label: FORECLOSURE
-        #   range:
-        #     start: '2023-06-01T00:00:00.000Z'
-        #     end: '2023-06-30T00:23:59.999Z'
+          # range:
+          #   start: "2023-09-05T00:00:00.000Z"
+          #   end: "2023-09-05T23:59:59.999Z"
+        type: POST_FULFILLMENT
+      - id: PAYMENT_ID_INVOICE_LOAN
+        type: ON_ORDER
+        status: PAID
+        collected_by: BPP
         tags:
           - descriptor:
               code: BUYER_FINDER_FEES
@@ -241,15 +270,12 @@ message:
               - descriptor:
                   code: SETTLEMENT_AMOUNT
                 value: "1159"
-              - descriptor:
-                  code: OFFLINE_CONTRACT
-                value: "true"
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_INVOICE_LOAN
         params:
           amount: "46360"
           currency: INR
-        status: NOT-PAID
+        status: PAID
         time:
           label: INSTALLMENT
           range:
@@ -260,12 +286,12 @@ message:
         params:
           amount: "46360"
           currency: INR
-        status: NOT-PAID
+        status: PAID
         time:
           label: INSTALLMENT
           range:
             start: "2023-07-01T00:00:00.000Z"
-            end: "2023-07-31T00:23:59.999"
+            end: "2023-07-31T23:59:59.999Z"
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_INVOICE_LOAN
         params:
@@ -276,7 +302,7 @@ message:
           label: INSTALLMENT
           range:
             start: "2023-08-01T00:00:00.000Z"
-            end: "2023-08-31T00:23:59.999"
+            end: "2023-08-31T23:59:59.999Z"
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_INVOICE_LOAN
         params:
@@ -287,7 +313,7 @@ message:
           label: INSTALLMENT
           range:
             start: "2023-09-01T00:00:00.000Z"
-            end: "2023-09-30T00:23:59.999Z"
+            end: "2023-09-30T23:59:59.999Z"
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_INVOICE_LOAN
         params:
@@ -298,34 +324,26 @@ message:
           label: INSTALLMENT
           range:
             start: "2023-10-01T00:00:00.000Z"
-            end: "2023-10-31T00:23:59.999"
+            end: "2023-10-31T23:59:59.999Z"
+
     cancellation_terms:
       - fulfillment_state:
           descriptor:
             code: SANCTIONED
         cancellation_fee:
           percentage: 3%
-      - external_ref:
+        external_ref:
           mimetype: text/html
-          url: "https://bpp.credit.becknprotocol.org/loan/tnc.html"
+          url: https://icicibank.com/loan/tnc.html
       - fulfillment_state:
           descriptor:
             code: DISBURSED
-            name: Loan disbursed
         cancellation_fee:
           percentage: 5%
+        external_ref:
+          mimetype: text/html
+          url: https://icicibank.com/loan/tnc.html
     documents:
-      - descriptor:
-          code: LOAN_AGREEMENT
-          name: Loan Agreement Document
-          short_desc: Download your Loan Agreement document here
-          long_desc:
-            A Loan Agreement Document is a legal contract outlining terms such as loan amount,
-            interest rate, repayment schedule, and collateral,
-            binding a lender and borrower in a formal financial arrangement.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-agreement/O1.pdf
-
       - descriptor:
           code: LOAN_AGREEMENT
           name: Loan Agreement Document
