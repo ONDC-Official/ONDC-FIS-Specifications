@@ -32,7 +32,7 @@ compareFiles();
 getSwaggerYaml("example_set", outputPath);
 const { buildAttribiutes } = require('./build-attributes.js')
 const { buildErrorCodes } = require('./build-error-code.js')
-const { buildTlc } = require('./build-tlc.js')
+const { buildTlc } = require('./build-tlc.js');
 
 const SKIP_VALIDATION = {
   flows: "skip1",
@@ -122,7 +122,7 @@ async function matchKeyType(
   const exampleArray = currentExamplePos[currentAttrib];
   const schemaType = currentSchemaPos[currentAttrib]?.type;
   const allOfType = currentSchemaPos[currentAttrib]?.allOf?.[0]?.type;
-  const itemType = currentSchemaPos[currentAttrib]?.items?.allOf?.[0]?.type;
+  const itemType = currentSchemaPos[currentAttrib]?.items?.allOf?.[0]?.type || currentSchemaPos[currentAttrib]?.items?.type;
 
   for (let i = 0; i < exampleArray?.length; i++) {
     const checkEnum = exampleArray[i];
@@ -244,7 +244,6 @@ async function traverseAttributes(currentAttributeValue, schemaForTraversal, log
   for (const currentAttributeKey of Object.keys(currentAttributeValue)) {
     const currentAttr = currentAttributeValue[currentAttributeKey];
     const schemaType = schemaForTraversal[currentAttributeKey];
-
         //&& 'type' in currentAttr && 'owner' in currentAttr && 'usage' in currentAttr && 'description' in currentAttr
     if ('required' in currentAttr ) {
       continue ;
@@ -375,6 +374,7 @@ const checkKeysExistence = (example, mandatoryRequiredKeys, endPoint) => {
     if(keys.includes("_description")){
       continue;
     }
+
     for (let key of keys) {
       if (Array.isArray(currentObj)) {
         isArray = true;
@@ -391,6 +391,9 @@ const checkKeysExistence = (example, mandatoryRequiredKeys, endPoint) => {
     }
 
     if (isArray) {
+      if(keys.includes("tags")){
+        continue;
+      }
       handleIfObjectIsArray(currentKeys, currentObj, endPoint);
     }
   }
@@ -482,7 +485,10 @@ async function checkAttributes(exampleSets, attributes) {
               if(attribute_set[example_sets]){
                 const currentAttribute = attribute_set[example_sets]
                   // if(example_sets == "on_init")
-                await comapreObjects(example?.value, currentAttribute, example_sets)
+                // if(example_sets === "search"){
+                  await comapreObjects(example?.value, currentAttribute, example_sets)
+                // } 
+                
               }else{
                 console.log(`attribute not found for ${example_sets}`)
               }
@@ -500,15 +506,39 @@ async function checkAttributes(exampleSets, attributes) {
      } 
 }
 
+async function iterateTags( examplesTag, attributesTag, example_sets) {
+  //un-comment for error trace
+  //console.log('example_sets', example_sets)
+
+  for (let i = 0; i < examplesTag?.length; i++) {
+    const exampleItem = examplesTag[i];
+    const attributeItem = attributesTag;
+    const { list } = exampleItem;
+    //console.log('dlasjhdlasldjkalsdklahdlahsd', attributeItem, attributesTag)
+    if(attributeItem?.hasOwnProperty(exampleItem?.descriptor?.code)){
+      if (Array.isArray(list)) {
+        await iterateTags(list, attributeItem[exampleItem?.descriptor?.code].list, example_sets)
+      }
+    }else{
+      console.log(`Tag not matched  ${ JSON.stringify(exampleItem?.descriptor)} in ${example_sets}`);
+    }
+  }
+}
+
 async function comapreObjects(examples, attributes, example_sets) {
   for (const key in examples) {
-    if (key !== "tags")
+    //un-commnet this if key is not found
+    //console.log('key', key, examples[key])
+    if(key == "tags"){
+      if (Array.isArray(examples[key])) {
+        //console.log('examples[key]', examples[key], attributes[key], attributes)
+        await iterateTags(examples[key], attributes[key], example_sets);
+      }
+    }else{
       if (
         typeof examples[key] === "object" &&
         typeof attributes[key] === "object"
       ) {
-        // console.log('key',key)
-        // console.log('typeof examples[key]', typeof examples[key], typeof attributes[key])
         if (!attributes[key]) {
           console.log(`null value found for, ${key} in  ${example_sets}`);
         } else if (Array.isArray(examples[key])) {
@@ -528,6 +558,7 @@ async function comapreObjects(examples, attributes, example_sets) {
       } else if (!attributes.hasOwnProperty(key)) {
         console.log(`keys not found, ${key} in  ${example_sets}`);
       }
+    }
   }
 }
 function cleanup() {
@@ -569,8 +600,8 @@ function addEnumTag(base, layer) {
   base["x-errorcodes"] = layer["error_codes"];
   base["x-tlc"] = layer["tlc"];
   base["x-featureui"] = layer["feature-ui"]
-  base["x-sandboxui"] = layer["sandbox-ui"]
   base["x-testcasesui"] = layer["testcases-ui"]
+  base["x-sandboxui"] = layer["sandbox-ui"]
 
 }
 
