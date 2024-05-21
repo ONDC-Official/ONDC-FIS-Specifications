@@ -33,7 +33,6 @@ getSwaggerYaml("example_set", outputPath);
 const { buildAttribiutes } = require('./build-attributes.js')
 const { buildErrorCodes } = require('./build-error-code.js')
 const { buildTlc } = require('./build-tlc.js');
-const { trace } = require("console");
 
 const SKIP_VALIDATION = {
   flows: "skip1",
@@ -603,7 +602,6 @@ function addEnumTag(base, layer) {
   base["x-featureui"] = layer["feature-ui"]
   base["x-testcasesui"] = layer["testcases-ui"]
   base["x-sandboxui"] = layer["sandbox-ui"]
-  base["x-changeLog"] = layer["changeLog"]
 
 }
 
