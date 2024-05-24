@@ -10,12 +10,11 @@ ONDC Financial Services developer guide [link](https://ondc-official.github.io/O
 
 ## Latest Version
 
-
 ## Earlier Versions
 
-| Version | Release Date    | beckn Version                               | Comments                                                            |
-| ------- | --------------- | ------------------------------------------- | ------------------------------------------------------------------- |
-| v2.0.0  | TBD             | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Credit use cases enabled |
+| Version | Release Date | beckn Version                               | Comments                                                            |
+| ------- | ------------ | ------------------------------------------- | ------------------------------------------------------------------- |
+| v2.0.0  | TBD          | financial-service - 0.2.0<br />core - 1.3.0 | - Added UI for specification visual<br />- Credit use cases enabled |
 
 ## Introduction
 
@@ -23,9 +22,9 @@ Open Network for Digital Commerce (ONDC) is a network based on beckn open protoc
 
 ONDC financial services aims to build a nationwide multi-modal network that provides seamless experiences, supports growth & innovation by,
 
-* bringing together a diverse set of financial services players who can engage with the open network on their own terms
-* fostering collaboration, sharing & new models
-* facilitating responsive policy by bringing onboard decision making authorities
+- bringing together a diverse set of financial services players who can engage with the open network on their own terms
+- fostering collaboration, sharing & new models
+- facilitating responsive policy by bringing onboard decision making authorities
 
 In the financial service space, the intent is to enable seamless and truly interoperatable service options by bringing in diverse inventory onboard at scale that will serve the country’s population.
 
@@ -33,7 +32,7 @@ This would be possible in the financial service domain by making sure all financ
 
 ## Enabled/Supported use cases on network
 
-* Credit use case: Personal loan and Invoice based loan
+- Credit use case: Personal loan and Invoice based loan
 
 ## Working with Protocol
 
@@ -69,3 +68,5 @@ Each contribution will be peer-reviewed by the ONDC financial services committee
 #### What is Contribution to network
 
 Addition/Modification of examples, enum, policies which are very specific to the networks scope and purview.
+
+test changes
