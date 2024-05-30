@@ -19,15 +19,28 @@ Seller app responds with the details needed to perform kyc (3-step xinput)
 
 Seller app can choose to support all or any of the above scenarios. It will error out for cases it won't support.
 
+If everything is ready, seller app responds with different payment options through which the investor can make the payment to complete this order.
+
+##### Payment Options
+**New Mandate Registration**  
+`amount` represents the mandate limit. It should be atleast the sip instalment amount. Distributor can propose a number, but AMC will have the final say on this.
+
+**Existing Mandate Selection**  
+If the investor has an existing mandate, AMC will send that along with masked bank a/c number against which the mandate is registered.
+
+**Netbanking**  
+For one time payment, if netbanking is supported for the given investor's bank a/c, AMC will respond with this option.
+
+**UPI Collect**  
+For one time payment, if upi collect is supported for the given investor's bank a/c, AMC will respond with this option.
+
 ```mermaid
 sequenceDiagram
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
     bap ->> bpp: `/select` w/ scheme, investor identifier
-    bpp ->> bap: `/on_select` w/ existing/new folio options
-    bap ->> bpp: `/select` w/ the choice of existing/new folio
     alt flow = existing folio
-        Note over bap, bpp: No additional steps
+        bpp ->> bap: `/on_select` w/ existing + new folio options
     else flow = new folio
         rect rgb(191, 223, 255)
             bpp ->> bap: `/on_select` with xinput for folio opening
@@ -59,22 +72,9 @@ sequenceDiagram
 ---
 
 ### Initiation
-Buyer app makes an `init` call with the details of the investor, order, the fulfillment choice and the bank a/c from where the investor want to make the payment
+Buyer app makes an `init` call with the details of the investor, order, the fulfillment choice and the bank a/c from where the investor want to make the payment and the payment method. Buyer app takes a clickwrap consent from the investor on the TnC, performs 2fa and sends those details.
 
-If everything is ready, seller app responds with different payment options through which the investor can make the payment to complete this order. And the order is created in draft state. The terms and conditions to be accepted by the investor is also sent in the response.
-
-##### Payment Options
-**New Mandate Registration**  
-`amount` represents the mandate limit. It should be atleast the sip instalment amount. Distributor can propose a number, but AMC will have the final say on this.
-
-**Existing Mandate Selection**  
-If the investor has an existing mandate, AMC will send that along with masked bank a/c number against which the mandate is registered.
-
-**Netbanking**  
-For one time payment, if netbanking is supported for the given investor's bank a/c, AMC will respond with this option.
-
-**UPI Collect**  
-For one time payment, if upi collect is supported for the given investor's bank a/c, AMC will respond with this option.
+Seller app checks all the inputs and the order is created in draft state. The payment URL is sent in the response.
 
 Order in `CREATED` state marks the end of this stage.
 
@@ -84,8 +84,9 @@ sequenceDiagram
     autonumber
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    bap ->> bpp: `/init` w/ order details & fulfillment choice (onetime/sip)
-    bpp ->> bap: `/on_init` w/ payment options, TnC & order in `CREATED` state
+    Note over bap, bpp: Distributor performs 2fa before confirming. <br /> Static terms cover this
+    bap ->> bpp: `/init` w/ order details, fulfillment choice (onetime/sip), payment method and bank a/c
+    bpp ->> bap: `/on_init` w/ payment URL & order in `CREATED` state
 ```
 
 #### Initiating Redemption Order
@@ -94,13 +95,14 @@ sequenceDiagram
     autonumber
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    bap ->> bpp: `/init` w/ order details & fulfillment choice (onetime/swp)
-    bpp ->> bap: `/on_init` w/ TnC & order in `CREATED` state
+    Note over bap, bpp: Distributor performs 2fa before confirming. <br /> Static terms cover this
+    bap ->> bpp: `/init` w/ order details, fulfillment choice (onetime/swp)
+    bpp ->> bap: `/on_init` w/ order in `CREATED` state
 ```
 ---
 
 ### Confirmation
-Buyer app sends all the details of the investor and the transaction and the selected payment option along with all the negotiated terms in the previous step. Buyer app takes a clickwrap consent from the investor on the TnC, performs 2fa and sends those details.
+Buyer app sends all the details of the investor and the transaction and the selected payment option along with all the negotiated terms in the previous step.
 
 Depending on the selected payment option, seller app responds with either a payment URL or order in accepted state.
 
@@ -115,22 +117,21 @@ sequenceDiagram
     participant Investor
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    Note over bap, bpp: Distributor performs 2fa before confirming. <br /> Static terms cover this
     Note over bap, bpp: Acceptance of TnC by the Investor is <br /> assumed w/ the `confirm` call
-    bap ->> bpp: `/confirm` w/ selected payment & 2fa details
+    bap ->> bpp: `/confirm` w/ all order details
     alt payment = existing mandate
         rect rgb(191, 223, 255)
-            bpp ->> bap: `/on_confirm` w/ order in `ACCEPTED` state
+            bpp ->> bap: `/on_confirm` w/ order in `ACCEPTED` and payment in `PAID` state
         end
     else payment = new mandate/ netbanking/ upi
         rect rgb(102,179,255)
-            bpp ->> bap: `/on_confirm` w/ payment url
-            bap --) Investor: Redirect to url
+            bpp ->> bap: `/on_confirm` w/ order in `ACCEPTED` state
+            bap --) Investor: Redirect to payment url
             Investor --) bpp: Completes the payment
             alt payment successful
-                bpp ->> bap: `/on_status` w/ order in `ACCEPTED` state
+                bpp ->> bap: `/on_status` w/ payment in `PAID` state
             else payment failed
-                bpp ->> bap: `/on_status` w/ order in `REJECTED` state
+                bpp ->> bap: `/on_status` w/ payment in `NOT_PAID` state
             end
         end
     end
@@ -145,7 +146,6 @@ sequenceDiagram
     participant Investor
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    Note over bap, bpp: Distributor performs 2fa before confirming. <br /> Static terms cover this
     Note over bap, bpp: Acceptance of TnC by the Investor is <br /> assumed w/ the `confirm` call
     bap ->> bpp: `/confirm` w/ 2fa details
     alt all validations pass
