@@ -7,3 +7,5 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Using `PRE_FULFILLMENT` as the payment type to indicate the stage of payment collection
 - Sending payment options in `on_select` call
 - Sending payment url in `on_init` call
+- Sending 2fa details in `init` call
+- Sending tnc in `on_select` call
