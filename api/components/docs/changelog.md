@@ -9,3 +9,5 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Sending payment url in `on_init` call
 - Sending 2fa details in `init` call
 - Sending tnc in `on_select` call
+- Passing arn details in organization creds
+- Passing pan number in person id
