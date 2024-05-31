@@ -11,3 +11,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Sending tnc in `on_select` call
 - Passing arn details in organization creds
 - Passing pan number in person id
+- Adding 2fa email/mobile details to folio information sent by sellerapp (this is needed by the buyer app to perform 2fa)
