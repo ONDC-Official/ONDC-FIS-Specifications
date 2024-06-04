@@ -21,16 +21,19 @@ function renderMarkdown(branchName,file) {
     .then(async (text) => {
       const result =  await extractTextBetweenBackticks(text)
       //if mermaid diagram exist
-      let createMermaid;
       if(result?.length){
-        //const modifiedText = result[0].replace(/mermaid/g, '');
-        createMermaid = await mermaid.render(`main-summary1`, result[1])
+        for (const [index, item] of result.entries()) {
+          const mermaidDiagram = await mermaid.render(`marimaid-summary-${index}`, item)
+          const mermaidPattern = /```mermaid[\s\S]*?```/;
+          text = text.replace(mermaidPattern, mermaidDiagram?.svg)
+        }
       }
-      const removedMermaidData = text.replace(/```mermaid[\s\S]+?```/g, '');
-      const textWithBranchName = removedMermaidData.replace(/branchName/g, branchName);
+
+      const textWithBranchName = text.replace(/branchName/g, branchName);
       const textData = marked.parse(textWithBranchName);
 
-      document.getElementById("markdown-container").innerHTML = textData + (createMermaid?.svg ? createMermaid?.svg : '');
+      document.getElementById("markdown-container").innerHTML = textData 
+
     });
 }
 
@@ -41,21 +44,13 @@ function updateFeature() {
 }
 
 function extractTextBetweenBackticks(inputString) {
-  // const regex = /```([\s\S]*?)```/g;
-  // const matches = inputString.match(regex);
-  
-  // if (matches) {
-  //     return matches.map(match => match.replace(/```/g, ''));
-  // } else {
-  //     return [];
-  // }
-  const regex = /```mermaid\s*(.*?)\s*```/s;
-  const matches = inputString.match(regex);
+  const mermaidRegex = /```mermaid([\s\S]*?)```/g;
+  let matches;
+  const diagrams = [];
 
-  if (matches && matches.length >= 2) {
-    return matches
-  } else {
-    console.log("No mermaid data found.");
-    return []
+  while ((matches = mermaidRegex.exec(inputString)) !== null) {
+    diagrams.push(matches[1].trim());
   }
+
+  return diagrams;
 }
