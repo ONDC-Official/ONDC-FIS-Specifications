@@ -1,0 +1,158 @@
+summary: Prepayment Invoice Based Loans
+details:
+  - description: Order Confirmation 
+    mermaid: >-
+      sequenceDiagram
+        title  Order Fulfillment
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request Loan Account
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success Loan Account
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - description: Fulfillment  
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+references: if any
+steps:         
+  - summary: The lender confirms the invoice based  loan order.
+    api: on_confirm
+    details:
+      - description: The lender platform confirms the invoice based loan order and provides the final confirmation details.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/on_confirm/on_confirm-request.yaml" 
+ #update
+  - summary: The borrower (BAP) sends the update request by sending the order ID.
+    api: update
+    details:
+      - description: The borrower (BAP) sends the update request by sending the order ID to be updated along with the object in the order to be updated as update_target.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/update/update-request-prepayment.yaml" 
+  - summary: The lender platform updates the borrower for prepayment request.
+    api: on_update
+    details:
+      - description: The lender platform updates the borrower with on_update request response for prepayment.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/on_update/on_update-request-prepayment.yaml" 
+  - summary: The lender platform updates the consumer with pre-payment success.
+    api: on_update
+    details:
+      - description: The lender platform updates the borrower with on_update success response for pre-payment.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success Loan Account
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/on_update/on_update-success-prepayment.yaml"           
+  - summary: The borrower seeks the most recent loan status update.
+    api: status
+    details:
+      - description: The borrower platform requests the lender platform to provide the latest status of the invoice based loan application.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/status/status-request.yaml" 
+  - summary: Lender provides the borrower with real-time updates on their invoice based loan after receiving the prepayment.
+    api: on_status
+    details:
+      - description: When the lender receives the prepayment of invoice based loan from the borrower, the on_status API delivers prompt updates to the borrower. These updates include the current status of the invoice based loan, ensuring transparency and keeping the borrower informed throughout the loan repayment process.
+        mermaid: &onStatus >-
+          sequenceDiagram
+            title  Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    example:
+      value:
+        $ref: "../../examples/invoice-based-loans/on_status/on_status-request-prepayment.yaml"            
