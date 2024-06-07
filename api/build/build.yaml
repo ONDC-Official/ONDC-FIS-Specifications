@@ -8139,6 +8139,9 @@ x-examples:
           - summary: send payment url & tnc
             description: send payment url & tnc
             value: *ref_16
+          - summary: send order in created state
+            description: send order in created state
+            value: *ref_28
 x-attributes:
   mutual-funds:
     attribute_set:
@@ -8610,7 +8613,7 @@ x-attributes:
               owner: BAP
               usage: PURCHASE
               description: Type of order being placed
-            provider: &ref_40
+            provider: &ref_39
               id:
                 required: mandatory
                 type: string
@@ -8625,68 +8628,46 @@ x-attributes:
                 owner: BPP
                 usage: '--'
                 description: MF provider details
-            items: &ref_39
-              id:
-                required: mandatory
-                type: string
-                owner: BPP
-                usage: 98dgwr41
-                description: ID of the item that is chosen, as received in the catalog
-              quantity:
-                selected:
-                  count:
-                    required: optional
-                    type: integer
-                    owner: BAP
-                    usage: 1
-                    description: >-
-                      This represents the quantity selected for purchase of the
-                      item
-                  _description:
-                    required: optional
-                    type: object
-                    owner: BAP
-                    usage: 1
-                    description: Describes the selected quantity assocaited with the item
-                _description:
-                  required: optional
-                  type: object
-                  owner: BAP
-                  usage: 1
-                  description: Describes the quantity assocaited with the item
-              fulfillment_ids:
-                required: optional
-                type: string
-                owner: BPP
-                usage: 3bd4ea25
-                description: Unique reference ID to the fulfillment of an order
-              _description:
+            items: &ref_40
+              _description: &ref_42
                 required: mandatory
                 type: object
                 owner: BAP/BPP
                 usage: '--'
                 description: List of mf schemes in an order
+              id: &ref_43
+                required: mandatory
+                type: string
+                owner: BPP
+                usage: 98dgwr41
+                description: ID of the item that is chosen, as received in the catalog
+              fulfillment_ids: &ref_44
+                required: optional
+                type: string
+                owner: BPP
+                usage: 3bd4ea25
+                description: Unique reference ID to the fulfillment of an order
             fulfillments: &ref_41
-              _description:
+              _description: &ref_45
                 required: mandatory
                 type: object
                 owner: BAP
                 usage: '--'
                 description: Fulfillment details
-              type:
+              type: &ref_46
                 required: mandatory
                 type: string
                 owner: BPP
                 usage: SIP
                 description: Type of the fulfillment chosen
-              id:
+              id: &ref_47
                 required: mandatory
                 type: string
                 owner: BPP
                 usage: 45af324fs
                 description: ID of the fulfillment chosen
               customer:
-                _description:
+                _description: &ref_48
                   required: mandatory
                   type: object
                   owner: BAP
@@ -8694,7 +8675,7 @@ x-attributes:
                   description: >-
                     This refers to the description of the person that will
                     ulitmately receive the order.
-                person:
+                person: &ref_49
                   id:
                     required: mandatory
                     type: string
@@ -8709,7 +8690,7 @@ x-attributes:
                     description: >-
                       This refers to the description of the associated person as
                       an individual entity.
-              agent:
+              agent: &ref_50
                 _description:
                   required: mandatory
                   type: object
@@ -8757,7 +8738,7 @@ x-attributes:
                       owner: BAP
                       usage: ARN
                       description: Distributor license type
-            xinput:
+            xinput: &ref_51
               _description:
                 required: optional
                 type: object
@@ -8806,8 +8787,14 @@ x-attributes:
               description: >-
                 This refers to the complete description of the legal contract
                 created between the buyer and the seller.
-            items: *ref_39
-            provider: *ref_40
+            type:
+              required: mandatory
+              type: string
+              owner: BAP
+              usage: PURCHASE
+              description: Type of order being placed
+            provider: *ref_39
+            items: *ref_40
             fulfillments: *ref_41
             xinput:
               _description:
@@ -8917,31 +8904,31 @@ x-attributes:
                   Indicates whether the form data is mandatorily required by the
                   BPP to confirm the order.
             payments:
-              _description:
+              _description: &ref_52
                 required: optional
                 type: list
                 owner: BPP
                 usage: '--'
                 description: List of payment options for this order
-              id:
+              id: &ref_53
                 required: optional
                 type: string
                 owner: BPP
                 usage: pmt_1
                 description: Payment option identifier
-              collected_by:
+              collected_by: &ref_54
                 required: optional
                 type: string
                 owner: BPP
                 usage: BPP
                 description: Who is collecting the payment
-              type:
+              type: &ref_55
                 required: optional
                 type: string
                 owner: BPP
                 usage: PRE_FULFILLMENT
                 description: When is the payment to be collected
-              tags:
+              tags: &ref_56
                 _description:
                   required: optional
                   type: array
@@ -9005,7 +8992,7 @@ x-attributes:
                     owner: BPP
                     usage: MANDATE_REGISTRATION
                     description: Value of the tag
-            documents:
+            documents: &ref_57
               _description:
                 required: optional
                 type: list
@@ -9045,8 +9032,206 @@ x-attributes:
                 description: Mime type of the document to be fetched from the URL
       init:
         context: *ref_38
+        message:
+          order:
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
+            provider: *ref_39
+            type:
+              required: mandatory
+              type: string
+              owner: BAP
+              usage: PURCHASE
+              description: Type of order being placed
+            items: &ref_58
+              _description: *ref_42
+              id: *ref_43
+              fulfillment_ids: *ref_44
+              quantity:
+                _description:
+                  required: mandatory
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: Describes the quantity assocaited with the item
+                selected:
+                  _description:
+                    required: mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: Describes the selected quantity assocaited with the item
+                  measure:
+                    _description:
+                      required: mandatory
+                      type: object
+                      owner: BAP
+                      usage: '--'
+                      description: Describes the measure of the selected quantity
+                    value:
+                      required: mandatory
+                      type: integer
+                      owner: BAP
+                      usage: '3000'
+                      description: Value of order
+                    unit:
+                      required: mandatory
+                      type: string
+                      owner: BAP
+                      usage: amount
+                      description: Type of the value of order
+              time:
+                _description:
+                  required: optional
+                  type: object
+                  owner: BAP
+                  usage: '--'
+                  description: Time associated for recurring orders
+                schedule:
+                  _description:
+                    required: optional
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: Schedule of the recurring orders
+                  frequency:
+                    required: optional
+                    type: string
+                    owner: BAP
+                    usage: '--'
+                    description: Frequency of the recurring orders in ISO8601 format
+            fulfillments: &ref_59
+              _description: *ref_45
+              type: *ref_46
+              id: *ref_47
+              customer:
+                _description: *ref_48
+                person: *ref_49
+                contact:
+                  _description:
+                    required: mandatory
+                    type: object
+                    owner: BAP
+                    usage: '--'
+                    description: Customer contact information on which 2fa is done
+                  phone:
+                    required: mandatory
+                    type: string
+                    owner: BAP
+                    usage: '9916587487'
+                    description: Phone number of the customer on which 2fa is done
+              agent: *ref_50
+            xinput: *ref_51
+            payments:
+              _description: *ref_52
+              id: *ref_53
+              collected_by: *ref_54
+              type: *ref_55
+              tags: *ref_56
+              params: &ref_60
+                _description:
+                  required: optional
+                  type: object
+                  owner: BAP/BPP
+                  usage: '--'
+                  description: payment related parameters
+                amount:
+                  required: optional
+                  type: integer
+                  owner: BAP/BPP
+                  usage: 30000
+                  description: mandate limit if new mandate registration
+                currency:
+                  required: optional
+                  type: string
+                  owner: BAP/BPP
+                  usage: inr
+                  description: currency of the amount, if mandate limit is given
+                source_bank_code:
+                  required: optional
+                  type: string
+                  owner: BAP
+                  usage: icic0000047
+                  description: >-
+                    ifsc code of the investor bank a/c from which he wants to
+                    make the payment
+                source_bank_account_number:
+                  required: optional
+                  type: string
+                  owner: BAP
+                  usage: '004875487458'
+                  description: >-
+                    bank a/c number of the investor from which he wants to make
+                    the payment
+                source_bank_account_name:
+                  required: optional
+                  type: string
+                  owner: BAP
+                  usage: Harish Gupta
+                  description: >-
+                    Name on the bank a/c of the investor from which he wants to
+                    make the payment
+            documents: *ref_57
       on_init:
         context: *ref_38
+        message:
+          order:
+            _description:
+              required: Mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: >-
+                This refers to the complete description of the legal contract
+                created between the buyer and the seller.
+            id:
+              required: mandatory
+              type: string
+              owner: BPP
+              usage: 54adfadsf6144
+              description: ID of the order at the seller app end
+            status:
+              required: mandatory
+              type: string
+              owner: BAP
+              usage: CREATED
+              description: Status of the order at seller app end
+            provider: *ref_39
+            type:
+              required: mandatory
+              type: string
+              owner: BAP
+              usage: PURCHASE
+              description: Type of order being placed
+            items: *ref_58
+            fulfillments: *ref_59
+            xinput: *ref_51
+            payments:
+              _description: *ref_52
+              id: *ref_53
+              collected_by: *ref_54
+              type: *ref_55
+              tags: *ref_56
+              params: *ref_60
+              url:
+                required: optional
+                type: string
+                owner: BPP
+                usage: https://api.sellerapp.com/pay
+                description: payment url for the selected payment mode
+              status:
+                required: optional
+                type: string
+                owner: BPP
+                usage: NOT-PAID
+                description: status of the payment
+            documents: *ref_57
       confirm:
         context: *ref_38
       on_confirm:
