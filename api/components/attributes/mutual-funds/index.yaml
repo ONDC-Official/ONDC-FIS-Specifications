@@ -489,7 +489,7 @@ select:
                 owner: BAP
                 usage: ARN
                 description: Distributor license type
-      xinput: &xinput_select
+      xinput: &xinput_w_submission_id
         _description:
           required: optional
           type: object
@@ -871,7 +871,7 @@ init:
               owner: BAP
               usage: '9916587487'
               description: Phone number of the customer on which 2fa is done
-      xinput: *xinput_select
+      xinput: *xinput_w_submission_id
       payments: &payments_with_source_bank
         <<: *payments_onselect
         params:
@@ -945,8 +945,8 @@ on_init:
         description: Type of order being placed
       items: *items_input_with_quantity
       fulfillments: *fulfillments_with_2fa
-      xinput: *xinput_select
-      payments:
+      xinput: *xinput_w_submission_id
+      payments: &payments_with_url
         <<: *payments_with_source_bank
         url:
           required: optional
@@ -964,1196 +964,120 @@ on_init:
 
 confirm:
   context: *context
-  # message:
-  #   order:
-  #     items:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: b2400168
-  #         description: 'Unique ID of the order. '
-  #       quantity:
-  #         selected:
-  #           count:
-  #             required: optional
-  #             type: integer
-  #             owner: BPP
-  #             usage: 1
-  #             description: This represents the quantity selected for purchase of the item
-  #           _description:
-  #             required: optional
-  #             type: object
-  #             owner: BAP
-  #             usage: 1
-  #             description: Describes the selected quantity assocaited with the item
-  #         _description:
-  #           required: optional
-  #           type: object
-  #           owner: BAP
-  #           usage: 1
-  #           description: Describes the quantity assocaited with the item
-  #       xinput:
-  #         form_response:
-  #           submission_id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: ebff9b95
-  #             description: Describes the submission ID of the form
-  #           _description:
-  #             required: mandatory
-  #             type: object
-  #             owner: BAP
-  #             usage: '--'
-  #             description: >-
-  #               This description outlines the feedback or system's reaction to
-  #               the information provided following the submission of a form.
-  #         _description:
-  #           required: mandatory
-  #           type: object
-  #           owner: BAP/BPP
-  #           usage: '--'
-  #           description: >-
-  #             This attribute refers to the information about additional input
-  #             required from the customer to confirm this order.
-  #         form:
-  #           _description:
-  #             required: mandatory
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: >-
-  #               This attribute refers to the information about additional input
-  #               form generated from the system.
-  #           id:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: d097c2f5
-  #             description: This refers to the unique id of the form
-  #       category_ids:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: 4bd4ea25
-  #         description: Describes the category id
-  #       fulfillment_ids:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: 3bd4ea25
-  #         description: Unique reference ID to the fulfillment of an order
-  #       _description:
-  #         required: Mandatory
-  #         type: object
-  #         owner: BAP/BPP
-  #         usage: '--'
-  #         description: >-
-  #           This decription refers to the comprehensive list of the products or
-  #           services selected and obtained within the specified order.
-  #     provider:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: db1928f9
-  #         description: Id of the provider
-  #       _description:
-  #         required: Mandatory
-  #         type: object
-  #         owner: BPP
-  #         usage: '--'
-  #         description: >-
-  #           This describes the complete formulated description of the loan
-  #           provider whose catalog items have been selected.
-  #     fulfillments:
-  #       customer:
-  #         contact:
-  #           email:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: alice@example.com
-  #             description: Email address of the cusotmer
-  #           phone:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: 9999199991
-  #             description: Phone number of the cusotmer
-  #         person:
-  #           name:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: Alice
-  #             description: Name of the customer
-  #           id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: PAN:EKLZS12E
-  #             description: Describe the person id
-  #           _description:
-  #             required: Mandatory
-  #             type: object
-  #             owner: BAP
-  #             usage: '--'
-  #             description: >-
-  #               This refers to the description of the associated person as an
-  #               individual entity.
-  #         _description:
-  #           required: Mandatory
-  #           type: object
-  #           owner: BAP
-  #           usage: '--'
-  #           description: >-
-  #             This refers to the description of the person that will ulitmately
-  #             receive the order.
-  #       stops:
-  #         type:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: start
-  #           description: Describes the start of the fulfillment
-  #         authorization:
-  #           type:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: OTP
-  #             description: Describes the type of the authorization scheme
-  #           token:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: 535346
-  #             description: Describes the token of the authorization scheme
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: 8bd4ea25
-  #         description: Describe the fulfillment id
-  #       agent:
-  #         person:
-  #           id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: EUIN:1234
-  #             description: Describe the person id
-  #           _description:
-  #             required: mandatory
-  #             type: object
-  #             owner: BAP
-  #             usage: '--'
-  #             description: Describes a person as any individual
-  #         _description:
-  #           required: mandatory
-  #           type: object
-  #           owner: BAP
-  #           usage: '--'
-  #           description: The agent that is currently handling the fulfillment of the order
-  #       type:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: EMANDATE
-  #         description: Describe the fulfillment type
-  #       _description:
-  #         required: Mandatory
-  #         type: object
-  #         owner: BAP
-  #         usage: '--'
-  #         description: >-
-  #           This refers to the decription as to how that order will
-  #           rendered/fulfilled to the end-customers.
-  #     billing:
-  #       name:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: Charles D'Souza
-  #         description: Describes the name of billing entity
-  #       email:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: charles@equitygrow.in
-  #         description: Describes the email of billing entity
-  #     payments:
-  #       collected_by:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: BPP
-  #         description: Describes the source of payment collection
-  #       type:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: ON-FULFILLMENT
-  #         description: Describes the type of payment collection
-  #     quote:
-  #       price:
-  #         value:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: 60
-  #           description: Describes the price of a product or service
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Describes the currency of a product or service
-  #         _description:
-  #           required: optional
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: This refers to the value of used currency of quoted price.
-  #       breakup:
-  #         title:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Price
-  #           description: Describes the breakup title
-  #         item:
-  #           id:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: o097c2f5
-  #             description: Describes the breakup item id
-  #           _description:
-  #             required: optional
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: Describes the item for quotes breakup
-  #         _description:
-  #           required: optional
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: This attribute describes the breakup of the total quoted price.
-  #         price:
-  #           _description:
-  #             required: optional
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: >-
-  #               This describes the decimal value of the price of a product or
-  #               service.
-  #       _description:
-  #         required: optional
-  #         type: object
-  #         owner: BPP
-  #         usage: '--'
-  #         description: >-
-  #           This refers to the complete description of the mutully agreed upon
-  #           quotation for this order.
-  #     _description:
-  #       required: Mandatory
-  #       type: object
-  #       owner: BAP/BPP
-  #       usage: '--'
-  #       description: >-
-  #         This refers to the complete description of the legal contract created
-  #         between the buyer and the seller.
+  message:
+    order:
+      _description:
+        required: Mandatory
+        type: object
+        owner: BAP/BPP
+        usage: '--'
+        description: >-
+          This refers to the complete description of the legal contract created
+          between the buyer and the seller.
+      id:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: '54adfadsf6144'
+        description: ID of the order at the seller app end
+      provider: *provider
+      type:
+        required: mandatory
+        type: string
+        owner: BAP
+        usage: 'PURCHASE'
+        description: Type of order being placed
+      items: *items_input_with_quantity
+      fulfillments: *fulfillments_with_2fa
+      xinput: *xinput_w_submission_id
+      payments: *payments_with_url
+      documents: *tnc_docs
 on_confirm:
   context: *context
-  # message:
-  #   order:
-  #     id:
-  #       required: mandatory
-  #       type: string
-  #       owner: BPP
-  #       usage: 66B7AED
-  #       description: ID of the order.
-  #     items:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: b2400168
-  #         description: ID of the item.
-  #       descriptor:
-  #         name:
-  #           required: mandatory
-  #           type: string
-  #           owner: BPP
-  #           usage: HDFC Midcap Opportunities Fund - SIP
-  #           description: Physical description of something.
-  #         code:
-  #           required: mandatory
-  #           type: string
-  #           owner: BPP
-  #           usage: SIP
-  #           description: Describes the items code.
-  #         _description:
-  #           required: Mandatory
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: >-
-  #             This include the details about the distinctive features, benefits,
-  #             or unique aspects of the products or service that has been offered
-  #             to the end customer.
-  #       price:
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Price of the selected item.
-  #         value:
-  #           required: optional
-  #           type: integer
-  #           owner: BPP
-  #           usage: 60
-  #           description: Describes a numerical value in decimal form
-  #         _description:
-  #           required: Mandatory
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: Describes the price for item.
-  #       quantity:
-  #         selected:
-  #           count:
-  #             required: optional
-  #             type: integer
-  #             owner: BPP
-  #             usage: 2
-  #             description: This represents the quantity selected for purchase of the item
-  #       fulfillment_ids:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: 3bd4ea25
-  #         description: Unique reference ID to the fulfillment of an order
-  #       category_ids:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: 4bd4ea25
-  #         description: Describes the category id
-  #       _description:
-  #         required: Mandatory
-  #         type: object
-  #         owner: BAP/BPP
-  #         usage: '--'
-  #         description: >-
-  #           This decription refers to the comprehensive list of the products or
-  #           services selected and obtained within the specified order.
-  #     provider:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: db1928f9
-  #         description: Id of the provider
-  #       descriptor:
-  #         name:
-  #           required: mandatory
-  #           type: string
-  #           owner: BPP
-  #           usage: HDFC Midcap Opportunities Fund
-  #           description: Physical description of something.
-  #         images:
-  #           url:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: >-
-  #               https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-  #             description: URL to the image. This can be a data url or an remote url
-  #           size_type:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: sm
-  #             description: Describes the size type of the image
-  #           _description:
-  #             required: Mandatory
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: It encapsulates the detailed description of the used image.
-  #         short_desc:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: HDFC Midcap Opportunities Fund
-  #           description: Short description of the provider
-  #         _description:
-  #           required: Mandatory
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: This describes the detailed description of the provider
-  #       _description:
-  #         required: Mandatory
-  #         type: object
-  #         owner: BPP
-  #         usage: '--'
-  #         description: This describes the detailed description of the provider
-  #     fulfillments:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: 3bd4ea25
-  #         description: Unique reference ID to the fulfillment of an order
-  #       customer:
-  #         contact:
-  #           email:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: alice@example.com
-  #             description: Email address of the cusotmer
-  #           phone:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: 9999199991
-  #             description: Phone number of the cusotmer
-  #           _description:
-  #             required: Mandatory
-  #             type: object
-  #             owner: BAP
-  #             usage: '--'
-  #             description: This refers to the details of the customer contacts
-  #         person:
-  #           name:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: Alice
-  #             description: Name of the customer
-  #           id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: PAN:EKLZS12E
-  #             description: Describe the person id
-  #           _description:
-  #             required: Mandatory
-  #             type: object
-  #             owner: BAP
-  #             usage: '--'
-  #             description: >-
-  #               This refers to the description of the associated person as an
-  #               individual entity.
-  #         _description:
-  #           required: Mandatory
-  #           type: object
-  #           owner: BAP
-  #           usage: '--'
-  #           description: >-
-  #             This refers to the description of the person that will ulitmately
-  #             receive the order.
-  #       state:
-  #         descriptor:
-  #           name:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: Mutual Fund Order Initialized
-  #             description: Current state of the fulfillment
-  #           code:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: ORDER_REQUESTED
-  #             description: Describes the fulfillment state's code
-  #           _description:
-  #             required: mandatory
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: Describes the fulfillments state's descriptor
-  #         _description:
-  #           required: mandatory
-  #           type: object
-  #           owner: BAP/BPP
-  #           usage: '--'
-  #           description: Describes the fulfillments state
-  #       agent:
-  #         person:
-  #           id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: EUIN:1234
-  #             description: Describe the person id
-  #       stops:
-  #         type:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: SIP_INVESTMENT_PERIOD
-  #           description: Describes the stop type for fulfillment
-  #         time:
-  #           range:
-  #             start:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: '2023-01-01T00:00:00.000Z'
-  #               description: Describes the range start for fulfillment
-  #             end:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: '2023-04-30T23:59:59.999Z'
-  #               description: Describes the range end for fulfillment
-  #       type:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: SIP
-  #         description: >-
-  #           A code that describes the mode of fulfillment. This is typically set
-  #           when there are multiple ways an order can be fulfilled. 
-  #       _description:
-  #         required: Mandatory
-  #         type: object
-  #         owner: BAP/BPP
-  #         usage: '--'
-  #         description: >-
-  #           This refers to the decription as to how that order will
-  #           rendered/fulfilled to the end-customers.
-  #     quote:
-  #       price:
-  #         value:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: 60
-  #           description: Describes the price of a product or service
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Describes the currency of a product or service
-  #         _description:
-  #           required: optional
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: This refers to the value of used currency of quoted price.
-  #       breakup:
-  #         item:
-  #           price:
-  #             value:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: 80
-  #               description: Describes the value of a product or service
-  #             currency:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: INR
-  #               description: Describes the currency of a product or service
-  #           quantity:
-  #             allocated:
-  #               measure:
-  #                 value:
-  #                   required: optional
-  #                   type: string
-  #                   owner: BPP
-  #                   usage: 2.5
-  #                   description: Describes allocated quantity
-  #           id:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: o097c2f5
-  #             description: Describes the breakup item id
-  #           _description:
-  #             required: optional
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: Describes the item for quotes breakup
-  #         title:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Price
-  #           description: Describes the breakup title
-  #         _description:
-  #           required: optional
-  #           type: object
-  #           owner: BPP
-  #           usage: '--'
-  #           description: This attribute describes the breakup of the total quoted price.
-  #         price:
-  #           _description:
-  #             required: optional
-  #             type: object
-  #             owner: BPP
-  #             usage: '--'
-  #             description: >-
-  #               This describes the decimal value of the price of a product or
-  #               service.
-  #       _description:
-  #         required: optional
-  #         type: object
-  #         owner: BPP
-  #         usage: '--'
-  #         description: >-
-  #           This refers to the complete description of the mutully agreed upon
-  #           quotation for this order.
-  #     billing:
-  #       name:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: Charles D'Souza
-  #         description: Describes the name of billing entity
-  #       email:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: charles@equitygrow.in
-  #         description: Describes the email of billing entity
-  #     cancellation_terms:
-  #       fulfillment_state:
-  #         descriptor:
-  #           name:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: Terms
-  #             description: Describes the name of the descriptor
-  #       external_ref:
-  #         mimetype:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: text/html
-  #           description: Describes the mime type of external ref
-  #         url:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: https://abcmutalfunds.com/mf/tnc.html
-  #           description: Describes the url of external ref
-  #     payments:
-  #       collected_by:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: BPP
-  #         description: Describes the source of payment collection
-  #       type:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: ON-FULFILLMENT
-  #         description: Describes the type of payment collection
-  #       params:
-  #         amount:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: 500
-  #           description: Describes a numerical value in decimal form
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Describes the currency of a product or service
-  #         transaction_id:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: bh767iygx65u76iyg
-  #           description: Describes the transaction id of the payment
-  #       status:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: PAID
-  #         description: Describes the payment status
-  #       url:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: >-
-  #           https://www.abcinsurance.com/pg-gateway/payment?amount=500&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
-  #         description: Describes the payment url
-  #     documents:
-  #       descriptor:
-  #         code:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: LOAN_AGREEMENT
-  #           description: >-
-  #             It refers to the unique descriptor identifier used for the
-  #             document
-  #         name:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Loan Agreement Document
-  #           description: It refers to the specific name of the document
-  #         short_desc:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Download your Loan Agreement document here
-  #           description: This refers to the concised description of the document
-  #         long_desc:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: A Loan Agreement Document is a legal contract outlining terms
-  #           description: This refers to the brief description of the document
-  #       mime_type:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: application/pdf
-  #         description: >-
-  #           It refers to the categorization of the document based on its file
-  #           format and content type.
-  #       url:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: https://lender.com/loan/loan-agreement/O1.pdf
-  #         description: This describes the url from where the document can be accessed
-  #     _description:
-  #       required: Mandatory
-  #       type: object
-  #       owner: BAP/BPP
-  #       usage: '--'
-  #       description: >-
-  #         This refers to the complete description of the legal contract created
-  #         between the buyer and the seller.
+  message:
+    order:
+      _description:
+        required: Mandatory
+        type: object
+        owner: BAP/BPP
+        usage: '--'
+        description: >-
+          This refers to the complete description of the legal contract created
+          between the buyer and the seller.
+      id:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: '54adfadsf6144'
+        description: ID of the order at the seller app end
+      status:
+        required: mandatory
+        type: string
+        owner: BAP
+        usage: 'ACCEPTED'
+        description: Status of the order at seller app end
+      provider: *provider
+      type:
+        required: mandatory
+        type: string
+        owner: BAP
+        usage: 'PURCHASE'
+        description: Type of order being placed
+      items: *items_input_with_quantity
+      fulfillments: *fulfillments_with_2fa
+      xinput: *xinput_w_submission_id
+      payments: *payments_with_url
+      documents: *tnc_docs
 
-status:
-  context: *context
-  # message:
-  #   ref_id:
-  #     required: optional
-  #     type: string
-  #     owner: BAP
-  #     usage: a9aaecca-10b7-4d19-b640-b047a7c62196
-  #     description: >-
-  #       Unique id for reference, pre-order this will be transaction ID.This
-  #       identifier serves as a distinctive reference, particularly functioning
-  #       as a transaction ID in the case of pre-orders. It acts as a unique code
-  #       or number assigned to facilitate tracking and referencing throughout the
-  #       pre-order process, ensuring a seamless and organized handling of
-  #       transactions.
-  #   order_id:
-  #     required: optional
-  #     type: string
-  #     owner: BAP
-  #     usage: a9aaecca-10b7-4d19-b640-b047a7c62196
-  #     description: This refers to the distinctive identifier associated to a order
 on_status:
   context: *context
-  # message:
-  #   order:
-  #     id:
-  #       required: optional
-  #       type: string
-  #       owner: BPP
-  #       usage: 66B7AED
-  #       description: ID of the order.
-  #     items:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: b2400168
-  #         description: ID of the item.
-  #       descriptor:
-  #         name:
-  #           required: mandatory
-  #           type: string
-  #           owner: BPP
-  #           usage: HDFC Midcap Opportunities Fund - SIP
-  #           description: Physical description of something.
-  #         code:
-  #           required: mandatory
-  #           type: string
-  #           owner: BPP
-  #           usage: SIP
-  #           description: Describes the items code.
-  #       price:
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Price of the selected item.
-  #         value:
-  #           required: optional
-  #           type: integer
-  #           owner: BPP
-  #           usage: 60
-  #           description: Describes a numerical value in decimal form
-  #       quantity:
-  #         selected:
-  #           count:
-  #             required: optional
-  #             type: integer
-  #             owner: BPP
-  #             usage: 2
-  #             description: This represents the quantity selected for purchase of the item
-  #       fulfillment_ids:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: 3bd4ea25
-  #         description: Unique reference ID to the fulfillment of an order
-  #       category_ids:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: 4bd4ea25
-  #         description: Describes the category id
-  #     provider:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: db1928f9
-  #         description: Id of the provider
-  #       descriptor:
-  #         name:
-  #           required: mandatory
-  #           type: string
-  #           owner: BPP
-  #           usage: HDFC Midcap Opportunities Fund
-  #           description: Physical description of something.
-  #         images:
-  #           url:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: >-
-  #               https://www.hdfcfunds.com/content/dam/abc/india/assets/images/header/logo.png
-  #             description: URL to the image. This can be a data url or an remote url
-  #           size_type:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: sm
-  #             description: Describes the size type of the image
-  #         short_desc:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: HDFC Midcap Opportunities Fund
-  #           description: Short description of the provider
-  #     fulfillments:
-  #       id:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: 3bd4ea25
-  #         description: Unique reference ID to the fulfillment of an order
-  #       customer:
-  #         contact:
-  #           email:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: alice@example.com
-  #             description: Email address of the cusotmer
-  #           phone:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: 9999199991
-  #             description: Phone number of the cusotmer
-  #         person:
-  #           name:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: Alice
-  #             description: Name of the customer
-  #           id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: PAN:EKLZS12E
-  #             description: Describe the person id
-  #       state:
-  #         descriptor:
-  #           name:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: Mutual Fund Order Initialized
-  #             description: Current state of the fulfillment
-  #           code:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: ORDER_REQUESTED
-  #             description: Describes the fulfillment state's code
-  #       agent:
-  #         person:
-  #           id:
-  #             required: mandatory
-  #             type: string
-  #             owner: BPP
-  #             usage: EUIN:1234
-  #             description: Describe the person id
-  #       stops:
-  #         type:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: SIP_INVESTMENT_PERIOD
-  #           description: Describes the stop type for fulfillment
-  #         time:
-  #           range:
-  #             start:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: '2023-01-01T00:00:00.000Z'
-  #               description: Describes the range start for fulfillment
-  #             end:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: '2023-04-30T23:59:59.999Z'
-  #               description: Describes the range end for fulfillment
-  #       type:
-  #         required: mandatory
-  #         type: string
-  #         owner: BPP
-  #         usage: SIP
-  #         description: >-
-  #           A code that describes the mode of fulfillment. This is typically set
-  #           when there are multiple ways an order can be fulfilled. 
-  #     quote:
-  #       price:
-  #         value:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: 60
-  #           description: Describes the price of a product or service
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Describes the currency of a product or service
-  #       breakup:
-  #         item:
-  #           price:
-  #             value:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: 80
-  #               description: Describes the value of a product or service
-  #             currency:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: INR
-  #               description: Describes the currency of a product or service
-  #           quantity:
-  #             allocated:
-  #               measure:
-  #                 value:
-  #                   required: optional
-  #                   type: string
-  #                   owner: BPP
-  #                   usage: 2.5
-  #                   description: Describes allocated quantity
-  #             unitized:
-  #               measure:
-  #                 estimated_value:
-  #                   required: optional
-  #                   type: string
-  #                   owner: BPP
-  #                   usage: 5
-  #                   description: Describes a numerical value in decimal form
-  #                 computed_value:
-  #                   required: optional
-  #                   type: string
-  #                   owner: BPP
-  #                   usage: 5
-  #                   description: Describes a numerical value in decimal form
-  #                 unit:
-  #                   required: optional
-  #                   type: string
-  #                   owner: BPP
-  #                   usage: units
-  #                   description: Describes the unit type of allocated quantity
-  #           id:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: o097c2f5
-  #             description: Describes the breakup item id
-  #           time:
-  #             label:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: NAV last updated at
-  #               description: Describes the label for breakup item
-  #             timestamp:
-  #               required: optional
-  #               type: string
-  #               owner: BPP
-  #               usage: '2023-01-25T05:23:03.443Z'
-  #               description: Describes the timestamp for breakup item
-  #         title:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Price
-  #           description: Describes the breakup title
-  #     billing:
-  #       name:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: Charles D'Souza
-  #         description: Describes the name of billing entity
-  #       email:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: charles@equitygrow.in
-  #         description: Describes the email of billing entity
-  #     cancellation_terms:
-  #       fulfillment_state:
-  #         descriptor:
-  #           name:
-  #             required: optional
-  #             type: string
-  #             owner: BPP
-  #             usage: Terms
-  #             description: Describes the name of the descriptor
-  #       external_ref:
-  #         mimetype:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: text/html
-  #           description: Describes the mime type of external ref
-  #         url:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: https://abcmutalfunds.com/mf/tnc.html
-  #           description: Describes the url of external ref
-  #     payments:
-  #       collected_by:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: BPP
-  #         description: Describes the source of payment collection
-  #       type:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: ON-FULFILLMENT
-  #         description: Describes the type of payment collection
-  #       params:
-  #         amount:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: 500
-  #           description: Describes a numerical value in decimal form
-  #         currency:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: INR
-  #           description: Describes the currency of a product or service
-  #         transaction_id:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: bh767iygx65u76iyg
-  #           description: Describes the transaction id of the payment
-  #       status:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: PAID
-  #         description: Describes the payment status
-  #       url:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: >-
-  #           https://www.abcinsurance.com/pg-gateway/payment?amount=500&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
-  #         description: Describes the payment url
-  #     documents:
-  #       descriptor:
-  #         code:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: LOAN_AGREEMENT
-  #           description: >-
-  #             It refers to the unique descriptor identifier used for the
-  #             document
-  #         name:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Loan Agreement Document
-  #           description: It refers to the specific name of the document
-  #         short_desc:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: Download your Loan Agreement document here
-  #           description: This refers to the concised description of the document
-  #         long_desc:
-  #           required: optional
-  #           type: string
-  #           owner: BPP
-  #           usage: A Loan Agreement Document is a legal contract outlining terms
-  #           description: This refers to the brief description of the document
-  #       mime_type:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: application/pdf
-  #         description: >-
-  #           It refers to the categorization of the document based on its file
-  #           format and content type.
-  #       url:
-  #         required: optional
-  #         type: string
-  #         owner: BPP
-  #         usage: https://lender.com/loan/loan-agreement/O1.pdf
-  #         description: This describes the url from where the document can be accessed
+  message:
+    order:
+      _description:
+        required: Mandatory
+        type: object
+        owner: BAP/BPP
+        usage: '--'
+        description: >-
+          This refers to the complete description of the legal contract created
+          between the buyer and the seller.
+      id:
+        required: mandatory
+        type: string
+        owner: BPP
+        usage: '54adfadsf6144'
+        description: ID of the order at the seller app end
+      status:
+        required: mandatory
+        type: string
+        owner: BAP
+        usage: 'ACCEPTED'
+        description: Status of the order at seller app end
+      provider: *provider
+      type:
+        required: mandatory
+        type: string
+        owner: BAP
+        usage: 'PURCHASE'
+        description: Type of order being placed
+      items: *items_input_with_quantity
+      fulfillments:
+        <<: *fulfillments
+        customer:
+          <<: *customer_select
+          contact:
+            _description:
+              required: optional
+              type: object
+              owner: BAP
+              usage: '--'
+              description: Customer contact information on which 2fa is done
+            phone:
+              required: optional
+              type: string
+              owner: BAP
+              usage: '9916587487'
+              description: Phone number of the customer on which 2fa is done
+      xinput: *xinput_w_submission_id
+      payments: *payments_with_url
+      documents: *tnc_docs
