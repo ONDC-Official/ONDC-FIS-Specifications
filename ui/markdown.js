@@ -21,16 +21,26 @@ function renderMarkdown(branchName,file) {
     .then(async (text) => {
       const result =  await extractTextBetweenBackticks(text)
       //if mermaid diagram exist
+      // if(result?.length){
+      //   for (const [index, item] of result.entries()) {
+      //     console.log("item> ", item)
+      //     const mermaidDiagram = await mermaid.render(`marimaid-summary-${index}`, item)
+      //     const mermaidPattern = /```mermaid[\s\S]*?```/;
+      //     console.log("meramidD", mermaidDiagram?.svg)
+      //     text = text.replace(mermaidPattern, mermaidDiagram?.svg.replace(/\"/g, '"'))
+      //   }
+      // }
+
+      const textWithBranchName = text.replace(/branchName/g, branchName);
+      let textData = marked.parse(textWithBranchName);
+
       if(result?.length){
         for (const [index, item] of result.entries()) {
           const mermaidDiagram = await mermaid.render(`marimaid-summary-${index}`, item)
-          const mermaidPattern = /```mermaid[\s\S]*?```/;
-          text = text.replace(mermaidPattern, mermaidDiagram?.svg)
+          const mermaidPattern = /<code class="language-mermaid">[\s\S]*?code>/;
+          textData = textData.replace(mermaidPattern, mermaidDiagram?.svg.replace(/\"/g, '"'))
         }
       }
-
-      const textWithBranchName = text.replace(/branchName/g, branchName);
-      const textData = marked.parse(textWithBranchName);
 
       document.getElementById("markdown-container").innerHTML = textData 
 
