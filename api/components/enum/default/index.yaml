@@ -1,0 +1,275 @@
+search:
+  context: &ref_0
+    location:
+      country:
+        code:
+          - code: IND
+            description: Represents the country
+            reference: <PR/Issue/Discussion Links md format text>
+      city:
+        code:
+          - code: std:080
+            description: >-
+              Represent the city code that identifies the cities. In case of '*'
+              it will fetch all the cities where service is being provided.
+            reference: <PR/Issue/Discussion Links md format text>
+    domain:
+      - code: ONDC:FIS12
+        description: Updated domain namespace
+        reference: <PR/Issue/Discussion Links md format text>
+  message:
+    intent:
+      category: &ref_1
+        descriptor:
+          code:
+            - code: PERSONAL_LOAN
+              description: >-
+                Describes an unsecured credit provided by financial institutions
+                based on criteria like employment history, repayment capacity,
+                income level, profession and credit history
+              reference: <PR/Issue/Discussion Links md format text
+            - code: INVOICE_BASED_LOAN
+              description: >-
+                Describes an unsecured credit facility that allows a business to
+                borrow money using high-value unpaid invoices as collateral.
+                Borrower must enable GST API access in the GSTN portal is a
+                prerequisite for applying for an unsecured loan
+              reference: <PR/Issue/Discussion Links md format text
+on_search:
+  context: *ref_0
+  message:
+    catalog:
+      providers:
+        items: &ref_2
+          descriptor:
+            code:
+              - code: PERSONAL_LOAN
+                description: >-
+                  Describes an unsecured credit provided by financial
+                  institutions based on criteria like employment history,
+                  repayment capacity, income level, profession and credit
+                  history
+                reference: <PR/Issue/Discussion Links md format text
+              - code: INVOICE_BASED_LOAN
+                description: >-
+                  Describes an unsecured credit facility that allows a business
+                  to borrow money using high-value unpaid invoices as
+                  collateral. Borrower must enable GST API access in the GSTN
+                  portal is a prerequisite for applying for an unsecured loan
+                reference: <PR/Issue/Discussion Links md format text
+          xinput:
+            form_response:
+              status:
+                - code: PENDING
+                  description: Describes the current state of the request.
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: APPROVED
+                  description: Describes the current state of the request.
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: REJECTED
+                  description: Describes the current state of the request.
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: EXPIRED
+                  description: Describes the current state of the request.
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: SUCCESS
+                  description: When form gets submitted successfully
+                  reference: <PR/Issue/Discussion Links md format text
+        categories: *ref_1
+select:
+  context: *ref_0
+  message:
+    order: &ref_3
+      items: *ref_2
+on_select:
+  context: *ref_0
+  message:
+    order: *ref_3
+init:
+  context: *ref_0
+  message:
+    order:
+      payments:
+        collected_by: &ref_4
+          - code: BPP
+            description: When seller app is collecting the payment
+            reference: <PR/Issue/Discussion Links md format text
+          - code: BAP
+            description: When buyer app is collecting the payment
+            reference: <PR/Issue/Discussion Links md format text
+      items: *ref_2
+on_init:
+  context: *ref_0
+  message:
+    order: &ref_5
+      items: *ref_2
+      payments: &ref_6
+        type:
+          - code: ON-ORDER
+            description: Payment happens on order placement
+            reference: <PR/Issue/Discussion Links md format text
+          - code: ON-FULFILLMENT
+            description: Payment happens on completion of the service
+            reference: <PR/Issue/Discussion Links md format text
+          - code: POST-FULFILLMENT
+            description: Payment happens post completion of the service
+            reference: <PR/Issue/Discussion Links md format text
+        collected_by: *ref_4
+        status:
+          - code: PAID
+            description: Reflects current status wheteher installment has been paid or not
+            reference: <PR/Issue/Discussion Links md format text
+          - code: NOT-PAID
+            description: Reflects current status wheteher installment has been paid or not
+            reference: <PR/Issue/Discussion Links md format text
+          - code: DEFERRED
+            description: Reflects current payment status when the installment is deferred.
+            reference: <PR/Issue/Discussion Links md format text
+          - code: DELAYED
+            description: Reflects current payment status when the installment is delayed.
+            reference: <PR/Issue/Discussion Links md format text
+        time:
+          label:
+            - code: MISSED_EMI_PAYMENT
+              description: >-
+                Describes, when buyer missed to make a scheduled installment
+                payment.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: FORECLOSURE
+              description: Describes, when buyer initates the foreclose intent.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: PRE_PART_PAYMENT
+              description: Describes, when buyer initates the pre part intent.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: INSTALLMENT
+              description: >-
+                Describes, an amount that a borrower makes over a period of time
+                in order to pay off a loan.
+              reference: <PR/Issue/Discussion Links md format text
+      fulfillments:
+        state:
+          descriptor:
+            code:
+              - code: INITIATED
+                description: When loan gets initiated by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - code: SANCTIONED
+                description: Loan sanction is the approval of the loan by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - code: DISBURSED
+                description: >-
+                  When the lender delivers the amount to the borrower after
+                  verification and approval
+                reference: <PR/Issue/Discussion Links md format text
+              - code: PENDING
+                description: When the loan is in pending state
+                reference: <PR/Issue/Discussion Links md format text
+              - code: REJECTED
+                description: >-
+                  When the loan request gets rejected by lender due to some
+                  reason
+                reference: <PR/Issue/Discussion Links md format text
+              - code: COMPLETED
+                description: When the overall process for loan gets over
+                reference: <PR/Issue/Discussion Links md format text
+      cancellation_terms:
+        fulfillment_state:
+          descriptor:
+            name:
+              - code: INITIATED
+                description: When loan gets initiated by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - code: SANCTIONED
+                description: Loan sanction is the approval of the loan by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - code: DISBURSED
+                description: >-
+                  When the lender delivers the amount to the borrower after
+                  verification and approval
+                reference: <PR/Issue/Discussion Links md format text
+              - code: PENDING
+                description: When the loan is in pending state
+                reference: <PR/Issue/Discussion Links md format text
+              - code: REJECTED
+                description: >-
+                  When the loan request gets rejected by lender due to some
+                  reason
+                reference: <PR/Issue/Discussion Links md format text
+              - code: COMPLETED
+                description: When the overall process for loan gets over
+                reference: <PR/Issue/Discussion Links md format text
+      quote:
+        breakup:
+          title:
+            - code: PRINCIPAL
+              description: Describes the initial sum of money borrowed from a lender.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: INTEREST
+              description: >-
+                Describes the amount need to be paid in addition to principal
+                amount.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: PROCESSING_FEE
+              description: Describes the amount which is charged by the lender.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: INSURANCE_CHARGES
+              description: Describes the insurance charges which is charged by the lender.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: NET_DISBURSED_AMOUNT
+              description: >-
+                Describes the amount of money which is disbursed as final
+                amount.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: OTHER_CHARGES
+              description: Describes the other charges which is charged by the lender.
+              reference: <PR/Issue/Discussion Links md format text
+confirm:
+  context: *ref_0
+  message:
+    order:
+      items: *ref_2
+on_confirm:
+  context: *ref_0
+  message:
+    order: *ref_5
+status:
+  context: *ref_0
+on_status:
+  context: *ref_0
+  message:
+    order: *ref_5
+update:
+  context: *ref_0
+  message:
+    order: &ref_7
+      payments: *ref_6
+      fulfillments:
+        state:
+          descriptor:
+            code:
+              - code: INITIATED
+                description: When loan gets initiated by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - code: SANCTIONED
+                description: Loan sanction is the approval of the loan by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - code: DISBURSED
+                description: >-
+                  When the lender delivers the amount to the borrower after
+                  verification and approval
+                reference: <PR/Issue/Discussion Links md format text
+              - code: PENDING
+                description: When the loan is in pending state
+                reference: <PR/Issue/Discussion Links md format text
+              - code: REJECTED
+                description: >-
+                  When the loan request gets rejected by lender due to some
+                  reason
+                reference: <PR/Issue/Discussion Links md format text
+              - code: COMPLETED
+                description: When the overall process for loan gets over
+                reference: <PR/Issue/Discussion Links md format text
+on_update:
+  context: *ref_0
+  message:
+    order: *ref_7
