@@ -8,8 +8,8 @@
 ### States
 
 - `CREATED`: Draft order.
-- `ACCEPTED`: Order is accepted by BPP. For purchase orders, this means a successful payment.
-- `REJECTED`: Order is rejected by BPP. In most cases this is due to payment failures.
+- `ACCEPTED`: Order is accepted by BPP. This means all validations are done and the buyer app can facilitate payment
+- `REJECTED`: Order is rejected by BPP. This means some validations have failed and the order cannot be accepted
 
 ## Fulfillment
 
@@ -73,8 +73,12 @@ stateDiagram-v2
 
 ### Types
 
-- `EXISTING_MANDATE`
-- `NEW_MANDATE_REGISTRATION`
+- `PRE_FULFILLMENT`
+
+### Modes
+
+- `MANDATE_EXISTING`
+- `MANDATE_REGISTRATION`
 - `NETBANKING`
 - `UPI_COLLECT`
 - `MANDATE_DEBIT`
