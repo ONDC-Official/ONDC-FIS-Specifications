@@ -62,7 +62,7 @@ These naming conventions ensure clear identification and organization of files b
 
 ### Log Verification
 
-#### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis/fis12](https://log-validation.ondc.org/api/validate/fis/fis12) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
+#### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis](https://log-validation.ondc.org/api/validate/fis) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
 
 Available flows are:
 
