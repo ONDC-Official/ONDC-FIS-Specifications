@@ -28,49 +28,30 @@
 
 These naming conventions ensure clear identification and organization of files based on the corresponding API endpoints and their respective calls.
 
-<!-- ### Scenarios -->
+
+### Scenarios
+- **Flow 1(Marine Insurance Application)**
+  The buyer initiates a search for "Marine Insurance" on the Buyer App, compares the available offerings received from the seller app, and selects the desired option. Upon selection, the buyer can proceed to avail the insurance services by submitting all the relevant details/documents and subsequently receives the issued policy.
+
+- **Flow 2(Claim Marine Insurance)**
+  The buyer intends to claim a Marine insurance policy against an existing one. The user journey involves selecting the existing policy for the claim process. Also showcase the changes in the status of the fulfillments once the claim is initiated & processed.
+
+- **Flow 3(Renew Marine Insurance)**
+  Buyer wants to renew a Marine insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to renew marine insurance. 
+
 
 ### Log Verification
 
 #### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis](https://log-validation.ondc.org/api/validate/fis) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
 
 Available flows are:
-- HEALTH
-- MOTOR
 - MARINE
+- MARINE_CLAIM
+- MARINE_RENEW
 
 The payload structure for validation is as follows:
 
-Health:
-```json
-{
-  "domain": "ONDC:FIS13",
-  "version": "2.0.0",
-  "flow": "HEALTH",
-  "payload": {
-    "search_1": {},
-    "on_search_1": {},
-    "search_2": {},
-    "on_search_2": {},
-    "select": {},
-    "on_select": {},
-    "init_1": {},
-    "on_init_1": {},
-    "init_2": {},
-    "on_init_2": {},
-    "status": {},
-    "on_status": {},
-    "init_3": {},
-    "on_init_3": {},
-    "confirm": {},
-    "on_confirm": {},
-    "cancel": {},
-    "on_cancel": {}
-  }
-}
-```
-
-Marine:
+MARINE:
 ```json
 {
   "domain": "ONDC:FIS13",
@@ -91,33 +72,33 @@ Marine:
 }
 ```
 
-Motor:
+CLAIM MARINE:
 ```json
 {
   "domain": "ONDC:FIS13",
   "version": "2.0.0",
-  "flow": "MOTOR",
+  "flow": "MARINE_CLAIM",
   "payload": {
-    "search_1": {},
-    "on_search_1": {},
-    "search_2": {},
-    "on_search_2": {},
-    "select_1": {},
-    "on_select_1": {},
-    "status": {},
-    "on_status": {},
-    "select_2": {},
-    "on_select_2": {},
-    "select_3": {},
-    "on_select_3": {},
-    "init_1": {},
-    "on_init_1": {},
-    "init_2": {},
-    "on_init_2": {},
-    "confirm": {},
     "on_confirm": {},
-    "update": {},
-    "on_update": {}
+    "on_update_unsolicated": {},
+    "status_1": {},
+    "on_status_1": {},
+    "status_2": {},
+    "on_status_2": {}
+  }
+}
+```
+
+RENEW MARINE:
+```json
+{
+  "domain": "ONDC:FIS13",
+  "version": "2.0.0",
+  "flow": "MARINE_RENEW",
+  "payload": {
+    "on_confirm": {},
+    "on_update_unsolicated_1": {},
+    "on_update_unsolicated_2": {},
   }
 }
 ```
