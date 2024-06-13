@@ -45,8 +45,8 @@ These naming conventions ensure clear identification and organization of files b
 
 Available flows are:
 - HEALTH
-- MOTOR
-- MARINE
+- HEALTH_CLAIM
+- HEALTH_RENEW
 
 The payload structure for validation is as follows:
 
@@ -79,54 +79,33 @@ Health:
 }
 ```
 
-Marine:
+CLAIM HEALTH:
 ```json
 {
   "domain": "ONDC:FIS13",
   "version": "2.0.0",
-  "flow": "MARINE",
+  "flow": "HEALTH_CLAIM",
   "payload": {
-    "search": {},
-    "on_search": {},
-    "select_1": {},
-    "on_select_1": {},
-    "select_2": {},
-    "on_select_2": {},
-    "init": {},
-    "on_init": {},
-    "confirm": {},
-    "on_confirm": {}
+    "on_confirm": {},
+    "on_update_unsolicated": {},
+    "status_1": {},
+    "on_status_1": {},
+    "status_2": {},
+    "on_status_2": {}
   }
 }
 ```
 
-Motor:
+RENEW HEALTH:
 ```json
 {
   "domain": "ONDC:FIS13",
   "version": "2.0.0",
-  "flow": "MOTOR",
+  "flow": "HEALTH_RENEW",
   "payload": {
-    "search_1": {},
-    "on_search_1": {},
-    "search_2": {},
-    "on_search_2": {},
-    "select_1": {},
-    "on_select_1": {},
-    "status": {},
-    "on_status": {},
-    "select_2": {},
-    "on_select_2": {},
-    "select_3": {},
-    "on_select_3": {},
-    "init_1": {},
-    "on_init_1": {},
-    "init_2": {},
-    "on_init_2": {},
-    "confirm": {},
     "on_confirm": {},
-    "update": {},
-    "on_update": {}
+    "on_update_unsolicated_1": {},
+    "on_update_unsolicated_2": {},
   }
 }
 ```
