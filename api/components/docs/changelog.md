@@ -12,3 +12,7 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Passing arn details in organization creds
 - Passing pan number in person id
 - Adding 2fa email/mobile details to folio information sent by sellerapp (this is needed by the buyer app to perform 2fa)
+
+#### 20th June, 2024
+- Adding terms of engagement
+- Moving quantity to select call
