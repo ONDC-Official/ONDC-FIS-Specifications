@@ -77,6 +77,8 @@ steps:
             end
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
     reference: if any
     example:
       value:
@@ -95,25 +97,39 @@ steps:
             rect rgb(191, 223, 255)
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-            end 
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
     reference: if any
     example:
       value:
         $ref: "../../examples/health-insurance/on_status/on_status-claim_processing.yaml"
-  - summary: Buyer app seeks the most recent claim status update
-    api: status
-    details:
-      - description: Buyer app requests the insurer to provide the latest status of the health insurance application.
-        mermaid: *status
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/health-insurance/status/status-request-form-ped.yaml"
+  # - summary: Buyer app seeks the most recent claim status update
+  #   api: status
+  #   details:
+  #     - description: Buyer app requests the insurer to provide the latest status of the health insurance application.
+  #       mermaid: *status
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/health-insurance/status/status-request-form-ped.yaml"
   - summary: Insurer provides the buyer with latest update of claim status (Claim Completed)
     api: on_status
     details:
-      - description: Insurer provides the buyer with latest update of the claim status.
-        mermaid: *onStatus
+      - description: Insurer provides the buyer with latest update of the claim status. Status can be fetched by calling the status API or can be received using unsolicited on_status callback
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
     reference: if any
     example:
       value:
