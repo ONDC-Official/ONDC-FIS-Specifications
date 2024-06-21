@@ -28,30 +28,33 @@
 
 These naming conventions ensure clear identification and organization of files based on the corresponding API endpoints and their respective calls.
 
-
 ### Scenarios
+
 - **Flow 1(Marine Insurance Application)**
   The buyer initiates a search for "Marine Insurance" on the Buyer App, compares the available offerings received from the seller app, and selects the desired option. Upon selection, the buyer can proceed to avail the insurance services by submitting all the relevant details/documents and subsequently receives the issued policy.
 
 - **Flow 2(Claim Marine Insurance)**
   The buyer intends to claim a Marine insurance policy against an existing one. The user journey involves selecting the existing policy for the claim process. Also showcase the changes in the status of the fulfillments once the claim is initiated & processed.
 
-- **Flow 3(Renew Marine Insurance)**
-  Buyer wants to renew a Marine insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to renew marine insurance. 
+- **Flow 3(Cancel Marine Insurance)**
 
+  Buyer wants to cancel a Marine insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to cancel Buyer wants to renew a Marine insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to renew marine insurance.
+  insurance.
 
 ### Log Verification
 
 #### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis](https://log-validation.ondc.org/api/validate/fis) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
 
 Available flows are:
+
 - MARINE
 - MARINE_CLAIM
-- MARINE_RENEW
+- MARINE_CANCEL
 
 The payload structure for validation is as follows:
 
 MARINE:
+
 ```json
 {
   "domain": "ONDC:FIS13",
@@ -73,6 +76,7 @@ MARINE:
 ```
 
 CLAIM MARINE:
+
 ```json
 {
   "domain": "ONDC:FIS13",
@@ -89,16 +93,18 @@ CLAIM MARINE:
 }
 ```
 
-RENEW MARINE:
+CANCEL MARINE:
+
 ```json
 {
   "domain": "ONDC:FIS13",
   "version": "2.0.0",
-  "flow": "MARINE_RENEW",
+  "flow": "MARINE_CANCEL",
   "payload": {
     "on_confirm": {},
-    "on_update_unsolicated_1": {},
-    "on_update_unsolicated_2": {},
+    "cancel": {},
+    "on_cancel": {},
+    "on_cancel_unsolicated": {}
   }
 }
 ```
