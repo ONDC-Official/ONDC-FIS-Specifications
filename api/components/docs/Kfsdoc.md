@@ -11,7 +11,7 @@
 |(vi) Annual Percentage Rate - Effective annualized interest rate (in percentage) (computed on net disbursed amount using IRR approach and reducing balance method)    | 17.07%    | ANNUAL_PERCENTAGE_RATE   | loan_info Tag Group   |
 |(vii)  Tenor of the loan (in months/days)    | 24 months    |  TERM   | loan_info Tag Group    |
 | (viii) Repayment frequency by the borrower   | Monthly  | REPAYMENT_FREQUENCY   |loan_info Tag Group  |
-| (ix) Number of instalments of repayment  | 24   | NUMBER_OF_INSTALLMENTS_OF_REPAYMENT |loan_info Tag Group   |
+| (ix) Number of instalments of repayment  | 24   | NUMBER_OF_INSTALLMENTS |loan_info Tag Group   |
 | (x) Amount of each instalment of repayment (in Rupees)   | 970   | INSTALLMENT_AMOUNT  |  loan-info Tag Group   |
 | Details about the contingent charges                  |     |  |     |
 |(xi) Rate of annualized penal charges in case of delayed payments (if any)   | 5%  |  DELAY_PENALTY_FEE  | loan_info Tag Group |

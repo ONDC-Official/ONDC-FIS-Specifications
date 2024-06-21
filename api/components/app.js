@@ -507,22 +507,32 @@ async function checkAttributes(exampleSets, attributes) {
 }
 
 async function iterateTags( examplesTag, attributesTag, example_sets) {
-  //un-comment for error trace
-  //console.log('example_sets', example_sets)
-
-  for (let i = 0; i < examplesTag?.length; i++) {
-    const exampleItem = examplesTag[i];
-    const attributeItem = attributesTag;
-    const { list } = exampleItem;
-    //console.log('dlasjhdlasldjkalsdklahdlahsd', attributeItem, attributesTag)
-    if(attributeItem?.hasOwnProperty(exampleItem?.descriptor?.code)){
-      if (Array.isArray(list)) {
-        await iterateTags(list, attributeItem[exampleItem?.descriptor?.code].list, example_sets)
-      }
-    }else{
-      console.log(`Tag not matched  ${ JSON.stringify(exampleItem?.descriptor)} in ${example_sets}`);
-    }
-  }
+  // for (let i = 0; i < examplesTag?.length; i++) {
+  //   const exampleItem = examplesTag[i];
+  //   const attributeItem = attributesTag;
+  //   const { list } = exampleItem;
+  //   console.log('exampleItem?.descriptor?.code',exampleItem?.descriptor?.code,attributeItem)
+  //   if(attributeItem?.hasOwnProperty(exampleItem?.descriptor?.code)){
+  //     if (Array.isArray(list)) {
+  //       await iterateTags(list, attributeItem[exampleItem?.descriptor?.code].list)
+  //     }
+  //   }else{
+  //     console.log("Tag not matched", exampleItem?.descriptor);
+  //   }
+  // }
+  for (const tags in attributesTag) {
+          //console.log('attributesTag',attributesTag)
+        if(attributesTag[tags]?.required?.toLowerCase() === "mandatory"){
+          const foundItem = examplesTag.find(item => item?.descriptor?.code === tags);
+          if(!foundItem){
+            console.log("Tag not found", tags, 'in', example_sets);
+          }else{
+            //console.log('tag', foundItem, attributesTag[tags])
+            const {list} = foundItem;
+            await iterateTags(list, attributesTag[tags]?.list, example_sets)
+          }
+        }
+  } 
 }
 
 async function comapreObjects(examples, attributes, example_sets) {
