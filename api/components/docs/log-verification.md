@@ -29,28 +29,38 @@
 These naming conventions ensure clear identification and organization of files based on the corresponding API endpoints and their respective calls.
 
 ### Scenarios
+
 - **Flow 1(Health Insurance Application)**
 
   The buyer initiates a search for "Health Insurance" on the Buyer App, compares the available offerings received from the seller app, and selects the desired option. Upon selection, the buyer can proceed to avail the insurance services by submitting all the relevant details/documents and subsequently receives the issued policy.
+
 - **Flow 2(Claim Health Insurance)**
 
   The buyer intends to claim a health insurance policy against an existing one. The user journey involves selecting the existing policy for the claim process. Also showcase the changes in the status of the fulfillments once the claim is initiated & processed.
+
 - **Flow 3(Renew Health Insurance)**
 
-  Buyer wants to renew a health insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to renew health insurance. 
+  Buyer wants to renew a health insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to renew health insurance.
+
+- **Flow 4(Cancel Health Insurance)**
+
+  Buyer wants to cancel a Health insurance policy against an existing policy. Showcase the journey of the user by selecting an existing policy to cancel health insurance.
 
 ### Log Verification
 
 #### To verify your logs, you can use the POST api exposed at [https://log-validation.ondc.org/api/validate/fis](https://log-validation.ondc.org/api/validate/fis) within the [Log Validation Utility](https://github.com/ONDC-Official/log-validation-utility).
 
 Available flows are:
+
 - HEALTH
 - HEALTH_CLAIM
 - HEALTH_RENEW
+- HEALTH_CANCEL
 
 The payload structure for validation is as follows:
 
 Health:
+
 ```json
 {
   "domain": "ONDC:FIS13",
@@ -80,6 +90,7 @@ Health:
 ```
 
 CLAIM HEALTH:
+
 ```json
 {
   "domain": "ONDC:FIS13",
@@ -97,6 +108,7 @@ CLAIM HEALTH:
 ```
 
 RENEW HEALTH:
+
 ```json
 {
   "domain": "ONDC:FIS13",
@@ -105,7 +117,23 @@ RENEW HEALTH:
   "payload": {
     "on_confirm": {},
     "on_update_unsolicated_1": {},
-    "on_update_unsolicated_2": {},
+    "on_update_unsolicated_2": {}
+  }
+}
+```
+
+CANCEL HEALTH:
+
+```json
+{
+  "domain": "ONDC:FIS13",
+  "version": "2.0.0",
+  "flow": "HEALTH_CANCEL",
+  "payload": {
+    "on_confirm": {},
+    "cancel": {},
+    "on_cancel": {},
+    "on_cancel_unsolicated": {}
   }
 }
 ```
