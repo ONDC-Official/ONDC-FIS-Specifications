@@ -63,6 +63,7 @@ flowchart LR
 
 ## Protocol Details
 
+- [Discovery stage is detailed here](./stage-discovery.md)
 - [Order stage is detailed here](./stage-order.md)
 - [Fulfillment stage is detailed here](stage-fulfillment.md)
 - [Order and Payment lifecycle is detailed here](./lifecycle-and-states.md)

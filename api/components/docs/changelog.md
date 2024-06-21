@@ -13,6 +13,7 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Passing pan number in person id
 - Adding 2fa email/mobile details to folio information sent by sellerapp (this is needed by the buyer app to perform 2fa)
 
-#### 20th June, 2024
+#### 21st June, 2024
 - Adding terms of engagement
 - Moving quantity to select call
+- Search: moving incremental pull time into tags (as category may not be the only filter going forward)
