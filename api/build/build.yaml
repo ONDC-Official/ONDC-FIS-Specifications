@@ -2913,13 +2913,13 @@ x-enum:
                 - code: PROCESSING
                   description: Describes if claim application is under processing
                   reference: <PR/Issue/Discussion Links md format text
-                - code: CLAIM_INITIATED
+                - code: INITIATED
                   description: Describes if claim has been initiated
                   reference: <PR/Issue/Discussion Links md format text
-                - code: CLAIM_PROCESSING
+                - code: PROCESSING
                   description: Describes if claim is under process
                   reference: <PR/Issue/Discussion Links md format text
-                - code: CLAIM_PROCESSED
+                - code: PROCESSED
                   description: Describes if claim has been processed
                   reference: <PR/Issue/Discussion Links md format text
                 - code: CLAIM_REJECTED
@@ -3276,7 +3276,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_15
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3354,7 +3354,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_16
             context:
               domain: ONDC:FIS13
               location:
@@ -3532,7 +3532,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_17
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -3588,7 +3588,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_20
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -3735,7 +3735,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_18
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -3789,7 +3789,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_19
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -3948,7 +3948,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_21
             context:
               domain: ONDC:FIS13
               location:
@@ -4083,7 +4083,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_22
             context:
               domain: ONDC:FIS13
               location:
@@ -4268,7 +4268,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_23
             context:
               domain: ONDC:FIS13
               location:
@@ -4799,7 +4799,7 @@ x-flows:
                     id: FULFILMENT_ID
                   - state:
                       descriptor:
-                        code: CLAIM_INITIATED
+                        code: INITIATED
                     type: CLAIM
                     id: FULFILMENT_ID_2
                 items:
@@ -5006,9 +5006,11 @@ x-flows:
                 end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_24
             context:
               domain: ONDC:FIS13
               location:
@@ -5044,7 +5046,9 @@ x-flows:
                 rect rgb(191, 223, 255)
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end 
+                end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
           value:
@@ -5098,7 +5102,7 @@ x-flows:
                     id: FULFILMENT_ID
                   - state:
                       descriptor:
-                        code: CLAIM_PROCESSING
+                        code: PROCESSING
                     type: CLAIM
                     id: FULFILMENT_ID_2
                 items:
@@ -5288,32 +5292,15 @@ x-flows:
                     url: https://abcinsurance.com/renew-policy/
                 created_at: '2023-07-24T05:41:32.487Z'
                 updated_at: '2023-07-24T05:41:32.487Z'
-      - summary: Buyer app seeks the most recent claim status update
-        api: status
-        details:
-          - description: >-
-              Buyer app requests the insurer to provide the latest status of the
-              marine insurance application.
-            mermaid: |-
-              sequenceDiagram
-                title Order Fulfillment
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                end
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value: *ref_15
       - summary: >-
           Insurer provides the buyer with latest update of claim status (Claim
           Completed)
         api: on_status
         details:
-          - description: Insurer provides the buyer with latest update of the claim status.
+          - description: >-
+              Insurer provides the buyer with latest update of the claim status.
+              Status can be fetched by calling the status API or can be received
+              using unsolicited on_status callback
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -5324,7 +5311,9 @@ x-flows:
                 rect rgb(191, 223, 255)
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end 
+                end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
           value:
@@ -5378,7 +5367,7 @@ x-flows:
                     id: FULFILMENT_ID
                   - state:
                       descriptor:
-                        code: CLAIM_PROCESSED
+                        code: PROCESSED
                     type: CLAIM
                     id: FULFILMENT_ID_2
                 items:
@@ -5619,7 +5608,7 @@ x-flows:
                 end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_cancel
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_cancel
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
@@ -5663,7 +5652,7 @@ x-flows:
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_cancel
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_cancel
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
@@ -5903,7 +5892,7 @@ x-flows:
                 created_at: '2023-07-24T05:41:32.487Z'
                 updated_at: '2023-07-24T05:41:32.487Z'
       - summary: Insurer accepts/appends the terms of cancellation
-        api: on_cancel
+        api: on_update
         details:
           - description: >-
               Insurer accepts the terms of cancel request and provides with
@@ -5918,7 +5907,7 @@ x-flows:
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_cancel
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_cancel
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
         reference: if any
@@ -5931,12 +5920,12 @@ x-flows:
                   code: IND
                 city:
                   code: '*'
-              action: on_cancel
+              action: on_update
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
               bpp_id: fis.test.bpp.io
               bpp_uri: https://fis.test.bpp.io/
-              message_id: bce1b181-5a07-49ab-8a3d-b1db9da642fd
+              message_id: 6fd62e92-1b80-45c8-ad14-a5204f86d80c
               timestamp: '2023-07-22T15:01:25.694Z'
               transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
               ttl: PT24M
@@ -6132,43 +6121,43 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_16
+            value: *ref_15
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_17
+            value: *ref_16
       select:
         examples:
           - summary: select-request-aadhar-kyc info
             description: TBD
-            value: *ref_18
+            value: *ref_17
           - summary: select-request-additional-info
             description: TBD
-            value: *ref_19
+            value: *ref_18
       on_select:
         examples:
           - summary: on_select-request-aadhar-kyc
             description: TBD
-            value: *ref_20
+            value: *ref_19
           - summary: on_select-additional-info
             description: TBD
-            value: *ref_21
+            value: *ref_20
       init:
         examples:
           - summary: init-request info
             description: TBD
-            value: *ref_22
+            value: *ref_21
       on_init:
         examples:
           - summary: on_init-request
             description: TBD
-            value: *ref_23
+            value: *ref_22
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_24
+            value: *ref_23
       on_confirm:
         examples:
           - summary: on_confirm
@@ -6178,7 +6167,7 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_15
+            value: *ref_24
       on_status:
         examples:
           - summary: on_status
