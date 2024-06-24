@@ -1,0 +1,127 @@
+summary: Claim Motor Insurance
+details:
+  - description: Detailed process of claiming a Motor Insurance
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+references: if any
+steps:
+  - summary: Insurer confirms the motor insurance order & provides the claim form URL
+    api: on_confirm
+    details:
+      - description: Insurer confirms the motor insurace order and provides the confirmation details along with claim form URL.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255) 
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_confirm/on_confirm-request.yaml" 
+  - summary: Buyer app redirected to claim url page
+    api: redirect
+    details:
+      - description: Buyer app will be redirected to a new page using the link provided in the previous step.
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/form/manual-review.html"
+  - summary: Insurance sends unsolicited update
+    api: on_update
+    details:
+      - description: Insurer sends unsolicited update as the state of the order has been updated.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            rect rgb(191, 223, 255)  
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_update/on_update_claim.yaml"      
+  - summary: Buyer app seeks the most recent claim status update
+    api: status
+    details:
+      - description: Buyer app requests the insurer to provide the latest status of the claim.
+        mermaid: &status >- 
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/status/status_request_1.yaml"
+  - summary: Insurer shares the latest claim status
+    api: on_status
+    details:
+      - description: Insurer provides the buyer with latest update of claim status (Claim Processing).
+        mermaid: &onStatus >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_status/on_status_request_claim_processing.yaml"
+  - summary: Insurer provides the buyer with latest update of claim status (Claim Completed)
+    api: on_status
+    details:
+      - description: Insurer provides the buyer with latest update of the claim status. Status can be fetched by calling the status API or can be received using unsolicited on_status callback
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): status
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/motor-insurance/on_status/on_status_request_claim_processed.yaml"
