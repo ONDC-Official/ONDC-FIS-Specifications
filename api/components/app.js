@@ -392,6 +392,9 @@ const checkKeysExistence = (example, mandatoryRequiredKeys, endPoint) => {
     }
 
     if (isArray) {
+      if(keys.includes("tags")){
+        continue;
+      }
       handleIfObjectIsArray(currentKeys, currentObj, endPoint);
     }
   }
@@ -483,7 +486,10 @@ async function checkAttributes(exampleSets, attributes) {
               if(attribute_set[example_sets]){
                 const currentAttribute = attribute_set[example_sets]
                   // if(example_sets == "on_init")
-                await comapreObjects(example?.value, currentAttribute, example_sets)
+                // if(example_sets === "search"){
+                  await comapreObjects(example?.value, currentAttribute, example_sets)
+                // } 
+                
               }else{
                 console.log(`attribute not found for ${example_sets}`)
               }
@@ -501,11 +507,31 @@ async function checkAttributes(exampleSets, attributes) {
      } 
 }
 
+async function iterateTags( examplesTag, attributesTag, example_sets) {
+  for (const tags in attributesTag) {
+          //console.log('attributesTag',attributesTag)
+        if(attributesTag[tags]?.required?.toLowerCase() === "mandatory"){
+          const foundItem = examplesTag.find(item => item?.descriptor?.code === tags);
+          if(!foundItem){
+            console.log("Tag not found", tags, 'in', example_sets);
+          }else{
+            //console.log('tag', foundItem, attributesTag[tags])
+            const {list} = foundItem;
+            await iterateTags(list, attributesTag[tags]?.list, example_sets)
+          }
+        }
+  } 
+}
+
 async function comapreObjects(examples, attributes, example_sets) {
   for (const key in examples) {
     //un-commnet this if key is not found
     //console.log('key', key, examples[key])
-    if (key !== "tags")
+    if(key == "tags"){
+      if (Array.isArray(examples[key])) {
+        await iterateTags(examples[key], attributes[key], example_sets);
+      }
+    }else{
       if (
         typeof examples[key] === "object" &&
         typeof attributes[key] === "object"
@@ -529,6 +555,7 @@ async function comapreObjects(examples, attributes, example_sets) {
       } else if (!attributes.hasOwnProperty(key)) {
         console.log(`keys not found, ${key} in  ${example_sets}`);
       }
+    }
   }
 }
 function cleanup() {
