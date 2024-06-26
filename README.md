@@ -33,11 +33,14 @@ This would be possible in the financial service domain by making sure all financ
 ## Enabled/Supported use cases on network
 
 * Complete credit use case for Personal-loan.
+* Personal Loan: Without Account Aggregator
 * Loan Foreclosure
 * Pre-Part Payment
 * Missed-EMI Payment
 * Form Status for application/html
 * Form Status for text/html
+* Purchase Finance
+* Purchase Finance: Without Account Aggregator
 
 ## Working with Protocol
 
