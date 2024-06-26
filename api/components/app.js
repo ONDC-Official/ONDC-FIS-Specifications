@@ -506,19 +506,33 @@ async function checkAttributes(exampleSets, attributes) {
      } 
 }
 
-async function iterateTags( examplesTag, attributesTag) {
-  for (let i = 0; i < examplesTag?.length; i++) {
-    const exampleItem = examplesTag[i];
-    const attributeItem = attributesTag;
-    const { list } = exampleItem;
-    if(attributeItem.hasOwnProperty(exampleItem?.descriptor?.code)){
-      if (Array.isArray(list)) {
-        await iterateTags(list, attributeItem[exampleItem?.descriptor?.code].list)
-      }
-    }else{
-      console.log("Tag not matched", exampleItem?.descriptor);
-    }
-  }
+async function iterateTags( examplesTag, attributesTag, example_sets) {
+  // for (let i = 0; i < examplesTag?.length; i++) {
+  //   const exampleItem = examplesTag[i];
+  //   const attributeItem = attributesTag;
+  //   const { list } = exampleItem;
+  //   console.log('exampleItem?.descriptor?.code',exampleItem?.descriptor?.code,attributeItem)
+  //   if(attributeItem?.hasOwnProperty(exampleItem?.descriptor?.code)){
+  //     if (Array.isArray(list)) {
+  //       await iterateTags(list, attributeItem[exampleItem?.descriptor?.code].list)
+  //     }
+  //   }else{
+  //     console.log("Tag not matched", exampleItem?.descriptor);
+  //   }
+  // }
+  for (const tags in attributesTag) {
+          //console.log('attributesTag',attributesTag)
+        if(attributesTag[tags]?.required?.toLowerCase() === "mandatory"){
+          const foundItem = examplesTag.find(item => item?.descriptor?.code === tags);
+          if(!foundItem){
+            console.log("Tag not found", tags, 'in', example_sets);
+          }else{
+            //console.log('tag', foundItem, attributesTag[tags])
+            const {list} = foundItem;
+            await iterateTags(list, attributesTag[tags]?.list, example_sets)
+          }
+        }
+  } 
 }
 
 async function comapreObjects(examples, attributes, example_sets) {
@@ -527,7 +541,7 @@ async function comapreObjects(examples, attributes, example_sets) {
     //console.log('key', key, examples[key])
     if(key == "tags"){
       if (Array.isArray(examples[key])) {
-        await iterateTags(examples[key], attributes[key]);
+        await iterateTags(examples[key], attributes[key], example_sets);
       }
     }else{
       if (
