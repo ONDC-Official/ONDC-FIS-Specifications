@@ -10,6 +10,7 @@
 - `CREATED`: Draft order.
 - `ACCEPTED`: Order is accepted by BPP. This means all validations are done and the buyer app can facilitate payment
 - `REJECTED`: Order is rejected by BPP. This means some validations have failed and the order cannot be accepted
+- `CANCELLED`: Order is cancelled either by BAP or BPP. This means for sip order, no more instalments will be generated
 
 ## Fulfillment
 

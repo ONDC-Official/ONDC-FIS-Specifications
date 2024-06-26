@@ -17,3 +17,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Adding terms of engagement
 - Moving quantity to select call
 - Search: moving incremental pull time into tags (as category may not be the only filter going forward)
+- Cancel: adding cancellation reasons enums and changing status of order to `CANCELLED` for cancelled sip orders
