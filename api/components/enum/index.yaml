@@ -1,0 +1,72 @@
+search:
+  context: &context
+    $ref: "./context.yaml"
+  message:
+    intent:
+      category: &category
+          $ref: './category.yaml'
+on_search:
+  context: *context
+  message:
+    catalog:
+      providers:
+        items: &item
+          $ref: "./item.yaml"
+        categories: *category
+select:
+  context: *context
+  message:
+    order: &order
+      items: *item
+on_select:
+  context: *context
+  message:
+    order: *order
+init:
+  context: *context
+  message:
+    order: 
+      payments:
+        collected_by:
+          $ref: "./payment.yaml#/collected_by"
+      items: *item
+on_init:
+  context: *context
+  message:
+    order: &order
+      items: *item
+      payments: &payment
+        $ref: "./payment.yaml"
+      fulfillments: &fulfillment
+        $ref: "./Fulfillment.yaml"
+      cancellation_terms: &cancellation_terms
+        $ref: "./cancellation_terms.yaml"
+      quote: 
+        $ref: "./quote.yaml"  
+confirm:
+  context: *context
+  message:
+    order:
+      items: *item
+on_confirm:
+  context: *context
+  message:
+    order: *order
+status:
+  context: *context
+on_status:
+  context: *context
+  message:
+    order: *order
+update:
+  context: *context
+  message:
+    order: &order
+      payments: &payment
+        $ref: "./payment.yaml"
+      fulfillments: &fulfillment
+        $ref: "./fulfillment.yaml"
+on_update:
+  context: *context
+  message:
+    order: *order
