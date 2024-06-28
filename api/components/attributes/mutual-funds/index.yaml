@@ -694,8 +694,74 @@ on_select:
         usage: 'PURCHASE'
         description: Type of order being placed
       provider: *provider
-      items: *items_input
-      fulfillments: *fulfillments
+      items: &items_output
+        <<: *items_input
+        tags:
+          _description:
+            required: mandatory
+            type: array
+            owner: BAP/BPP
+            usage: '--'
+            description: Label for tag group              
+          display:
+            required: mandatory
+            type: boolean
+            owner: BAP/BPP
+            usage: true
+            description: True if BAP has to display the tag content
+          descriptor:
+            _description:
+              required: mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: Label for tag group              
+            name:
+              required: mandatory
+              type: string
+              owner: BAP/BPP
+              usage: BPP TERMS OF ENGAGEMENT
+              description: Name of the tag group
+            code:
+              required: mandatory
+              type: string
+              owner: BAP/BPP
+              usage: BPP_TERMS
+              description: Code of the tag group
+      fulfillments:
+        <<: *fulfillments
+        tags:
+          _description:
+            required: mandatory
+            type: array
+            owner: BAP/BPP
+            usage: '--'
+            description: Label for tag group              
+          display:
+            required: mandatory
+            type: boolean
+            owner: BAP/BPP
+            usage: true
+            description: True if BAP has to display the tag content
+          descriptor:
+            _description:
+              required: mandatory
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: Label for tag group              
+            name:
+              required: mandatory
+              type: string
+              owner: BAP/BPP
+              usage: BPP TERMS OF ENGAGEMENT
+              description: Name of the tag group
+            code:
+              required: mandatory
+              type: string
+              owner: BAP/BPP
+              usage: BPP_TERMS
+              description: Code of the tag group
       xinput:
         _description:
           required: optional
@@ -1103,8 +1169,41 @@ on_init:
         owner: BAP
         usage: 'PURCHASE'
         description: Type of order being placed
-      items: *items_input
-      fulfillments: *fulfillments_with_2fa
+      items: *items_output
+      fulfillments: &fulfillments_with_2fa_output
+        <<: *fulfillments_with_2fa
+        tags:
+          _description:
+            required: optional
+            type: array
+            owner: BAP/BPP
+            usage: '--'
+            description: Label for tag group              
+          display:
+            required: optional
+            type: boolean
+            owner: BAP/BPP
+            usage: true
+            description: True if BAP has to display the tag content
+          descriptor:
+            _description:
+              required: optional
+              type: object
+              owner: BAP/BPP
+              usage: '--'
+              description: Label for tag group              
+            name:
+              required: optional
+              type: string
+              owner: BAP/BPP
+              usage: BPP TERMS OF ENGAGEMENT
+              description: Name of the tag group
+            code:
+              required: optional
+              type: string
+              owner: BAP/BPP
+              usage: BPP_TERMS
+              description: Code of the tag group
       xinput: *xinput_w_submission_id
       payments: &payments_with_url
         <<: *payments_with_source_bank
@@ -1248,8 +1347,8 @@ on_confirm:
         owner: BAP
         usage: 'PURCHASE'
         description: Type of order being placed
-      items: *items_input
-      fulfillments: *fulfillments_with_2fa
+      items: *items_output
+      fulfillments: *fulfillments_with_2fa_output
       xinput: *xinput_w_submission_id
       payments: *payments_with_url
       documents: *tnc_docs
@@ -1326,24 +1425,8 @@ on_status:
         owner: BAP
         usage: 'PURCHASE'
         description: Type of order being placed
-      items: *items_input
-      fulfillments:
-        <<: *fulfillments
-        customer:
-          <<: *customer_select
-          contact:
-            _description:
-              required: optional
-              type: object
-              owner: BAP
-              usage: '--'
-              description: Customer contact information on which 2fa is done
-            phone:
-              required: optional
-              type: string
-              owner: BAP
-              usage: '9916587487'
-              description: Phone number of the customer on which 2fa is done
+      items: *items_output
+      fulfillments: *fulfillments_with_2fa_output
       xinput: *xinput_w_submission_id
       payments: *payments_with_url
       documents: *tnc_docs
@@ -1394,24 +1477,8 @@ on_cancel:
         owner: BAP
         usage: 'PURCHASE'
         description: Type of order being placed
-      items: *items_input
-      fulfillments:
-        <<: *fulfillments
-        customer:
-          <<: *customer_select
-          contact:
-            _description:
-              required: optional
-              type: object
-              owner: BAP
-              usage: '--'
-              description: Customer contact information on which 2fa is done
-            phone:
-              required: optional
-              type: string
-              owner: BAP
-              usage: '9916587487'
-              description: Phone number of the customer on which 2fa is done
+      items: *items_output
+      fulfillments: *fulfillments_with_2fa_output
       xinput: *xinput_w_submission_id
       payments: *payments_with_url
       documents: *tnc_docs
