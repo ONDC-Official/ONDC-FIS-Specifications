@@ -81,7 +81,9 @@ stateDiagram-v2
 - `MANDATE_EXISTING`
 - `MANDATE_REGISTRATION`
 - `NETBANKING`
-- `UPI_COLLECT`
+- `UPI_PG` (upi payment through pg link)
+- `UPI_URI` (upi payment through intent/qr via upi uri)
+- `UPI_COLLECT` (upi payment through collect request)
 - `MANDATE_DEBIT`
 
 ### States
