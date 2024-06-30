@@ -22,7 +22,7 @@ For recurring orders, seller app creates a new order for every instalment and it
 sequenceDiagram
     participant bap AS Distributor
     participant bpp AS AMC/Aggregator
-    bpp ->> bap: `/on_status` w/ child order in `ACCEPTED` state
+    bpp ->> bap: `/on_confirm` w/ child order in `ACCEPTED` state
 
     rect rgb(191, 223, 255)
     alt payment successful
