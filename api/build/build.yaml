@@ -1889,6 +1889,13 @@ components:
                   specified in this object.
                 type: string
                 format: uri
+              old_policy_doc:
+                description: >-
+                  The URL from where the form can be fetched. The content
+                  fetched from the url must be processed as per the mime_type
+                  specified in this object.
+                type: string
+                format: uri
         refund_terms:
           description: Refund terms of this item
           type: array
@@ -2969,10 +2976,13 @@ x-enum:
                   reference: <PR/Issue/Discussion Links md format text
           type:
             - code: RENEWAL
-              description: Describes if fulfilment type.
+              description: Describes the fulfilment type.
               reference: <PR/Issue/Discussion Links md format text
             - code: CLAIM
-              description: Describes if fulfilment type.
+              description: Describes the fulfilment type.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: POLICY
+              description: Describes the fulfilment type.
               reference: <PR/Issue/Discussion Links md format text
         payments: *ref_4
         documents: &ref_7
@@ -3197,7 +3207,7 @@ x-tags:
                     description: Date when invoice has been generated
                     reference: <PR/Issue/Discussion Links md format text>
           payments: *ref_9
-  on_select: &ref_12
+  on_select:
     message:
       order:
         items: *ref_10
@@ -3205,39 +3215,33 @@ x-tags:
     message:
       order:
         payments: *ref_9
-  on_init:
+  on_init: &ref_11
     message:
       order:
         items: *ref_10
         payments: *ref_9
-  confirm: &ref_11
+  confirm: *ref_11
+  on_confirm: *ref_11
+  on_status: &ref_12
     message:
       order:
         items: *ref_10
         fulfillments:
-          customer:
-            person:
-              tags:
-                - code: PERSON_ADDITIONAL_DETAILS
-                  description: Describes the additional details of the buyer
+          tags:
+            - code: INFO
+              description: Describes the additional info
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: REQUESTED_CLAIM_AMOUNT
+                  description: Describes the requested cliam amount.
                   reference: <PR/Issue/Discussion Links md format text>
-                  list:
-                    - code: POLITICALLY_EXPOSED_PERSON
-                      description: >-
-                        A "Politically Exposed Person" (PEP) refers to an
-                        individual who holds, or has held, a prominent public
-                        position or political office, both domestically and
-                        internationally
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: GSTIN
-                      description: >-
-                        GSTIN stands for Goods and Services Tax Identification
-                        Number. It is a unique 15-digit alphanumeric code
-                        assigned to businesses and individuals registered under
-                        the Goods and Services Tax (GST) system in India
-                      reference: <PR/Issue/Discussion Links md format text>
-  on_confirm: *ref_11
-  on_status: *ref_11
+                - code: APPROVED_CLAIM_AMOUNT
+                  description: Describes the approved cliam amount.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: REF_ID
+                  description: Describes the reference id.
+                  reference: <PR/Issue/Discussion Links md format text>
+        payments: *ref_9
   on_cancel: *ref_12
   on_update: *ref_12
 x-flows:
@@ -4879,6 +4883,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - category_ids:
                       - C1
@@ -5225,6 +5230,8 @@ x-flows:
                         phone: +91-9999999999
                       person:
                         name: Joe Adam
+                    type: POLICY
+                    id: F1
                 items:
                   - add_ons:
                       - id: A1
@@ -5337,6 +5344,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - category_ids:
                       - C1
@@ -5645,7 +5653,10 @@ x-flows:
                       contact:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
+                      person:
+                        name: Joe Adam
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: A1
@@ -5792,6 +5803,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: C1
@@ -6530,7 +6542,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK       
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_28
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -6569,7 +6581,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_33
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -6945,7 +6957,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_32
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -7141,7 +7153,7 @@ x-flows:
                 end    
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_31
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -7320,7 +7332,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): init
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_30
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -7529,7 +7541,7 @@ x-flows:
         reference: if any
         example:
           value: This will redirected to different html page
-      - summary: Insurance sends unsolicited update
+      - summary: Insurer sends unsolicited update
         api: on_update
         details:
           - description: >-
@@ -7581,6 +7593,14 @@ x-flows:
                       descriptor:
                         code: INITIATED
                     type: CLAIM
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
                     customer:
                       contact:
                         email: joe.adam@abc.org
@@ -7795,30 +7815,30 @@ x-flows:
                   - external_ref:
                       mimetype: text/html,
                       url: https://fis.test.bpp.io/cancellation-terms
-      - summary: Buyer app seeks the most recent claim status update
-        api: status
+      - summary: Insurer sends unsolicited update
+        api: on_update
         details:
           - description: >-
-              Buyer app requests the insurer to provide the latest status of the
-              claim.
+              Insurer sends unsolicited update as the state of the order has
+              been updated.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)  
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value:
             context:
-              action: status
+              action: on_update
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
               bpp_id: fis.test.bpp.io
@@ -7829,66 +7849,64 @@ x-flows:
                   code: IND
                 city:
                   code: '*'
-              message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
-              timestamp: '2023-07-24T05:41:47.097Z'
-              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
-              ttl: PT10M
-              version: 2.0.0
-            message:
-              order_id: POLICY_ID
-      - summary: Insurer shares the latest claim status
-        api: on_status
-        details:
-          - description: >-
-              Insurer provides the buyer with latest update of claim status
-              (Claim Processing).
-            mermaid: |-
-              sequenceDiagram
-                title Order Fulfillment
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value: &ref_30
-            context:
-              action: on_status
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: ONDC:FIS13
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
-              timestamp: '2023-07-24T05:42:00.067Z'
+              message_id: 75e46164-0ea6-4974-b641-5322d5147deb
+              timestamp: '2023-07-24T05:43:20.910Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
               ttl: PT24H
               version: 2.0.0
             message:
               order:
-                id: POLICY_ID
+                fulfillments:
+                  - state:
+                      descriptor:
+                        code: GRANTED
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9999999999
+                    id: F1
+                    type: POLICY
+                  - state:
+                      descriptor:
+                        code: PROCESSING
+                    type: CLAIM
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
+                          - descriptor:
+                              code: APPROVED_CLAIM_AMOUNT
+                            value: 90000 INR
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9667788867
+                    id: F2
                 items:
-                  - category_ids:
+                  - add_ons:
+                      - id: A1
+                        descriptor:
+                          code: NO_CLAIM_BONUS
+                          name: No Claim Bonus
+                        quantity:
+                          selected:
+                            count: 1
+                        price:
+                          value: '100'
+                          currency: INR
+                    category_ids:
                       - C1
                       - C3
                     descriptor:
-                      name: Health Gain Plus Individual
+                      name: ABC Individaul Health Insurance Policy
                       short_desc: >-
                         ABC Individaul Health Insurance Class A with custom
                         addon
-                    id: CHILD_ITEM_ID_I1
-                    parent_item_id: I1
+                    id: I1
                     fulfillment_ids:
                       - F1
                       - F2
@@ -7939,78 +7957,7 @@ x-flows:
                     time:
                       duration: P1Y
                       label: TENURE
-                    add_ons:
-                      - id: A1
-                        quantity:
-                          selected:
-                            count: 1
-                        descriptor:
-                          name: No Claim Bonus
-                          code: NO_CLAIM_BONUS
-                        price:
-                          value: '100'
-                          currency: INR
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
-                    id: F1
-                  - state:
-                      descriptor:
-                        code: PROCESSING
-                    type: CLAIM
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9667788867
-                    id: F2
-                provider:
-                  descriptor:
-                    long_desc: >-
-                      ABC Insurance Ltd. Deals in multiple Insurance Services
-                      like Health, Motor, Marine etc
-                    name: ABC Insurance Ltd.
-                    short_desc: 'ABC Insurance Ltd. India '
-                    images:
-                      - url: >-
-                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                        size_type: xs
-                  id: P1
-                quote:
-                  id: OFFER_ID/PROPOSAL_ID
-                  breakup:
-                    - price:
-                        value: '900'
-                        currency: INR
-                      title: BASE_PRICE
-                    - price:
-                        value: '50'
-                        currency: INR
-                      title: CONVIENCE_FEE
-                    - price:
-                        value: '40'
-                        currency: INR
-                      title: TAX
-                    - price:
-                        value: '10'
-                        currency: INR
-                      title: PROCESSING_FEE
-                    - title: ADD_ONS
-                      item:
-                        id: I1
-                        add_ons:
-                          - id: A1
-                      price:
-                        value: '100'
-                        currency: INR
-                  price:
-                    currency: INR
-                    value: '1100'
-                  ttl: PT15D
+                id: POLICY_ID
                 payments:
                   - collected_by: BPP
                     params:
@@ -8056,8 +8003,56 @@ x-flows:
                               code: SETTLEMENT_AMOUNT
                             value: '400'
                           - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
                               code: OFFLINE_CONTRACT
                             value: 'true'
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: xs
+                  id: P1
+                quote:
+                  id: OFFER_ID/PROPOSAL_ID
+                  breakup:
+                    - price:
+                        value: '900'
+                        currency: INR
+                      title: BASE_PRICE
+                    - price:
+                        value: '50'
+                        currency: INR
+                      title: CONVIENCE_FEE
+                    - price:
+                        value: '40'
+                        currency: INR
+                      title: TAX
+                    - price:
+                        value: '10'
+                        currency: INR
+                      title: PROCESSING_FEE
+                    - title: ADD_ONS
+                      item:
+                        id: CHILD_ITEM_ID_I1
+                        add_ons:
+                          - id: A1
+                      price:
+                        value: '100'
+                        currency: INR
+                  price:
+                    currency: INR
+                    value: '1100'
                 status: ACTIVE
                 documents:
                   - descriptor:
@@ -8094,13 +8089,13 @@ x-flows:
                         visiting the following URL
                     mime_type: application/html
                     url: https://abcinsurance.com/renew-policy/
+                created_at: '2023-07-24T05:41:32.487Z'
+                updated_at: '2023-07-24T05:43:08.910Z'
                 cancellation_terms:
                   - external_ref:
                       mimetype: text/html,
                       url: https://fis.test.bpp.io/cancellation-terms
-      - summary: >-
-          Insurer provides the buyer with latest update of claim status (Claim
-          Completed)
+      - summary: Insurer provides the buyer with latest update of claim status
         api: on_status
         details:
           - description: >-
@@ -8112,17 +8107,18 @@ x-flows:
                 title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                rect rgb(191, 223, 255)
+                rect rgb(191, 223, 255)  
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_29
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -8152,10 +8148,22 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                   - state:
                       descriptor:
                         code: PROCESSED
                     type: CLAIM
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
+                          - descriptor:
+                              code: APPROVED_CLAIM_AMOUNT
+                            value: 90000 INR
                     customer:
                       contact:
                         email: joe.adam@abc.org
@@ -8363,6 +8371,289 @@ x-flows:
                   - external_ref:
                       mimetype: text/html,
                       url: https://fis.test.bpp.io/cancellation-terms
+      - summary: Insurer sends unsolicited update
+        api: on_update
+        details:
+          - description: >-
+              Insurer sends unsolicited update as the state of the order has
+              been updated.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                rect rgb(191, 223, 255)  
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_update
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: 5e026ee7-d32b-4a7e-b78d-0b32ac8cbe9a
+              timestamp: '2023-07-24T05:43:30.910Z'
+              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                fulfillments:
+                  - state:
+                      descriptor:
+                        code: GRANTED
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9999999999
+                    id: F1
+                    type: POLICY
+                  - state:
+                      descriptor:
+                        code: PROCESSED
+                    type: CLAIM
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
+                          - descriptor:
+                              code: APPROVED_CLAIM_AMOUNT
+                            value: 90000 INR
+                          - descriptor:
+                              code: REF_ID
+                            value: d9bf1b85-7974
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9667788867
+                    id: F2
+                items:
+                  - add_ons:
+                      - id: A1
+                        descriptor:
+                          code: NO_CLAIM_BONUS
+                          name: No Claim Bonus
+                        quantity:
+                          selected:
+                            count: 1
+                        price:
+                          value: '100'
+                          currency: INR
+                    category_ids:
+                      - C1
+                      - C3
+                    descriptor:
+                      name: ABC Individaul Health Insurance Policy
+                      short_desc: >-
+                        ABC Individaul Health Insurance Class A with custom
+                        addon
+                    id: I1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    price:
+                      currency: INR
+                      value: '900'
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: COVERAGE_AMOUNT
+                            value: '10000000'
+                          - descriptor:
+                              code: CO_PAYMENT
+                            value: 'Yes'
+                          - descriptor:
+                              code: ROOM_RENT_CAP
+                            value: '25000'
+                          - descriptor:
+                              code: RESTORATION_BENEFIT
+                            value: 'No'
+                          - descriptor:
+                              code: CLAIM_SETTLEMENT_RATIO
+                            value: '0.8'
+                          - descriptor:
+                              code: PRE_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '2'
+                          - descriptor:
+                              code: POST_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '5'
+                          - descriptor:
+                              code: MATERNITY_COVERAGE
+                            value: 'Yes'
+                          - descriptor:
+                              code: INITIAL_WAITING_PERIOD
+                            value: 'No'
+                          - descriptor:
+                              code: CASHLESS_HOSPITALS
+                            value: '50'
+                          - descriptor:
+                              code: ROOM_CATEGORY
+                            value: Deluxe
+                          - descriptor:
+                              code: PROPOSAL_ID
+                            value: PROPOSAL_ID
+                    time:
+                      duration: P1Y
+                      label: TENURE
+                id: POLICY_ID
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '1100'
+                      bank_account_number: '1800002341'
+                      bank_code: SBIN0001234
+                      currency: INR
+                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+                    status: PAID
+                    type: PRE-ORDER
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: xs
+                  id: P1
+                quote:
+                  id: OFFER_ID/PROPOSAL_ID
+                  breakup:
+                    - price:
+                        value: '900'
+                        currency: INR
+                      title: BASE_PRICE
+                    - price:
+                        value: '50'
+                        currency: INR
+                      title: CONVIENCE_FEE
+                    - price:
+                        value: '40'
+                        currency: INR
+                      title: TAX
+                    - price:
+                        value: '10'
+                        currency: INR
+                      title: PROCESSING_FEE
+                    - title: ADD_ONS
+                      item:
+                        id: CHILD_ITEM_ID_I1
+                        add_ons:
+                          - id: A1
+                      price:
+                        value: '100'
+                        currency: INR
+                  price:
+                    currency: INR
+                    value: '1100'
+                status: ACTIVE
+                documents:
+                  - descriptor:
+                      code: POLICY_DOC
+                      name: Insurance Policy Document
+                      short_desc: Download your digitally signed policy document here
+                      long_desc: >-
+                        Download you digitally signed policy document here. This
+                        document is password protected. To open this document,
+                        please type in your password in DDMMMYYYYXXXX format
+                        where DDMMMYYYY represents your date of birth, and XXXX
+                        represents the first four letters of your name
+                    mime_type: application/pdf
+                    url: https://abcinsurance.com/policies/O1.pdf
+                  - descriptor:
+                      code: CLAIM_DOC
+                      name: Claim Insurance Policy
+                      short_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/claim-policy/
+                  - descriptor:
+                      code: RENEW_DOC
+                      name: Renew Insurance Policy
+                      short_desc: >-
+                        Buyer can renew their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can easily renew their insurance policies by
+                        visiting the following URL
+                    mime_type: application/html
+                    url: https://abcinsurance.com/renew-policy/
+                created_at: '2023-07-24T05:41:32.487Z'
+                updated_at: '2023-07-24T05:43:08.910Z'
+                cancellation_terms:
+                  - external_ref:
+                      mimetype: text/html,
+                      url: https://fis.test.bpp.io/cancellation-terms
   - summary: Renew Health Insurance
     details:
       - description: Detailed process of renewing a Health Insurance
@@ -8392,10 +8683,10 @@ x-flows:
                 title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
+                rect rgb(191, 223, 255)  
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
@@ -8410,10 +8701,12 @@ x-flows:
         reference: if any
         example:
           value: This will redirected to different html page
-      - summary: Buyer app sends unsolicated update
+      - summary: Buyer app sends unsolicated on_update
         api: on_update
         details:
-          - description: Buyer app sends unsolicated update with payment link.
+          - description: >-
+              Buyer app sends unsolicated on_update with updated fulfillment
+              state & payment status.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
@@ -8421,10 +8714,10 @@ x-flows:
                 participant Insurer Platform (BPP)
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                rect rgb(191, 223, 255)  
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_27
@@ -8456,6 +8749,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                   - state:
                       descriptor:
                         code: INITIATED
@@ -8591,338 +8885,8 @@ x-flows:
                               code: OFFLINE_CONTRACT
                             value: 'true'
                   - collected_by: BPP
-                    url: >-
-                      https://www.abcinsurance.com/pg-gateway/payment?amount=1100&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
                     params:
                       amount: '1100'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                    status: NOT-PAID
-                    type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                provider:
-                  descriptor:
-                    long_desc: >-
-                      ABC Insurance Ltd. Deals in multiple Insurance Services
-                      like Health, Motor, Marine etc
-                    name: ABC Insurance Ltd.
-                    short_desc: 'ABC Insurance Ltd. India '
-                    images:
-                      - url: >-
-                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
-                        size_type: xs
-                  id: P1
-                quote:
-                  id: OFFER_ID/PROPOSAL_ID
-                  breakup:
-                    - price:
-                        value: '900'
-                        currency: INR
-                      title: BASE_PRICE
-                    - price:
-                        value: '50'
-                        currency: INR
-                      title: CONVIENCE_FEE
-                    - price:
-                        value: '40'
-                        currency: INR
-                      title: TAX
-                    - price:
-                        value: '10'
-                        currency: INR
-                      title: PROCESSING_FEE
-                    - title: ADD_ONS
-                      item:
-                        id: CHILD_ITEM_ID_I1
-                        add_ons:
-                          - id: A1
-                      price:
-                        value: '100'
-                        currency: INR
-                  price:
-                    currency: INR
-                    value: '1100'
-                status: ACTIVE
-                documents:
-                  - descriptor:
-                      code: POLICY_DOC
-                      name: Insurance Policy Document
-                      short_desc: Download your digitally signed policy document here
-                      long_desc: >-
-                        Download you digitally signed policy document here. This
-                        document is password protected. To open this document,
-                        please type in your password in DDMMMYYYYXXXX format
-                        where DDMMMYYYY represents your date of birth, and XXXX
-                        represents the first four letters of your name
-                    mime_type: application/pdf
-                    url: https://abcinsurance.com/policies/O1.pdf
-                  - descriptor:
-                      code: CLAIM_DOC
-                      name: Claim Insurance Policy
-                      short_desc: >-
-                        Buyer can claim their insurance by visiting the below
-                        url
-                      long_desc: >-
-                        Buyer can claim their insurance by visiting the below
-                        url
-                    mime_type: application/html
-                    url: https://abcinsurance.com/claim-policy/
-                  - descriptor:
-                      code: RENEW_DOC
-                      name: Renew Insurance Policy
-                      short_desc: >-
-                        Buyer can renew their insurance by visiting the below
-                        url
-                      long_desc: >-
-                        Buyer can easily renew their insurance policies by
-                        visiting the following URL
-                    mime_type: application/html
-                    url: https://abcinsurance.com/renew-policy/
-                created_at: '2023-07-24T05:41:32.487Z'
-                updated_at: '2023-07-24T05:43:08.910Z'
-                cancellation_terms:
-                  - external_ref:
-                      mimetype: text/html,
-                      url: https://fis.test.bpp.io/cancellation-terms
-      - summary: Buyer app redirected to payment url
-        api: redirect
-        details:
-          - description: >-
-              Buyer app redirected to payment url using the link provided in the
-              previous step.
-        reference: if any
-        example:
-          value: This will redirected to different html page
-      - summary: Buyer app sends unsolicated update
-        api: on_update
-        details:
-          - description: >-
-              Buyer app sends unsolicated update with updated payment
-              information.
-            mermaid: |-
-              sequenceDiagram
-                title Order Fulfillment
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value:
-            context:
-              action: on_update
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: ONDC:FIS13
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              message_id: 6c7121e2-e137-473f-ba96-809b62019f43
-              timestamp: '2023-07-24T05:43:08.910Z'
-              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
-              ttl: PT24H
-              version: 2.0.0
-            message:
-              order:
-                fulfillments:
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9999999999
-                    id: F1
-                  - state:
-                      descriptor:
-                        code: GRANTED
-                    type: RENEWAL
-                    customer:
-                      contact:
-                        email: joe.adam@abc.org
-                        phone: +91-9667788867
-                    id: F2
-                items:
-                  - add_ons:
-                      - id: A1
-                        descriptor:
-                          code: NO_CLAIM_BONUS
-                          name: No Claim Bonus
-                        quantity:
-                          selected:
-                            count: 1
-                        price:
-                          value: '100'
-                          currency: INR
-                    category_ids:
-                      - C1
-                      - C3
-                    descriptor:
-                      name: ABC Individaul Health Insurance Policy
-                      short_desc: >-
-                        ABC Individaul Health Insurance Class A with custom
-                        addon
-                    id: I1
-                    fulfillment_ids:
-                      - F1
-                      - F2
-                    price:
-                      currency: INR
-                      value: '900'
-                    tags:
-                      - descriptor:
-                          name: General Information
-                          code: GENERAL_INFO
-                        list:
-                          - descriptor:
-                              code: COVERAGE_AMOUNT
-                            value: '10000000'
-                          - descriptor:
-                              code: CO_PAYMENT
-                            value: 'Yes'
-                          - descriptor:
-                              code: ROOM_RENT_CAP
-                            value: '25000'
-                          - descriptor:
-                              code: RESTORATION_BENEFIT
-                            value: 'No'
-                          - descriptor:
-                              code: CLAIM_SETTLEMENT_RATIO
-                            value: '0.8'
-                          - descriptor:
-                              code: PRE_HOSPITALIZATION_COVERAGE_DAYS
-                            value: '2'
-                          - descriptor:
-                              code: POST_HOSPITALIZATION_COVERAGE_DAYS
-                            value: '5'
-                          - descriptor:
-                              code: MATERNITY_COVERAGE
-                            value: 'Yes'
-                          - descriptor:
-                              code: INITIAL_WAITING_PERIOD
-                            value: 'No'
-                          - descriptor:
-                              code: CASHLESS_HOSPITALS
-                            value: '50'
-                          - descriptor:
-                              code: ROOM_CATEGORY
-                            value: Deluxe
-                          - descriptor:
-                              code: PROPOSAL_ID
-                            value: PROPOSAL_ID
-                    time:
-                      duration: P1Y
-                      label: TENURE
-                id: POLICY_ID
-                payments:
-                  - collected_by: BPP
-                    params:
-                      amount: '1100'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
-                      currency: INR
-                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    status: PAID
-                    type: PRE-ORDER
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                  - collected_by: BPP
-                    params:
-                      amount: '1100'
-                      bank_account_number: '1800002341'
-                      bank_code: SBIN0001234
                       currency: INR
                       transaction_id: 97ca91e3-3bd1-4bbf-a066-4db2a6070b6e
                     status: PAID
@@ -9011,6 +8975,556 @@ x-flows:
                   - external_ref:
                       mimetype: text/html,
                       url: https://fis.test.bpp.io/cancellation-terms
+      - summary: Buyer app sends unsolicated on_status
+        api: on_status
+        details:
+          - description: >-
+              Buyer app sends the buyer with latest update of the order status.
+              Status can be fetched by calling the status API or can be received
+              using unsolicited on_status callback
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                rect rgb(191, 223, 255)  
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_status
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: 93f76756-cab6-4971-a534-c03e87c1f297
+              timestamp: '2023-07-24T05:43:20.910Z'
+              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                fulfillments:
+                  - state:
+                      descriptor:
+                        code: GRANTED
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9999999999
+                    id: F1
+                    type: POLICY
+                  - state:
+                      descriptor:
+                        code: PROCESSING
+                    type: RENEWAL
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9667788867
+                    id: F2
+                items:
+                  - add_ons:
+                      - id: A1
+                        descriptor:
+                          code: NO_CLAIM_BONUS
+                          name: No Claim Bonus
+                        quantity:
+                          selected:
+                            count: 1
+                        price:
+                          value: '100'
+                          currency: INR
+                    category_ids:
+                      - C1
+                      - C3
+                    price:
+                      currency: INR
+                      value: '900'
+                    descriptor:
+                      name: ABC Individaul Health Insurance Policy
+                      short_desc: >-
+                        ABC Individaul Health Insurance Class A with custom
+                        addon
+                    id: I1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: COVERAGE_AMOUNT
+                            value: '10000000'
+                          - descriptor:
+                              code: CO_PAYMENT
+                            value: 'Yes'
+                          - descriptor:
+                              code: ROOM_RENT_CAP
+                            value: '25000'
+                          - descriptor:
+                              code: RESTORATION_BENEFIT
+                            value: 'No'
+                          - descriptor:
+                              code: CLAIM_SETTLEMENT_RATIO
+                            value: '0.8'
+                          - descriptor:
+                              code: PRE_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '2'
+                          - descriptor:
+                              code: POST_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '5'
+                          - descriptor:
+                              code: MATERNITY_COVERAGE
+                            value: 'Yes'
+                          - descriptor:
+                              code: INITIAL_WAITING_PERIOD
+                            value: 'No'
+                          - descriptor:
+                              code: CASHLESS_HOSPITALS
+                            value: '50'
+                          - descriptor:
+                              code: ROOM_CATEGORY
+                            value: Deluxe
+                          - descriptor:
+                              code: PROPOSAL_ID
+                            value: PROPOSAL_ID
+                    time:
+                      duration: P1Y
+                      label: TENURE
+                id: POLICY_ID
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '1100'
+                      bank_account_number: '1800002341'
+                      bank_code: SBIN0001234
+                      currency: INR
+                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+                    status: PAID
+                    type: PRE-ORDER
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                  - collected_by: BPP
+                    params:
+                      amount: '1100'
+                      currency: INR
+                      transaction_id: 97ca91e3-3bd1-4bbf-a066-4db2a6070b6e
+                    status: PAID
+                    type: POST_FULFILLMENT
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: xs
+                  id: P1
+                quote:
+                  id: OFFER_ID/PROPOSAL_ID
+                  breakup:
+                    - price:
+                        value: '900'
+                        currency: INR
+                      title: BASE_PRICE
+                    - price:
+                        value: '50'
+                        currency: INR
+                      title: CONVIENCE_FEE
+                    - price:
+                        value: '40'
+                        currency: INR
+                      title: TAX
+                    - price:
+                        value: '10'
+                        currency: INR
+                      title: PROCESSING_FEE
+                    - title: ADD_ONS
+                      item:
+                        id: CHILD_ITEM_ID_I1
+                        add_ons:
+                          - id: A1
+                      price:
+                        value: '100'
+                        currency: INR
+                  price:
+                    currency: INR
+                    value: '1100'
+                status: ACTIVE
+                documents:
+                  - descriptor:
+                      code: POLICY_DOC
+                      name: Insurance Policy Document
+                      short_desc: Download your digitally signed policy document here
+                      long_desc: >-
+                        Download you digitally signed policy document here. This
+                        document is password protected. To open this document,
+                        please type in your password in DDMMMYYYYXXXX format
+                        where DDMMMYYYY represents your date of birth, and XXXX
+                        represents the first four letters of your name
+                    mime_type: application/pdf
+                    url: https://abcinsurance.com/policies/O1.pdf
+                  - descriptor:
+                      code: CLAIM_DOC
+                      name: Claim Insurance Policy
+                      short_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/claim-policy/
+                  - descriptor:
+                      code: RENEW_DOC
+                      name: Renew Insurance Policy
+                      short_desc: >-
+                        Buyer can renew their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can easily renew their insurance policies by
+                        visiting the following URL
+                    mime_type: application/html
+                    url: https://abcinsurance.com/renew-policy/
+                created_at: '2023-07-24T05:41:32.487Z'
+                updated_at: '2023-07-24T05:43:08.910Z'
+                cancellation_terms:
+                  - external_ref:
+                      mimetype: text/html,
+                      url: https://fis.test.bpp.io/cancellation-terms
+      - summary: Buyer app sends unsolicated update
+        api: on_update
+        details:
+          - description: >-
+              Buyer app sends unsolicated on_update with updated policy doc &
+              fulfillment state.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                rect rgb(191, 223, 255)  
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_update
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: 699208a0-30c0-40d9-97c7-d753b8a3a42e
+              timestamp: '2023-07-24T05:43:25.910Z'
+              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                fulfillments:
+                  - state:
+                      descriptor:
+                        code: GRANTED
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9999999999
+                    id: F1
+                    type: POLICY
+                  - state:
+                      descriptor:
+                        code: GRANTED
+                    type: RENEWAL
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9667788867
+                    id: F2
+                items:
+                  - add_ons:
+                      - id: A1
+                        descriptor:
+                          code: NO_CLAIM_BONUS
+                          name: No Claim Bonus
+                        quantity:
+                          selected:
+                            count: 1
+                        price:
+                          value: '100'
+                          currency: INR
+                    category_ids:
+                      - C1
+                      - C3
+                    price:
+                      currency: INR
+                      value: '900'
+                    descriptor:
+                      name: ABC Individaul Health Insurance Policy
+                      short_desc: >-
+                        ABC Individaul Health Insurance Class A with custom
+                        addon
+                    id: I1
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: COVERAGE_AMOUNT
+                            value: '10000000'
+                          - descriptor:
+                              code: CO_PAYMENT
+                            value: 'Yes'
+                          - descriptor:
+                              code: ROOM_RENT_CAP
+                            value: '25000'
+                          - descriptor:
+                              code: RESTORATION_BENEFIT
+                            value: 'No'
+                          - descriptor:
+                              code: CLAIM_SETTLEMENT_RATIO
+                            value: '0.8'
+                          - descriptor:
+                              code: PRE_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '2'
+                          - descriptor:
+                              code: POST_HOSPITALIZATION_COVERAGE_DAYS
+                            value: '5'
+                          - descriptor:
+                              code: MATERNITY_COVERAGE
+                            value: 'Yes'
+                          - descriptor:
+                              code: INITIAL_WAITING_PERIOD
+                            value: 'No'
+                          - descriptor:
+                              code: CASHLESS_HOSPITALS
+                            value: '50'
+                          - descriptor:
+                              code: ROOM_CATEGORY
+                            value: Deluxe
+                          - descriptor:
+                              code: PROPOSAL_ID
+                            value: PROPOSAL_ID
+                    time:
+                      duration: P1Y
+                      label: TENURE
+                id: POLICY_ID
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '1100'
+                      bank_account_number: '1800002341'
+                      bank_code: SBIN0001234
+                      currency: INR
+                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+                    status: PAID
+                    type: PRE-ORDER
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '400'
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                  - collected_by: BPP
+                    params:
+                      amount: '1100'
+                      currency: INR
+                      transaction_id: 97ca91e3-3bd1-4bbf-a066-4db2a6070b6e
+                    status: PAID
+                    type: POST_FULFILLMENT
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: xs
+                  id: P1
+                quote:
+                  id: OFFER_ID/PROPOSAL_ID
+                  breakup:
+                    - price:
+                        value: '900'
+                        currency: INR
+                      title: BASE_PRICE
+                    - price:
+                        value: '50'
+                        currency: INR
+                      title: CONVIENCE_FEE
+                    - price:
+                        value: '40'
+                        currency: INR
+                      title: TAX
+                    - price:
+                        value: '10'
+                        currency: INR
+                      title: PROCESSING_FEE
+                    - title: ADD_ONS
+                      item:
+                        id: CHILD_ITEM_ID_I1
+                        add_ons:
+                          - id: A1
+                      price:
+                        value: '100'
+                        currency: INR
+                  price:
+                    currency: INR
+                    value: '1100'
+                status: ACTIVE
+                documents:
+                  - descriptor:
+                      code: POLICY_DOC
+                      name: Insurance Policy Document
+                      short_desc: Download your digitally signed policy document here
+                      long_desc: >-
+                        Download you digitally signed policy document here. This
+                        document is password protected. To open this document,
+                        please type in your password in DDMMMYYYYXXXX format
+                        where DDMMMYYYY represents your date of birth, and XXXX
+                        represents the first four letters of your name
+                    mime_type: application/pdf
+                    old_policy_doc: https://abcinsurance.com/policies/O1.pdf
+                    url: https://abcinsurance.com/policies/O2.pdf
+                  - descriptor:
+                      code: CLAIM_DOC
+                      name: Claim Insurance Policy
+                      short_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/claim-policy/
+                  - descriptor:
+                      code: RENEW_DOC
+                      name: Renew Insurance Policy
+                      short_desc: >-
+                        Buyer can renew their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can easily renew their insurance policies by
+                        visiting the following URL
+                    mime_type: application/html
+                    url: https://abcinsurance.com/renew-policy/
+                created_at: '2023-07-24T05:41:32.487Z'
+                updated_at: '2023-07-24T05:43:08.910Z'
+                cancellation_terms:
+                  - external_ref:
+                      mimetype: text/html,
+                      url: https://fis.test.bpp.io/cancellation-terms
   - summary: Cancel Health Insurance
     details:
       - description: Detailed process of cancelling a Health Insurance
@@ -9066,7 +9580,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_34
             context:
               action: cancel
               bap_id: fis.test.bap.io
@@ -9110,7 +9624,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_35
             context:
               action: on_cancel
               bap_id: fis.test.bap.io
@@ -9139,6 +9653,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: C1
@@ -9396,6 +9911,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: C1
@@ -9972,6 +10488,7 @@ x-examples:
                                     code: GSTIN
                                   value: 20JDVIEHVJDSN
                       id: F1
+                      type: POLICY
                   items:
                     - id: CHILD_ITEM_ID_I1
                       add_ons:
@@ -10147,7 +10664,26 @@ x-examples:
         examples:
           - summary: status
             description: TBD
-            value: *ref_28
+            value:
+              context:
+                action: status
+                bap_id: fis.test.bap.io
+                bap_uri: https://fis.test.bap.io/
+                bpp_id: fis.test.bpp.io
+                bpp_uri: https://fis.test.bpp.io/
+                domain: ONDC:FIS13
+                location:
+                  country:
+                    code: IND
+                  city:
+                    code: '*'
+                message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
+                timestamp: '2023-07-24T05:41:47.097Z'
+                transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+                ttl: PT10M
+                version: 2.0.0
+              message:
+                order_id: POLICY_ID
           - summary: review-form-status-request
             description: TBD
             value:
@@ -10175,7 +10711,7 @@ x-examples:
             value: *ref_13
           - summary: status-request-form-ped
             description: TBD
-            value: *ref_29
+            value: *ref_28
           - summary: status-request-renewal
             description: TBD
             value:
@@ -10623,32 +11159,274 @@ x-examples:
                         url: https://fis.test.bpp.io/cancellation-terms
           - summary: on_status-claim_processing
             description: TBD
-            value: *ref_30
+            value:
+              context:
+                action: on_status
+                bap_id: fis.test.bap.io
+                bap_uri: https://fis.test.bap.io/
+                bpp_id: fis.test.bpp.io
+                bpp_uri: https://fis.test.bpp.io/
+                domain: ONDC:FIS13
+                location:
+                  country:
+                    code: IND
+                  city:
+                    code: '*'
+                message_id: de5bcc49-27ab-4516-b548-7535240c8dfd
+                timestamp: '2023-07-24T05:42:00.067Z'
+                transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+                ttl: PT24H
+                version: 2.0.0
+              message:
+                order:
+                  id: POLICY_ID
+                  items:
+                    - category_ids:
+                        - C1
+                        - C3
+                      descriptor:
+                        name: Health Gain Plus Individual
+                        short_desc: >-
+                          ABC Individaul Health Insurance Class A with custom
+                          addon
+                      id: CHILD_ITEM_ID_I1
+                      parent_item_id: I1
+                      fulfillment_ids:
+                        - F1
+                        - F2
+                      price:
+                        currency: INR
+                        value: '900'
+                      tags:
+                        - descriptor:
+                            name: General Information
+                            code: GENERAL_INFO
+                          list:
+                            - descriptor:
+                                code: COVERAGE_AMOUNT
+                              value: '10000000'
+                            - descriptor:
+                                code: CO_PAYMENT
+                              value: 'Yes'
+                            - descriptor:
+                                code: ROOM_RENT_CAP
+                              value: '25000'
+                            - descriptor:
+                                code: RESTORATION_BENEFIT
+                              value: 'No'
+                            - descriptor:
+                                code: CLAIM_SETTLEMENT_RATIO
+                              value: '0.8'
+                            - descriptor:
+                                code: PRE_HOSPITALIZATION_COVERAGE_DAYS
+                              value: '2'
+                            - descriptor:
+                                code: POST_HOSPITALIZATION_COVERAGE_DAYS
+                              value: '5'
+                            - descriptor:
+                                code: MATERNITY_COVERAGE
+                              value: 'Yes'
+                            - descriptor:
+                                code: INITIAL_WAITING_PERIOD
+                              value: 'No'
+                            - descriptor:
+                                code: CASHLESS_HOSPITALS
+                              value: '50'
+                            - descriptor:
+                                code: ROOM_CATEGORY
+                              value: Deluxe
+                            - descriptor:
+                                code: PROPOSAL_ID
+                              value: PROPOSAL_ID
+                      time:
+                        duration: P1Y
+                        label: TENURE
+                      add_ons:
+                        - id: A1
+                          quantity:
+                            selected:
+                              count: 1
+                          descriptor:
+                            name: No Claim Bonus
+                            code: NO_CLAIM_BONUS
+                          price:
+                            value: '100'
+                            currency: INR
+                  fulfillments:
+                    - state:
+                        descriptor:
+                          code: GRANTED
+                      customer:
+                        contact:
+                          email: joe.adam@abc.org
+                          phone: +91-9999999999
+                      id: F1
+                      type: POLICY
+                    - state:
+                        descriptor:
+                          code: PROCESSING
+                      type: CLAIM
+                      customer:
+                        contact:
+                          email: joe.adam@abc.org
+                          phone: +91-9667788867
+                      id: F2
+                  provider:
+                    descriptor:
+                      long_desc: >-
+                        ABC Insurance Ltd. Deals in multiple Insurance Services
+                        like Health, Motor, Marine etc
+                      name: ABC Insurance Ltd.
+                      short_desc: 'ABC Insurance Ltd. India '
+                      images:
+                        - url: >-
+                            https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                          size_type: xs
+                    id: P1
+                  quote:
+                    id: OFFER_ID/PROPOSAL_ID
+                    breakup:
+                      - price:
+                          value: '900'
+                          currency: INR
+                        title: BASE_PRICE
+                      - price:
+                          value: '50'
+                          currency: INR
+                        title: CONVIENCE_FEE
+                      - price:
+                          value: '40'
+                          currency: INR
+                        title: TAX
+                      - price:
+                          value: '10'
+                          currency: INR
+                        title: PROCESSING_FEE
+                      - title: ADD_ONS
+                        item:
+                          id: I1
+                          add_ons:
+                            - id: A1
+                        price:
+                          value: '100'
+                          currency: INR
+                    price:
+                      currency: INR
+                      value: '1100'
+                    ttl: PT15D
+                  payments:
+                    - collected_by: BPP
+                      params:
+                        amount: '1100'
+                        bank_account_number: '1800002341'
+                        bank_code: SBIN0001234
+                        currency: INR
+                        transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+                      status: PAID
+                      type: PRE-ORDER
+                      tags:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES
+                          display: false
+                          list:
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_TYPE
+                              value: percent-annualized
+                            - descriptor:
+                                code: BUYER_FINDER_FEES_PERCENTAGE
+                              value: '1'
+                        - descriptor:
+                            code: SETTLEMENT_TERMS
+                          display: false
+                          list:
+                            - descriptor:
+                                code: SETTLEMENT_WINDOW
+                              value: PT60M
+                            - descriptor:
+                                code: SETTLEMENT_BASIS
+                              value: Delivery
+                            - descriptor:
+                                code: SETTLEMENT_TYPE
+                              value: upi
+                            - descriptor:
+                                code: DELAY_INTEREST
+                              value: '2.5'
+                            - descriptor:
+                                code: STATIC_TERMS
+                              value: >-
+                                https://www.icicibank.com/personal-banking/loans/personal-loan
+                            - descriptor:
+                                code: SETTLEMENT_AMOUNT
+                              value: '400'
+                            - descriptor:
+                                code: OFFLINE_CONTRACT
+                              value: 'true'
+                  status: ACTIVE
+                  documents:
+                    - descriptor:
+                        code: POLICY_DOC
+                        name: Insurance Policy Document
+                        short_desc: Download your digitally signed policy document here
+                        long_desc: >-
+                          Download you digitally signed policy document here.
+                          This document is password protected. To open this
+                          document, please type in your password in
+                          DDMMMYYYYXXXX format where DDMMMYYYY represents your
+                          date of birth, and XXXX represents the first four
+                          letters of your name
+                      mime_type: application/pdf
+                      url: https://abcinsurance.com/policies/O1.pdf
+                    - descriptor:
+                        code: CLAIM_DOC
+                        name: Claim Insurance Policy
+                        short_desc: >-
+                          Buyer can claim their insurance by visiting the below
+                          url
+                        long_desc: >-
+                          Buyer can claim their insurance by visiting the below
+                          url
+                      mime_type: application/html
+                      url: https://abcinsurance.com/claim-policy/
+                    - descriptor:
+                        code: RENEW_DOC
+                        name: Renew Insurance Policy
+                        short_desc: >-
+                          Buyer can renew their insurance by visiting the below
+                          url
+                        long_desc: >-
+                          Buyer can easily renew their insurance policies by
+                          visiting the following URL
+                      mime_type: application/html
+                      url: https://abcinsurance.com/renew-policy/
+                  cancellation_terms:
+                    - external_ref:
+                        mimetype: text/html,
+                        url: https://fis.test.bpp.io/cancellation-terms
           - summary: on_status-claim
             description: TBD
-            value: *ref_31
+            value: *ref_29
           - summary: on_status-form-completed
             description: TBD
-            value: *ref_32
+            value: *ref_30
           - summary: on_status-form-processing
             description: TBD
-            value: *ref_33
+            value: *ref_31
           - summary: on_status-form-submitted
             description: TBD
-            value: *ref_34
+            value: *ref_32
           - summary: on_status-ped-form-processing
             description: TBD
-            value: *ref_35
+            value: *ref_33
       cancel:
         examples:
           - summary: cancel
             description: TBD
-            value: *ref_36
+            value: *ref_34
       on_cancel:
         examples:
           - summary: on_cancel
             description: TBD
-            value: *ref_37
+            value: *ref_35
 x-attributes:
   health-insurance:
     attribute_set:
@@ -18187,13 +18965,13 @@ x-attributes:
                   usage: 1000
                   description: Describes payment amount
                 bank_account_number:
-                  required: mandatory
+                  required: optional
                   type: number
                   owner: BPP
                   usage: 180002341
                   description: Describes bank account number
                 bank_code:
-                  required: mandatory
+                  required: optional
                   type: string
                   owner: BPP
                   usage: SBIN0001234
