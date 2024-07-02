@@ -1889,6 +1889,13 @@ components:
                   specified in this object.
                 type: string
                 format: uri
+              old_policy_doc:
+                description: >-
+                  The URL from where the form can be fetched. The content
+                  fetched from the url must be processed as per the mime_type
+                  specified in this object.
+                type: string
+                format: uri
         refund_terms:
           description: Refund terms of this item
           type: array
@@ -3030,7 +3037,10 @@ x-enum:
                   reference: <PR/Issue/Discussion Links md format text
           type:
             - code: CLAIM
-              description: Describes if claim has been granted
+              description: Describes the fulfillment type.
+              reference: <PR/Issue/Discussion Links md format text
+            - code: POLICY
+              description: Describes the fulfillment type.
               reference: <PR/Issue/Discussion Links md format text
         payments: *ref_4
         documents: &ref_7
@@ -3352,7 +3362,7 @@ x-tags:
                       insurance policy of the vehicle ended
                     reference: <PR/Issue/Discussion Links md format text>
           payments: *ref_9
-  on_select: &ref_12
+  on_select:
     message:
       order:
         items: *ref_10
@@ -3371,7 +3381,26 @@ x-tags:
         items: *ref_10
         payments: *ref_9
   on_confirm: *ref_11
-  on_status: *ref_11
+  on_status: &ref_12
+    message:
+      order:
+        items: *ref_10
+        payments: *ref_9
+        fulfillments:
+          tags:
+            - code: INFO
+              description: Describes the additional info
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: REQUESTED_CLAIM_AMOUNT
+                  description: Describes the requested cliam amount.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: APPROVED_CLAIM_AMOUNT
+                  description: Describes the approved cliam amount.
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: REF_ID
+                  description: Describes the reference id.
+                  reference: <PR/Issue/Discussion Links md format text>
   on_cancel: *ref_12
   on_update: *ref_12
 x-flows:
@@ -6601,6 +6630,7 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                    type: POLICY
                     state:
                       descriptor:
                         name: Insurance Initiated
@@ -7045,6 +7075,7 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                    type: POLICY
                     state:
                       descriptor:
                         name: Insurance Initiated
@@ -7360,6 +7391,7 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                    type: POLICY
                 items:
                   - id: CHILD_ITEM_CI1
                     parent_item_id: I1
@@ -7487,6 +7519,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: A1
@@ -7819,6 +7852,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9667788867
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: A1
@@ -8362,6 +8396,7 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                    type: POLICY
                     state:
                       descriptor:
                         name: Insurance Initiated
@@ -9126,11 +9161,11 @@ x-flows:
         reference: if any
         example:
           value: This will redirected to different html page
-      - summary: Insurance sends unsolicited update
+      - summary: Insurance sends unsolicited on_update
         api: on_update
         details:
           - description: >-
-              Insurer sends unsolicited update as the state of the order has
+              Insurer sends unsolicited on_update as the state of the order has
               been updated.
             mermaid: |-
               sequenceDiagram
@@ -9174,6 +9209,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                   - state:
                       descriptor:
                         code: INITIATED
@@ -9183,6 +9219,14 @@ x-flows:
                         phone: +91-9999999999
                     type: CLAIM
                     id: F2
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
                 items:
                   - add_ons:
                       - id: A1
@@ -9425,30 +9469,30 @@ x-flows:
                     url: https://abcinsurance.com/claim-policy/
                 created_at: '2023-07-24T05:41:32.487Z'
                 updated_at: '2023-07-24T05:41:32.487Z'
-      - summary: Buyer app seeks the most recent claim status update
-        api: status
+      - summary: Insurance sends unsolicited on_update
+        api: on_update
         details:
           - description: >-
-              Buyer app requests the insurer to provide the latest status of the
-              claim.
+              Insurer sends unsolicited on_update as the state of the order has
+              been updated.
             mermaid: |-
               sequenceDiagram
                 title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
                 rect rgb(191, 223, 255)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
           value:
             context:
-              action: status
+              action: on_update
               bap_id: fis.test.bap.io
               bap_uri: https://fis.test.bap.io/
               bpp_id: fis.test.bpp.io
@@ -9459,49 +9503,8 @@ x-flows:
                   code: IND
                 city:
                   code: '*'
-              message_id: 3b61e77a-f558-4cae-937c-2057be80643b
-              timestamp: '2023-07-22T15:08:17.325Z'
-              transaction_id: a4db048b-d07c-40e0-9c0b-b7f006c4df74
-              ttl: PT10M
-              version: 2.0.0
-            message:
-              order_id: O1
-      - summary: Insurer shares the latest claim status
-        api: on_status
-        details:
-          - description: >-
-              Insurer provides the buyer with latest update of claim status
-              (Claim Processing).
-            mermaid: |-
-              sequenceDiagram
-                title Order Fulfillment
-                participant Buyer Platform (BAP)
-                participant Insurer Platform (BPP)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                rect rgb(191, 223, 255)
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                end
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
-                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-        reference: if any
-        example:
-          value:
-            context:
-              action: on_status
-              bap_id: fis.test.bap.io
-              bap_uri: https://fis.test.bap.io/
-              bpp_id: fis.test.bpp.io
-              bpp_uri: https://fis.test.bpp.io/
-              domain: ONDC:FIS13
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              message_id: 3b61e77a-f558-4cae-937c-2057be80643b
-              timestamp: '2023-07-25T05:41:32.487Z'
+              message_id: 5e1c7853-fe1a-4c27-b6be-3dc470545d3b
+              timestamp: '2023-07-25T05:41:37.487Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
               ttl: PT24H
               version: 2.0.0
@@ -9516,6 +9519,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                   - state:
                       descriptor:
                         code: PROCESSING
@@ -9525,6 +9529,17 @@ x-flows:
                         phone: +91-9999999999
                     type: CLAIM
                     id: F2
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
+                          - descriptor:
+                              code: APPROVED_CLAIM_AMOUNT
+                            value: 90000 INR
                 items:
                   - add_ons:
                       - id: A1
@@ -9767,9 +9782,7 @@ x-flows:
                     url: https://abcinsurance.com/claim-policy/
                 created_at: '2023-07-24T05:41:32.487Z'
                 updated_at: '2023-07-24T05:41:32.487Z'
-      - summary: >-
-          Insurer provides the buyer with latest update of claim status (Claim
-          Completed)
+      - summary: Insurer provides the buyer with latest update of claim status
         api: on_status
         details:
           - description: >-
@@ -9781,14 +9794,14 @@ x-flows:
                 title Order Fulfillment
                 participant Buyer Platform (BAP)
                 participant Insurer Platform (BPP)
-                Buyer Platform (BAP)->>Insurer Platform (BPP): status
-                Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-                rect rgb(191, 223, 255)
+                rect rgb(191, 223, 255)  
                 Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
                 end
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -9804,8 +9817,8 @@ x-flows:
                   code: IND
                 city:
                   code: '*'
-              message_id: b1dc4257-e49c-4142-adad-4c4bf829d7d3
-              timestamp: '2023-07-25T05:41:32.487Z'
+              message_id: e59980c3-f0a6-48be-bd32-4fababb250e6
+              timestamp: '2023-07-25T05:41:39.487Z'
               transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
               ttl: PT24H
               version: 2.0.0
@@ -9820,6 +9833,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                   - state:
                       descriptor:
                         code: PROCESSED
@@ -9829,6 +9843,333 @@ x-flows:
                         phone: +91-9999999999
                     type: CLAIM
                     id: F2
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
+                          - descriptor:
+                              code: APPROVED_CLAIM_AMOUNT
+                            value: 90000 INR
+                items:
+                  - add_ons:
+                      - id: A1
+                        quantity:
+                          selected:
+                            count: 1
+                        descriptor:
+                          name: Consumables Cover
+                          code: CONSUMABLES_COVER
+                    descriptor:
+                      name: 2-Wheeler 3rd Party Motor Insurance
+                      short_desc: >-
+                        2-Wheeler 3rd Party Motor Insurance by ABC Insurance
+                        Provider
+                    id: CHILD_ITEM_CI1
+                    parent_item_id: I1
+                    category_ids:
+                      - C3
+                      - C4
+                      - C5
+                      - C6
+                    price:
+                      value: '12505'
+                      currency: INR
+                    tags:
+                      - descriptor:
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: PERSONAL_ACCIDENT_COVER
+                            value: '10000000'
+                          - descriptor:
+                              code: DEPRECIATION_COVER
+                            value: 'Yes'
+                          - descriptor:
+                              code: ROAD_SIDE_ASSISTANCE
+                            value: '25000'
+                          - descriptor:
+                              code: CONSUMABLES_COVER
+                            value: 'No'
+                          - descriptor:
+                              code: ELECTRICAL_ACCESSORIES_COVER
+                            value: '0.8'
+                          - descriptor:
+                              code: NON_ELECTRICAL_ACCESSORIES_COVER
+                            value: '2'
+                          - descriptor:
+                              code: ENGINE_COVER
+                            value: '5'
+                          - descriptor:
+                              code: EXTERNAL_CNG_OR_LPG_COVER
+                            value: 'Yes'
+                          - descriptor:
+                              code: KEY_COVER
+                            value: 'No'
+                          - descriptor:
+                              code: PERSONAL_BAGGAGE_COVER
+                            value: '50'
+                          - descriptor:
+                              code: TYRE_COVER
+                            value: '50'
+                          - descriptor:
+                              code: RETURN_TO_INVOICE
+                            value: '50'
+                          - descriptor:
+                              code: PER_DAY_CASH
+                            value: '50'
+                          - descriptor:
+                              code: MANUAL_REVIEW
+                              name: Manual Review
+                              short_desc: Describes manual review value
+                            value: 'true'
+                          - descriptor:
+                              code: IDV_VALUE
+                              name: IDV value
+                              short_desc: Describes the IDV value
+                            value: '300000'
+                      - descriptor:
+                          code: VAHAN_DETAILS
+                          name: Vahan Details
+                        list:
+                          - descriptor:
+                              code: MODEL
+                            value: X100
+                          - descriptor:
+                              code: MAKE
+                            value: BMX
+                          - descriptor:
+                              code: FUEL_TYPE
+                            value: Petrol
+                          - descriptor:
+                              code: VARIANT
+                            value: ZX
+                          - descriptor:
+                              code: REGISTERED_CITY
+                            value: Bangalore
+                          - descriptor:
+                              code: REGISTERED_DATE
+                            value: '2022-01-13'
+                          - descriptor:
+                              code: CHASSIS_NUMBER
+                            value: nvuwi3n23io90
+                          - descriptor:
+                              code: ENGINE_NUMBER
+                            value: 98vd98e32
+                          - descriptor:
+                              code: PREVIOUS_POLICY_NUMBER
+                            value: f5f90d6e8f924
+                          - descriptor:
+                              code: PREVIOUS_INSURER
+                            value: XYZ
+                          - descriptor:
+                              code: PREVIOUS_POLICY_END_DATE
+                            value: '2022-01-02'
+                    time:
+                      duration: P1Y
+                      label: TENURE
+                    fulfillment_ids:
+                      - F1
+                      - F2
+                id: O1
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '12505'
+                      bank_account_number: '1800002341'
+                      bank_code: SBIN0001234
+                      currency: INR
+                      transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
+                    status: PAID
+                    type: PRE-ORDER
+                    tags:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                      - descriptor:
+                          code: SETTLEMENT_TERMS
+                        display: false
+                        list:
+                          - descriptor:
+                              code: SETTLEMENT_WINDOW
+                            value: PT60M
+                          - descriptor:
+                              code: SETTLEMENT_BASIS
+                            value: Delivery
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: upi
+                          - descriptor:
+                              code: MANDATORY_ARBITRATION
+                            value: 'true'
+                          - descriptor:
+                              code: COURT_JURISDICTION
+                            value: New Delhi
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '2.5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://www.icicibank.com/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1000'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
+                provider:
+                  descriptor:
+                    long_desc: >-
+                      ABC Insurance Ltd. Deals in multiple Insurance Services
+                      like Health, Motor, Marine etc
+                    name: ABC Insurance Ltd.
+                    short_desc: 'ABC Insurance Ltd. India '
+                    images:
+                      - url: >-
+                          https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
+                        size_type: xs
+                  id: P1
+                quote:
+                  id: Q1
+                  price:
+                    currency: INR
+                    value: '12505'
+                  breakup:
+                    - price:
+                        value: '11531'
+                        currency: INR
+                      title: BASE_PRICE
+                    - price:
+                        value: '50'
+                        currency: INR
+                      title: CONVIENCE_FEE
+                    - price:
+                        value: '30'
+                        currency: INR
+                      title: TAX
+                    - price:
+                        value: '20'
+                        currency: INR
+                      title: PROCESSING_FEE
+                    - title: ADD_ONS
+                      item:
+                        id: A1
+                      price:
+                        value: '900'
+                        currency: INR
+                  ttl: PT15D
+                status: ACTIVE
+                documents:
+                  - descriptor:
+                      code: POLICY_DOC
+                      name: Motor Policy Document
+                      short_desc: Download your digitally signed policy document here
+                      long_desc: >-
+                        Download you digitally signed policy document here. This
+                        document is password protected. To open this document,
+                        please type in your password in DDMMMYYYYXXXX format
+                        where DDMMMYYYY represents your date of birth, and XXXX
+                        represents the first four letters of your name
+                    mime_type: application/pdf
+                    url: https://abcinsurance.com/policies/O1.pdf
+                  - descriptor:
+                      code: CLAIM_DOC
+                      name: Claim Insurance Policy
+                      short_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                      long_desc: >-
+                        Buyer can claim their insurance by visiting the below
+                        url
+                    mime_type: application/html
+                    url: https://abcinsurance.com/claim-policy/
+                created_at: '2023-07-24T05:41:32.487Z'
+                updated_at: '2023-07-24T05:41:32.487Z'
+      - summary: Insurance sends unsolicited on_update
+        api: on_update
+        details:
+          - description: >-
+              Insurer sends unsolicited on_update as the state of the order has
+              been updated.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Buyer Platform (BAP)
+                participant Insurer Platform (BPP)
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                rect rgb(191, 223, 255)  
+                Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value:
+            context:
+              action: on_update
+              bap_id: fis.test.bap.io
+              bap_uri: https://fis.test.bap.io/
+              bpp_id: fis.test.bpp.io
+              bpp_uri: https://fis.test.bpp.io/
+              domain: ONDC:FIS13
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              message_id: 324bd523-d2ad-4ed4-8a1f-ebfd8d1f1f15
+              timestamp: '2023-07-25T05:42:01.487Z'
+              transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
+              ttl: PT24H
+              version: 2.0.0
+            message:
+              order:
+                fulfillments:
+                  - state:
+                      descriptor:
+                        code: GRANTED
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9999999999
+                    id: F1
+                    type: POLICY
+                  - state:
+                      descriptor:
+                        code: PROCESSED
+                    customer:
+                      contact:
+                        email: joe.adam@abc.org
+                        phone: +91-9999999999
+                    type: CLAIM
+                    id: F2
+                    tags:
+                      - descriptor:
+                          code: INFO
+                        display: true
+                        list:
+                          - descriptor:
+                              code: REQUESTED_CLAIM_AMOUNT
+                            value: 100000 INR
+                          - descriptor:
+                              code: APPROVED_CLAIM_AMOUNT
+                            value: 90000 INR
+                          - descriptor:
+                              code: REF_ID
+                            value: d9bf1b85-7973
                 items:
                   - add_ons:
                       - id: A1
@@ -10199,6 +10540,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: A1
@@ -10490,6 +10832,7 @@ x-flows:
                         email: joe.adam@abc.org
                         phone: +91-9999999999
                     id: F1
+                    type: POLICY
                 items:
                   - add_ons:
                       - id: A1
