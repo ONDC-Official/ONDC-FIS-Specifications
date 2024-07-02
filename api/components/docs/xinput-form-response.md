@@ -55,12 +55,24 @@ The differentiation in MIME types and additional settings, such as resubmit and 
 <form action="/form/submission-path">
   <label for="dob">Date of Birth</label>
   <input type="date" id="dob" name="dob" />
-  <label for="panValue">PAN Number</label>
-  <input type="text" id="panValue" name="panValue" />
-  <input type="hidden" id="formId" name="formId" value="<Form_ID>" />
+  <label for="pan_value">PAN Number</label>
+  <input type="text" id="pan_value" name="pan_value" />
+  <input type="hidden" id="form_id" name="form_id" value="<Form_ID>" />
   <input type="submit" value="Submit" />
 </form>
 ````
+
+If the type of the input field is readonly, then the buyer app must render it as it is; the field should not be editable.
+
+````html
+<form action="/action_page.php">
+  <label for="country">Country:</label>
+  <input type="text" id="country" name="country" value="Norway" readonly><br><br>
+  <input type="submit" value="Submit">
+</form>
+````
+
+The name field will be used for generating payload of text/html form(name fields will be used as keys, this is default behaviour of html)
 
 The form gets submitted at the specified path in action. On submission, if successful, the buyer is provided with a submission_id.
 
