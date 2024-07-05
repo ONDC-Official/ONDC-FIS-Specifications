@@ -131,11 +131,14 @@ sequenceDiagram
             alt payment successful
                 bpp ->> bap: `/on_status` w/ payment in `PAID` state
             else payment failed
-                bpp ->> bap: `/on_status` w/ payment in `NOT_PAID` state
+                bpp ->> bap: `/on_status` w/ payment in `FAILED` state
             end
         end
     end
 ```
+
+If the payment fails, buyer app can ask for a new payment link by calling the update api with the payment object containing investor bank a/c and payment mode.  
+Seller app will respond with the new payment link for payment. If the seller app doesn't accept change of bank a/c, it should error out in the `on_update` call.
 
 #### Confirming Redemption Order
 ```mermaid
