@@ -21,3 +21,9 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Adding item tags and fulfillment tags in all on_* responses, to make the order object self contained all the time
 - Removing `type` from order as it is redundant. The actual type can be taken from the fulfillment type
 - Using unsolicited `on_confirm` to trigger sip instalment generation notification
+- Adding update/ on_update calls for payment failure retries
+
+#### 12th July, 2024
+- Using numeric codes for cancellation reason ids
+- Adding cancellation terms to order object. This is to explicitly add cancellation terms
+- Adding cancellation object to order object. This is to convey the details about a cancelled order

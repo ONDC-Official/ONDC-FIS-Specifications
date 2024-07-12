@@ -2982,34 +2982,46 @@ x-enum:
     context: *ref_0
     message:
       cancellation_reason_id:
-        - code: TECHNICAL_REASON
+        - code: '00'
           description: >-
-            This is when the buyer app wants to cancel the order because the
-            investor dropped off in between or just to keep the order status at
-            buyer app and seller app in sync. This is not with investor input.
+            TECHNICAL_REASON. This is when the buyer app wants to cancel the
+            order because the investor dropped off in between or just to keep
+            the order status at buyer app and seller app in sync. This is not
+            with investor input.
           reference: <PR/Issue/Discussion Links md format text>
-        - code: AMOUNT_NOT_AVAILABLE
-          description: Investor doesn't have the money to continue investing
-          reference: <PR/Issue/Discussion Links md format text>
-        - code: SCHEME_NOT_PERFORMING
+        - code: '01'
           description: >-
-            Investor did not get returns as expected as the scheme is not
-            performing
+            AMOUNT_NOT_AVAILABLE. Investor doesn't have the money to continue
+            investing
           reference: <PR/Issue/Discussion Links md format text>
-        - code: SERVICE_ISSUE
-          description: Investor is not satisfied with the service
+        - code: '02'
+          description: >-
+            SCHEME_NOT_PERFORMING. Investor did not get returns as expected as
+            the scheme is not performing
           reference: <PR/Issue/Discussion Links md format text>
-        - code: LOAD_REVISED
-          description: Investor is not satisfied with revision on load
+        - code: '03'
+          description: SERVICE_ISSUE. Investor is not satisfied with the service
           reference: <PR/Issue/Discussion Links md format text>
-        - code: WISH_TO_INVEST_IN_ANOTHER_SCHEME
-          description: Investor wishes to invest in another scheme
+        - code: '04'
+          description: LOAD_REVISED. Investor is not satisfied with revision on load
           reference: <PR/Issue/Discussion Links md format text>
-        - code: CHANGE_IN_FUND_MANAGER
-          description: Investor is not satisfied with change in fund manager
+        - code: '05'
+          description: >-
+            WISH_TO_INVEST_IN_ANOTHER_SCHEME. Investor wishes to invest in
+            another scheme
           reference: <PR/Issue/Discussion Links md format text>
-        - code: GOAL_ACHIEVED
-          description: The goal for sip is achieved earlier than planned
+        - code: '06'
+          description: >-
+            CHANGE_IN_FUND_MANAGER. Investor is not satisfied with change in
+            fund manager
+          reference: <PR/Issue/Discussion Links md format text>
+        - code: '07'
+          description: GOAL_ACHIEVED. The goal for sip is achieved earlier than planned
+          reference: <PR/Issue/Discussion Links md format text>
+        - code: '08'
+          description: >-
+            FAILURE_THRESHOLD_REACHED. The max allowed number of consecutive sip
+            instalment faillures reached. Provider cancels the sip in this case.
           reference: <PR/Issue/Discussion Links md format text>
 x-tags:
   search:
@@ -5356,6 +5368,11 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
+                cancellation_terms:
+                  - reason_required: true
+                    external_ref:
+                      url: https://api.sellerapp.com/cterms?id=214werw3w4
+                      mimetype: text/html
       - summary: On Status
         api: on_status
         details:
@@ -7844,6 +7861,11 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
+                cancellation_terms:
+                  - reason_required: true
+                    external_ref:
+                      url: https://api.sellerapp.com/cterms?id=214werw3w4
+                      mimetype: text/html
       - summary: On Status
         api: on_status
         details:
@@ -8922,6 +8944,13 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
+                cancellation_terms:
+                  - reason_required: true
+                    cancel_by:
+                      timestamp: '2024-07-25T05:23:03.443Z'
+                    external_ref:
+                      url: https://api.sellerapp.com/cterms?id=214werw3w4
+                      mimetype: text/html
       - summary: On Status (successful instalment payment)
         api: on_status
         details:
@@ -9654,18 +9683,6 @@ x-flows:
                               name: Cumulative Amount Minimum
                               code: CUMULATIVE_AMOUNT_MIN
                             value: '30000'
-                      - display: true
-                        descriptor:
-                          name: Information
-                        list:
-                          - descriptor:
-                              name: Reason Code
-                              code: REASON_CODE
-                            value: instalment_failure_threshold_reached
-                          - descriptor:
-                              name: Reason Message
-                              code: REASON_MESSAGE
-                            value: 3 consecutive instalments failed
                 xinput:
                   form:
                     id: form_1
@@ -9697,6 +9714,13 @@ x-flows:
                       code: TERMS
                     url: https://api.sellerapp.com/tnc?id=214werw3w4
                     mime_type: text/html
+                cancellation:
+                  time: '2024-07-01T05:23:03.443Z'
+                  cancelled_by: PROVIDER
+                  reason:
+                    id: '08'
+                    descriptor:
+                      name: 3 consecutive instalments failed
   - summary: SIP Completion
     reference: >-
       https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
@@ -10834,6 +10858,11 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
+                cancellation_terms:
+                  - reason_required: true
+                    external_ref:
+                      url: https://api.sellerapp.com/cterms?id=214werw3w4
+                      mimetype: text/html
       - summary: On Status
         api: on_status
         details:
@@ -12948,7 +12977,7 @@ x-examples:
                 action: cancel
               message:
                 order_id: mfpp_213adf123af
-                cancellation_reason_id: GOAL_ACHIEVED
+                cancellation_reason_id: '07'
       on_cancel:
         examples:
           - summary: cancelled sip order
@@ -13092,18 +13121,6 @@ x-examples:
                                 name: Cumulative Amount Minimum
                                 code: CUMULATIVE_AMOUNT_MIN
                               value: '30000'
-                        - display: true
-                          descriptor:
-                            name: Information
-                          list:
-                            - descriptor:
-                                name: Reason Code
-                                code: REASON_CODE
-                              value: GOAL_ACHIEVED
-                            - descriptor:
-                                name: Reason Message
-                                code: REASON_MESSAGE
-                              value: Investment goal is achieved
                   xinput:
                     form:
                       id: form_1
@@ -13135,6 +13152,13 @@ x-examples:
                         code: TERMS
                       url: https://api.sellerapp.com/tnc?id=214werw3w4
                       mime_type: text/html
+                  cancellation:
+                    time: '2024-07-01T05:23:03.443Z'
+                    cancelled_by: CONSUMER
+                    reason:
+                      id: '07'
+                      descriptor:
+                        name: Investment goal is achieved
       update:
         examples:
           - summary: update an order with a new payment
