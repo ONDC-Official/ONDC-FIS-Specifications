@@ -27,3 +27,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Using numeric codes for cancellation reason ids
 - Adding cancellation terms to order object. This is to explicitly add cancellation terms
 - Adding cancellation object to order object. This is to convey the details about a cancelled order
+- Using standard enums for form headings
