@@ -1,10 +1,5 @@
 ## Order
 
-### Types
-
-- `PURCHASE` - All onetime(lumpsum) and recurring(sip) buy orders
-- `REDEMPTION` - All onetime and recurring(swp) sell orders
-
 ### States
 
 - `CREATED`: Draft order.
@@ -21,11 +16,12 @@ Fulfillment is the order processing activity, which happens after the order is a
 - `LUMPSUM`
 - `SIP`
 - `REDEMPTION`
-- `SWP`
 - `SIP_INSTALMENT`
 
 ### States
 
+- `PENDING`: In case of purchases, fulfillment starts only after payment is done. This state indicates that the order is confirmed, but the payment is pending.
+- `INITIATED`: This means the fulfillment is started. In case of one time orders - the orders are sent for processing. In case of recurring orders - the instalments will be generated as per the schedule
 - `ONGOING`: For recurring orders (sip, swp), this means the instalments are ongoing as per the schedule
 - `COMPLETED`: For recurring orders (sip, swp), this means the instalments are completed as per the schedule and no new instalments will be generated
 - `CANCELLED`: For recurring orders (sip, swp), this means the order is cancelled by the seller app and no new instalments will be generated
@@ -45,12 +41,16 @@ stateDiagram-v2
     CREATED --> REJECTED
     CREATED --> ACCEPTED
 
+    PENDING: fulfillment PENDING
+    INITIATED: fulfillment INITIATED
     SUCCESSFUL : fulfillment SUCCESSFUL
     FAILED : fulfillment FAILED
     ONGOING: fulfillment ONGOING
     COMPLETED: fulfillment COMPLETED
     CANCELLED: fulfillment CANCELLED
 
+    ACCEPTED --> PENDING
+    ACCEPTED --> INITIATED
     ACCEPTED --> SUCCESSFUL
     ACCEPTED --> FAILED
     ACCEPTED --> ONGOING
