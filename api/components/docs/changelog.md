@@ -29,3 +29,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Adding cancellation object to order object. This is to convey the details about a cancelled order
 - Using standard enums for form headings
 - Using `2.0.0` as the first version to adhere to ondc conventions
+- Using `quote` to capture nav, units and other fulfillment details
