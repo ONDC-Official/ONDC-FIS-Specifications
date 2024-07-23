@@ -1,4 +1,4 @@
-summary: Personal Loan with Account Aggregator & monitoring consent
+summary: Personal Loan without Account Aggregator & monitoring consent
 details:
   - description: Discovery of Funds
     mermaid: >-
@@ -159,49 +159,51 @@ steps:
     example:
       value:
         $ref: "../../examples/personal-loans/select/select-request-personal-info.yaml"
-  - summary: Creates a consent request with selected product
-    api: on_select
-    details:
-      - description: The lender platform generates a consent request for capturing borrower's consent.
-        mermaid: >-
-          sequenceDiagram
-            title  Selection
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Borrower Platform (BAP)->>Lender Form Service: Form Submission
-            Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            rect rgb(191, 223, 255) 
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/personal-loans/on_select/on_select-request-consent-created.yaml"    
-  - summary: Approval of consent request
-    api: select
-    details:
-      - description: The BAP approves the consent request and sends the loan product, the loan provider, and the customer's identity to the BPP.
-        mermaid: >-
-          sequenceDiagram
-            title  Selection
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            rect rgb(191, 223, 255) 
-            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/personal-loans/select/select-request-set-consent-approved.yaml"
+  
+  # - summary: Creates a consent request with selected product
+  #   api: on_select
+  #   details:
+  #     - description: The lender platform generates a consent request for capturing borrower's consent.
+  #       mermaid: >-
+  #         sequenceDiagram
+  #           title  Selection
+  #           participant Borrower Platform (BAP)
+  #           participant Lender Platform (BPP)
+  #           participant Lender Form Service
+  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
+  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
+  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
+  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+  #           rect rgb(191, 223, 255) 
+  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  #           end
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/personal-loans/on_select/on_select-request-consent-created.yaml"    
+  # - summary: Approval of consent request
+  #   api: select
+  #   details:
+  #     - description: The BAP approves the consent request and sends the loan product, the loan provider, and the customer's identity to the BPP.
+  #       mermaid: >-
+  #         sequenceDiagram
+  #           title  Selection
+  #           participant Borrower Platform (BAP)
+  #           participant Lender Platform (BPP)
+  #           rect rgb(191, 223, 255) 
+  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+  #           end
+  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/personal-loans/select/select-request-set-consent-approved.yaml"
+  
   - summary: The lender offers the required form for the chosen personal loan service.
     api: on_select
     details:
@@ -552,6 +554,8 @@ steps:
             end
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
@@ -576,68 +580,76 @@ steps:
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
         $ref: "../../examples/personal-loans/on_confirm/on_confirm-request.yaml" 
-  #consent-handler flow
-  - summary: The provider platform updates the consumer.
-    api: on_update
-    details:
-      - description: The provider platform updates the consumer with on_update request response.
-        mermaid: >-
-          sequenceDiagram
-            title Order Fulfillment
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/personal-loans/on_update/on_update-request-consent.yaml"
+  #account mointoring flow
+  # - summary: The provider platform updates the consumer.
+  #   api: on_update
+  #   details:
+  #     - description: The provider platform updates the consumer with on_update request response.
+  #       mermaid: >-
+  #         sequenceDiagram
+  #           title Order Fulfillment
+  #           participant Borrower Platform (BAP)
+  #           participant Lender Platform (BPP)
+  #           rect rgb(191, 223, 255)
+  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  #           end
+  #           Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/personal-loans/on_update/on_update-request-consent.yaml"
     
-  - summary: The borrower (BAP) sends the update request by sending the order ID.
-    api: update
-    details:
-      - description: The borrower (BAP) sends the update request by sending the order ID to be updated along with the object in the order to be updated as update_target.
-        mermaid: >-
-          sequenceDiagram
-            title Order Fulfillment
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  # - summary: The borrower (BAP) sends the update request by sending the order ID.
+  #   api: update
+  #   details:
+  #     - description: The borrower (BAP) sends the update request by sending the order ID to be updated along with the object in the order to be updated as update_target.
+  #       mermaid: >-
+  #         sequenceDiagram
+  #           title Order Fulfillment
+  #           participant Borrower Platform (BAP)
+  #           participant Lender Platform (BPP)
+  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  #           rect rgb(191, 223, 255)
+  #           Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+  #           end
+  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
            
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/personal-loans/update/update-request-consent-approved.yaml" 
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/personal-loans/update/update-request-consent-approved.yaml" 
+  
   - summary: The provider platform updates the consumer.
     api: on_update
     details:
       - description: The provider platform updates the consumer with on_update request response.
         mermaid: >-
           sequenceDiagram
-            title Order Fulfillment
+            title Order Confirmation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
             Lender Platform (BPP)->>Borrower Platform (BAP):on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
