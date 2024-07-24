@@ -31,3 +31,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Using `2.0.0` as the first version to adhere to ondc conventions
 - Using `quote` to capture nav, units and other fulfillment details
 - Moving sip order frequency into fulfillment stops to avoid duplicate usage of `item.time` attribute and also to keep it close to the fulfillment as the recurring nature of the order is captured at the fulfillment level
+- Using capital case for `BPP` and `INR` instead of smallcase
