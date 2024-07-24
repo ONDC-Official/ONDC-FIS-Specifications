@@ -34,3 +34,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Using capital case for `BPP` and `INR` instead of smallcase
 - Removing provider code enums to reduce dependency on the protocol for every new provider
 - Adding missing submit tag to forms
+- Changing `MASKED_FOLIO_NUMBER` to `FOLIO_NUMBER` to support both masked and unmasked in one attribute. It is left to the seller app to decide what to send in that
