@@ -38,3 +38,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Adding `transaction_id` to payment params to capture reference number for successful payments
 - Using unsolicited `on_update` calls instead of `on_status` for updates to order involving attributes, tags other than just status
 - Using just the updated paths in update call example
+- Adding scheme offer documents in the scheme information tag group
