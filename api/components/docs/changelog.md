@@ -40,3 +40,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Using just the updated paths in update call example
 - Adding scheme offer documents in the scheme information tag group
 - Moving Investor TnC from `documents` to `CONSUMER_TNC` tag in scheme plan item. This way the buyer app can choose to get the tnc accepted at any point in the journey
+- Fixing item tag group codes: `IDENTIFIERS` TO `PLAN_IDENTIFIERS`, `OPTIONS` TO `PLAN_OPTIONS`, `INFORMATION` TO `SCHEME_INFORMATION`
