@@ -36,3 +36,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Adding missing submit tag to forms
 - Changing `MASKED_FOLIO_NUMBER` to `FOLIO_NUMBER` to support both masked and unmasked in one attribute. It is left to the seller app to decide what to send in that
 - Adding `transaction_id` to payment params to capture reference number for successful payments
+- Using unsolicited `on_update` calls instead of `on_status` for updates to order involving attributes, tags other than just status
