@@ -41,3 +41,4 @@ As we keep getting feedback from the participants, the protocol specs might chan
 - Adding scheme offer documents in the scheme information tag group
 - Moving Investor TnC from `documents` to `CONSUMER_TNC` tag in scheme plan item. This way the buyer app can choose to get the tnc accepted at any point in the journey
 - Fixing item tag group codes: `IDENTIFIERS` TO `PLAN_IDENTIFIERS`, `OPTIONS` TO `PLAN_OPTIONS`, `INFORMATION` TO `SCHEME_INFORMATION`
+- Using ISO8601 Duration format for sip frequencies in fulfillment tag groups. This makes it easy for the buyer app to send the selected frequency as is while placing the order.
