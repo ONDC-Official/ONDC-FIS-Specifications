@@ -51,3 +51,23 @@ sequenceDiagram
     end
 ```
 ---
+
+### Cancellation
+
+Confirmed orders can be cancelled if allowed by the provider/bpp
+
+#### lumpsum
+1. cancellation can happen in fulfillment states = pending (i.e before payment is made)
+2. provider can cancel if the payment is not received within a certain time period and mention the reason as payment not received
+
+#### sip
+1. cancellation can happen in fulfillment states = pending, ongoing
+2. provider can cancel if the mandate is not registered within a certain time period and mention the reason as payment instrument not received
+
+#### sip instalment
+1. cancellation can happen in fulfillment states = pending (i.e before payment is made)
+
+#### redemption
+1. cancellation is not possible as the fulfillment gets started immediately after the order is accepted
+
+Cancellation reasons are provided as enums
