@@ -1,4 +1,4 @@
-summary: Personal Loan- Without Account Aggregator
+summary: Personal Loan - Without Account Aggregator
 details:
   - description: Discovery of Funds
     mermaid: |-
@@ -606,6 +606,8 @@ steps:
             end
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK 
     reference: if any
     example:
       value:
@@ -632,27 +634,34 @@ steps:
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
         $ref: ../../examples/personal-loans/on_confirm/on_confirm-request.yaml
   - summary: The provider platform updates the consumer.
-    api: on_update
+    api: on_status
     details:
       - description: >-
           The provider platform updates the consumer with on_update request
           response.
         mermaid: |-
           sequenceDiagram
-            title Order Fulfillment
+            title Order Confirmation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
            
@@ -660,7 +669,7 @@ steps:
     example:
       value:
         $ref: >-
-          ../../examples/personal-loans/on_update/on_update_request-disbursed-without-AA.yaml
+          ../../examples/personal-loans/on_status/on_status_request-disbursed-without-AA.yaml
   - summary: The borrower seeks the most recent loan status update.
     api: status
     details:
