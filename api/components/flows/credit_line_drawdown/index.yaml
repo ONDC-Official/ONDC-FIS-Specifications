@@ -1,0 +1,256 @@
+summary: working_capital_line_drawdown
+details:
+  - description: Working Capital Line Drawdown
+    mermaid: >
+      sequenceDiagram
+        title Loan Drawdown
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        participant Lender Form Service
+        Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
+        Lender Form Service-->>Borrower Platform (BAP): Form Received
+        Borrower Platform (BAP)->>Lender Form Service: Form Submission
+        Lender Form Service-->>Borrower Platform (BAP): Submission ID
+        Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+       Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+steps:
+  - summary: "The borrower initiates loan drawdown request using the reference if
+      from base transaction "
+    reference: if any
+    api: init
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/init/init-request-initate-drawdown.yaml
+    details:
+      - description: "The borrower initiates loan drawdown request using the reference
+          if from base transaction "
+        mermaid: >
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+  - summary: The lender will share the form details for invoice upload
+    reference: if any
+    api: on_init
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/on_init/on_init-invoice-upload-form.yaml
+    details:
+      - description: The lender will share the form details for invoice upload
+        mermaid: >-
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+  - summary: The borrower receives the invoice details upload form
+    reference: if any
+    api: form
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/forms/Invoice Upload.html
+    details:
+      - description: The borrower receives the invoice details upload form
+        mermaid: >
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+  - summary: The borrower submits the form for Invoice upload
+    reference: if any
+    api: init
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/init/init-request-submit-invoice-form.yaml
+    details:
+      - description: The borrower submits the form for Invoice upload
+        mermaid: >
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - summary: The lender will share the disbursement and repayment details along with
+      request for OTP consent
+    reference: if any
+    api: on_init
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/on_init/on_init_consent_request.yaml
+    details:
+      - description: The lender will share the disbursement and repayment details along
+          with request for OTP consent
+        mermaid: >
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+  - summary: The Borrower will provide the OTP received in the confirm request
+    reference: if any
+    api: confirm
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/confirm/confirm-drawdown-with-consent.yaml
+    details:
+      - description: The Borrower will provide the OTP received in the confirm request
+        mermaid: >
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255) 
+           Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - summary: The lender will acknowledge the borrower's consent for disbursal
+    reference: if any
+    api: on_confirm
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/on_confirm/on_confirm-with-disbursement-details.yaml
+    details:
+      - description: The lender will acknowledge the borrower's consent for disbursal
+        mermaid: >
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - summary: The lender sends the completion of disbursal through unsolicited
+      on_update call
+    reference: if any
+    api: on_update
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/on_update/on_update_disbursement_update.yaml
+    details:
+      - description: The lender sends the completion of disbursal through unsolicited
+          on_update call
+        mermaid: >-
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+           Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - summary: The lender updates base transaction through unsolicited on_update call
+    reference: if any
+    api: on_update
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/on_update/on_update_disbursement_update_base_transaction.yaml
+    details:
+      - description: The lender updates base transaction through unsolicited on_update call
+        mermaid: >-
+          sequenceDiagram
+            title Loan Drawdown
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK

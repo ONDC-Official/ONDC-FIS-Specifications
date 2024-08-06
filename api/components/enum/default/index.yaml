@@ -1,5 +1,5 @@
 search:
-  context: &ref_0
+  context: &a1
     location:
       country:
         code:
@@ -9,8 +9,7 @@ search:
       city:
         code:
           - code: std:080
-            description: >-
-              Represent the city code that identifies the cities. In case of '*'
+            description: Represent the city code that identifies the cities. In case of '*'
               it will fetch all the cities where service is being provided.
             reference: <PR/Issue/Discussion Links md format text>
     domain:
@@ -19,34 +18,27 @@ search:
         reference: <PR/Issue/Discussion Links md format text>
   message:
     intent:
-      category: &ref_1
+      category:
         descriptor:
           code:
-            - code: PERSONAL_LOAN
-              description: >-
-                Describes an unsecured credit provided by financial institutions
-                based on criteria like employment history, repayment capacity,
-                income level, profession and credit history
-              reference: <PR/Issue/Discussion Links md format text
-            - code: PURCHASE_FINANCE
-              description: >-
-                Describes a digital journey where customers can discover the
-                best "loan offers" on the buyer apps to buy the products on
-                credit.
+            - code: WORKING_CAPITAL_LOAN
+              description: Describes an unsecured credit provided by financial institutions
+                based on criteria like GST Returns and Financial And Business
+                details
               reference: <PR/Issue/Discussion Links md format text
 on_search:
-  context: *ref_0
+  context: *a1
   message:
     catalog:
       providers:
-        items: &ref_2
-          descriptor:
+        items:
+          descriptor: &a2
             code:
               - code: LOAN
                 description: Describes item descriptor code
                 reference: <PR/Issue/Discussion Links md format text
           xinput:
-            form_response:
+            form_response: &a3
               status:
                 - code: PENDING
                   description: Describes the current state of the request.
@@ -65,53 +57,215 @@ on_search:
                   reference: <PR/Issue/Discussion Links md format text
             head:
               headings:
-                - code: EMANDATE
-                  description: Describes form heading.
+                - code: BANK_STATEMENT_AND_GST_RETURNS
+                  description: GST Returns and Bank Statement information
                   reference: <PR/Issue/Discussion Links md format text
-                - code: ESIGN
-                  description: Describes form heading.
+                - code: BUSINESS_AND_FINANCIAL_DOCUMENTS
+                  description: Business and Financial Information
                   reference: <PR/Issue/Discussion Links md format text
-                - code: MERCHANT_AND_PRDOUCT_DEATILS
-                  description: Describes form heading.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: PERSONAL_INFORMATION
-                  description: Describes form heading.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: SET_LOAN_AMOUNT
-                  description: Describes form heading.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: KYC
-                  description: Describes form heading.
-                  reference: <PR/Issue/Discussion Links md format text
-        categories: *ref_1
+        categories:
+          descriptor:
+            code:
+              - code: WORKING_CAPITAL_LOAN
+                description: Working capital loan offered by financial institutions for
+                  businesses
+                reference: <PR/Issue/Discussion Links md format text
 select:
-  context: *ref_0
-  message:
-    order: &ref_3
-      items: *ref_2
-on_select:
-  context: *ref_0
-  message:
-    order: *ref_3
-init:
-  context: *ref_0
+  context: *a1
   message:
     order:
-      payments:
-        collected_by: &ref_4
-          - code: BPP
-            description: When seller app is collecting the payment
-            reference: <PR/Issue/Discussion Links md format text
-          - code: BAP
-            description: When buyer app is collecting the payment
-            reference: <PR/Issue/Discussion Links md format text
-      items: *ref_2
-on_init:
-  context: *ref_0
+      items:
+        descriptor: *a2
+        xinput:
+          form_response: *a3
+          head:
+            headings:
+              - &a4
+                code: INDIVIDUAL_KYC
+                description: Individual KYC
+                reference: <PR/Issue/Discussion Links md format text
+              - code: ENTITY_KYC
+                description: Entity KYC
+                reference: <PR/Issue/Discussion Links md format text
+on_select:
+  context: *a1
   message:
-    order: &ref_5
-      items: *ref_2
-      payments: &ref_6
+    order:
+      items:
+        descriptor: *a2
+        xinput:
+          form_response: *a3
+          head:
+            headings:
+              - *a4
+              - code: ENTITY_KYC
+                description: Business KYC
+                reference: <PR/Issue/Discussion Links md format text
+      quote: &a12
+        breakup:
+          title:
+            - code: WORKING_CAPITAL_LIMIT
+              description: Describes the initial sum of limit borrowed from a lender, should
+                include unit INR.
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: CURRENT_UTLIZATION
+              description: Describes the amount which is already used by the borrower from the
+                working capital limit, should include unit INR.
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: PROCESSING_FEE
+              description: Describes the amount which is charged by the lender, should include
+                unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: INSURANCE_CHARGES
+              description: Describes the insurance charges which is charged by the lender,
+                should include unit INR.
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: OTHER_UPFRONT_CHARGES
+              description: Describes the other upfront charges which is charged by the lender,
+                should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: OTHER_CHARGES
+              description: Describes the other charges which is charged by the lender, should
+                include unit INR.
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: LATE_FEE_AMOUNT
+              description: Describes the late fee charges, in case of emi delays, should
+                include unit INR.
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: FORCLOSUER_CHARGES
+              description: Describes the charges associated with early loan repayment, should
+                include unit INR or %.
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: PRE_PAYMENT_CHARGE
+              description: Describes the amount charged by lender for pre payement, should
+                include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+init:
+  context: *a1
+  message:
+    order:
+      items: &a5
+        descriptor: *a2
+        xinput:
+          form_response: *a3
+          head:
+            headings:
+              - code: ACCOUNT_INFORMATION
+                description: Borrowers bank account details
+                reference: <PR/Issue/Discussion Links md format text
+              - code: ENACH
+                description: ENACH input
+                reference: <PR/Issue/Discussion Links md format text
+              - code: ESIGN
+                description: ESIGN of Loan Agreement
+                reference: <PR/Issue/Discussion Links md format text
+on_init:
+  context: *a1
+  message:
+    order:
+      items: *a5
+      fulfillments: &a13
+        state:
+          descriptor:
+            code:
+              - &a6
+                code: INITIATED
+                description: When loan gets initiated by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - &a7
+                code: SANCTIONED
+                description: Loan sanction is the approval of the loan by lender
+                reference: <PR/Issue/Discussion Links md format text
+              - &a8
+                code: DISBURSED
+                description: When the lender delivers the amount to the borrower after
+                  verification and approval
+                reference: <PR/Issue/Discussion Links md format text
+              - &a9
+                code: PENDING
+                description: When the loan is in pending state
+                reference: <PR/Issue/Discussion Links md format text
+              - &a10
+                code: REJECTED
+                description: When the loan request gets rejected by lender due to some reason
+                reference: <PR/Issue/Discussion Links md format text
+              - &a11
+                code: COMPLETED
+                description: When the overall process for loan gets over
+                reference: <PR/Issue/Discussion Links md format text
+              - code: PLACED
+                description: Describes the base-order's fulfillment state.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: DELIVERED
+                description: Describes the base-order's fulfillment state.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: CANCELLED
+                description: Describes the base-order's fulfillment state.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: VOID
+                description: Describes base-order's fulfillment state.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: RETURNED
+                description: Describes base-order's fulfillment state.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: REFUNDED
+                description: Describes base-order's fulfillment state.
+                reference: <PR/Issue/Discussion Links md format text
+        type:
+          - code: LOAN
+            description: Describes the fulfillments type for loan item.
+            reference: <PR/Issue/Discussion Links md format text
+          - code: BASE_ORDER
+            description: Describes the fulfillments type for order item
+            reference: <PR/Issue/Discussion Links md format text.
+      cancellation_terms: &a14
+        fulfillment_state:
+          descriptor:
+            name:
+              - *a6
+              - *a7
+              - *a8
+              - *a9
+              - *a10
+              - *a11
+      quote: *a12
+confirm:
+  context: *a1
+  message:
+    order:
+      items:
+        descriptor: *a2
+        xinput:
+          form_response: *a3
+on_confirm: &a15
+  context: *a1
+  message:
+    order:
+      items:
+        descriptor: *a2
+        xinput:
+          form_response: *a3
+          head:
+            headings:
+              - code: EMANDATE
+                description: Describes form heading.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: ESIGN
+                description: Describes form heading.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: MERCHANT_AND_PRDOUCT_DEATILS
+                description: Describes form heading.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: PERSONAL_INFORMATION
+                description: Describes form heading.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: SET_LOAN_AMOUNT
+                description: Describes form heading.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: KYC
+                description: Describes form heading.
+                reference: <PR/Issue/Discussion Links md format text
+      payments: &a16
         type:
           - code: ON-ORDER
             description: Payment happens on order placement
@@ -122,7 +276,13 @@ on_init:
           - code: POST-FULFILLMENT
             description: Payment happens post completion of the service
             reference: <PR/Issue/Discussion Links md format text
-        collected_by: *ref_4
+        collected_by:
+          - code: BPP
+            description: When seller app is collecting the payment
+            reference: <PR/Issue/Discussion Links md format text
+          - code: BAP
+            description: When buyer app is collecting the payment
+            reference: <PR/Issue/Discussion Links md format text
         status:
           - code: PAID
             description: Reflects current status wheteher installment has been paid or not
@@ -139,8 +299,7 @@ on_init:
         time:
           label:
             - code: MISSED_EMI_PAYMENT
-              description: >-
-                Describes, when buyer missed to make a scheduled installment
+              description: Describes, when buyer missed to make a scheduled installment
                 payment.
               reference: <PR/Issue/Discussion Links md format text
             - code: FORECLOSURE
@@ -150,220 +309,19 @@ on_init:
               description: Describes, when buyer initates the pre part intent.
               reference: <PR/Issue/Discussion Links md format text
             - code: INSTALLMENT
-              description: >-
-                Describes, an amount that a borrower makes over a period of time
-                in order to pay off a loan.
+              description: Describes, an amount that a borrower makes over a period of time in
+                order to pay off a loan.
               reference: <PR/Issue/Discussion Links md format text
-      fulfillments:
-        state:
-          descriptor:
-            code:
-              - code: INITIATED
-                description: When loan gets initiated by lender
-                reference: <PR/Issue/Discussion Links md format text
-              - code: SANCTIONED
-                description: Loan sanction is the approval of the loan by lender
-                reference: <PR/Issue/Discussion Links md format text
-              - code: DISBURSED
-                description: >-
-                  When the lender delivers the amount to the borrower after
-                  verification and approval
-                reference: <PR/Issue/Discussion Links md format text
-              - code: PENDING
-                description: When the loan is in pending state
-                reference: <PR/Issue/Discussion Links md format text
-              - code: REJECTED
-                description: >-
-                  When the loan request gets rejected by lender due to some
-                  reason
-                reference: <PR/Issue/Discussion Links md format text
-              - code: COMPLETED
-                description: When the overall process for loan gets over
-                reference: <PR/Issue/Discussion Links md format text
-              - code: PLACED
-                description: Describes the base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: DELIVERED
-                description: Describes the base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: CANCELLED
-                description: Describes the base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: VOID
-                description: Describes base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: RETURNED
-                description: Describes base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: REFUNDED
-                description: Describes base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-        type:
-          - code: LOAN
-            description: Describes the fulfillments type for loan item.
-            reference: <PR/Issue/Discussion Links md format text
-          - code: BASE_ORDER
-            description: Describes the fulfillments type for order item
-            reference: <PR/Issue/Discussion Links md format text.
-      cancellation_terms:
-        fulfillment_state:
-          descriptor:
-            name:
-              - code: INITIATED
-                description: When loan gets initiated by lender
-                reference: <PR/Issue/Discussion Links md format text
-              - code: SANCTIONED
-                description: Loan sanction is the approval of the loan by lender
-                reference: <PR/Issue/Discussion Links md format text
-              - code: DISBURSED
-                description: >-
-                  When the lender delivers the amount to the borrower after
-                  verification and approval
-                reference: <PR/Issue/Discussion Links md format text
-              - code: PENDING
-                description: When the loan is in pending state
-                reference: <PR/Issue/Discussion Links md format text
-              - code: REJECTED
-                description: >-
-                  When the loan request gets rejected by lender due to some
-                  reason
-                reference: <PR/Issue/Discussion Links md format text
-              - code: COMPLETED
-                description: When the overall process for loan gets over
-                reference: <PR/Issue/Discussion Links md format text
-      quote:
-        breakup:
-          title:
-            - code: PRINCIPAL_AMOUNT
-              description: >-
-                Describes the initial sum of money borrowed from a lender,
-                should include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: INTEREST_AMOUNT
-              description: >-
-                Describes the amount need to be paid in addition to principal
-                amount, should include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: PROCESSING_FEE
-              description: >-
-                Describes the amount which is charged by the lender, should
-                include unit INR or %.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: OTHER_UPFRONT_CHARGES
-              description: >-
-                Describes the other upfront charges which is charged by the
-                lender, should include unit INR or %.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: INSURANCE_CHARGES
-              description: >-
-                Describes the insurance charges which is charged by the lender,
-                should include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: NET_DISBURSED_AMOUNT
-              description: >-
-                Describes the amount of money which is disbursed as final
-                amount, should include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: OTHER_CHARGES
-              description: >-
-                Describes the other charges which is charged by the lender,
-                should include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: LATE_FEE_AMOUNT
-              description: >-
-                Describes the late fee charges, in case of emi delays, should
-                include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: OUTSTANDING_PRINCIPAL
-              description: >-
-                Describes the the remaining amount of the original loan, should
-                include unit INR.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: FORCLOSUER_CHARGES
-              description: >-
-                Describes the charges associated with early loan repayment,
-                should include unit INR or %.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: OUTSTANDING_INTEREST
-              description: >-
-                Describes the remaining interest of the original loan, should
-                include unit INR or %.
-              reference: <PR/Issue/Discussion Links md format text
-            - code: PRE_PAYMENT_CHARGE, should include unit INR or %.
-              description: Describes the amount charged by lender for pre payement.
-              reference: <PR/Issue/Discussion Links md format text
-confirm:
-  context: *ref_0
+      fulfillments: *a13
+      cancellation_terms: *a14
+      quote: *a12
+status:
+  context: *a1
+on_status: *a15
+update: &a17
+  context: *a1
   message:
     order:
-      items: *ref_2
-on_confirm:
-  context: *ref_0
-  message:
-    order: *ref_5
-status:
-  context: *ref_0
-on_status:
-  context: *ref_0
-  message:
-    order: *ref_5
-update:
-  context: *ref_0
-  message:
-    order: &ref_7
-      payments: *ref_6
-      fulfillments:
-        state:
-          descriptor:
-            code:
-              - code: INITIATED
-                description: When loan gets initiated by lender
-                reference: <PR/Issue/Discussion Links md format text
-              - code: SANCTIONED
-                description: Loan sanction is the approval of the loan by lender
-                reference: <PR/Issue/Discussion Links md format text
-              - code: DISBURSED
-                description: >-
-                  When the lender delivers the amount to the borrower after
-                  verification and approval
-                reference: <PR/Issue/Discussion Links md format text
-              - code: PENDING
-                description: When the loan is in pending state
-                reference: <PR/Issue/Discussion Links md format text
-              - code: REJECTED
-                description: >-
-                  When the loan request gets rejected by lender due to some
-                  reason
-                reference: <PR/Issue/Discussion Links md format text
-              - code: COMPLETED
-                description: When the overall process for loan gets over
-                reference: <PR/Issue/Discussion Links md format text
-              - code: PLACED
-                description: Describes the base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: DELIVERED
-                description: Describes the base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: CANCELLED
-                description: Describes the base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: VOID
-                description: Describes base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: RETURNED
-                description: Describes base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-              - code: REFUNDED
-                description: Describes base-order's fulfillment state.
-                reference: <PR/Issue/Discussion Links md format text
-        type:
-          - code: LOAN
-            description: Describes the fulfillments type for loan item.
-            reference: <PR/Issue/Discussion Links md format text
-          - code: BASE_ORDER
-            description: Describes the fulfillments type for order item
-            reference: <PR/Issue/Discussion Links md format text.
-on_update:
-  context: *ref_0
-  message:
-    order: *ref_7
+      payments: *a16
+      fulfillments: *a13
+on_update: *a17
