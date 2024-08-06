@@ -1,4 +1,4 @@
-## Log submission Scenarios for Personal Loan
+## Log submission Scenarios for Working Capital Loan
 
 #### Instructions
 
@@ -31,7 +31,7 @@ These naming conventions ensure clear identification and organization of files b
 
 - **Flow 1**
 
-  Borrower searches for a "Personal Loan" on a Buyer App compares and selects from the available loan offerings received from the seller app (aka lender). Borrowe is able to avail the loan by submitting all the relevant details/documents and gets the loan disbursed into their given bank accounts.
+  Borrower searches for a "Working Capital" on a Buyer App compares and selects from the available loan offerings received from the seller app (aka lender). Borrowe is able to avail the loan by submitting all the relevant details/documents and gets the loan disbursed into their given bank accounts.
 
   Unsolicited /On_status call from seller app to buyer app for every redirection form ("mime_type": "application/html").
 

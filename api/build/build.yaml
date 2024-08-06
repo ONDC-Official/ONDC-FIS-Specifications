@@ -4568,7 +4568,7 @@ x-flows:
         reference: if any
         api: init
         example:
-          value: &ref_28
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -4618,12 +4618,6 @@ x-flows:
                 items:
                   - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
                     parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
-                    xinput:
-                      form:
-                        id: <form_business_kyc_F04>
-                      form_response:
-                        status: SUCCESS
-                        submission_id: <form_submission_id_business_kyc_F04>
         details:
           - description: 'The borrower submits the Entity KYC form in the init '
             mermaid: |-
@@ -4875,7 +4869,7 @@ x-flows:
         reference: if any
         api: update
         example:
-          value: &ref_56
+          value: &ref_58
             context:
               domain: ONDC:FIS12
               version: 2.1.0
@@ -4924,7 +4918,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_48
+          value: &ref_49
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -5171,7 +5165,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_49
+          value: &ref_50
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -5418,7 +5412,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_50
+          value: &ref_51
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -5730,7 +5724,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
-  - summary: Working Capital Loan
+  - summary: Credit Line Assignment
     details:
       - description: Discovery Working Capital Loan
         mermaid: |-
@@ -5785,7 +5779,11 @@ x-flows:
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): init
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             Lender Platform (BPP)->>Borrower Platform (BAP):on_init
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
@@ -5812,6 +5810,10 @@ x-flows:
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             Lender Platform (BPP)->>Borrower Platform (BAP):on_init
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Esign Loan Agreement )
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
       - description: Order Confirmation
         mermaid: |-
           sequenceDiagram
@@ -5819,10 +5821,6 @@ x-flows:
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Esign Loan Agreement )
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Borrower Platform (BAP)->>Lender Form Service: Form Submission
-            Lender Form Service-->>Borrower Platform (BAP): Submission ID
             Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
@@ -5833,7 +5831,7 @@ x-flows:
         reference: if any
         api: search
         example:
-          value: &ref_52
+          value: &ref_53
             context:
               domain: ONDC:FIS12
               location:
@@ -5877,7 +5875,7 @@ x-flows:
         reference: if any
         api: on_search
         example:
-          value: &ref_43
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -6086,43 +6084,11 @@ x-flows:
                 end
                 Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Form Service->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: User submits the GST and Bank Statement information
         reference: if any
         api: search
         example:
-          value: &ref_54
+          value: &ref_55
             context:
               domain: ONDC:FIS12
               location:
@@ -6173,41 +6139,11 @@ x-flows:
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_search
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Form Service->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: Lender provides the form input for business and financials details
         reference: if any
         api: on_search
         example:
-          value: &ref_44
+          value: &ref_45
             context:
               domain: ONDC:FIS12
               location:
@@ -6334,10 +6270,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
@@ -6348,32 +6280,6 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Form Service->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: >-
           The borrower receives the working capital loan form which includes the
           business and financial details
@@ -6412,12 +6318,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_search
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 rect rgb(191, 223, 255) 
@@ -6428,35 +6328,11 @@ x-flows:
                 end
                 Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Form Service->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: User submits the Business and Financial details information
         reference: if any
         api: search
         example:
-          value: &ref_53
+          value: &ref_54
             context:
               domain: ONDC:FIS12
               location:
@@ -6509,14 +6385,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
@@ -6527,35 +6395,13 @@ x-flows:
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Form Service->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: >-
           The lender will provide working capital loan offer with all the loan
           details
         reference: if any
         api: on_search
         example:
-          value: &ref_45
+          value: &ref_46
             context:
               domain: ONDC:FIS12
               location:
@@ -6804,19 +6650,10 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-
                 Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
@@ -6825,33 +6662,13 @@ x-flows:
                 end
                 Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Form Service->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: >-
           The Borrower chooses one of the offer from the the list of offers from
           the lenders
         reference: if any
         api: select
         example:
-          value: &ref_55
+          value: &ref_56
             context:
               domain: ONDC:FIS12
               location:
@@ -6911,44 +6728,12 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 rect rgb(191, 223, 255) 
                 Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_select
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: 'The lender will share form input for individual KYC '
@@ -6964,23 +6749,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                
                 Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
@@ -6989,22 +6757,6 @@ x-flows:
                 end
                Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
-               Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: 'The borrower receives the form link for individual KYC completion '
         reference: if any
         api: form
@@ -7018,46 +6770,13 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_select
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               rect rgb(191, 223, 255) 
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 end
-               Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: >-
           The lender sends the completion status of Individual KYC through
@@ -7076,27 +6795,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                rect rgb(191, 223, 255) 
@@ -7105,16 +6803,6 @@ x-flows:
                 end
                 Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower submits the form for Individual KYC
         reference: if any
         api: select
@@ -7128,28 +6816,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
                Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                rect rgb(191, 223, 255) 
@@ -7158,18 +6824,10 @@ x-flows:
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_select
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower receives form for entity KYC
         reference: if any
         api: on_select
-        example:
+        example: &ref_28
           value: *ref_27
         details:
           - description: The borrower receives form for entity KYC
@@ -7179,33 +6837,11 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
                Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_select
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
@@ -7213,10 +6849,6 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower fetches the form for entity KYC
         reference: if any
         api: form
@@ -7274,36 +6906,9 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_select
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-               Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
@@ -7311,56 +6916,183 @@ x-flows:
                 end
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-      - summary: 'The borrower submits the Entity KYC form in the init '
+      - summary: The borrower submits the Entity KYC form
         reference: if any
-        api: init
+        api: select
         example:
-          value: *ref_28
+          value: &ref_57
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: select
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://bap.credit.becknprotocol.io/
+              bap_id: bap.credit.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  fulfillments:
+                    - id: '1333'
+                      customer:
+                        person:
+                          name: John Doe
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252U
+                              type: PAN
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                    - id: '1334'
+                      customer:
+                        person:
+                          name: Co Applicant 1
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252A
+                              type: PAN
+                        contact:
+                          email: applicant.1@gmail.com
+                          phone: '7888888888'
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    xinput:
+                      form:
+                        id: <form_business_kyc_F04>
+                      form_response:
+                        status: SUCCESS
+                        submission_id: <form_submission_id_business_kyc_F04>
         details:
-          - description: 'The borrower submits the Entity KYC form in the init '
+          - description: The borrower submits the Entity KYC form
             mermaid: |-
               sequenceDiagram
                 title  Order creation
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-               Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - summary: >-
+          The lender will acknowledge the borrower's completion of entity KYC in
+          Checklists 
+        reference: if any
+        api: on_select
+        example: *ref_28
+        details:
+          - description: >-
+              The lender will acknowledge the borrower's completion of entity
+              KYC in Checklists 
+            mermaid: |-
+              sequenceDiagram
+                title  Order creation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+      - summary: The borrower initiates the order for confirmation
+        reference: if any
+        api: init
+        example:
+          value: &ref_32
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: init
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.0
+              bap_uri: https://bap.credit.becknprotocol.io/
+              bap_id: bap.credit.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  fulfillments:
+                    - id: '1333'
+                      customer:
+                        person:
+                          name: John Doe
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252U
+                              type: PAN
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                    - id: '1334'
+                      customer:
+                        person:
+                          name: Co Applicant 1
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252A
+                              type: PAN
+                        contact:
+                          email: applicant.1@gmail.com
+                          phone: '7888888888'
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    xinput:
+                      form:
+                        id: <form_account_info_F05>
+                      form_response:
+                        status: SUCCESS
+                        submission_id: <form_submission_id_account_info_F05>
+        details:
+          - description: The borrower initiates the order for confirmation
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
@@ -7370,7 +7102,7 @@ x-flows:
         reference: if any
         api: on_init
         example:
-          value: &ref_38
+          value: &ref_39
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -7662,42 +7394,9 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(GST & Bank Statements)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Business & Financials)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-               Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
@@ -7728,7 +7427,7 @@ x-flows:
             </html>
         details:
           - description: Borrower fetches form details for Account Information
-            mermaid: |
+            mermaid: |+
               sequenceDiagram
                 title Initializing Order
                 participant Borrower Platform (BAP)
@@ -7739,112 +7438,17 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-               end
+                end
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Enach)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-      - summary: The borrower submits the Account Information
-        reference: if any
-        api: init
-        example:
-          value: &ref_32
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              action: init
-              timestamp: '2023-05-25T05:23:03.443Z'
-              version: 2.0.0
-              bap_uri: https://bap.credit.becknprotocol.io/
-              bap_id: bap.credit.becknprotocol.io
-              ttl: PT10M
-              bpp_id: bpp.credit.becknprotocol.org
-              bpp_uri: https://bpp.credit.becknprotocol.org
-            message:
-              order:
-                provider:
-                  id: PROVIDER_ID
-                  fulfillments:
-                    - id: '1333'
-                      customer:
-                        person:
-                          name: John Doe
-                          dob: '1998-09-12'
-                          gender: Male
-                          creds:
-                            - id: BXU87Y252U
-                              type: PAN
-                        contact:
-                          email: john.doe@gmail.com
-                          phone: '7888888888'
-                    - id: '1334'
-                      customer:
-                        person:
-                          name: Co Applicant 1
-                          dob: '1998-09-12'
-                          gender: Male
-                          creds:
-                            - id: BXU87Y252A
-                              type: PAN
-                        contact:
-                          email: applicant.1@gmail.com
-                          phone: '7888888888'
-                items:
-                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
-                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
-                    xinput:
-                      form:
-                        id: <form_account_info_F05>
-                      form_response:
-                        status: SUCCESS
-                        submission_id: <form_submission_id_account_info_F05>
-        details:
-          - description: The borrower submits the Account Information
-            mermaid: |
-              sequenceDiagram
-                title Initializing Order
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                rect rgb(191, 223, 255) 
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-               end
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Enach)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+
       - summary: >-
           The lender shares the information for e-nach and payment link for
           processing fee payment collection
         reference: if any
         api: on_init
         example:
-          value: &ref_41
+          value: &ref_42
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -8140,30 +7744,22 @@ x-flows:
           - description: >-
               The lender shares the information for e-nach and payment link for
               processing fee payment collection
-            mermaid: |
+            mermaid: |-
               sequenceDiagram
                 title Initializing Order
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               end
+                end
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Enach)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower fetches link for e-mandate
         reference: if any
         api: form
@@ -8177,15 +7773,9 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
@@ -8193,17 +7783,13 @@ x-flows:
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: >-
           The lender sends the completion status of e-mandate and payment
           through unsolicited on_status call
         reference: if any
         api: on_status
         example:
-          value: &ref_46
+          value: &ref_47
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -8487,32 +8073,22 @@ x-flows:
           - description: >-
               The lender sends the completion status of e-mandate and payment
               through unsolicited on_status call
-            mermaid: |
+            mermaid: |-
               sequenceDiagram
                 title Initializing Order
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower submits the form for e-mandate
         reference: if any
         api: init
@@ -8576,21 +8152,9 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255) 
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
@@ -8600,7 +8164,7 @@ x-flows:
         reference: if any
         api: on_init
         example:
-          value: &ref_39
+          value: &ref_40
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -8900,20 +8464,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
@@ -8951,7 +8501,7 @@ x-flows:
         reference: if any
         api: on_status
         example:
-          value: &ref_47
+          value: &ref_48
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -9332,7 +8882,7 @@ x-flows:
         reference: if any
         api: on_confirm
         example:
-          value: &ref_36
+          value: &ref_37
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -9645,7 +9195,7 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
-  - summary: working_capital_line_drawdown
+  - summary: Credit Line Drawdown
     details:
       - description: Working Capital Line Drawdown
         mermaid: |
@@ -9724,23 +9274,11 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The lender will share the form details for invoice upload
         reference: if any
         api: on_init
         example:
-          value: &ref_40
+          value: &ref_41
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -9886,7 +9424,7 @@ x-flows:
                       required: true
         details:
           - description: The lender will share the form details for invoice upload
-            mermaid: |
+            mermaid: |-
               sequenceDiagram
                 title Loan Drawdown
                 participant Borrower Platform (BAP)
@@ -9902,18 +9440,6 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower receives the invoice details upload form
         reference: if any
         api: form
@@ -9966,8 +9492,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 rect rgb(191, 223, 255) 
@@ -9978,16 +9502,6 @@ x-flows:
                 end
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The borrower submits the form for Invoice upload
         reference: if any
         api: init
@@ -10025,10 +9539,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
@@ -10039,21 +9549,13 @@ x-flows:
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: >-
           The lender will share the disbursement and repayment details along
           with request for OTP consent
         reference: if any
         api: on_init
         example:
-          value: &ref_42
+          value: &ref_43
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -10241,10 +9743,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
@@ -10255,14 +9753,8 @@ x-flows:
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The Borrower will provide the OTP received in the confirm request
         reference: if any
         api: confirm
@@ -10305,17 +9797,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 rect rgb(191, 223, 255) 
@@ -10326,13 +9807,11 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Disbursement status)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_update(Base Transaction Update)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
       - summary: The lender will acknowledge the borrower's consent for disbursal
         reference: if any
         api: on_confirm
         example:
-          value: &ref_37
+          value: &ref_38
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -10519,20 +9998,9 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255) 
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
@@ -10559,19 +10027,6 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
@@ -10586,7 +10041,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_51
+          value: &ref_52
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -10887,20 +10342,7 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with reference order id)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Invoice details upload)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init (Consent Required)
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-               Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with consent OTP)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
@@ -10925,9 +10367,6 @@ x-examples:
             value: *ref_31
       init:
         examples:
-          - summary: init_entity_kyc.yaml
-            description: TBD
-            value: *ref_28
           - summary: init_bank_account_information.yaml
             description: TBD
             value: *ref_32
@@ -10940,42 +10379,45 @@ x-examples:
           - summary: init-request-submit-invoice-form.yaml
             description: init-request-submit-invoice-form.yaml
             value: *ref_35
+          - summary: init_entity_kyc.yaml
+            description: TBD
+            value: *ref_36
       on_confirm:
         examples:
           - summary: on_confirm_loan_offer_details.yaml
             description: TBD
-            value: *ref_36
+            value: *ref_37
           - summary: on_confirm-with-disbursement-details.yaml
             description: on_confirm-with-disbursement-details.yaml
-            value: *ref_37
+            value: *ref_38
       on_init:
         examples:
           - summary: on_init_account_information.yaml
             description: TBD
-            value: *ref_38
+            value: *ref_39
           - summary: on_init_e_sign.yaml
             description: TBD
-            value: *ref_39
+            value: *ref_40
           - summary: on_init-invoice-upload-form.yaml
             description: on_init-invoice-upload-form.yaml
-            value: *ref_40
+            value: *ref_41
           - summary: on_init_e_mandate.yaml
             description: TBD
-            value: *ref_41
+            value: *ref_42
           - summary: on_init_consent_request.yaml
             description: on_init_consent_request.yaml
-            value: *ref_42
+            value: *ref_43
       on_search:
         examples:
           - summary: on_search_gst_bank_statement.yaml
             description: TBD
-            value: *ref_43
+            value: *ref_44
           - summary: on_search-business_financials.yaml
             description: TBD
-            value: *ref_44
+            value: *ref_45
           - summary: on_search-loan_offer.yaml
             description: TBD
-            value: *ref_45
+            value: *ref_46
       on_select:
         examples:
           - summary: on_select_individual_kyc
@@ -10984,6 +10426,274 @@ x-examples:
           - summary: on_select_entity_kyc.yaml
             description: TBD
             value: *ref_27
+          - summary: on_select_entity_kyc_ack.yaml
+            description: on_select_entity_kyc_ack.yaml
+            value:
+              context:
+                domain: ONDC:FIS
+                version: 2.0.0
+                action: on_select
+                bap_id: bizongo-next.becknprotocol.io
+                bap_uri: https://bizongo-next.becknprotocol.io/
+                bpp_id: bpp.credit.becknprotocol.org
+                bpp_uri: https://bpp.credit.becknprotocol.org
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+                message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+                timestamp: '2023-05-25T05:23:03.443Z'
+                ttl: PT30M
+              message:
+                order:
+                  provider:
+                    id: PROVIDER_ID
+                    descriptor:
+                      images:
+                        - size_type: sm
+                          url: >-
+                            https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                      long_desc: ICICI Bank Ltd, India.
+                      name: ICICI Bank
+                      short_desc: ICICI Bank Ltd
+                    fulfillments:
+                      - id: '1333'
+                        customer:
+                          person:
+                            name: John Doe
+                            dob: '1998-09-12'
+                            gender: Male
+                            creds:
+                              - id: BXU87Y252U
+                                type: PAN
+                          contact:
+                            email: john.doe@gmail.com
+                            phone: '7888888888'
+                        tags:
+                          - descriptor:
+                              code: CHECKLISTS
+                              name: Applicant Checklists
+                            list:
+                              - descriptor:
+                                  code: KYC
+                                  name: KYC
+                                value: COMPLETED
+                              - descriptor:
+                                  code: E_SIGN
+                                  name: E Sign Required
+                                value: PENDING
+                      - id: '1334'
+                        customer:
+                          person:
+                            name: Co Applicant 1
+                            dob: '1998-09-12'
+                            gender: Male
+                            creds:
+                              - id: BXU87Y252A
+                                type: PAN
+                          contact:
+                            email: applicant.1@gmail.com
+                            phone: '7888888888'
+                        tags:
+                          - descriptor:
+                              code: CHECKLISTS
+                              name: Applicant Checklists
+                            list:
+                              - descriptor:
+                                  code: KYC
+                                  name: KYC
+                                value: COMPLETED
+                              - descriptor:
+                                  code: E_SIGN
+                                  name: E Sign Required
+                                value: PENDING
+                    tags:
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: ICICI_LSP
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: lsp@iciciprulife.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: ICICI
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: lifeline@iciciprulife.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: 1800 1080
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: customer.care@icicibank.com
+                  quote:
+                    id: LOAN_LEAD_ID_OR_SIMILAR
+                    price:
+                      currency: INR
+                      value: '2792'
+                    breakup:
+                      - title: WOKRKING_CAPITAL_LIMIT
+                        price:
+                          value: '1100000'
+                          currency: INR
+                      - title: CURRENT_UTLIZATION
+                        price:
+                          value: '0'
+                          currency: INR
+                      - title: PROCESSING_FEE
+                        price:
+                          value: '1100'
+                          currency: INR
+                      - title: INSURANCE_CHARGES
+                        price:
+                          value: '1100'
+                          currency: INR
+                      - title: OTHER_UPFRONT_CHARGES
+                        price:
+                          value: '11000'
+                          currency: INR
+                      - title: OTHER_CHARGES
+                        price:
+                          value: '1100'
+                          currency: INR
+                    ttl: PT5D
+                  items:
+                    - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                      parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                      descriptor:
+                        code: LOAN
+                        name: Loan
+                      category_ids:
+                        - '101123'
+                      fulfillment_ids:
+                        - '1333'
+                        - '1334'
+                      price:
+                        currency: INR
+                        value: '14300'
+                      tags:
+                        - descriptor:
+                            code: INFO
+                            name: Information
+                          list:
+                            - descriptor:
+                                code: WORKING_CAPITAL_LIMIT
+                                name: Working capital limit
+                              value: 1100000 INR
+                            - descriptor:
+                                code: INTEREST_RATE
+                                name: Interest Rate
+                              value: 13.5 %
+                            - descriptor:
+                                code: PROCESSING_FEE
+                                name: Processing Fee
+                              value: 1200 INR
+                            - descriptor:
+                                code: INSURANCE_CHARGES
+                                name: Insurance Charges
+                              value: 231 INR
+                            - descriptor:
+                                code: OTHER_UPFRONT_CHARGES
+                                name: Other up front charges
+                                short_desc: Other up front charges
+                              value: 530 INR
+                            - descriptor:
+                                code: TERM
+                                name: Loan Term
+                              value: P24M
+                            - descriptor:
+                                code: REPAYMENT_FREQUENCY
+                                name: Repayment Frequency
+                                short_desc: Repayment Frequency by borrower
+                              value: P1M
+                            - descriptor:
+                                code: RATE_ANNUALISED_PENAL_CHARGES
+                                name: Rate Annualised penal charges
+                              value: 2 %
+                            - descriptor:
+                                code: OTHER_CHARGES
+                                name: Other Charges
+                              value: 231 INR
+                            - descriptor:
+                                code: COOL_OFF_PERIOD
+                                name: Cooling off
+                                short_desc: >-
+                                  Look up period during which borrower shouldn't
+                                  be charged any penalty on repayment loan.
+                              value: P12D
+                            - descriptor:
+                                code: KYC_MODE
+                                name: KYC Mode
+                              value: ONLINE
+                            - descriptor:
+                                code: CO_APPLICANT
+                                name: Co Applicant
+                              value: REQUIRED
+                          display: true
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Checklists
+                          list:
+                            - descriptor:
+                                code: INDIVIDUAL_KYC
+                                name: Indvidual KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: BUSINESS_KYC
+                                name: Business KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: PERSONAL_DISCUSSION
+                                name: Personal Discussion
+                              value: PENDING
+                            - descriptor:
+                                code: PHYSICAL_VERIFICATION
+                                name: Physical Verification
+                              value: PENDING
+                            - descriptor:
+                                code: ENACH
+                                name: Enach
+                              value: PENDING
+                            - descriptor:
+                                code: PROCESSING_FEE
+                                name: Processing Fees
+                              value: PENDING
+                            - descriptor:
+                                code: ESIGN
+                                name: Esign
+                              value: PENDING
+                          display: true
       on_status:
         examples:
           - summary: on_status_individual_kyc.yaml
@@ -10991,7 +10701,7 @@ x-examples:
             value: *ref_25
           - summary: on_status_e-mandate.yaml
             description: TBD
-            value: *ref_46
+            value: *ref_47
           - summary: on_status_individual_kyc_pending.yaml
             description: on_status_individual_kyc_pending.yaml
             value:
@@ -11267,7 +10977,7 @@ x-examples:
                           status: PENDING
           - summary: on_status_e-sign.yaml
             description: on_status_e-sign.yaml
-            value: *ref_47
+            value: *ref_48
       on_update:
         examples:
           - summary: on_update_disbursement_update.yaml
@@ -11275,40 +10985,43 @@ x-examples:
             value: *ref_29
           - summary: on_update_pre_part_payment.yaml
             description: on_update_pre_part_payment.yaml
-            value: *ref_48
+            value: *ref_49
           - summary: on_update_pre_part_payment_complete.yaml
             description: on_update_pre_part_payment_complete.yaml
-            value: *ref_49
+            value: *ref_50
           - summary: on_update_pre_part_payment_base_transaction.yaml
             description: on_update_pre_part_payment_base_transaction.yaml
-            value: *ref_50
+            value: *ref_51
           - summary: on_update_disbursement_update_base_transaction.yaml
             description: on_update_disbursement_update_base_transaction.yaml
-            value: *ref_51
+            value: *ref_52
       search:
         examples:
           - summary: search-request.yaml
             description: TBD
-            value: *ref_52
+            value: *ref_53
           - summary: search-request_business_financials.yaml
             description: TBD
-            value: *ref_53
+            value: *ref_54
           - summary: search-request_gst_bank_statements.yaml
             description: TBD
-            value: *ref_54
+            value: *ref_55
       select:
         examples:
           - summary: select_loan_offer.yaml
             description: TBD
-            value: *ref_55
+            value: *ref_56
           - summary: select-individual-kyc.yaml
             description: TBD
             value: *ref_26
+          - summary: select_business_kyc.yaml
+            description: select_business_kyc.yaml
+            value: *ref_57
       update:
         examples:
           - summary: update_pre_part_payment.yaml
             description: update_pre_part_payment.yaml
-            value: *ref_56
+            value: *ref_58
 x-attributes:
   working-capital-loan:
     attribute_set:
