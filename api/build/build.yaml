@@ -3441,6 +3441,771 @@ x-tags:
         provider: *ref_22
   on_update: *ref_23
 x-flows:
+  - summary: Drawdown Foreclosure
+    details:
+      - description: Detailed process for drawdown foreclosure
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (Pre-part-payment)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    references: if any
+    steps:
+      - summary: >-
+          The borrower (BAP) sends the update request for foreclosure using
+          drawdown order id 
+        reference: if any
+        api: update
+        example:
+          value: &ref_63
+            context:
+              domain: ONDC:FIS12
+              version: 2.1.0
+              action: update
+              bap_id: bap.credit.becknprotocol.io
+              bap_uri: https://bap.credit.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+            message:
+              update_target: payments
+              order:
+                id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                payments:
+                  - time:
+                      label: FORECLOSURE
+        details:
+          - description: >-
+              The borrower (BAP) sends the update request for foreclosure using
+              drawdown order id 
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (foreclosure)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - summary: >-
+          The lender will provide a payment details for foreclosure of drawdown
+          and also update the repayment details
+        reference: if any
+        api: on_update
+        example:
+          value: &ref_49
+            context:
+              domain: ONDC:FIS
+              version: 2.0.0
+              action: on_update
+              bap_id: bizongo-next.becknprotocol.io
+              bap_uri: https://bizongo-next.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: PT30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - size_type: sm
+                        url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                    long_desc: ICICI Bank Ltd, India.
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                  fulfillments:
+                    - id: '1333'
+                      customer:
+                        person:
+                          name: John Doe
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252U
+                              type: PAN
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                      tags:
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Applicant Checklists
+                          list:
+                            - descriptor:
+                                code: KYC
+                                name: KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: E_SIGN
+                                name: E Sign Required
+                              value: COMPLETED
+                    - id: '1334'
+                      customer:
+                        person:
+                          name: Co Applicant 1
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252A
+                              type: PAN
+                        contact:
+                          email: applicant.1@gmail.com
+                          phone: '7888888888'
+                      tags:
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Applicant Checklists
+                          list:
+                            - descriptor:
+                                code: KYC
+                                name: KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: E_SIGN
+                                name: E Sign Required
+                              value: COMPLETED
+                  tags:
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '14300'
+                  breakup:
+                    - title: WOKRKING_CAPITAL_LIMIT
+                      price:
+                        value: '1100000'
+                        currency: INR
+                    - title: CURRENT_UTLIZATION
+                      price:
+                        value: '20000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '11000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: FORCLOSUER_CHARGES
+                      price:
+                        value: '9536'
+                        currency: INR
+                    - title: OUTSTANDING_INTEREST
+                      price:
+                        value: '200'
+                        currency: INR
+                  ttl: PT5D
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    descriptor:
+                      code: LOAN
+                      name: Loan
+                    category_ids:
+                      - '101123'
+                    fulfillment_ids:
+                      - '1333'
+                      - '1334'
+                    price:
+                      currency: INR
+                      value: '14300'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: WORKING_CAPITAL_LIMIT
+                              name: Working capital limit
+                            value: 1100000 INR
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                            value: 13.5 %
+                          - descriptor:
+                              code: PROCESSING_FEE
+                              name: Processing Fee
+                            value: 1200 INR
+                          - descriptor:
+                              code: INSURANCE_CHARGES
+                              name: Insurance Charges
+                            value: 231 INR
+                          - descriptor:
+                              code: OTHER_UPFRONT_CHARGES
+                              name: Other up front charges
+                              short_desc: Other up front charges
+                            value: 530 INR
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                            value: P24M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: RATE_ANNUALISED_PENAL_CHARGES
+                              name: Rate Annualised penal charges
+                            value: 2 %
+                          - descriptor:
+                              code: OTHER_CHARGES
+                              name: Other Charges
+                            value: 231 INR
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: Cooling off
+                              short_desc: >-
+                                Look up period during which borrower shouldn't
+                                be charged any penalty on repayment loan.
+                            value: P12D
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                            value: ONLINE
+                          - descriptor:
+                              code: CO_APPLICANT
+                              name: Co Applicant
+                            value: REQUIRED
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Checklists
+                        list:
+                          - descriptor:
+                              code: INDIVIDUAL_KYC
+                              name: Indvidual KYC
+                            value: COMPLETED
+                          - descriptor:
+                              code: BUSINESS_KYC
+                              name: Business KYC
+                            value: COMPLETED
+                          - descriptor:
+                              code: PERSONAL_DISCUSSION
+                              name: Personal Discussion
+                            value: COMPLETED
+                          - descriptor:
+                              code: PHYSICAL_VERIFICATION
+                              name: Physical Verification
+                            value: COMPLETED
+                          - descriptor:
+                              code: ENACH
+                              name: Enach
+                            value: COMPLETED
+                          - descriptor:
+                              code: PROCESSING_FEE
+                              name: Processing Fees
+                            value: COMPLETED
+                          - descriptor:
+                              code: ESIGN
+                              name: Esign
+                            value: COMPLETED
+                        display: true
+                      - descriptor:
+                          code: WORKING_CAPITAL_TRANSACTIONS
+                          name: Working Capital Transactions
+                        list:
+                          - descriptor:
+                              code: LOAN_DRAWDOWN
+                              name: Loan Drawdown
+                            value: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN_DISBURSEMENT
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '1000'
+                      currency: INR
+                    status: PAID
+                    type: PRE-ORDER
+                    url: https://payment.fis.test.bpp.io
+                  - id: PAYMENT_ID_FORECLOSURE
+                    url: >-
+                      https://pg.icici.com/?amount=148616&ref_id=b5487595-42c3-4e20-bd43-ae21400f60f0
+                    params:
+                      amount: '20200'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: FORECLOSURE
+                    type: POST_FULFILLMENT
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        code: SANCTIONED
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://icicibank.com/loan/tnc.html
+                documents:
+                  - descriptor:
+                      code: LOAN_AGREEMENT
+                      name: Loan Agreement Document
+                      short_desc: Download your Loan Agreement document here
+                      long_desc: >-
+                        A Loan Agreement Document is a legal contract outlining
+                        terms such as loan amount, interest rate, repayment
+                        schedule, and collateral, binding a lender and borrower
+                        in a formal financial arrangement.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-agreement/O1.pdf
+                  - descriptor:
+                      code: LOAN_CANCELLATION
+                      name: Loan Cancellation Document
+                      short_desc: Download your Loan Cancellation document here
+                      long_desc: >-
+                        A Loan Cancellation Document is a formal agreement used
+                        to terminate an existing loan, releasing the borrower
+                        from repayment obligations and confirming the loan's
+                        cancellation.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-cancellation/O1.pdf
+        details:
+          - description: >-
+              The lender will provide a payment details for foreclosure of
+              drawdown and also update the repayment details
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (Foreclosure-payment)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - summary: The lender will update quotation in the base transaction
+        reference: if any
+        api: on_update
+        example:
+          value: &ref_50
+            context:
+              domain: ONDC:FIS
+              version: 2.0.0
+              action: on_update
+              bap_id: bizongo-next.becknprotocol.io
+              bap_uri: https://bizongo-next.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: PT30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - size_type: sm
+                        url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                    long_desc: ICICI Bank Ltd, India.
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                  fulfillments:
+                    - id: '1333'
+                      customer:
+                        person:
+                          name: John Doe
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252U
+                              type: PAN
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                      tags:
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Applicant Checklists
+                          list:
+                            - descriptor:
+                                code: KYC
+                                name: KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: E_SIGN
+                                name: E Sign Required
+                              value: COMPLETED
+                    - id: '1334'
+                      customer:
+                        person:
+                          name: Co Applicant 1
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252A
+                              type: PAN
+                        contact:
+                          email: applicant.1@gmail.com
+                          phone: '7888888888'
+                      tags:
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Applicant Checklists
+                          list:
+                            - descriptor:
+                                code: KYC
+                                name: KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: E_SIGN
+                                name: E Sign Required
+                              value: COMPLETED
+                  tags:
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '14300'
+                  breakup:
+                    - title: WOKRKING_CAPITAL_LIMIT
+                      price:
+                        value: '1100000'
+                        currency: INR
+                    - title: CURRENT_UTLIZATION
+                      price:
+                        value: '20000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '11000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: FORCLOSUER_CHARGES
+                      price:
+                        value: '9536'
+                        currency: INR
+                    - title: OUTSTANDING_INTEREST
+                      price:
+                        value: '200'
+                        currency: INR
+                  ttl: PT5D
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    descriptor:
+                      code: LOAN
+                      name: Loan
+                    category_ids:
+                      - '101123'
+                    fulfillment_ids:
+                      - '1333'
+                      - '1334'
+                    price:
+                      currency: INR
+                      value: '14300'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: WORKING_CAPITAL_LIMIT
+                              name: Working capital limit
+                            value: 1100000 INR
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                            value: 13.5 %
+                          - descriptor:
+                              code: PROCESSING_FEE
+                              name: Processing Fee
+                            value: 1200 INR
+                          - descriptor:
+                              code: INSURANCE_CHARGES
+                              name: Insurance Charges
+                            value: 231 INR
+                          - descriptor:
+                              code: OTHER_UPFRONT_CHARGES
+                              name: Other up front charges
+                              short_desc: Other up front charges
+                            value: 530 INR
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                            value: P24M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: RATE_ANNUALISED_PENAL_CHARGES
+                              name: Rate Annualised penal charges
+                            value: 2 %
+                          - descriptor:
+                              code: OTHER_CHARGES
+                              name: Other Charges
+                            value: 231 INR
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: Cooling off
+                              short_desc: >-
+                                Look up period during which borrower shouldn't
+                                be charged any penalty on repayment loan.
+                            value: P12D
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                            value: ONLINE
+                          - descriptor:
+                              code: CO_APPLICANT
+                              name: Co Applicant
+                            value: REQUIRED
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Checklists
+                        list:
+                          - descriptor:
+                              code: INDIVIDUAL_KYC
+                              name: Indvidual KYC
+                            value: COMPLETED
+                          - descriptor:
+                              code: BUSINESS_KYC
+                              name: Business KYC
+                            value: COMPLETED
+                          - descriptor:
+                              code: PERSONAL_DISCUSSION
+                              name: Personal Discussion
+                            value: COMPLETED
+                          - descriptor:
+                              code: PHYSICAL_VERIFICATION
+                              name: Physical Verification
+                            value: COMPLETED
+                          - descriptor:
+                              code: ENACH
+                              name: Enach
+                            value: COMPLETED
+                          - descriptor:
+                              code: PROCESSING_FEE
+                              name: Processing Fees
+                            value: COMPLETED
+                          - descriptor:
+                              code: ESIGN
+                              name: Esign
+                            value: COMPLETED
+                        display: true
+                      - descriptor:
+                          code: WORKING_CAPITAL_TRANSACTIONS
+                          name: Working Capital Transactions
+                        list:
+                          - descriptor:
+                              code: LOAN_DRAWDOWN
+                              name: Loan Drawdown
+                            value: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN_DISBURSEMENT
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '1000'
+                      currency: INR
+                    status: PAID
+                    type: PRE-ORDER
+                    url: https://payment.fis.test.bpp.io
+                  - id: PAYMENT_ID_PRE_PART_PAYMENT
+                    url: >-
+                      https://pg.icici.com/?amount=148616&ref_id=b5487595-42c3-4e20-bd43-ae21400f60f0
+                    params:
+                      amount: '20200'
+                      currency: INR
+                    status: PAID
+                    time:
+                      label: FORECLOSURE
+                    type: POST_FULFILLMENT
+                cancellation_terms:
+                  - fulfillment_state:
+                      descriptor:
+                        code: SANCTIONED
+                    cancellation_fee:
+                      percentage: 3%
+                  - external_ref:
+                      mimetype: text/html
+                      url: https://icicibank.com/loan/tnc.html
+                documents:
+                  - descriptor:
+                      code: LOAN_AGREEMENT
+                      name: Loan Agreement Document
+                      short_desc: Download your Loan Agreement document here
+                      long_desc: >-
+                        A Loan Agreement Document is a legal contract outlining
+                        terms such as loan amount, interest rate, repayment
+                        schedule, and collateral, binding a lender and borrower
+                        in a formal financial arrangement.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-agreement/O1.pdf
+                  - descriptor:
+                      code: LOAN_CANCELLATION
+                      name: Loan Cancellation Document
+                      short_desc: Download your Loan Cancellation document here
+                      long_desc: >-
+                        A Loan Cancellation Document is a formal agreement used
+                        to terminate an existing loan, releasing the borrower
+                        from repayment obligations and confirming the loan's
+                        cancellation.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-cancellation/O1.pdf
+        details:
+          - description: The lender will update quotation in the base transaction
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (Pre-part-payment)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -4636,6 +5401,861 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
+  - summary: Missed EMI Payment
+    details:
+      - description: Detailed process for missed emi payment
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (Pre-part-payment)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    references: if any
+    steps:
+      - summary: >-
+          The borrower (BAP) sends the update request for missed emi payment
+          using drawdown order id 
+        reference: if any
+        api: update
+        example:
+          value: &ref_64
+            context:
+              domain: ONDC:FIS12
+              version: 2.1.0
+              action: update
+              bap_id: bap.credit.becknprotocol.io
+              bap_uri: https://bap.credit.becknprotocol.io/
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              ttl: PT30M
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+            message:
+              update_target: payments
+              order:
+                id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                payments:
+                  - time:
+                      label: MISSED_EMI_PAYMENT
+        details:
+          - description: >-
+              The borrower (BAP) sends the update request for missed emi payment
+              using drawdown order id 
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (missed emi payment)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Payment Url
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - summary: >-
+          The lender(BPP) will provide a payment details for missed emi payment
+          of drawdown and also update the repayment details
+        reference: if any
+        api: on_update
+        example:
+          value: &ref_51
+            context:
+              domain: ONDC:FIS
+              version: 2.0.0
+              action: on_update
+              bap_id: bizongo-next.becknprotocol.io
+              bap_uri: https://bizongo-next.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: PT30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - size_type: sm
+                        url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                    long_desc: ICICI Bank Ltd, India.
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                  fulfillments:
+                    - id: '1335'
+                      customer:
+                        person:
+                          name: John Doe
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                      stops:
+                        - authorization:
+                            type: OTP
+                            token: '1222'
+                  tags:
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '20200'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        value: '20000'
+                        currency: INR
+                    - title: INTEREST_AMOUNT
+                      price:
+                        value: '400'
+                        currency: INR
+                  ttl: PT5D
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN_DISBURSEMENT
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    descriptor:
+                      code: LOAN
+                      name: Loan
+                    category_ids:
+                      - '101123'
+                    fulfillment_ids:
+                      - '1335'
+                    price:
+                      currency: INR
+                      value: '20400'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                            value: 13.5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Checklists
+                        list:
+                          - descriptor:
+                              code: DRADOWN_APPROVAL
+                              name: Drawdown Approval
+                            value: COMPLETED
+                        display: true
+                payments:
+                  - id: INVOICE_MISSED_EMI_PAYMENT_ID
+                    collected_by: BPP
+                    url: >-
+                      https://pg.icici.com/?amount=47360&ref_id=b5487595-42c3-4e20-bd43-ae21400f60f0
+                    params:
+                      amount: '20500'
+                      currency: INR
+                    status: NOT-PAID
+                    time:
+                      label: MISSED_EMI_PAYMENT
+                      range:
+                        start: '2023-08-01T00:00:00.000Z'
+                        end: '2023-08-31T23:59:59.999Z'
+                    type: POST_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                          name: Repayment Breakup
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                              name: Principal Amount
+                            value: '20000'
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                              name: Interest Amount
+                            value: '400'
+                          - descriptor:
+                              code: LATE_PAYMENT_FEE
+                              name: Late Payment fees
+                            value: '100'
+                  - id: INVOICE_DISBURSEMENT_ID
+                    params:
+                      transaction_id: AXISBANK1222
+                      amount: '20000'
+                      currency: INR
+                      bank_account_number: '1800002341'
+                      bank_code: SBIN0001234
+                    time:
+                      label: PAYMENT_DATE
+                      timestamp: '2022-11-18T08:28:29.131Z'
+                    collected_by: MERCHANT
+                    type: ON-ORDER
+                    status: PAID
+                  - id: INVOICE_REPAYMENT_ID
+                    collected_by: BPP
+                    type: POST-FULFILLMENT
+                    params:
+                      amount: '20400'
+                      currency: INR
+                      bank_account_number: '1800002341'
+                      bank_code: AXIN0001234
+                      source_bank_account_number: '1800002341'
+                      source_bank_code: AXIN0001234
+                    status: DEFERRED
+                    time:
+                      range:
+                        start: '2024-06-01T00:00:00.000Z'
+                        end: '2024-07-30T23:00:00.000Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                          name: Repayment Breakup
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                              name: Principal Amount
+                            value: '20000'
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                              name: Interest Amount
+                            value: '400'
+        details:
+          - description: >-
+              The lender(BPP) will provide a payment details for missed emi
+              payment of drawdown and also update the repayment details
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (missed emi payment)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Payment Url
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - summary: >-
+          The lender will update payment success details to borrower on drawdown
+          order
+        reference: if any
+        api: on_update
+        example:
+          value: &ref_52
+            context:
+              domain: ONDC:FIS
+              version: 2.0.0
+              action: on_update
+              bap_id: bizongo-next.becknprotocol.io
+              bap_uri: https://bizongo-next.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: PT30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - size_type: sm
+                        url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                    long_desc: ICICI Bank Ltd, India.
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                  fulfillments:
+                    - id: '1335'
+                      customer:
+                        person:
+                          name: John Doe
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                      stops:
+                        - authorization:
+                            type: OTP
+                            token: '1222'
+                  tags:
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '20200'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        value: '20000'
+                        currency: INR
+                    - title: INTEREST_AMOUNT
+                      price:
+                        value: '400'
+                        currency: INR
+                  ttl: PT5D
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN_DISBURSEMENT
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    descriptor:
+                      code: LOAN
+                      name: Loan
+                    category_ids:
+                      - '101123'
+                    fulfillment_ids:
+                      - '1335'
+                    price:
+                      currency: INR
+                      value: '20400'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                            value: 13.5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Checklists
+                        list:
+                          - descriptor:
+                              code: DRADOWN_APPROVAL
+                              name: Drawdown Approval
+                            value: COMPLETED
+                        display: true
+                payments:
+                  - id: INVOICE_MISSED_EMI_PAYMENT_ID
+                    collected_by: BPP
+                    url: >-
+                      https://pg.icici.com/?amount=47360&ref_id=b5487595-42c3-4e20-bd43-ae21400f60f0
+                    params:
+                      amount: '20500'
+                      currency: INR
+                    status: PAID
+                    time:
+                      label: MISSED_EMI_PAYMENT
+                      range:
+                        start: '2023-08-01T00:00:00.000Z'
+                        end: '2023-08-31T23:59:59.999Z'
+                    type: POST_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                          name: Repayment Breakup
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                              name: Principal Amount
+                            value: '20000'
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                              name: Interest Amount
+                            value: '400'
+                          - descriptor:
+                              code: LATE_PAYMENT_FEE
+                              name: Late Payment fees
+                            value: '100'
+                  - id: INVOICE_DISBURSEMENT_ID
+                    params:
+                      transaction_id: AXISBANK1222
+                      amount: '20000'
+                      currency: INR
+                      bank_account_number: '1800002341'
+                      bank_code: SBIN0001234
+                    time:
+                      label: PAYMENT_DATE
+                      timestamp: '2022-11-18T08:28:29.131Z'
+                    collected_by: MERCHANT
+                    type: ON-ORDER
+                    status: PAID
+                  - id: INVOICE_REPAYMENT_ID
+                    collected_by: BPP
+                    type: POST-FULFILLMENT
+                    params:
+                      amount: '20400'
+                      currency: INR
+                      bank_account_number: '1800002341'
+                      bank_code: AXIN0001234
+                      source_bank_account_number: '1800002341'
+                      source_bank_code: AXIN0001234
+                    status: DEFERRED
+                    time:
+                      range:
+                        start: '2024-06-01T00:00:00.000Z'
+                        end: '2024-07-30T23:00:00.000Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                          name: Repayment Breakup
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                              name: Principal Amount
+                            value: '20000'
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                              name: Interest Amount
+                            value: '400'
+        details:
+          - description: >-
+              The lender will update payment success details to borrower on
+              drawdown order
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (missed emi payment)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Payment Url
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - summary: The lender will update quotation in the base transaction
+        reference: if any
+        api: on_update
+        example:
+          value: &ref_53
+            context:
+              domain: ONDC:FIS
+              version: 2.0.0
+              action: on_update
+              bap_id: bizongo-next.becknprotocol.io
+              bap_uri: https://bizongo-next.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7d62196
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: PT30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - size_type: sm
+                        url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                    long_desc: ICICI Bank Ltd, India.
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                  fulfillments:
+                    - id: '1333'
+                      customer:
+                        person:
+                          name: John Doe
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252U
+                              type: PAN
+                        contact:
+                          email: john.doe@gmail.com
+                          phone: '7888888888'
+                      tags:
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Applicant Checklists
+                          list:
+                            - descriptor:
+                                code: KYC
+                                name: KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: E_SIGN
+                                name: E Sign Required
+                              value: COMPLETED
+                    - id: '1334'
+                      customer:
+                        person:
+                          name: Co Applicant 1
+                          dob: '1998-09-12'
+                          gender: Male
+                          creds:
+                            - id: BXU87Y252A
+                              type: PAN
+                        contact:
+                          email: applicant.1@gmail.com
+                          phone: '7888888888'
+                      tags:
+                        - descriptor:
+                            code: CHECKLISTS
+                            name: Applicant Checklists
+                          list:
+                            - descriptor:
+                                code: KYC
+                                name: KYC
+                              value: COMPLETED
+                            - descriptor:
+                                code: E_SIGN
+                                name: E Sign Required
+                              value: COMPLETED
+                  tags:
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '14300'
+                  breakup:
+                    - title: WOKRKING_CAPITAL_LIMIT
+                      price:
+                        value: '1100000'
+                        currency: INR
+                    - title: CURRENT_UTLIZATION
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '1100'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '11000'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '1100'
+                        currency: INR
+                  ttl: PT5D
+                items:
+                  - id: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN
+                    parent_item_id: ITEM_ID_WORKING_CAPITAL_LOAN
+                    descriptor:
+                      code: LOAN
+                      name: Loan
+                    category_ids:
+                      - '101123'
+                    fulfillment_ids:
+                      - '1333'
+                      - '1334'
+                    price:
+                      currency: INR
+                      value: '14300'
+                    tags:
+                      - descriptor:
+                          code: INFO
+                          name: Information
+                        list:
+                          - descriptor:
+                              code: WORKING_CAPITAL_LIMIT
+                              name: Working capital limit
+                            value: 1100000 INR
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                            value: 13.5 %
+                          - descriptor:
+                              code: PROCESSING_FEE
+                              name: Processing Fee
+                            value: 1200 INR
+                          - descriptor:
+                              code: INSURANCE_CHARGES
+                              name: Insurance Charges
+                            value: 231 INR
+                          - descriptor:
+                              code: OTHER_UPFRONT_CHARGES
+                              name: Other up front charges
+                              short_desc: Other up front charges
+                            value: 530 INR
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                            value: P24M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: RATE_ANNUALISED_PENAL_CHARGES
+                              name: Rate Annualised penal charges
+                            value: 2 %
+                          - descriptor:
+                              code: OTHER_CHARGES
+                              name: Other Charges
+                            value: 231 INR
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: Cooling off
+                              short_desc: >-
+                                Look up period during which borrower shouldn't
+                                be charged any penalty on repayment loan.
+                            value: P12D
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                            value: ONLINE
+                          - descriptor:
+                              code: CO_APPLICANT
+                              name: Co Applicant
+                            value: REQUIRED
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Checklists
+                        list:
+                          - descriptor:
+                              code: INDIVIDUAL_KYC
+                              name: Indvidual KYC
+                            value: COMPLETED
+                          - descriptor:
+                              code: BUSINESS_KYC
+                              name: Business KYC
+                            value: COMPLETED
+                          - descriptor:
+                              code: PERSONAL_DISCUSSION
+                              name: Personal Discussion
+                            value: COMPLETED
+                          - descriptor:
+                              code: PHYSICAL_VERIFICATION
+                              name: Physical Verification
+                            value: COMPLETED
+                          - descriptor:
+                              code: ENACH
+                              name: Enach
+                            value: COMPLETED
+                          - descriptor:
+                              code: PROCESSING_FEE
+                              name: Processing Fees
+                            value: COMPLETED
+                          - descriptor:
+                              code: ESIGN
+                              name: Esign
+                            value: COMPLETED
+                        display: true
+                      - descriptor:
+                          code: WORKING_CAPITAL_TRANSACTIONS
+                          name: Working Capital Transactions
+                        list:
+                          - descriptor:
+                              code: LOAN_DRAWDOWN
+                              name: Loan Drawdown
+                            value: CHILD_ITEM_ID_WORKING_CAPITAL_LOAN_DISBURSEMENT
+                payments:
+                  - collected_by: BPP
+                    params:
+                      amount: '1000'
+                      currency: INR
+                    status: PAID
+                    type: PRE-ORDER
+                    url: https://payment.fis.test.bpp.io
+                documents:
+                  - descriptor:
+                      code: LOAN_AGREEMENT
+                      name: Loan Agreement Document
+                      short_desc: Download your Loan Agreement document here
+                      long_desc: >-
+                        A Loan Agreement Document is a legal contract outlining
+                        terms such as loan amount, interest rate, repayment
+                        schedule, and collateral, binding a lender and borrower
+                        in a formal financial arrangement.
+                    mime_type: application/pdf
+                    url: https://lender.com/loan/loan-agreement/O1.pdf
+        details:
+          - description: The lender will update quotation in the base transaction
+            mermaid: |-
+              sequenceDiagram
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update (missed emi payment)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Payment Url
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Base Transaction
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
   - summary: Pre-Part Payment
     details:
       - description: Detailed process for pre-part payment
@@ -4869,7 +6489,7 @@ x-flows:
         reference: if any
         api: update
         example:
-          value: &ref_58
+          value: &ref_65
             context:
               domain: ONDC:FIS12
               version: 2.1.0
@@ -4918,7 +6538,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_49
+          value: &ref_54
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -5165,7 +6785,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_50
+          value: &ref_55
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -5412,7 +7032,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_51
+          value: &ref_56
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -5831,7 +7451,7 @@ x-flows:
         reference: if any
         api: search
         example:
-          value: &ref_53
+          value: &ref_58
             context:
               domain: ONDC:FIS12
               location:
@@ -6088,7 +7708,7 @@ x-flows:
         reference: if any
         api: search
         example:
-          value: &ref_55
+          value: &ref_60
             context:
               domain: ONDC:FIS12
               location:
@@ -6332,7 +7952,7 @@ x-flows:
         reference: if any
         api: search
         example:
-          value: &ref_54
+          value: &ref_59
             context:
               domain: ONDC:FIS12
               location:
@@ -6668,7 +8288,7 @@ x-flows:
         reference: if any
         api: select
         example:
-          value: &ref_56
+          value: &ref_61
             context:
               domain: ONDC:FIS12
               location:
@@ -6920,7 +8540,7 @@ x-flows:
         reference: if any
         api: select
         example:
-          value: &ref_57
+          value: &ref_62
             context:
               domain: ONDC:FIS12
               location:
@@ -10041,7 +11661,7 @@ x-flows:
         reference: if any
         api: on_update
         example:
-          value: &ref_52
+          value: &ref_57
             context:
               domain: ONDC:FIS
               version: 2.0.0
@@ -10980,48 +12600,69 @@ x-examples:
             value: *ref_48
       on_update:
         examples:
+          - summary: on_update_foreclosure_drawdown.yaml
+            description: Example for foreclosure of drawdown made from credit line
+            value: *ref_49
+          - summary: on_update_foreclosure_update_base_transaction.yaml
+            description: on_update_foreclosure_update_base_transaction.yaml
+            value: *ref_50
+          - summary: on_update_missed_emi_payment
+            description: on_update_missed_emi_payment
+            value: *ref_51
+          - summary: on_update_missed_emi_payment_complete
+            description: on_update_missed_emi_payment_complete
+            value: *ref_52
+          - summary: on_update_missed_emi_payment_update_base_transaction
+            description: on_update_missed_emi_payment_update_base_transaction
+            value: *ref_53
           - summary: on_update_disbursement_update.yaml
             description: on_update_request_disbursement_update.yaml
             value: *ref_29
           - summary: on_update_pre_part_payment.yaml
             description: on_update_pre_part_payment.yaml
-            value: *ref_49
+            value: *ref_54
           - summary: on_update_pre_part_payment_complete.yaml
             description: on_update_pre_part_payment_complete.yaml
-            value: *ref_50
+            value: *ref_55
           - summary: on_update_pre_part_payment_base_transaction.yaml
             description: on_update_pre_part_payment_base_transaction.yaml
-            value: *ref_51
+            value: *ref_56
           - summary: on_update_disbursement_update_base_transaction.yaml
             description: on_update_disbursement_update_base_transaction.yaml
-            value: *ref_52
+            value: *ref_57
       search:
         examples:
           - summary: search-request.yaml
             description: TBD
-            value: *ref_53
+            value: *ref_58
           - summary: search-request_business_financials.yaml
             description: TBD
-            value: *ref_54
+            value: *ref_59
           - summary: search-request_gst_bank_statements.yaml
             description: TBD
-            value: *ref_55
+            value: *ref_60
       select:
         examples:
           - summary: select_loan_offer.yaml
             description: TBD
-            value: *ref_56
+            value: *ref_61
           - summary: select-individual-kyc.yaml
             description: TBD
             value: *ref_26
           - summary: select_business_kyc.yaml
             description: select_business_kyc.yaml
-            value: *ref_57
+            value: *ref_62
       update:
         examples:
+          - summary: update_fore_closure.yaml
+            description: update_fore_closure.yaml
+            value: *ref_63
+          - summary: update_missed_emi_payment
+            description: update_missed_emi_payment
+            value: *ref_64
           - summary: update_pre_part_payment.yaml
             description: update_pre_part_payment.yaml
-            value: *ref_58
+            value: *ref_65
 x-attributes:
   working-capital-loan:
     attribute_set:
