@@ -50,7 +50,7 @@ The differentiation in MIME types and additional settings, such as resubmit and 
 ### Xinput Navigation flow
 ~~Old Construct : In the xinput object, if the value of `cur` (current index) is less than `max` (maximum index), the buyer must repeat the same API endpoint call. If `cur` equals `max`, the buyer should move on to the next API call.~~
 
-**New Construct:** When the `cur` (current index) index matches the `max` (maximum index), the same endpoint call (such as select) will be made. In the subsequent on_select call, the seller will provide the form response with a status of SUCCESS and a submission ID. Following this, a new API call, such as init, will be made without the submission ID.
+**New Construct:** When the `cur` (current index) index matches the `max` (maximum index), the same endpoint call (such as select) will be made. In the subsequent on_select call, the seller will provide the form response with a form status and a submission ID. Following this, a new API call, such as init, will be made without the submission ID.
 
 - sample xinput for on_Select call   
 ```
