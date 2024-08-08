@@ -46,6 +46,32 @@ The differentiation in MIME types and additional settings, such as resubmit and 
   - `mime_type`: Type of MIME.
   - `url`: Endpoint where the form is hosted.
   - `multiple_sumbissions`: Indicates whether multiple submissions are allowed.
+  
+### Xinput Navigation flow
+~~Old Construct : In the xinput object, if the value of `cur` (current index) is less than `max` (maximum index), the buyer must repeat the same API endpoint call. If `cur` equals `max`, the buyer should move on to the next API call.~~
+
+**New Construct:** When the `cur` (current index) index matches the `max` (maximum index), the same endpoint call (such as select) will be made. In the subsequent on_select call, the seller will provide the form response with a status of SUCCESS and a submission ID. Following this, a new API call, such as init, will be made without the submission ID.
+
+- sample xinput for on_Select call   
+```
+    index:
+      min: 0
+      cur: 2
+      max: 2
+```
+Now the next call should be again select with submissionId & in on_select the seller will provide the xinput with form_response & next call should be the init without xinput object
+```
+"xinput": {
+    "form": {
+      "id": "FO3"
+    },
+    "form_response": {
+      "status": "SUCCESS",
+      "submission_id": "F03_SUBMISSION_ID"
+    }
+}    
+```
+
 
  ### mime_type: 
  Describes the type of MIME.It can take one of two possible values: application/html or text/html. 
