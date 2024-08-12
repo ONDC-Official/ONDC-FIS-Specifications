@@ -6,7 +6,7 @@ context:
     city:
       code: '*'
   version: 2.0.0
-  action: on_init
+  action: on_update
   bap_id: bizongo-next.becknprotocol.io
   bap_uri: https://bizongo-next.becknprotocol.io/
   bpp_id: bpp.credit.becknprotocol.org
@@ -17,6 +17,8 @@ context:
   ttl: PT30M
 message:
   order:
+    id: WORKING_CAPITAL_LINE_ORDER_ID
+    status: CANCELLED
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -52,7 +54,7 @@ message:
                 - descriptor:
                     code: E_SIGN
                     name: E Sign Required
-                  value: PENDING
+                  value: COMPLETED
         - id: '1334'
           customer:
             person:
@@ -77,7 +79,7 @@ message:
                 - descriptor:
                     code: E_SIGN
                     name: E Sign Required
-                  value: PENDING
+                  value: COMPLETED
       tags:
         - descriptor:
             code: LSP_INFO
@@ -174,7 +176,7 @@ message:
           - '1334'
         price:
           currency: INR
-          value: '2792'
+          value: '14300'
         tags:
           - descriptor:
               code: INFO
@@ -265,25 +267,8 @@ message:
               - descriptor:
                   code: ESIGN
                   name: Esign
-                value: PENDING
+                value: COMPLETED
             display: true
-        xinput:
-          head:
-            descriptor:
-              name: ESIGN
-            index:
-              min: 0
-              cur: 1
-              max: 2
-            headings:
-              - ACCOUNT_INFORMATION
-              - ENACH
-              - ESIGN
-          form:
-            id: <form_esign_F07>
-            mime_type: text/html
-            url: https://bpp.credit.becknprotocol.org/xinput/link/link_esign
-          required: true
     payments:
       - id: PAYMENT_ID_PROCESSING_FEES
         collected_by: BPP
@@ -293,3 +278,23 @@ message:
         status: PAID
         type: PRE-ORDER
         url: https://payment.fis.test.bpp.io
+    cancellation_terms:
+      - fulfillment_state:
+          descriptor:
+            code: SANCTIONED
+        cancellation_fee:
+          percentage: 3%
+      - external_ref:
+          mimetype: text/html
+          url: https://bpp.credit.becknprotocol.org/tnc.html
+    documents:
+      - descriptor:
+          code: LOAN_AGREEMENT
+          name: Loan Agreement Document
+          short_desc: Download your Loan Agreement document here
+          long_desc: >-
+            A Loan Agreement Document is a legal contract outlining terms such
+            as loan amount, interest rate, repayment schedule, and collateral,
+            binding a lender and borrower in a formal financial arrangement.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-agreement/O1.pdf
