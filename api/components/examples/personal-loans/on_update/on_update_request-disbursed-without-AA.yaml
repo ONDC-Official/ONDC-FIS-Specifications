@@ -5,18 +5,19 @@ context:
       code: IND
     city:
       code: '*'
-  action: on_select
   version: 2.0.1
-  bap_id: bap.credit.becknprotocol.io
+  action: on_update
   bap_uri: https://bap.credit.becknprotocol.io/
+  bap_id: bap.credit.becknprotocol.io
   bpp_id: bpp.credit.becknprotocol.org
   bpp_uri: https://bpp.credit.becknprotocol.org
-  transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
-  message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+  transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+  message_id: 0d30bfbf-87b8-43d2-8f95-36ebb9a24fd6
+  ttl: PT10M
   timestamp: "2023-05-25T05:23:03.443Z"
-  ttl: P30M
 message:
   order:
+    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -164,26 +165,8 @@ message:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
                   short_desc: Each installment amount of repayment
-                value: PT30D
-            display: true
-        xinput:
-          head:
-            descriptor:
-              name: Customer Information
-            index:
-              min: 0
-              cur: 1
-              max: 1
-            headings:
-              - Set Loan Amount
-              - Know your Customer
-          form:
-            id: FO3
-            mime_type: application/html
-            url: https://bpp.credit.becknprotocol.org/loans-kyc/xinput/form/F03
-            resubmit: false
-            multiple_sumbissions: false
-          required: true
+                value: PT30D 
+            display: true  
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
@@ -213,13 +196,152 @@ message:
         - title: NET_DISBURSED_AMOUNT
           price:
             value: "197700"
-            currency: INR      
-        - title: OTHER_UPFRONT_CHARGES
-          price:
-            value: "0"
-            currency: INR
+            currency: INR 
         - title: OTHER_CHARGES
           price:
             value: "0"
-            currency: INR       
+            currency: INR          
       ttl: PT15D
+    fulfillments:
+      - customer:
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
+        state:
+          descriptor:
+            code: DISBURSED
+    payments:
+      - id: PAYMENT_ID_PERSONAL_LOAN
+        type: ON_ORDER
+        status: NOT-PAID
+        collected_by: BPP
+        tags:
+          - descriptor:
+              code: BUYER_FINDER_FEES
+            display: false
+            list:
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_TYPE
+                value: "percent-annualized"
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_PERCENTAGE
+                value: "1"
+          - descriptor:
+              code: SETTLEMENT_TERMS
+            display: false
+            list:
+              - descriptor: 
+                  code: SETTLEMENT_WINDOW
+                value: 'PT60M'
+              - descriptor: 
+                  code: SETTLEMENT_BASIS
+                value: 'INVOICE_RECEIPT'
+              - descriptor: 
+                  code: MANDATORY_ARBITRATION
+                value: 'TRUE'
+              - descriptor: 
+                  code: COURT_JURISDICTION
+                value: 'New Delhi'
+              - descriptor: 
+                  code: STATIC_TERMS
+                value: 'https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan'
+              - descriptor: 
+                  code: SETTLEMENT_AMOUNT
+                value: '1159'
+              - descriptor: 
+                  code: OFFLINE_CONTRACT
+                value: 'true' 
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-06-01T00:00:00.000Z"
+            end: "2023-06-30T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-07-01T00:00:00.000Z"
+            end: "2023-07-31T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-08-01T00:00:00.000Z"
+            end: "2023-08-31T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-09-01T00:00:00.000Z"
+            end: "2023-09-30T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-10-01T00:00:00.000Z"
+            end: "2023-10-31T23:59:59.999Z"    
+    
+    cancellation_terms:
+      - fulfillment_state:
+          descriptor:
+            code: SANCTIONED
+        cancellation_fee:
+          percentage: 3%
+      - external_ref:
+          mimetype: text/html
+          url: https://icicibank.com/loan/tnc.html
+      - fulfillment_state:
+          descriptor:
+            code: DISBURSED
+        cancellation_fee:
+          percentage: 5%
+        # external_ref:
+        #   mimetype: text/html
+        #   url: https://icicibank.com/loan/tnc.html
+    documents:
+      - descriptor:
+          code: LOAN_AGREEMENT
+          name: Loan Agreement Document
+          short_desc: Download your Loan Agreement document here
+          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, 
+            interest rate, repayment schedule, and collateral,
+            binding a lender and borrower in a formal financial arrangement.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-agreement/O1.pdf
+      - descriptor:
+          code: LOAN_CANCELLATION
+          name: Loan Cancellation Document
+          short_desc: Download your Loan Cancellation document here
+          long_desc: A Loan Cancellation Document is a formal agreement used 
+            to terminate an existing loan, releasing the borrower from repayment 
+            obligations and confirming the loan's cancellation.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-cancellation/O1.pdf      
