@@ -87,7 +87,8 @@ on_search:
       providers:
         items: &a9
           tags:
-            - code: INFO
+            - &a16
+              code: INFO
               description: Describes the information of the loan like interest rate, tenure,
                 amount etc
               reference: <PR/Issue/Discussion Links md format text>
@@ -131,7 +132,8 @@ on_search:
                 - code: CO_APPLICANT
                   description: Describes co applicant is required or not
                   reference: <PR/Issue/Discussion Links md format text>
-            - code: CHECKLISTS
+            - &a17
+              code: CHECKLISTS
               description: Describes the checklist must be fullfilled for loan approval
               reference: <PR/Issue/Discussion Links md format text
               required: Required
@@ -234,13 +236,26 @@ init:
 on_init: &a14
   message:
     order:
-      payments:
+      payments: &a15
         tags:
           - *a12
       items: *a9
-      provider:
+      provider: &a18
         tags: *a13
         fulfillments: *a10
 on_confirm: *a14
 on_status: *a14
-on_update: *a14
+on_update:
+  message:
+    order:
+      payments: *a15
+      items:
+        tags:
+          - *a16
+          - *a17
+          - code: LINKED_ORDER_IDS
+            description: List of child order IDs of this particular order ID
+            required: Optional
+            list: []
+            reference: <PR/Issue/Discussion Links md format text
+      provider: *a18

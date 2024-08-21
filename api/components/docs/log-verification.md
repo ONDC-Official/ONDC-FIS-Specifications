@@ -20,6 +20,8 @@
 2. **Multiple Calls for Same Endpoint**:
 
    - When there are multiple API calls for the same endpoint, the naming convention should reflect the sequence of calls using numeric suffixes:
+     - `search 1: search_1.json` (for the first call of the "search" endpoint)
+     - `search 2: search_2.json` (for the second call of the "search" endpoint)
      - `select 1: select_1.json` (for the first call of the "select" endpoint)
      - `select 2: select_2.json` (for the second call of the "select" endpoint)
      - `init 1: init_1.json` (for the first call of the "init" endpoint)
@@ -31,31 +33,36 @@ These naming conventions ensure clear identification and organization of files b
 
 - **Flow 1**
 
-  Borrower searches for a "Working Capital" on a Buyer App compares and selects from the available loan offerings received from the seller app (aka lender). Borrowe is able to avail the loan by submitting all the relevant details/documents and gets the loan disbursed into their given bank accounts.
+  Borrower searches for a "Working Capital" on a Buyer App compares and selects from the available loan offerings received from the seller app (aka lender). Borrower is able to avail the loan by submitting all the relevant details/documents and gets the loan disbursed into their given bank accounts.
 
-  Unsolicited /On_status call from seller app to buyer app for every redirection form ("mime_type": "application/html").
+  Unsolicited /on_status call from seller app to buyer app for every redirection form ("mime_type": "application/html").
 
 - **Flow 2**
 
-  Borrower did not select from the available options of loans before the TTL for the offer and wants to make a selection now. So make the select call again to get the valid offers and then allow the borrower to select from the new offers received.
+  Borrower did not select from the available options of loans before the TTL for the offer and wants to make a selection now. So make the search call again to get the valid offers and then allow the borrower to select from the new offers received.
 
 - **Flow 3**
 
-  Borrower wants to Foreclose the existing loan.
-  Showcase the journey of the borrower selecting an existing loan to foreclose and then receive the payment amount (along with all the charges) and payment URL, finally making the payment and foreclosing the loan. Also show the change in the status of the payment and installments.
+  Lender assigns the working capital line to the borrower.
+  Showcase the journey of the borrower selecting an offer from multiple offer given by lender and doing Individual KYC & Entity KYC. Following to this, borrower also needs to do enach, processing fee payment and closing the esign on the given loan offer. Also showcase the changes of multiple on_status call received during this flow. And at the end show the flow of working capital line assignment.
 
 - **Flow 4**
 
-  Borrower wants to make pre-part payment against the existing loan.
+  Borrower wants to Foreclose the existing loan.
+  Showcase the journey of the borrower selecting an existing loan (drawdown order) to foreclose and then receive the payment amount (along with all the charges) and payment URL, finally making the payment and foreclosing the loan. Also show the change in the status of the payment and installments.
+
+- **Flow 5**
+
+  Borrower wants to make pre-part payment against the existing loan (particular drawdown).
   Showcase the journey of the borrower selecting an existing loan to make pre-part payment and then receive payment URL for the amount that the borrower wants to pay, finally making the payment.
   Also showcase, error scenarios where the seller does not allow for the pre-part payment and the change in the status of the payment and installments.
 
-- **Flow 5**
+- **Flow 6**
 
   Borrower has missed one/many EMIs and wants to make the payments against those paying the late fee.
   Showcase the journey of the borrower selecting an existing loan to make payment against all the missed EMI's and then receive payment amount (along with all the charges) and payment URL for the amount that the borrower needs to pay, finally making the payment. Also show the change in the status of the payment and installments.
 
-- **Flow 6**
+- **Flow 7**
 
   Borrower wants to check for the status of the EMI payment/foreclosed/pre-part payment/missed EMI payment against an existing loan.
 
@@ -65,10 +72,12 @@ To verify your logs, you can use the POST api exposed at [https://log-validation
 
 Available flows are:
 
-- PERSONAL
-- LOAN_FORECLOSURE
-- PRE_PART_PAYMENT
-- MISSED_EMI_PAYMENT
+- Credit Line Assignment
+- Credit Line Drawdown
+- Missed EMI Payment
+- Pre-Part Payment
+- Drawdown Foreclosure
+- Credit Line Cancellation
 
 The payload structure for validation is as follows:
 
@@ -76,10 +85,14 @@ The payload structure for validation is as follows:
 {
   "domain": "ONDC:FIS12",
   "version": "2.0.0",
-  "flow": "PERSONAL",
+  "flow": "WORKING_CAPITAL_LOAN",
   "payload": {
-    "search": {},
-    "on_search": {},
+    "search_1": {},
+    "on_search_1": {},
+    "search_2": {},
+    "on_search_2": {},
+    "search_3": {},
+    "on_search_3": {},
     "select_1": {},
     "on_select_1": {},
     "select_2": {},
