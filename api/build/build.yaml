@@ -2775,7 +2775,7 @@ components:
           type: boolean
 x-enum:
   search:
-    context: &ref_0
+    context: &ref_1
       location:
         country:
           code:
@@ -2856,9 +2856,9 @@ x-enum:
           reference: <PR/Issue/Discussion Links md format text
     message:
       intent:
-        category:
+        category: &ref_2
           descriptor:
-            code: &ref_1
+            code:
               - code: MUTUAL_FUNDS
                 description: >-
                   Describes, a kind of investment which requires to make
@@ -2884,7 +2884,8 @@ x-enum:
                   Describes, a kind of investment which requires to make
                   payments at regular intervals.
                 reference: <PR/Issue/Discussion Links md format text
-              - code: OPEN_ENDED_SOLUTION_ORIENTED
+              - &ref_0
+                code: OPEN_ENDED_SOLUTION_ORIENTED
                 description: >-
                   Describes, a kind of investment which requires to make
                   payments at regular intervals.
@@ -3029,11 +3030,7 @@ x-enum:
                   Describes, a kind of investment which requires to make
                   payments at regular intervals.
                 reference: <PR/Issue/Discussion Links md format text
-              - code: OPEN_ENDED_SOLUTION_ORIENTED
-                description: >-
-                  Describes, a kind of investment which requires to make
-                  payments at regular intervals.
-                reference: <PR/Issue/Discussion Links md format text
+              - *ref_0
               - code: OPEN_ENDED_EQUITY_CONTRA_FUND
                 description: >-
                   Describes, a kind of investment which requires to make
@@ -3111,7 +3108,7 @@ x-enum:
               description: represents the intent descriptor
               reference: <PR/Issue/Discussion Links md format text
   on_search:
-    context: *ref_0
+    context: *ref_1
     message:
       catalog:
         providers:
@@ -3127,11 +3124,9 @@ x-enum:
                   Describes, a kind of investment which requires to make
                   payments at regular intervals.
                 reference: <PR/Issue/Discussion Links md format text
-          categories:
-            descriptor:
-              code: *ref_1
+          categories: *ref_2
           items:
-            descriptor: &ref_2
+            descriptor: &ref_3
               code:
                 - code: SCHEME
                   description: >-
@@ -3143,7 +3138,7 @@ x-enum:
                     Describes, a kind of investment which requires to pay the
                     entire amount at once.
                   reference: <PR/Issue/Discussion Links md format text
-          fulfillments: &ref_3
+          fulfillments: &ref_4
             state:
               descriptor:
                 code:
@@ -3184,12 +3179,12 @@ x-enum:
               - code: REDEMPTION
                 description: Describes the type of fulfillment.
                 reference: <PR/Issue/Discussion Links md format text
-  select:
-    context: *ref_0
+  select: &ref_5
+    context: *ref_1
     message:
       order:
-        items: &ref_4
-          descriptor: *ref_2
+        items: &ref_6
+          descriptor: *ref_3
           quantity:
             selected:
               measure:
@@ -3200,20 +3195,15 @@ x-enum:
                   - code: MF_UNITS
                     description: Invest or redeem using mf units
                     reference: <PR/Issue/Discussion Links md format text
-        fulfillments: *ref_3
-  on_select:
-    context: *ref_0
-    message:
-      order:
-        items: *ref_4
-        fulfillments: *ref_3
+        fulfillments: *ref_4
+  on_select: *ref_5
   init:
-    context: *ref_0
+    context: *ref_1
     message:
       order:
-        items: *ref_4
-        fulfillments: *ref_3
-        payments: &ref_5
+        items: *ref_6
+        fulfillments: *ref_4
+        payments: &ref_7
           collected_by:
             - code: BPP
               description: when seller app is collecting the payment
@@ -3221,13 +3211,13 @@ x-enum:
             - code: BAP
               description: when buyer app is collecting the payment
               reference: <PR/Issue/Discussion Links md format text
-  on_init:
-    context: *ref_0
+  on_init: &ref_8
+    context: *ref_1
     message:
-      order: &ref_6
-        items: *ref_4
-        fulfillments: *ref_3
-        payments: *ref_5
+      order:
+        items: *ref_6
+        fulfillments: *ref_4
+        payments: *ref_7
         status:
           - code: CREATED
             description: Reflects current order status
@@ -3238,20 +3228,11 @@ x-enum:
           - code: REJECTED
             description: Reflects current order status
             reference: <PR/Issue/Discussion Links md format text
-  confirm:
-    context: *ref_0
-    message:
-      order: *ref_6
-  on_confirm:
-    context: *ref_0
-    message:
-      order: *ref_6
-  on_status:
-    context: *ref_0
-    message:
-      order: *ref_6
+  confirm: *ref_8
+  on_confirm: *ref_8
+  on_status: *ref_8
   cancel:
-    context: *ref_0
+    context: *ref_1
     message:
       cancellation_reason_id:
         - code: '00'
@@ -3319,12 +3300,14 @@ x-tags:
                     description: De-register for unsolicited calls of incremental pull
               - code: CHANGES_FROM
                 description: Pull schemes which are updated from the given date
-          - code: BAP_TERMS
+                reference: <PR/Issue/Discussion Links md format text
+          - &ref_10
+            code: BAP_TERMS
             description: >-
               Describes the terms of engagement between the buyer app and seller
               app, as set by buyer app
             reference: <PR/Issue/Discussion Links md format text>
-            list:
+            list: &ref_9
               - code: STATIC_TERMS
                 description: Static terms url for the engagement
                 reference: <PR/Issue/Discussion Links md format text>
@@ -3342,7 +3325,7 @@ x-tags:
     message:
       catalog:
         providers:
-          items: &ref_7
+          items: &ref_11
             tags:
               - code: SCHEME_INFORMATION
                 description: Information about the scheme
@@ -3540,63 +3523,31 @@ x-tags:
                   - code: ADDITIONAL_AMOUNT_MAX
                     description: Describes the additional amount max value
                     reference: <PR/Issue/Discussion Links md format text>
-        tags: &ref_8
-          - &ref_14
+        tags: &ref_12
+          - &ref_15
             code: BPP_TERMS
             description: >-
               Describes the terms of engagement between the buyer app and seller
               app, as set by seller app
             reference: <PR/Issue/Discussion Links md format text>
-            list:
-              - code: STATIC_TERMS
-                description: Static terms url for the engagement
-                reference: <PR/Issue/Discussion Links md format text>
-              - code: OFFLINE_CONTRACT
-                description: >-
-                  Whether an additional offline contract exists for the
-                  engagement between buyer app and seller app
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: true
-                    description: Offline contract exists
-                  - code: false
-                    description: Offline contract does not exist
-  select:
+            list: *ref_9
+  select: &ref_13
     message:
       order:
-        tags: &ref_9
-          - &ref_13
-            code: BAP_TERMS
-            description: >-
-              Describes the terms of engagement between the buyer app and seller
-              app, as set by buyer app
-            reference: <PR/Issue/Discussion Links md format text>
-            list:
-              - code: STATIC_TERMS
-                description: Static terms url for the engagement
-                reference: <PR/Issue/Discussion Links md format text>
-              - code: OFFLINE_CONTRACT
-                description: >-
-                  Whether an additional offline contract exists for the
-                  engagement between buyer app and seller app
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: true
-                    description: Offline contract exists
-                  - code: false
-                    description: Offline contract does not exist
-  on_select:
+        tags:
+          - *ref_10
+  on_select: &ref_14
     message:
       order:
-        items: *ref_7
-        fulfillments:
+        items: *ref_11
+        fulfillments: &ref_16
           tags:
-            - &ref_10
-              code: FOLIO_INFORMATION
+            - code: FOLIO_INFORMATION
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
               list:
-                - code: FOLIO_NUMBER
+                - &ref_19
+                  code: FOLIO_NUMBER
                   description: Describes the finder fees for buyer
                   reference: <PR/Issue/Discussion Links md format text>
                 - code: HOLDING_PATTERN
@@ -3614,8 +3565,7 @@ x-tags:
                 - code: 2FA_MOBILE_NUMBER_MASKED
                   description: Mobile number to be used for doing 2fa
                   reference: <PR/Issue/Discussion Links md format text>
-            - &ref_11
-              code: PAYOUT_BANK_ACCOUNT
+            - code: PAYOUT_BANK_ACCOUNT
               description: Details of the payout bank account
               reference: <PR/Issue/Discussion Links md format text>
               list:
@@ -3637,10 +3587,9 @@ x-tags:
                 - code: BANK_CODE
                   description: Describes the finder fees for buyer
                   reference: <PR/Issue/Discussion Links md format text>
-        payments:
+        payments: &ref_17
           tags:
-            - &ref_12
-              code: PAYMENT_METHOD
+            - code: PAYMENT_METHOD
               description: Payment method details
               reference: <PR/Issue/Discussion Links md format text>
               list:
@@ -3685,48 +3634,30 @@ x-tags:
                 - code: BANK_NAME
                   description: Bank name for existing mandates
                   reference: <PR/Issue/Discussion Links md format text>
-        tags: *ref_8
-  init:
-    message:
-      order:
-        tags: *ref_9
-  on_init:
-    message:
-      order:
-        items: *ref_7
-        fulfillments:
-          tags:
-            - *ref_10
-            - *ref_11
-        payments:
-          tags:
-            - *ref_12
-        tags: *ref_8
+        tags: *ref_12
+  init: *ref_13
+  on_init: *ref_14
   confirm:
     message:
       order:
-        tags: &ref_15
-          - *ref_13
-          - *ref_14
+        tags: &ref_18
+          - *ref_10
+          - *ref_15
   on_confirm:
     message:
       order:
-        items: *ref_7
-        fulfillments:
-          tags:
-            - *ref_10
-            - *ref_11
-        payments:
-          tags:
-            - *ref_12
-        tags: *ref_15
+        items: *ref_11
+        fulfillments: *ref_16
+        payments: *ref_17
+        tags: *ref_18
   on_status:
     message:
       order:
-        items: *ref_7
+        items: *ref_11
         payments:
           tags:
-            - code: ERROR_INFORMATION
+            - &ref_20
+              code: ERROR_INFORMATION
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
               list:
@@ -3742,9 +3673,7 @@ x-tags:
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
               list:
-                - code: FOLIO_NUMBER
-                  description: Describes the finder fees for buyer
-                  reference: <PR/Issue/Discussion Links md format text>
+                - *ref_19
                 - code: UNITS
                   description: Describes the finder fees for buyer
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3766,21 +3695,10 @@ x-tags:
                 - code: NEXT_INSTALMENT_DATE
                   description: Describes the finder fees for buyer
                   reference: <PR/Issue/Discussion Links md format text>
-            - code: ERROR_INFORMATION
-              description: Describes the finder fees for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: REASON_CODE
-                  description: Describes the finder fees for buyer
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: REASON_MESSAGE
-                  description: Describes the finder fees for buyer
-                  reference: <PR/Issue/Discussion Links md format text>
-        tags: *ref_15
+            - *ref_20
+        tags: *ref_18
 x-flows:
   - summary: Search (Full Pull)
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     steps:
       - summary: Search for schemes
         api: search
@@ -3788,7 +3706,7 @@ x-flows:
           - description: Search for all mutual fund schemes
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_48
             context:
               location:
                 country:
@@ -3836,7 +3754,7 @@ x-flows:
           - description: Returns the schemes on offer
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_21
             context:
               location:
                 country:
@@ -4159,7 +4077,7 @@ x-flows:
               incremental updates
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_49
             context:
               location:
                 country:
@@ -4216,10 +4134,8 @@ x-flows:
           - description: Returns the schemes on offer
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_21
   - summary: SIP Creation (New Folio)
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     steps:
       - summary: Select
         api: select
@@ -4227,7 +4143,7 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_22
             context:
               location:
                 country:
@@ -4296,7 +4212,7 @@ x-flows:
           - description: Send back new account input required
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_28
             context:
               location:
                 country:
@@ -4797,7 +4713,7 @@ x-flows:
           - description: Send folio information as form submission
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_23
             context:
               location:
                 country:
@@ -4871,7 +4787,7 @@ x-flows:
           - description: Send success status
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_29
             context:
               location:
                 country:
@@ -5084,7 +5000,7 @@ x-flows:
           - description: Send order details and payment selection
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_24
             context:
               location:
                 country:
@@ -5173,7 +5089,7 @@ x-flows:
           - description: Draft order is sent back with TnC and payment url
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_30
             context:
               location:
                 country:
@@ -5379,7 +5295,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_25
             context:
               location:
                 country:
@@ -5495,7 +5411,7 @@ x-flows:
           - description: Send order acceptance
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_26
             context:
               location:
                 country:
@@ -5726,7 +5642,7 @@ x-flows:
           - description: Send payment success
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_27
             context:
               location:
                 country:
@@ -5951,9 +5867,7 @@ x-flows:
                       mimetype: text/html
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
-  - summary: SIP Creation (New Folio w/ KYC)
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
+  - summary: SIP Creation (New Folio w KYC)
     references: if any
     steps:
       - summary: Select
@@ -5962,14 +5876,14 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: On Select
         api: on_select
         details:
           - description: Send back new folio + kyc input required
         reference: if any
         example:
-          value:
+          value: &ref_35
             context:
               location:
                 country:
@@ -6050,7 +5964,7 @@ x-flows:
                             value: PAYOUT
                 fulfillments:
                   - id: ff_123
-                    type: SIP
+                    type: LUMPSUM
                     customer:
                       person:
                         id: pan:arrpp7771n
@@ -6063,65 +5977,140 @@ x-flows:
                             type: ARN
                           - id: ARN-123456
                             type: SUB_BROKER_ARN
-                    stops:
-                      - time:
-                          schedule:
-                            frequency: R6/2024-05-15/P1M
                     tags:
+                      - display: true
+                        descriptor:
+                          name: Folio
+                          code: FOLIO_INFORMATION
+                        list:
+                          - descriptor:
+                              name: Folio Number
+                              code: FOLIO_NUMBER
+                            value: 1232132132/32
+                          - descriptor:
+                              name: Holding Pattern
+                              code: HOLDING_PATTERN
+                            value: SINGLE
+                          - descriptor:
+                              name: Holder Name
+                              code: HOLDER_NAME
+                            value: Satish K Perala
+                          - descriptor:
+                              name: Created On
+                              code: CREATED_ON
+                            value: 25/11/2019
+                          - descriptor:
+                              name: Email Address for 2FA
+                              code: 2FA_EMAIL_ADDRESS_MASKED
+                            value: '****sha@gmail.com'
+                          - descriptor:
+                              name: Mobile Number for 2FA
+                              code: 2FA_MOBILE_NUMBER_MASKED
+                            value: '***9345'
+                      - display: true
+                        descriptor:
+                          name: Folio
+                          code: FOLIO_INFORMATION
+                        list:
+                          - descriptor:
+                              name: Folio Number
+                              code: FOLIO_NUMBER
+                            value: 23234132/23
+                          - descriptor:
+                              name: Holding Pattern
+                              code: HOLDING_PATTERN
+                            value: SINGLE
+                          - descriptor:
+                              name: Holder Name
+                              code: HOLDER_NAME
+                            value: Satish K Perala
+                          - descriptor:
+                              name: Created On
+                              code: CREATED_ON
+                            value: 25/01/2021
+                          - descriptor:
+                              name: Email Address for 2FA
+                              code: 2FA_EMAIL_ADDRESS_MASKED
+                            value: '****sha@gmail.com'
+                          - descriptor:
+                              name: Mobile Number for 2FA
+                              code: 2FA_MOBILE_NUMBER_MASKED
+                            value: '***9345'
                       - display: true
                         descriptor:
                           name: Thresholds
                           code: THRESHOLDS
                         list:
                           - descriptor:
-                              name: Frequency
-                              code: FREQUENCY
-                            value: P1M
-                          - descriptor:
-                              name: Frequency Dates
-                              code: FREQUENCY_DATES
-                            value: >-
-                              1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28
-                          - descriptor:
                               name: Amount Minimum
                               code: AMOUNT_MIN
-                            value: '5000'
+                            value: '1000'
                           - descriptor:
                               name: Amount Maximum
                               code: AMOUNT_MAX
-                            value: '50000'
+                            value: '10000'
                           - descriptor:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                          - descriptor:
-                              name: Installments Count Minimum
-                              code: INSTALMENTS_COUNT_MIN
-                            value: '6'
-                          - descriptor:
-                              name: Installments Count Maximum
-                              code: INSTALMENTS_COUNT_MAX
-                            value: '12'
-                          - descriptor:
-                              name: Cumulative Amount Minimum
-                              code: CUMULATIVE_AMOUNT_MIN
-                            value: '30000'
                 xinput:
-                  required: true
+                  required: false
                   head:
                     index:
                       min: 0
                       cur: 0
-                      max: 2
+                      max: 0
                     headings:
                       - APPLICATION_FORM
-                      - KYC
-                      - ESIGN
                   form:
                     id: form_1
-                    url: >-
-                      https://forms.sellerapp.com/account-opening-kyc/data?k=234sadf234
+                    url: https://forms.sellerapp.com/account-opening?k=234sadf234
                     mime_type: text/html
+                payments:
+                  - id: pmt_123
+                    collected_by: BPP
+                    type: PRE_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          name: Payment Method
+                          code: PAYMENT_METHOD
+                        list:
+                          - descriptor:
+                              code: MODE
+                            value: NETBANKING
+                  - id: pmt_456
+                    collected_by: BPP
+                    type: PRE_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          name: Payment Method
+                          code: PAYMENT_METHOD
+                        list:
+                          - descriptor:
+                              code: MODE
+                            value: UPI_COLLECT
+                  - id: pmt_587
+                    collected_by: BPP
+                    type: PRE_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          name: Payment Method
+                          code: PAYMENT_METHOD
+                        list:
+                          - descriptor:
+                              code: MODE
+                            value: UPI_URI
+                  - id: pmt_984
+                    collected_by: BPP
+                    type: PRE_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          name: Payment Method
+                          code: PAYMENT_METHOD
+                        list:
+                          - descriptor:
+                              code: MODE
+                            value: UPI_PG
                 tags:
                   - display: false
                     descriptor:
@@ -6137,6 +6126,20 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
+                quote:
+                  id: q1
+                  price:
+                    currency: INR
+                    value: '3000'
+                  breakup:
+                    - item:
+                        id: '12391'
+                        fulfillment_ids:
+                          - ff_123
+                      title: Investment
+                      price:
+                        currency: INR
+                        value: '3000'
       - summary: Get Form
         api: form
         details:
@@ -6473,81 +6476,14 @@ x-flows:
           - description: Send folio information as form submission
         reference: if any
         example:
-          value: &ref_43
-            context:
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              domain: ONDC:FIS14
-              timestamp: '2023-05-25T05:23:03.443Z'
-              bap_id: api.buyerapp.com
-              bap_uri: https://api.buyerapp.com/ondc
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              version: 2.0.0
-              ttl: PT10M
-              bpp_id: api.sellerapp.com
-              bpp_uri: https://api.sellerapp.com/ondc
-              action: select
-            message:
-              order:
-                provider:
-                  id: amc_1
-                items:
-                  - id: '12391'
-                    quantity:
-                      selected:
-                        measure:
-                          value: '3000'
-                          unit: INR
-                fulfillments:
-                  - id: ff_123
-                    type: SIP
-                    customer:
-                      person:
-                        id: pan:arrpp7771n
-                    agent:
-                      person:
-                        id: euin:E52432
-                      organization:
-                        creds:
-                          - id: ARN-124567
-                            type: ARN
-                          - id: ARN-123456
-                            type: SUB_BROKER_ARN
-                    stops:
-                      - time:
-                          schedule:
-                            frequency: R6/2024-05-15/P1M
-                xinput:
-                  form:
-                    id: form_1
-                  form_response:
-                    submission_id: 6547-7456-7235-4386
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
+          value: *ref_23
       - summary: On Select
         api: on_select
         details:
           - description: Ask for digilocker fetch
         reference: if any
         example:
-          value:
+          value: &ref_72
             context:
               location:
                 country:
@@ -6728,7 +6664,7 @@ x-flows:
           - description: Send digilocker fetch as form submission
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_50
             context:
               location:
                 country:
@@ -6802,7 +6738,7 @@ x-flows:
           - description: Ask for esign
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_52
             context:
               location:
                 country:
@@ -6983,7 +6919,7 @@ x-flows:
           - description: Send esign fetch as form submission
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_51
             context:
               location:
                 country:
@@ -7057,7 +6993,7 @@ x-flows:
           - description: Send success status
         reference: if any
         example:
-          value:
+          value: &ref_73
             context:
               location:
                 country:
@@ -7247,38 +7183,235 @@ x-flows:
           - description: Send order details and payment selection
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_24
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
         reference: if any
         example:
-          value: *ref_19
+          value: &ref_71
+            context:
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              domain: ONDC:FIS14
+              timestamp: '2023-05-25T05:23:03.443Z'
+              bap_id: api.buyerapp.com
+              bap_uri: https://api.buyerapp.com/ondc
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              version: 2.0.0
+              ttl: PT10M
+              bpp_id: api.sellerapp.com
+              bpp_uri: https://api.sellerapp.com/ondc
+              action: on_init
+            message:
+              order:
+                id: mfpp_213adf123af
+                status: CREATED
+                provider:
+                  id: amc_1
+                  descriptor:
+                    name: ABC Mutual Fund
+                items:
+                  - id: '12391'
+                    descriptor:
+                      name: ABC Mid Cap Fund - Regular - Growth
+                      code: SCHEME_PLAN
+                    quantity:
+                      selected:
+                        measure:
+                          value: '3000'
+                          unit: INR
+                    fulfillment_ids:
+                      - ff_123
+                    tags:
+                      - display: true
+                        descriptor:
+                          name: Plan Information
+                          code: PLAN_INFORMATION
+                        list:
+                          - descriptor:
+                              name: Consumer Terms & Conditions
+                              code: CONSUMER_TNC
+                            value: >-
+                              https://sellerapp.com/legal/ondc:fis14/consumer_tnc.html
+                      - display: true
+                        descriptor:
+                          name: Plan Identifiers
+                          code: PLAN_IDENTIFIERS
+                        list:
+                          - descriptor:
+                              name: ISIN
+                              code: ISIN
+                            value: IN123214324
+                          - descriptor:
+                              name: RTA Identifier
+                              code: RTA_IDENTIFIER
+                            value: 02BZ
+                          - descriptor:
+                              name: AMFI Identifier
+                              code: AMFI_IDENTIFIER
+                            value: '125487'
+                      - display: true
+                        descriptor:
+                          name: Plan Options
+                          code: PLAN_OPTIONS
+                        list:
+                          - descriptor:
+                              name: Plan
+                              code: PLAN
+                            value: REGULAR
+                          - descriptor:
+                              name: Option
+                              code: OPTION
+                            value: IDCW
+                          - descriptor:
+                              name: IDCW Option
+                              code: IDCW_OPTION
+                            value: PAYOUT
+                fulfillments:
+                  - id: ff_123
+                    type: SIP
+                    customer:
+                      person:
+                        id: pan:arrpp7771n
+                      contact:
+                        phone: '9916599123'
+                    agent:
+                      person:
+                        id: euin:E52432
+                      organization:
+                        creds:
+                          - id: ARN-124567
+                            type: ARN
+                          - id: ARN-123456
+                            type: SUB_BROKER_ARN
+                    stops:
+                      - time:
+                          schedule:
+                            frequency: R6/2024-05-15/P1M
+                    tags:
+                      - display: true
+                        descriptor:
+                          name: Thresholds
+                          code: THRESHOLDS
+                        list:
+                          - descriptor:
+                              name: Frequency
+                              code: FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              name: Frequency Dates
+                              code: FREQUENCY_DATES
+                            value: >-
+                              1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28
+                          - descriptor:
+                              name: Amount Minimum
+                              code: AMOUNT_MIN
+                            value: '5000'
+                          - descriptor:
+                              name: Amount Maximum
+                              code: AMOUNT_MAX
+                            value: '50000'
+                          - descriptor:
+                              name: Amount Multiples
+                              code: AMOUNT_MULTIPLES
+                            value: '1'
+                          - descriptor:
+                              name: Installments Count Minimum
+                              code: INSTALMENTS_COUNT_MIN
+                            value: '6'
+                          - descriptor:
+                              name: Installments Count Maximum
+                              code: INSTALMENTS_COUNT_MAX
+                            value: '12'
+                          - descriptor:
+                              name: Cumulative Amount Minimum
+                              code: CUMULATIVE_AMOUNT_MIN
+                            value: '30000'
+                xinput:
+                  form:
+                    id: form_1
+                  form_response:
+                    status: SUCCESS
+                    submission_id: 6547-7456-7235-4386
+                payments:
+                  - id: pmt_123
+                    collected_by: BPP
+                    url: https://api.sellerapp.com/payment?k=abdafaf
+                    status: NOT-PAID
+                    params:
+                      amount: '3000'
+                      currency: INR
+                      source_bank_code: icic0000047
+                      source_bank_account_number: '004701563111'
+                      source_bank_account_name: harish gupta
+                    type: PRE_FULFILLMENT
+                    tags:
+                      - descriptor:
+                          name: Payment Method
+                          code: PAYMENT_METHOD
+                        list:
+                          - descriptor:
+                              code: MODE
+                            value: MANDATE_REGISTRATION
+                tags:
+                  - display: false
+                    descriptor:
+                      name: BPP Terms of Engagement
+                      code: BPP_TERMS
+                    list:
+                      - descriptor:
+                          name: Static Terms (Transaction Level)
+                          code: STATIC_TERMS
+                        value: >-
+                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
+                      - descriptor:
+                          name: Offline Contract
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                quote:
+                  id: q1
+                  price:
+                    currency: INR
+                    value: '0'
+                  breakup:
+                    - item:
+                        id: '12391'
+                        fulfillment_ids:
+                          - ff_123
+                      title: SIP
+                      price:
+                        currency: INR
+                        value: '0'
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_25
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_26
       - summary: On Status
         api: on_status
         details:
           - description: Send payment success
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_27
   - summary: SIP Creation (Existing Folio - Investor selects/enters a folio)
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: Select
@@ -7287,14 +7420,14 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: On Select
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_53
             context:
               location:
                 country:
@@ -7489,19 +7622,6 @@ x-flows:
                               name: Mobile Number for 2FA
                               code: 2FA_MOBILE_NUMBER_MASKED
                             value: '***9345'
-                xinput:
-                  required: false
-                  head:
-                    index:
-                      min: 0
-                      cur: 0
-                      max: 0
-                    headings:
-                      - APPLICATION_FORM
-                  form:
-                    id: form_1
-                    url: https://forms.sellerapp.com/account-opening?k=234sadf234
-                    mime_type: text/html
                 payments:
                   - id: pmt_123
                     collected_by: BPP
@@ -7572,7 +7692,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_55
             context:
               location:
                 country:
@@ -7658,7 +7778,7 @@ x-flows:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_56
             context:
               location:
                 country:
@@ -7890,7 +8010,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value:
+          value: &ref_74
             context:
               location:
                 country:
@@ -8003,7 +8123,7 @@ x-flows:
           - description: Send order acceptance
         reference: if any
         example:
-          value:
+          value: &ref_75
             context:
               location:
                 country:
@@ -8260,7 +8380,7 @@ x-flows:
           - description: Send payment success notification
         reference: if any
         example:
-          value:
+          value: &ref_76
             context:
               location:
                 country:
@@ -8512,8 +8632,6 @@ x-flows:
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: SIP Creation (New Folio) - Payment Failure
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: Select
@@ -8522,14 +8640,14 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: On Select
         api: on_select
         details:
           - description: Send back new folio input required
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_28
       - summary: Get Form
         api: form
         details:
@@ -8866,49 +8984,49 @@ x-flows:
           - description: Send folio information as form submission
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_23
       - summary: On Select
         api: on_select
         details:
           - description: Send success status
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_29
       - summary: Initialize the SIP order
         api: init
         details:
           - description: Send order details and payment selection
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_24
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_30
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_25
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_26
       - summary: On Update
         api: on_update
         details:
           - description: Send payment failure
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_63
             context:
               location:
                 country:
@@ -9135,7 +9253,7 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_31
             context:
               location:
                 country:
@@ -9373,7 +9491,7 @@ x-flows:
           - description: Send instalment order generation notification
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_32
             context:
               location:
                 country:
@@ -9554,7 +9672,7 @@ x-flows:
           - description: Successful sip instalment payment notification
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_33
             context:
               location:
                 country:
@@ -9704,7 +9822,7 @@ x-flows:
           - description: Successful sip instalment notification
         reference: if any
         example:
-          value: &ref_60
+          value: &ref_67
             context:
               location:
                 country:
@@ -9906,21 +10024,21 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_31
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send instalment order generation notification
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_32
       - summary: On Update (failed instalment payment)
         api: on_update
         details:
           - description: Failed sip instalment payment notification
         reference: if any
         example:
-          value: &ref_59
+          value: &ref_66
             context:
               location:
                 country:
@@ -10102,8 +10220,6 @@ x-flows:
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: SIP Instalment - Failure
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: On Update
@@ -10112,28 +10228,28 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_31
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send instalment order acceptance notification
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_32
       - summary: On Status (successful instalment payment)
         api: on_status
         details:
           - description: Successful sip instalment payment notification
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_33
       - summary: On Update (failed instalment)
         api: on_update
         details:
           - description: Failed sip instalment notification
         reference: if any
         example:
-          value: &ref_61
+          value: &ref_68
             context:
               location:
                 country:
@@ -10320,8 +10436,6 @@ x-flows:
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: SIP Auto Cancellation
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: On Update
@@ -10330,7 +10444,7 @@ x-flows:
           - description: Send parent order fulfillment cancellation status
         reference: if any
         example:
-          value: &ref_63
+          value: &ref_70
             context:
               location:
                 country:
@@ -10566,7 +10680,7 @@ x-flows:
           - description: Send cancel request along with cancellation reason
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_58
             context:
               location:
                 country:
@@ -10593,7 +10707,7 @@ x-flows:
           - description: Send parent order fulfillment cancellation status
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_59
             context:
               location:
                 country:
@@ -10819,8 +10933,6 @@ x-flows:
                           code: OFFLINE_CONTRACT
                         value: 'true'
   - summary: SIP Completion
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: On Update
@@ -10829,7 +10941,7 @@ x-flows:
           - description: Send parent order fulfillment completion status
         reference: if any
         example:
-          value: &ref_62
+          value: &ref_69
             context:
               location:
                 country:
@@ -11058,8 +11170,6 @@ x-flows:
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Lumpsum Investment (Existing Folio - Investor selects/enters a folio)
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: Select
@@ -11068,7 +11178,7 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_34
             context:
               location:
                 country:
@@ -11130,12 +11240,10 @@ x-flows:
                           code: OFFLINE_CONTRACT
                         value: 'true'
       - summary: On Select
-        api: on_select
-        details:
-          - description: Send back the list of existing folios and payment options
         reference: if any
+        api: on_select
         example:
-          value: &ref_30
+          value: &ref_54
             context:
               location:
                 country:
@@ -11305,19 +11413,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                xinput:
-                  required: false
-                  head:
-                    index:
-                      min: 0
-                      cur: 0
-                      max: 0
-                    headings:
-                      - APPLICATION_FORM
-                  form:
-                    id: form_1
-                    url: https://forms.sellerapp.com/account-opening?k=234sadf234
-                    mime_type: text/html
                 payments:
                   - id: pmt_123
                     collected_by: BPP
@@ -11392,13 +11487,15 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
+        details:
+          - description: Send back the list of existing folios and payment options
       - summary: Initialize the Lumpsum order
         api: init
         details:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_36
             context:
               location:
                 country:
@@ -11480,7 +11577,7 @@ x-flows:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_37
             context:
               location:
                 country:
@@ -11687,7 +11784,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_38
             context:
               location:
                 country:
@@ -11787,7 +11884,7 @@ x-flows:
           - description: Send order acceptance
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_39
             context:
               location:
                 country:
@@ -12015,7 +12112,7 @@ x-flows:
           - description: Send payment success notification
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_57
             context:
               location:
                 country:
@@ -12242,7 +12339,7 @@ x-flows:
           - description: Send fulfillment success notification
         reference: if any
         example:
-          value:
+          value: &ref_77
             context:
               location:
                 country:
@@ -12493,49 +12590,49 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_34
       - summary: On Select
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_35
       - summary: Initialize the Lumpsum order
         api: init
         details:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_36
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_37
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_38
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_34
+          value: *ref_39
       - summary: On Update
         api: on_update
         details:
           - description: Send payment failure notification
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_62
             context:
               location:
                 country:
@@ -12770,7 +12867,7 @@ x-flows:
           - description: Ask for new payment
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_60
             context:
               location:
                 country:
@@ -12815,7 +12912,7 @@ x-flows:
           - description: Receive new payment
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_61
             context:
               location:
                 country:
@@ -13063,17 +13160,15 @@ x-flows:
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Redemption
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: Select redemption in a particular folio and scheme
         api: select
-        details:
+        details: &ref_40
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_41
             context:
               location:
                 country:
@@ -13143,7 +13238,7 @@ x-flows:
           - description: List of payout bank a/cs is sent
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_42
             context:
               location:
                 country:
@@ -13361,11 +13456,10 @@ x-flows:
                         value: '3000'
       - summary: Initialize the redemption order
         api: init
-        details:
-          - description: Send order details and folio details
+        details: *ref_40
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_44
             context:
               location:
                 country:
@@ -13446,7 +13540,7 @@ x-flows:
           - description: Draft order is sent back with tnc
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_45
             context:
               location:
                 country:
@@ -13622,10 +13716,10 @@ x-flows:
       - summary: Confirm
         api: confirm
         details:
-          - description: Send order confirmation w/ 2fa details
+          - description: Send order confirmation w 2fa details
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_46
             context:
               location:
                 country:
@@ -13721,7 +13815,7 @@ x-flows:
           - description: Send accepted order
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_47
             context:
               location:
                 country:
@@ -13913,7 +14007,7 @@ x-flows:
           - description: Send redemption successful
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_64
             context:
               location:
                 country:
@@ -14116,59 +14210,56 @@ x-flows:
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Redemption - Failure
-    reference: >-
-      https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
     references: if any
     steps:
       - summary: Select redemption in a particular folio and scheme
         api: select
-        details:
+        details: &ref_43
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_35
+          value: *ref_41
       - summary: Get the redemption payout a/c details
         api: on_select
         details:
           - description: List of payout bank a/cs is sent
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_42
       - summary: Initialize the redemption order
         api: init
-        details:
-          - description: Send order details and folio details
+        details: *ref_43
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_44
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with tnc
         reference: if any
         example:
-          value: *ref_38
+          value: *ref_45
       - summary: Confirm
         api: confirm
         details:
-          - description: Send order confirmation w/ 2fa details
+          - description: Send order confirmation w 2fa details
         reference: if any
         example:
-          value: *ref_39
+          value: *ref_46
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send accepted order
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_47
       - summary: On Update
         api: on_update
         details:
           - description: Send redemption failed
         reference: if any
         example:
-          value: &ref_58
+          value: &ref_65
             context:
               location:
                 country:
@@ -14379,10 +14470,10 @@ x-examples:
     example_set:
       search:
         examples:
-          - summary: search for mutual funds Full Pull
+          - summary: search_for_mutual_funds_Full_Pull
             description: TBD
-            value: *ref_41
-          - summary: search for mutual funds incremental from given time
+            value: *ref_48
+          - summary: search_for_mutual_funds_incremental_from_given_time
             description: TBD
             value:
               context:
@@ -14435,60 +14526,130 @@ x-examples:
                             name: Offline Contract
                             code: OFFLINE_CONTRACT
                           value: 'true'
-          - summary: search for mutual funds register for incremental pull
+          - summary: search_for_mutual_funds_register_for_incremental_pull
             description: TBD
-            value: *ref_42
+            value: *ref_49
       on_search:
         examples:
-          - summary: mutual funds catalog
+          - summary: mutual_funds_catalog
             description: TBD
-            value: *ref_16
+            value: *ref_21
       select:
         examples:
-          - summary: select lumpsum order
+          - summary: select_lumpsum_order
             description: lumpsum order
-            value: *ref_29
-          - summary: select sip order
+            value: *ref_34
+          - summary: select_sip_order
             description: sip order
-            value: *ref_17
-          - summary: select redemption order
+            value: *ref_22
+          - summary: select_redemption_order
             description: redemption order
-            value: *ref_35
-          - summary: submit new folio form
+            value: *ref_41
+          - summary: submit_new_folio_form
             description: submit new folio form
-            value: *ref_24
-          - summary: submit kyc form (step 1)
+            value: *ref_23
+          - summary: submit_kyc_form_(step_1)
             description: submit kyc form
-            value: *ref_43
-          - summary: submit kyc form (step 2)
+            value:
+              context:
+                location:
+                  country:
+                    code: IND
+                  city:
+                    code: '*'
+                domain: ONDC:FIS14
+                timestamp: '2023-05-25T05:23:03.443Z'
+                bap_id: api.buyerapp.com
+                bap_uri: https://api.buyerapp.com/ondc
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                version: 2.0.0
+                ttl: PT10M
+                bpp_id: api.sellerapp.com
+                bpp_uri: https://api.sellerapp.com/ondc
+                action: select
+              message:
+                order:
+                  provider:
+                    id: amc_1
+                  items:
+                    - id: '12391'
+                      quantity:
+                        selected:
+                          measure:
+                            value: '3000'
+                            unit: INR
+                  fulfillments:
+                    - id: ff_123
+                      type: SIP
+                      customer:
+                        person:
+                          id: pan:arrpp7771n
+                      agent:
+                        person:
+                          id: euin:E52432
+                        organization:
+                          creds:
+                            - id: ARN-124567
+                              type: ARN
+                            - id: ARN-123456
+                              type: SUB_BROKER_ARN
+                      stops:
+                        - time:
+                            schedule:
+                              frequency: R6/2024-05-15/P1M
+                  xinput:
+                    form:
+                      id: form_1
+                    form_response:
+                      submission_id: 6547-7456-7235-4386
+                  tags:
+                    - display: false
+                      descriptor:
+                        name: BAP Terms of Engagement
+                        code: BAP_TERMS
+                      list:
+                        - descriptor:
+                            name: Static Terms (Transaction Level)
+                            code: STATIC_TERMS
+                          value: >-
+                            https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
+                        - descriptor:
+                            name: Offline Contract
+                            code: OFFLINE_CONTRACT
+                          value: 'true'
+          - summary: submit_kyc_form_(step_2)
             description: submit kyc form
-            value: *ref_44
-          - summary: submit kyc form (step 3)
+            value: *ref_50
+          - summary: submit_kyc_form_(step_3)
             description: submit kyc form
-            value: *ref_45
+            value: *ref_51
       on_select:
         examples:
-          - summary: send existing folios
-            description: send existing folios
-            value: *ref_46
-          - summary: send new folio xinput form
+          - summary: send_new_folio_xinput_form
             description: send new folio xinput form
-            value: *ref_23
-          - summary: send payment options
+            value: *ref_28
+          - summary: send_payment_options
             description: send payment options
-            value: *ref_25
-          - summary: send new kyc xinput form (redirection step)
+            value: *ref_29
+          - summary: send_new_kyc_xinput_form_(redirection_step)
             description: send new kyc xinput form (redirection step)
-            value: *ref_47
-          - summary: send payout bank details for redemption
+            value: *ref_52
+          - summary: send_payout_bank_details_for_redemption
             description: send payout bank details for redemption
-            value: *ref_36
+            value: *ref_42
+          - summary: send_existing_folios
+            description: send existing folios
+            value: *ref_53
+          - summary: lumpsum_existing
+            description: TBD
+            value: *ref_54
       init:
         examples:
-          - summary: init lumpsum order (netbanking payment)
+          - summary: init_lumpsum_order_(netbanking_payment)
             description: init lumpsum order (netbanking payment)
-            value: *ref_31
-          - summary: init lumpsum order (upi collect payment)
+            value: *ref_36
+          - summary: init_lumpsum_order_(upi_collect_payment)
             description: init lumpsum order (upi collect payment)
             value:
               context:
@@ -14575,21 +14736,21 @@ x-examples:
                             name: Offline Contract
                             code: OFFLINE_CONTRACT
                           value: 'true'
-          - summary: init sip existing folio
+          - summary: init_sip_existing_folio
             description: init sip existing folio
-            value: *ref_48
-          - summary: init sip new folio
+            value: *ref_55
+          - summary: init_sip_new_folio
             description: init sip new folio
-            value: *ref_18
-          - summary: init redemption order
+            value: *ref_24
+          - summary: init_redemption_order
             description: init redemption order
-            value: *ref_37
+            value: *ref_44
       on_init:
         examples:
-          - summary: send netbanking url & tnc for lumpsum purchase
+          - summary: send_netbanking_url_&_tnc_for_lumpsum_purchase
             description: send netbanking url & tnc
-            value: *ref_32
-          - summary: send upi uri & tnc for lumpsum purchase
+            value: *ref_37
+          - summary: send_upi_uri_&_tnc_for_lumpsum_purchase
             description: send upi uri & tnc
             value:
               context:
@@ -14793,31 +14954,31 @@ x-examples:
                           value: '3000'
                   created_at: '2023-05-25T05:23:03.443Z'
                   updated_at: '2023-05-25T05:23:03.443Z'
-          - summary: send payment url & tnc
+          - summary: send_payment_url_&_tnc
             description: send payment url & tnc
-            value: *ref_49
-          - summary: send order in created state
+            value: *ref_56
+          - summary: send_order_in_created_state
             description: send order in created state
-            value: *ref_38
+            value: *ref_45
       confirm:
         examples:
-          - summary: confirm sip
+          - summary: confirm_sip
             description: confirm sip
-            value: *ref_20
-          - summary: confirm redemption
+            value: *ref_25
+          - summary: confirm_redemption
             description: confirm redemption
-            value: *ref_39
+            value: *ref_46
       on_confirm:
         examples:
-          - summary: confirm order w/ accepted state
-            description: confirm order w/ accepted state
-            value: *ref_21
-          - summary: sip instalment created
+          - summary: confirm_order_w_accepted_state
+            description: confirm order w accepted state
+            value: *ref_26
+          - summary: sip_instalment_created
             description: sip instalment created
-            value: *ref_27
+            value: *ref_32
       status:
         examples:
-          - summary: status of an order
+          - summary: status_of_an_order
             description: bap can ask for the status of an order anytime
             value:
               context:
@@ -14841,20 +15002,20 @@ x-examples:
                 order_id: mfpp_213adf123af
       on_status:
         examples:
-          - summary: lumpsum payment success
+          - summary: lumpsum_payment_success
             description: lumpsum payment success
-            value: *ref_50
-          - summary: sip payment success
+            value: *ref_57
+          - summary: sip_payment_success
             description: sip payment success
-            value: *ref_22
+            value: *ref_27
       cancel:
         examples:
-          - summary: cancel an sip ordes
+          - summary: cancel_an_sip_ordes
             description: >-
               bap can cancel an ongoing sip order by giving a cancellation
               reason
-            value: *ref_51
-          - summary: cancel an sip order w/ custom reason
+            value: *ref_58
+          - summary: cancel_an_sip_order_w_custom_reason
             description: >-
               bap can cancel an ongoing sip order by giving a custom
               cancellation reason provided by the user
@@ -14883,55 +15044,113 @@ x-examples:
                   name: some custom reason given by the user
       on_cancel:
         examples:
-          - summary: cancelled sip order
+          - summary: cancelled_sip_order
             description: cancelled sip order
-            value: *ref_52
+            value: *ref_59
       update:
         examples:
-          - summary: update an order with a new payment
+          - summary: update_an_order_with_a_new_payment
             description: bap asks for a new payment link in case of payment failure
-            value: *ref_53
+            value: *ref_60
       on_update:
         examples:
-          - summary: send a new payment link
+          - summary: send_a_new_payment_link
             description: bpp sends a new payment link
-            value: *ref_54
-          - summary: lumpsum payment failure
-            description: lumpsum payment failure
-            value: *ref_55
-          - summary: sip payment failure
-            description: sip payment failure
-            value: *ref_56
-          - summary: redemption fulfillment success
-            description: redemption fulfillment success
-            value: *ref_57
-          - summary: redemption fulfillment failure
-            description: redemption fulfillment failure
-            value: *ref_58
-          - summary: sip instalment payment failed
-            description: sip instalment payment failed
-            value: *ref_59
-          - summary: sip instalment fulfillment success
-            description: sip instalment fulfillment success
-            value: *ref_60
-          - summary: sip instalment fulfillment failure
-            description: sip instalment fulfillment failure
             value: *ref_61
-          - summary: sip order completed
-            description: sip order completed
+          - summary: lumpsum_payment_failure
+            description: lumpsum payment failure
             value: *ref_62
-          - summary: sip order cancelled
-            description: sip order cancelled
+          - summary: sip_payment_failure
+            description: sip payment failure
             value: *ref_63
+          - summary: redemption_fulfillment_success
+            description: redemption fulfillment success
+            value: *ref_64
+          - summary: redemption_fulfillment_failure
+            description: redemption fulfillment failure
+            value: *ref_65
+          - summary: sip_instalment_payment_failed
+            description: sip instalment payment failed
+            value: *ref_66
+          - summary: sip_instalment_fulfillment_success
+            description: sip instalment fulfillment success
+            value: *ref_67
+          - summary: sip_instalment_fulfillment_failure
+            description: sip instalment fulfillment failure
+            value: *ref_68
+          - summary: sip_order_completed
+            description: sip order completed
+            value: *ref_69
+          - summary: sip_order_cancelled
+            description: sip order cancelled
+            value: *ref_70
+  EXTRA:
+    summary: Extra Examples
+    description: Extra Examples
+    example_set:
+      on_init:
+        examples:
+          - summary: on_init_on_init_7
+            description: TBD
+            value: *ref_71
+          - summary: on_init_on_init_2
+            description: TBD
+            value: *ref_30
+      on_select:
+        examples:
+          - summary: on_select_on_select_3
+            description: TBD
+            value: *ref_72
+          - summary: on_select_on_select_6
+            description: TBD
+            value: *ref_73
+          - summary: on_select_on_select_1
+            description: TBD
+            value: *ref_35
+      confirm:
+        examples:
+          - summary: confirm_confirm_1
+            description: TBD
+            value: *ref_74
+          - summary: confirm_confirm_2
+            description: TBD
+            value: *ref_38
+      on_confirm:
+        examples:
+          - summary: on_confirm_on_confirm_2
+            description: TBD
+            value: *ref_75
+          - summary: on_confirm_on_confirm_3
+            description: TBD
+            value: *ref_39
+          - summary: on_confirm_on_confirm_1
+            description: TBD
+            value: *ref_47
+      on_status:
+        examples:
+          - summary: on_status_on_status_3
+            description: TBD
+            value: *ref_76
+          - summary: on_status_on_status__successful_instalment_payment__2
+            description: TBD
+            value: *ref_33
+      on_update:
+        examples:
+          - summary: on_update_on_update_1
+            description: TBD
+            value: *ref_31
+          - summary: on_update_on_update_4
+            description: TBD
+            value: *ref_77
 x-attributes:
   mutual-funds:
     attribute_set:
       search:
         context:
-          location:
+          location: &ref_78
             country:
               code:
-                required: mandatory
+                required: MANDATORY
                 type: string
                 owner: BAP
                 usage: IND
@@ -14939,7 +15158,7 @@ x-attributes:
                   Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
                   dealing with MF in India, use `IND`
               _description:
-                required: Mandatory
+                required: MANDATORY
                 type: object
                 owner: BAP
                 usage: '--'
@@ -14948,7 +15167,7 @@ x-attributes:
                   transaction is meant to be completed.
             city:
               code:
-                required: mandatory
+                required: MANDATORY
                 type: string
                 owner: BAP
                 usage: '*'
@@ -14956,7 +15175,7 @@ x-attributes:
                   City code. As MF is a digital product, it is location
                   agnostic, use `*`
               _description:
-                required: Mandatory
+                required: MANDATORY
                 type: object
                 owner: BAP
                 usage: '--'
@@ -14964,65 +15183,65 @@ x-attributes:
                   This attribute defines the city of location where the
                   transaction is meant to be completed.
             _description:
-              required: Mandatory
+              required: MANDATORY
               type: object
               owner: BAP
               usage: '--'
               description: >-
                 This attribute defines the location where the transaction is
                 meant to be completed.
-          domain:
-            required: mandatory
+          domain: &ref_79
+            required: MANDATORY
             type: string
             owner: BAP
             usage: ONDC:FIS14
             description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
+          timestamp: &ref_80
+            required: MANDATORY
             type: string
             owner: BAP
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
+          bap_id: &ref_81
+            required: MANDATORY
             type: string
             owner: BAP
             usage: api.buyerapp.com
             description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
+          transaction_id: &ref_82
+            required: MANDATORY
             type: string
             owner: BAP
             usage: 23452234324sdf
             description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
+          message_id: &ref_83
+            required: MANDATORY
             type: string
             owner: BAP
             usage: 32r435345fddsaf
             description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
+          version: &ref_84
+            required: MANDATORY
             type: string
             owner: BAP
             usage: 2.0.0
             description: Protocol version used by the sender
           action:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BAP
             usage: search
             description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
+          bap_uri: &ref_85
+            required: MANDATORY
             type: string
             owner: BAP
             usage: https://api.buyerapp.com/ondc
             description: >-
               Subscriber URL for the buyer NP for accepting callbacks from
               seller NPs
-          ttl:
-            required: mandatory
+          ttl: &ref_86
+            required: MANDATORY
             type: string
             owner: BAP
             usage: PT30S
@@ -15034,13 +15253,13 @@ x-attributes:
             category:
               descriptor:
                 code:
-                  required: mandatory
+                  required: MANDATORY
                   type: string
                   owner: BAP
                   usage: MUTUAL_FUNDS
                   description: Describes  of code value for category
                 _description:
-                  required: Mandatory
+                  required: MANDATORY
                   type: object
                   owner: BAP
                   usage: '--'
@@ -15048,148 +15267,62 @@ x-attributes:
                     It refers to providing additional details about the
                     characteristics, features and attributes of products.
               _description:
-                required: Mandatory
+                required: MANDATORY
                 type: object
                 owner: BAP
                 usage: '--'
                 description: Describes the category of the intent.
             _description:
-              required: Mandatory
+              required: MANDATORY
               type: object
               owner: BAP
               usage: '--'
               description: Describe the intent to buy or avail a product or a service.
-            tags:
-              BAP_TERMS: &ref_64
-                required: Mandatory
+            tags: &ref_90
+              BAP_TERMS: &ref_130
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: '--'
                 description: Describes the BAP Terms.
                 list:
                   STATIC_TERMS:
-                    required: Mandatory
+                    required: MANDATORY
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Describes the static terms
                   OFFLINE_CONTRACT:
-                    required: Mandatory
+                    required: MANDATORY
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Describes the offline contract
       on_search:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
+        context: &ref_122
+          location: *ref_78
+          domain: *ref_79
+          timestamp: *ref_80
+          bap_id: *ref_81
+          transaction_id: *ref_82
+          message_id: *ref_83
+          version: *ref_84
           action:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BAP
             usage: on_search
             description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
+          bap_uri: *ref_85
+          ttl: *ref_86
+          bpp_id: &ref_88
+            required: MANDATORY
             type: string
             owner: BPP
             usage: api.sellerapp.com
             description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
+          bpp_uri: &ref_89
+            required: MANDATORY
             type: string
             owner: BPP
             usage: https://api.sellerapp.com/ondc
@@ -15197,7 +15330,7 @@ x-attributes:
         message:
           catalog:
             _description:
-              required: Mandatory
+              required: MANDATORY
               type: object
               owner: BPP
               usage: '--'
@@ -15206,7 +15339,7 @@ x-attributes:
                 as the response to the search done by BAP.
             descriptor:
               _description:
-                required: Mandatory
+                required: MANDATORY
                 type: object
                 owner: BPP
                 usage: '--'
@@ -15215,14 +15348,14 @@ x-attributes:
                   presenting a detailed description about the characteristics,
                   features, and unique qualities of that particular product.
               name:
-                required: mandatory
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: BPP Name
                 description: Name of the seller NP who is providing the catalog
             providers:
               _description:
-                required: mandatory
+                required: MANDATORY
                 type: object
                 owner: BPP
                 usage: '--'
@@ -15231,236 +15364,231 @@ x-attributes:
                   information that showcases the diverse range of products or
                   services offered by the business.
               id:
-                required: mandatory
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: db1928f9
                 description: ID of the AMC maintained at the seller NP level
               descriptor:
                 _description:
-                  required: Mandatory
+                  required: MANDATORY
                   type: object
                   owner: BPP
                   usage: '--'
                   description: This describes the detailed description of the provider
                 name:
-                  required: mandatory
+                  required: MANDATORY
                   type: string
                   owner: BPP
                   usage: ABC Asset Management Company Ltd.
                   description: Name of the AMC
               categories:
                 _description:
-                  required: Mandatory
+                  required: MANDATORY
                   type: object
                   owner: BPP
                   usage: '--'
                   description: Describes the list of categoreies provided by the seller NP
                 descriptor:
                   _description:
-                    required: Mandatory
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: >-
                       This refers to a label that can serve as a categorization
                       tag for groupiing together a collection of items for
-                      easier identification and management.          
+                      easier identification and management.
                   name:
-                    required: mandatory
+                    required: MANDATORY
                     type: string
                     owner: BPP
                     usage: Large Cap
                     description: Name of the category
                   code:
-                    required: mandatory
+                    required: MANDATORY
                     type: string
                     owner: BPP
                     usage: LARGE_CAP
                     description: Code of the category
                 id:
-                  required: mandatory
+                  required: MANDATORY
                   type: string
                   owner: BPP
                   usage: db1928f9
                   description: ID of the item category maintained at the seller NP level
                 parent_category_id:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: 342435ddafd
                   description: ID of the parent category in case there is a hierarchy
               items:
                 id:
-                  required: mandatory
+                  required: MANDATORY
                   type: string
                   owner: BPP
                   usage: 1cd4ea25
                   description: ID of the scheme / scheme plan
                 descriptor:
                   name:
-                    required: mandatory
+                    required: MANDATORY
                     type: string
                     owner: BPP
                     usage: ABC Large Cap Mutual Fund
                     description: Name of the item
                   code:
-                    required: mandatory
+                    required: MANDATORY
                     type: string
                     owner: BPP
                     usage: SCHEME_PLAN
                     description: Code of the item. Item can be a scheme / scheme plan
                 fulfillment_ids:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: 3bd4ea25
                   description: IDs of the associated fulfillments
                 category_ids:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: 4bd4ea25
                   description: List of categories that this scheme belongs to
                 matched:
-                  required: optional
+                  required: OPTIONAL
                   type: boolean
                   owner: BPP
                   usage: true
                   description: Whether this item is an exact match of the request
                 parent_item_id:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: 234dsfs
                   description: ID of the scheme that this plan belongs to
                 tags:
-                  PLAN_INFORMATION: &ref_70
-                    required: Mandatory
+                  PLAN_INFORMATION: &ref_97
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the Plan Information.
                     list:
                       CONSUMER_TNC:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the consumer tnc
-                  PLAN_IDENTIFIERS: &ref_71
-                    required: Mandatory
+                  PLAN_IDENTIFIERS: &ref_98
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the Plan Information.
                     list:
                       ISIN:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the ISIN
-                      RTA_IDENTIFIER:
-                        required: Mandatory
+                      RTA_IDENTIFIER: &ref_87
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the RTA Identifier
-                      AMFI_IDENTIFIER:
-                        required: Mandatory
-                        type: string
-                        owner: BPP
-                        usage: '--'
-                        description: Describes the RTA Identifier
-                  PLAN_OPTIONS: &ref_72
-                    required: Mandatory
+                      AMFI_IDENTIFIER: *ref_87
+                  PLAN_OPTIONS: &ref_99
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the Plan options.
                     list:
                       PLAN:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the Plan
                       OPTION:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the options
                       IDCW_OPTION:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the IDCW options
                   SCHEME_INFORMATION:
-                    required: Mandatory
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the Scheme Information
                     list:
                       STATUS:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the status
                       LOCKIN_PERIOD_IN_DAYS:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the lockin period
                       NFO_START_DATE:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the nfo start date
                       NFO_END_DATE:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the nfo end date
                       NFO_ALLOTMENT_DATE:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the nfo allotment date
                       NFO_REOPEN_DATE:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the nfo reopen date
                       ENTRY_LOAD:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the entry load
                       EXIT_LOAD:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the exit load
                       OFFER_DOCUMENTS:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the offer documents
                 _description:
-                  required: Mandatory
+                  required: MANDATORY
                   type: object
                   owner: BAP/BPP
                   usage: '--'
@@ -15469,265 +15597,169 @@ x-attributes:
                     order from
               fulfillments:
                 id:
-                  required: mandatory
+                  required: MANDATORY
                   type: string
                   owner: BPP
                   usage: 3bd4ea25
                   description: ID of the fulfillment to refer in the item
                 type:
-                  required: mandatory
+                  required: MANDATORY
                   type: string
                   owner: BPP
                   usage: SIP
                   description: Type of the fulfillment
                 tags:
-                  THRESHOLDS: &ref_79
-                    required: Mandatory
+                  THRESHOLDS: &ref_106
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the Plan Information.
                     list:
                       AMOUNT_MIN:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the min amount
                       AMOUNT_MAX:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the max amount
                       AMOUNT_MULTIPLES:
-                        required: Mandatory
+                        required: MANDATORY
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the amount multiples
                       UNITS_MIN:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the min units
                       UNITS_MAX:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the max units
                       UNITS_MULTIPLES:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the unit multuples
                       INSTALMENTS_COUNT_MIN:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the min installment count
                       INSTALMENTS_COUNT_MAX:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the max installment count
                       CUMULATIVE_AMOUNT_MIN:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the min cumulative amount
                       FREQUENCY:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the frequency
                       FREQUENCY_DATES:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the frequency dates
                       ADDITIONAL_AMOUNT_MIN:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the additional min amount
                       ADDITIONAL_AMOUNT_MAX:
-                        required: Optional
+                        required: OPTIONAL
                         type: string
                         owner: BPP
                         usage: '--'
                         description: Describes the additional max amount
                   _description:
-                    required: mandatory
+                    required: MANDATORY
                     type: array
                     owner: BPP
                     usage: '--'
                     description: List of tag groups
                 _description:
-                  required: mandatory
+                  required: MANDATORY
                   type: object
                   owner: BPP
                   usage: '--'
                   description: >-
                     This refers to the decription as to how that order will
                     rendered/fulfilled to the end-customers.
-            tags:
-              BPP_TERMS: &ref_80
-                required: Mandatory
+            tags: &ref_112
+              BPP_TERMS: &ref_131
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: '--'
                 description: Describes the BAP Terms.
                 list:
                   STATIC_TERMS:
-                    required: Mandatory
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the static terms
                   OFFLINE_CONTRACT:
-                    required: Mandatory
+                    required: MANDATORY
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Describes the offline contract
       select:
         context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
+          location: *ref_78
+          domain: *ref_79
+          timestamp: *ref_80
+          bap_id: *ref_81
+          transaction_id: *ref_82
+          message_id: *ref_83
+          version: *ref_84
           action:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BAP
             usage: select
             description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+          bap_uri: *ref_85
+          ttl: *ref_86
+          bpp_id: *ref_88
+          bpp_uri: *ref_89
         message:
           order:
-            _description:
-              required: mandatory
+            _description: &ref_91
+              required: MANDATORY
               type: object
               owner: BAP/BPP
               usage: '--'
               description: >-
                 This refers to the complete description of the legal contract
                 created between the buyer and the seller.
-            provider: &ref_65
+            provider: &ref_92
               id:
-                required: mandatory
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: 2a434adf
@@ -15735,109 +15767,109 @@ x-attributes:
                   ID of the provider whose item is chosen, as received in the
                   catalog
               _description:
-                required: mandatory
+                required: MANDATORY
                 type: object
                 owner: BPP
                 usage: '--'
                 description: MF provider details
-            items: &ref_81
-              _description: &ref_66
-                required: mandatory
+            items: &ref_113
+              _description: &ref_93
+                required: MANDATORY
                 type: object
                 owner: BAP/BPP
                 usage: '--'
                 description: List of mf schemes in an order
-              id: &ref_67
-                required: mandatory
+              id: &ref_94
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: 98dgwr41
                 description: ID of the item that is chosen, as received in the catalog
-              fulfillment_ids: &ref_68
-                required: optional
+              fulfillment_ids: &ref_95
+                required: OPTIONAL
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
                 description: Unique reference ID to the fulfillment of an order
-              quantity: &ref_69
+              quantity: &ref_96
                 _description:
-                  required: mandatory
+                  required: MANDATORY
                   type: object
                   owner: BAP
                   usage: '--'
                   description: Describes the quantity assocaited with the item
                 selected:
                   _description:
-                    required: mandatory
+                    required: MANDATORY
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Describes the selected quantity assocaited with the item
                   measure:
                     _description:
-                      required: mandatory
+                      required: MANDATORY
                       type: object
                       owner: BAP
                       usage: '--'
                       description: Describes the measure of the selected quantity
                     value:
-                      required: mandatory
+                      required: MANDATORY
                       type: integer
                       owner: BAP
                       usage: '3000'
                       description: Value of order
                     unit:
-                      required: mandatory
+                      required: MANDATORY
                       type: string
                       owner: BAP
                       usage: amount
                       description: Type of the value of order
             fulfillments:
-              _description: &ref_73
-                required: mandatory
+              _description: &ref_100
+                required: MANDATORY
                 type: object
                 owner: BAP
                 usage: '--'
                 description: Fulfillment details
-              type: &ref_74
-                required: mandatory
+              type: &ref_101
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: SIP
                 description: Type of the fulfillment chosen
-              id: &ref_75
-                required: mandatory
+              id: &ref_102
+                required: MANDATORY
                 type: string
                 owner: BPP
                 usage: 45af324fs
                 description: ID of the fulfillment chosen
-              customer: &ref_76
-                _description: &ref_82
-                  required: mandatory
+              customer: &ref_103
+                _description: &ref_114
+                  required: MANDATORY
                   type: object
                   owner: BAP
                   usage: '--'
                   description: >-
                     This refers to the description of the person that will
                     ulitmately receive the order.
-                person: &ref_83
+                person: &ref_115
                   id:
-                    required: mandatory
+                    required: MANDATORY
                     type: string
                     owner: BAP
                     usage: pan:arrpp7771n
                     description: Investor identifier in the format "pan:`pan_number`"
                   _description:
-                    required: mandatory
+                    required: MANDATORY
                     type: object
                     owner: BAP
                     usage: '--'
                     description: >-
                       This refers to the description of the associated person as
                       an individual entity.
-              agent: &ref_77
+              agent: &ref_104
                 _description:
-                  required: mandatory
+                  required: MANDATORY
                   type: object
                   owner: BAP
                   usage: '--'
@@ -15846,73 +15878,73 @@ x-attributes:
                     order
                 person:
                   _description:
-                    required: optional
+                    required: OPTIONAL
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Describes a person as any individual
                   id:
-                    required: optional
+                    required: OPTIONAL
                     type: string
                     owner: BAP
                     usage: euin:e1234
                     description: EUIN of the distributor employee
                 organization:
                   _description:
-                    required: mandatory
+                    required: MANDATORY
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Distributor organization details
                   creds:
                     _description:
-                      required: mandatory
+                      required: MANDATORY
                       type: object
                       owner: BAP
                       usage: '--'
                       description: Distributor license details
                     id:
-                      required: mandatory
+                      required: MANDATORY
                       type: string
                       owner: BAP
                       usage: ARN-123456
                       description: Distributor license number
                     type:
-                      required: mandatory
+                      required: MANDATORY
                       type: string
                       owner: BAP
                       usage: ARN
                       description: Distributor license type
-              stops: &ref_78
+              stops: &ref_105
                 _description:
-                  required: optional
+                  required: OPTIONAL
                   type: array
                   owner: BAP
                   usage: '--'
                   description: Provide schedule for recurring orders
                 time:
                   _description:
-                    required: optional
+                    required: OPTIONAL
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Time associated for recurring orders
                   schedule:
                     _description:
-                      required: optional
+                      required: OPTIONAL
                       type: object
                       owner: BAP
                       usage: '--'
                       description: Schedule of the recurring orders
                     frequency:
-                      required: optional
+                      required: OPTIONAL
                       type: string
                       owner: BAP
                       usage: '--'
                       description: Frequency of the recurring orders in ISO8601 format
-            xinput: &ref_84
-              _description:
-                required: optional
+            xinput: &ref_116
+              _description: &ref_107
+                required: OPTIONAL
                 type: object
                 owner: BAP/BPP
                 usage: '--'
@@ -15920,191 +15952,80 @@ x-attributes:
                   This attribute refers to the information about additional
                   input required from the customer to confirm this order.
               form:
-                _description:
-                  required: optional
+                _description: &ref_108
+                  required: OPTIONAL
                   type: object
                   owner: BPP
                   usage: '--'
                   description: >-
                     This attribute refers to the information about additional
                     input form generated from the system.
-                id:
-                  required: optional
+                id: &ref_109
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: d097c2f5
                   description: This refers to the unique id of the form
               form_response:
-                _description:
-                  required: optional
+                _description: &ref_110
+                  required: OPTIONAL
                   type: object
                   owner: BPP
                   usage: '--'
                   description: Form response details
-                submission_id:
-                  required: optional
+                submission_id: &ref_111
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: d097c2f5
                   description: Submission id of the form submission
-            tags:
-              BAP_TERMS: *ref_64
+            tags: *ref_90
       on_select:
         context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
+          location: *ref_78
+          domain: *ref_79
+          timestamp: *ref_80
+          bap_id: *ref_81
+          transaction_id: *ref_82
+          message_id: *ref_83
+          version: *ref_84
           action:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BAP
             usage: on_select
             description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+          bap_uri: *ref_85
+          ttl: *ref_86
+          bpp_id: *ref_88
+          bpp_uri: *ref_89
         message:
           order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            provider: *ref_65
-            items: &ref_90
-              _description: *ref_66
-              id: *ref_67
-              fulfillment_ids: *ref_68
-              quantity: *ref_69
+            _description: *ref_91
+            provider: *ref_92
+            items: &ref_123
+              _description: *ref_93
+              id: *ref_94
+              fulfillment_ids: *ref_95
+              quantity: *ref_96
               tags:
-                PLAN_INFORMATION: *ref_70
-                PLAN_IDENTIFIERS: *ref_71
-                PLAN_OPTIONS: *ref_72
+                PLAN_INFORMATION: *ref_97
+                PLAN_IDENTIFIERS: *ref_98
+                PLAN_OPTIONS: *ref_99
             fulfillments:
-              _description: *ref_73
-              type: *ref_74
-              id: *ref_75
-              customer: *ref_76
-              agent: *ref_77
-              stops: *ref_78
-              tags:
-                THRESHOLDS: *ref_79
+              _description: *ref_100
+              type: *ref_101
+              id: *ref_102
+              customer: *ref_103
+              agent: *ref_104
+              stops: *ref_105
+              tags: &ref_125
+                THRESHOLDS: *ref_106
             xinput:
-              _description:
-                required: optional
-                type: object
-                owner: BAP/BPP
-                usage: '--'
-                description: >-
-                  This attribute refers to the information about additional
-                  input required from the customer to confirm this order.
+              _description: *ref_107
               head:
                 _description:
-                  required: optional
+                  required: OPTIONAL
                   type: object
                   owner: BPP
                   usage: '--'
@@ -16114,7 +16035,7 @@ x-attributes:
                     this item.
                 index:
                   _description:
-                    required: optional
+                    required: OPTIONAL
                     type: object
                     owner: BPP
                     usage: '--'
@@ -16122,78 +16043,56 @@ x-attributes:
                       It refers to the integer value of the index number of
                       required additional input.
                   min:
-                    required: optional
+                    required: OPTIONAL
                     type: number
                     owner: BPP
                     usage: false
                     description: Describes the min indexvalue
                   max:
-                    required: optional
+                    required: OPTIONAL
                     type: number
                     owner: BPP
                     usage: 1
                     description: Describes the max index value
                   cur:
-                    required: optional
+                    required: OPTIONAL
                     type: number
                     owner: BPP
                     usage: 1
                     description: Describes the current index value
                 headings:
-                  required: optional
+                  required: OPTIONAL
                   type: array
                   owner: BPP
                   usage: New Folio
                   description: Describes the headings of the form.
               form:
-                _description:
-                  required: optional
-                  type: object
-                  owner: BPP
-                  usage: '--'
-                  description: >-
-                    This attribute refers to the information about additional
-                    input form generated from the system.
+                _description: *ref_108
                 mime_type:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: text/html
                   description: Describes the mime of the form
                 url:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: >-
                     https://6vs8xnx5i7.abcmf.co.in/mf-kyc/xinput/formid/a23f2fdfbbb8ac402bfd54f
                   description: Describes the url of the document
-                id:
-                  required: optional
-                  type: string
-                  owner: BPP
-                  usage: d097c2f5
-                  description: This refers to the unique id of the form
+                id: *ref_109
               form_response:
-                _description:
-                  required: optional
-                  type: object
-                  owner: BPP
-                  usage: '--'
-                  description: Form response details
-                submission_id:
-                  required: optional
-                  type: string
-                  owner: BPP
-                  usage: d097c2f5
-                  description: Submission id of the form submission
+                _description: *ref_110
+                submission_id: *ref_111
                 status:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BPP
                   usage: SUCCESS
                   description: Status of the form submission
               required:
-                required: optional
+                required: OPTIONAL
                 type: boolean
                 owner: BPP
                 usage: true
@@ -16201,273 +16100,169 @@ x-attributes:
                   Indicates whether the form data is mandatorily required by the
                   BPP to confirm the order.
             payments:
-              _description: &ref_85
-                required: optional
+              _description: &ref_117
+                required: OPTIONAL
                 type: list
                 owner: BPP
                 usage: '--'
                 description: List of payment options for this order
-              id: &ref_86
-                required: optional
+              id: &ref_118
+                required: OPTIONAL
                 type: string
                 owner: BPP
                 usage: pmt_1
                 description: Payment option identifier
-              collected_by: &ref_87
-                required: optional
+              collected_by: &ref_119
+                required: OPTIONAL
                 type: string
                 owner: BPP
                 usage: BPP
                 description: Who is collecting the payment
-              type: &ref_88
-                required: optional
+              type: &ref_120
+                required: OPTIONAL
                 type: string
                 owner: BPP
                 usage: PRE_FULFILLMENT
                 description: When is the payment to be collected
-              tags: &ref_89
+              tags: &ref_121
                 _description:
-                  required: optional
+                  required: OPTIONAL
                   type: array
                   owner: BPP
                   usage: '--'
                   description: Additional information related to the payment option
                 display:
-                  required: optional
+                  required: OPTIONAL
                   type: boolean
                   owner: BPP
                   usage: true
                   description: True if BAP has to display the tag content
                 descriptor:
                   _description:
-                    required: optional
+                    required: OPTIONAL
                     type: object
                     owner: BPP
                     usage: '--'
                     description: Label for tag group
                   name:
-                    required: optional
+                    required: OPTIONAL
                     type: string
                     owner: BPP
                     usage: Payment Method
                     description: Name of the tag group
                   code:
-                    required: optional
+                    required: OPTIONAL
                     type: string
                     owner: BPP
                     usage: PAYMENT_METHOD
                     description: Code of the tag group
                 list:
                   _description:
-                    required: optional
+                    required: OPTIONAL
                     type: array
                     owner: BPP
                     usage: '--'
                     description: List of tags
                   descriptor:
                     _description:
-                      required: optional
+                      required: OPTIONAL
                       type: object
                       owner: BPP
                       usage: '--'
                       description: Label for tag
                     name:
-                      required: optional
+                      required: OPTIONAL
                       type: string
                       owner: BPP
                       usage: Mode of payment
                       description: Name of the tag
                     code:
-                      required: optional
+                      required: OPTIONAL
                       type: string
                       owner: BPP
                       usage: MODE
                       description: Code of the tag
                   value:
-                    required: optional
+                    required: OPTIONAL
                     type: string
                     owner: BPP
                     usage: MANDATE_REGISTRATION
                     description: Value of the tag
-            tags:
-              BPP_TERMS: *ref_80
+            tags: *ref_112
       init:
         context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
+          location: *ref_78
+          domain: *ref_79
+          timestamp: *ref_80
+          bap_id: *ref_81
+          transaction_id: *ref_82
+          message_id: *ref_83
+          version: *ref_84
           action:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BAP
             usage: init
             description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+          bap_uri: *ref_85
+          ttl: *ref_86
+          bpp_id: *ref_88
+          bpp_uri: *ref_89
         message:
           order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            provider: *ref_65
-            items: *ref_81
-            fulfillments: &ref_93
-              _description: *ref_73
-              type: *ref_74
-              id: *ref_75
-              customer: &ref_91
-                _description: *ref_82
-                person: *ref_83
+            _description: *ref_91
+            provider: *ref_92
+            items: *ref_113
+            fulfillments: &ref_128
+              _description: *ref_100
+              type: *ref_101
+              id: *ref_102
+              customer: &ref_124
+                _description: *ref_114
+                person: *ref_115
                 contact:
                   _description:
-                    required: mandatory
+                    required: MANDATORY
                     type: object
                     owner: BAP
                     usage: '--'
                     description: Customer contact information on which 2fa is done
                   phone:
-                    required: mandatory
+                    required: MANDATORY
                     type: string
                     owner: BAP
                     usage: '9916587487'
                     description: Phone number of the customer on which 2fa is done
-              agent: *ref_77
-              stops: *ref_78
-            xinput: *ref_84
-            payments:
-              _description: *ref_85
-              id: *ref_86
-              collected_by: *ref_87
-              type: *ref_88
-              tags: *ref_89
-              params: &ref_92
+              agent: *ref_104
+              stops: *ref_105
+            xinput: *ref_116
+            payments: &ref_135
+              _description: *ref_117
+              id: *ref_118
+              collected_by: *ref_119
+              type: *ref_120
+              tags: *ref_121
+              params: &ref_126
                 _description:
-                  required: optional
+                  required: OPTIONAL
                   type: object
                   owner: BAP/BPP
                   usage: '--'
                   description: payment related parameters
                 amount:
-                  required: optional
+                  required: OPTIONAL
                   type: integer
                   owner: BAP/BPP
                   usage: 30000
                   description: mandate limit if new mandate registration
                 currency:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BAP/BPP
                   usage: inr
                   description: currency of the amount, if mandate limit is given
                 source_bank_code:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BAP
                   usage: icic0000047
@@ -16475,7 +16270,7 @@ x-attributes:
                     ifsc code of the investor bank a/c from which he wants to
                     make the payment
                 source_bank_account_number:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BAP
                   usage: '004875487458'
@@ -16483,1276 +16278,126 @@ x-attributes:
                     bank a/c number of the investor from which he wants to make
                     the payment
                 source_bank_account_name:
-                  required: optional
+                  required: OPTIONAL
                   type: string
                   owner: BAP
                   usage: Harish Gupta
                   description: >-
                     Name on the bank a/c of the investor from which he wants to
                     make the payment
-            tags:
-              BAP_TERMS: *ref_64
+            tags: *ref_90
       on_init:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+        context: *ref_122
         message:
           order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
+            _description: *ref_91
+            id: &ref_127
+              required: MANDATORY
               type: string
               owner: BPP
               usage: 54adfadsf6144
               description: ID of the order at the seller app end
             status:
-              required: mandatory
+              required: MANDATORY
               type: string
               owner: BAP
               usage: CREATED
               description: Status of the order at seller app end
-            provider: *ref_65
-            items: *ref_90
-            fulfillments: &ref_95
-              _description: *ref_73
-              type: *ref_74
-              id: *ref_75
-              customer: *ref_91
-              agent: *ref_77
-              stops: *ref_78
-              tags:
-                THRESHOLDS: *ref_79
-            xinput: *ref_84
-            payments: &ref_94
-              _description: *ref_85
-              id: *ref_86
-              collected_by: *ref_87
-              type: *ref_88
-              tags: *ref_89
-              params: *ref_92
+            provider: *ref_92
+            items: *ref_123
+            fulfillments: &ref_132
+              _description: *ref_100
+              type: *ref_101
+              id: *ref_102
+              customer: *ref_124
+              agent: *ref_104
+              stops: *ref_105
+              tags: *ref_125
+            xinput: *ref_116
+            payments: &ref_129
+              _description: *ref_117
+              id: *ref_118
+              collected_by: *ref_119
+              type: *ref_120
+              tags: *ref_121
+              params: *ref_126
               url:
-                required: optional
+                required: OPTIONAL
                 type: string
                 owner: BPP
                 usage: https://api.sellerapp.com/pay
                 description: payment url for the selected payment mode
               status:
-                required: optional
+                required: OPTIONAL
                 type: string
                 owner: BPP
                 usage: NOT-PAID
                 description: status of the payment
-            tags:
-              BPP_TERMS: *ref_80
+            tags: *ref_112
       confirm:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+        context: *ref_122
         message:
           order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
-              type: string
-              owner: BPP
-              usage: 54adfadsf6144
-              description: ID of the order at the seller app end
-            provider: *ref_65
-            items: *ref_81
-            fulfillments: *ref_93
-            xinput: *ref_84
-            payments: *ref_94
-            tags:
-              BAP_TERMS: *ref_64
-              BPP_TERMS: *ref_80
-      on_confirm:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+            _description: *ref_91
+            id: *ref_127
+            provider: *ref_92
+            items: *ref_113
+            fulfillments: *ref_128
+            xinput: *ref_116
+            payments: *ref_129
+            tags: &ref_133
+              BAP_TERMS: *ref_130
+              BPP_TERMS: *ref_131
+      on_confirm: &ref_134
+        context: *ref_122
         message:
           order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
-              type: string
-              owner: BPP
-              usage: 54adfadsf6144
-              description: ID of the order at the seller app end
+            _description: *ref_91
+            id: *ref_127
             status:
-              required: mandatory
+              required: MANDATORY
               type: string
               owner: BAP
               usage: ACCEPTED
               description: Status of the order at seller app end
-            provider: *ref_65
-            items: *ref_90
-            fulfillments: *ref_95
-            xinput: *ref_84
-            payments: *ref_94
-            tags:
-              BAP_TERMS: *ref_64
-              BPP_TERMS: *ref_80
+            provider: *ref_92
+            items: *ref_123
+            fulfillments: *ref_132
+            xinput: *ref_116
+            payments: *ref_129
+            tags: *ref_133
       status:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+        context: *ref_122
         message:
-          order_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: 54adfadsf6144
-            description: ID of the order at the seller app end
-      on_status:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
-        message:
-          order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
-              type: string
-              owner: BPP
-              usage: 54adfadsf6144
-              description: ID of the order at the seller app end
-            status:
-              required: mandatory
-              type: string
-              owner: BAP
-              usage: ACCEPTED
-              description: Status of the order at seller app end
-            provider: *ref_65
-            items: *ref_90
-            fulfillments: *ref_95
-            xinput: *ref_84
-            payments: *ref_94
-            tags:
-              BAP_TERMS: *ref_64
-              BPP_TERMS: *ref_80
+          order_id: *ref_127
+      on_status: *ref_134
       cancel:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
+        context: *ref_122
         message:
-          order_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: 54adfadsf6144
-            description: ID of the order at the seller app end
+          order_id: *ref_127
           cancellation_reason_id:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BPP
             usage: cr_123
             description: ID of the cancellation reason
-      on_cancel:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
-        message:
-          order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
-              type: string
-              owner: BPP
-              usage: 54adfadsf6144
-              description: ID of the order at the seller app end
-            status:
-              required: mandatory
-              type: string
-              owner: BAP
-              usage: ACCEPTED
-              description: Status of the order at seller app end
-            provider: *ref_65
-            items: *ref_90
-            fulfillments: *ref_95
-            xinput: *ref_84
-            payments: *ref_94
-            tags:
-              BAP_TERMS: *ref_64
-              BPP_TERMS: *ref_80
+      on_cancel: *ref_134
       update:
         context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
+          location: *ref_78
+          domain: *ref_79
         message:
           update_target:
-            required: mandatory
+            required: MANDATORY
             type: string
             owner: BAP
             usage: order.payments
             description: The path of the order object which is getting updated
           order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
-              type: string
-              owner: BPP
-              usage: 54adfadsf6144
-              description: ID of the order at the seller app end
-            payments:
-              _description: *ref_85
-              id: *ref_86
-              collected_by: *ref_87
-              type: *ref_88
-              tags: *ref_89
-              params:
-                _description:
-                  required: optional
-                  type: object
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: payment related parameters
-                amount:
-                  required: optional
-                  type: integer
-                  owner: BAP/BPP
-                  usage: 30000
-                  description: mandate limit if new mandate registration
-                currency:
-                  required: optional
-                  type: string
-                  owner: BAP/BPP
-                  usage: inr
-                  description: currency of the amount, if mandate limit is given
-                source_bank_code:
-                  required: optional
-                  type: string
-                  owner: BAP
-                  usage: icic0000047
-                  description: >-
-                    ifsc code of the investor bank a/c from which he wants to
-                    make the payment
-                source_bank_account_number:
-                  required: optional
-                  type: string
-                  owner: BAP
-                  usage: '004875487458'
-                  description: >-
-                    bank a/c number of the investor from which he wants to make
-                    the payment
-                source_bank_account_name:
-                  required: optional
-                  type: string
-                  owner: BAP
-                  usage: Harish Gupta
-                  description: >-
-                    Name on the bank a/c of the investor from which he wants to
-                    make the payment
-      on_update:
-        context:
-          location:
-            country:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: IND
-                description: >-
-                  Country code in ISO 3166-1 and ISO 3166-2 format. Since we are
-                  dealing with MF in India, use `IND`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-            city:
-              code:
-                required: mandatory
-                type: string
-                owner: BAP
-                usage: '*'
-                description: >-
-                  City code. As MF is a digital product, it is location
-                  agnostic, use `*`
-              _description:
-                required: Mandatory
-                type: object
-                owner: BAP
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-          domain:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: ONDC:FIS14
-            description: Domain as defined by ONDC. For MF use `ONDC:FIS14`
-          timestamp:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: '2023-03-23T04:41:16Z'
-            description: Time of request generation in RFC3339 format
-          bap_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: api.buyerapp.com
-            description: Subscriber ID of the buyer NP
-          transaction_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 23452234324sdf
-            description: Co-relation ID for the entire transaction journey
-          message_id:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 32r435345fddsaf
-            description: Co-relation ID for request / callback messages
-          version:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: 2.0.0
-            description: Protocol version used by the sender
-          action:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: on_search
-            description: Protocol method being called by the sender
-          bap_uri:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: https://api.buyerapp.com/ondc
-            description: >-
-              Subscriber URL for the buyer NP for accepting callbacks from
-              seller NPs
-          ttl:
-            required: mandatory
-            type: string
-            owner: BAP
-            usage: PT30S
-            description: >-
-              Duration for which this message holds valid. Typically, the sender
-              will wait for the callback response for this duration
-          bpp_id:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: api.sellerapp.com
-            description: Subscriber ID of the seller NP
-          bpp_uri:
-            required: mandatory
-            type: string
-            owner: BPP
-            usage: https://api.sellerapp.com/ondc
-            description: Subscriber URL of seller NP for accepting calls from buyer NPs
-        message:
-          order:
-            _description:
-              required: Mandatory
-              type: object
-              owner: BAP/BPP
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-            id:
-              required: mandatory
-              type: string
-              owner: BPP
-              usage: 54adfadsf6144
-              description: ID of the order at the seller app end
-            status:
-              required: mandatory
-              type: string
-              owner: BAP
-              usage: ACCEPTED
-              description: Status of the order at seller app end
-            provider: *ref_65
-            items: *ref_90
-            fulfillments: *ref_95
-            xinput: *ref_84
-            payments: *ref_94
-            tags:
-              BAP_TERMS: *ref_64
-              BPP_TERMS: *ref_80
+            _description: *ref_91
+            id: *ref_127
+            payments: *ref_135
+      on_update: *ref_134
 x-errorcodes:
   code:
     - Event: Distributor not empanelled
@@ -17928,12 +16573,12 @@ x-tlc:
         contracts, without overarching offline agreements.
 x-featureui:
   filenames:
-    - README.md
     - account-opening-laundry-list.md
     - buyer-app-responsibilities.md
     - changelog.md
     - forms-and-redirects.md
     - lifecycle-and-states.md
+    - README.md
     - stage-discovery.md
     - stage-fulfillment.md
     - stage-order.md
