@@ -1,3 +1,91 @@
-default:
-  enum_set:
-    $ref: ./default/index.yaml
+search:
+  context: &context
+    $ref: "./context.yaml"
+  message:
+    intent:
+      category:
+        descriptor:
+          code:
+            $ref: './provider.yaml#/category_codes'
+      descriptor:
+        $ref: './category.yaml#/intente_descriptor'
+
+            
+on_search:
+  context: *context
+  message:
+    catalog:
+      providers:
+        descriptor:
+          code:
+            $ref: "./provider.yaml#/provider_codes"
+        categories:
+          descriptor:
+            code:
+              $ref: "./provider.yaml#/category_codes"
+        items: &item
+          descriptor:
+            code:
+              $ref: "./item.yaml#/codes"
+        fulfillments: &fulfillment
+          $ref: "./fulfillment.yaml"
+
+select:
+  context: *context
+  message:
+    order: &order
+      items:
+        <<: *item
+        quantity:
+          selected:
+            measure:
+              unit:
+                $ref: "./item.yaml#/units"
+      fulfillments: *fulfillment
+
+on_select:
+  context: *context
+  message:
+    order:
+      <<: *order
+      # xinput:
+      #   head:
+      #     headings:
+      #       $ref: "./xinput.yaml#/heading"
+
+init:
+  context: *context
+  message:
+    order: &order1
+      <<: *order
+      payments: &payment
+        $ref: "./payment.yaml"
+
+on_init:
+  context: *context
+  message:
+    order: &order2
+      <<: *order1
+      status:
+        $ref: './order.yaml#/status'
+
+confirm:
+  context: *context
+  message:
+    order: *order2
+
+on_confirm:
+  context: *context
+  message:
+    order: *order2
+
+on_status:
+  context: *context
+  message:
+    order: *order2
+
+cancel:
+  context: *context
+  message:
+    cancellation_reason_id:
+      $ref: "./order.yaml#/cancellation_reason"
