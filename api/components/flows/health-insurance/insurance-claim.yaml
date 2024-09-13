@@ -43,7 +43,7 @@ steps:
     example:
       value:
         $ref: "../../examples/health-insurance/forms/claim-form.html"
-  - summary: Insurance sends unsolicited update
+  - summary: Insurer sends unsolicited update
     api: on_update
     details:
       - description: Insurer sends unsolicited update as the state of the order has been updated.
@@ -62,59 +62,121 @@ steps:
     example:
       value:
         $ref: "../../examples/health-insurance/on_update/on_update_claim.yaml"      
-  - summary: Buyer app seeks the most recent claim status update
-    api: status
+  - summary: Insurer sends unsolicited update
+    api: on_update
     details:
-      - description: Buyer app requests the insurer to provide the latest status of the claim.
-        mermaid: &status >- 
+      - description: Insurer sends unsolicited update as the state of the order has been updated.
+        mermaid: >-
           sequenceDiagram
             title Order Fulfillment
             participant Buyer Platform (BAP)
             participant Insurer Platform (BPP)
-            rect rgb(191, 223, 255)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): status
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)  
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
             end
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/health-insurance/status/status-request.yaml"
-  - summary: Insurer shares the latest claim status
+        $ref: "../../examples/health-insurance/on_update/on_update_claim_processing.yaml"      
+  
+  
+  # - summary: Buyer app seeks the most recent claim status update
+  #   api: status
+  #   details:
+  #     - description: Buyer app requests the insurer to provide the latest status of the claim.
+  #       mermaid: &status >- 
+  #         sequenceDiagram
+  #           title Order Fulfillment
+  #           participant Buyer Platform (BAP)
+  #           participant Insurer Platform (BPP)
+  #           rect rgb(191, 223, 255)
+  #           Buyer Platform (BAP)->>Insurer Platform (BPP): status
+  #           Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+  #           end
+  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/health-insurance/status/status-request.yaml"
+  # # - summary: Insurer shares the latest claim status
+  #   api: on_status
+  #   details:
+  #     - description: Insurer provides the buyer with latest update of claim status (Claim Processing).
+  #       mermaid: &onStatus >-
+  #         sequenceDiagram
+  #           title Order Fulfillment
+  #           participant Buyer Platform (BAP)
+  #           participant Insurer Platform (BPP)
+  #           Buyer Platform (BAP)->>Insurer Platform (BPP): status
+  #           Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+  #           rect rgb(191, 223, 255)
+  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  #           end
+  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/health-insurance/on_status/on_status-claim_processing.yaml"
+  # # - summary: Buyer app seeks the most recent claim status update
+  #   api: status
+  #   details:
+  #     - description: Buyer app requests the insurer to provide the latest status of the health insurance application.
+  #       mermaid: *status
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/health-insurance/status/status-request-form-ped.yaml"
+  - summary: Insurer provides the buyer with latest update of claim status
     api: on_status
     details:
-      - description: Insurer provides the buyer with latest update of claim status (Claim Processing).
-        mermaid: &onStatus >-
+      - description: Insurer provides the buyer with latest update of the claim status. Status can be fetched by calling the status API or can be received using unsolicited on_status callback
+        mermaid: >-
           sequenceDiagram
             title Order Fulfillment
             participant Buyer Platform (BAP)
             participant Insurer Platform (BPP)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): status
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            rect rgb(191, 223, 255)  
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-            end 
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/health-insurance/on_status/on_status-claim_processing.yaml"
-  - summary: Buyer app seeks the most recent claim status update
-    api: status
-    details:
-      - description: Buyer app requests the insurer to provide the latest status of the health insurance application.
-        mermaid: *status
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/health-insurance/status/status-request-form-ped.yaml"
-  - summary: Insurer provides the buyer with latest update of claim status (Claim Completed)
-    api: on_status
-    details:
-      - description: Insurer provides the buyer with latest update of the claim status.
-        mermaid: *onStatus
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            
     reference: if any
     example:
       value:
         $ref: "../../examples/health-insurance/on_status/on_status-claim.yaml"
+  
+  - summary: Insurer sends unsolicited update
+    api: on_update
+    details:
+      - description: Insurer sends unsolicited update as the state of the order has been updated.
+        mermaid: >-
+          sequenceDiagram
+            title Order Fulfillment
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_status
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            rect rgb(191, 223, 255)  
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/health-insurance/on_update/on_update_claim_processed.yaml"       
