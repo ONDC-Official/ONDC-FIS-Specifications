@@ -531,6 +531,7 @@ paths:
                   $ref: '#/components/schemas/Error'
               required:
                 - context
+                - message
       responses:
         default:
           $ref: '#/paths/~1init/post/responses/default'
@@ -1015,6 +1016,10 @@ components:
         ttl:
           description: Duration in seconds after which this catalog will expire
           type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Category:
       description: A label under which a collection of items can be grouped.
       type: object
@@ -1346,6 +1351,7 @@ components:
             - text/html
             - application/html
             - application/xml
+            - text/html-multi
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -1883,6 +1889,11 @@ components:
             - ACTIVE
             - COMPLETE
             - CANCELLED
+            - CANCELLATION_INITIATED
+            - ACCEPTED
+            - REJECTED
+            - CREATED
+            - COMPLETED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -1959,6 +1970,13 @@ components:
                   specified in this object.
                 type: string
                 format: uri
+              old_policy_doc:
+                description: >-
+                  The URL from where the form can be fetched. The content
+                  fetched from the url must be processed as per the mime_type
+                  specified in this object.
+                type: string
+                format: uri
         refund_terms:
           description: Refund terms of this item
           type: array
@@ -2020,6 +2038,10 @@ components:
             - $ref: '#/components/schemas/City'
         contact:
           $ref: '#/components/schemas/Contact'
+        creds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Credential'
     Payment:
       description: >-
         Describes the terms of settlement between the BAP and the BPP for a
@@ -2103,6 +2125,7 @@ components:
             - NOT-PAID
             - DELAYED
             - DEFERRED
+            - FAILED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -2508,8 +2531,10 @@ components:
           type: string
         callback_phone:
           type: string
+          format: phone
         phone:
           type: string
+          format: phone
         email:
           type: string
           format: email
@@ -3693,34 +3718,151 @@ x-flows:
 
             <body>
                 <form action="/form/submission/gst_bank_statement">
-                    <label for="gstin_profile">GSTN public profile</label><br>
-                    <input required id="gstin_profile" name="gstinProfile" type="file" accept=".json"/><br>
+                    <label for="gstin_profile_1">1) GSTN public profile</label><br>
+                    <input required id="gstin_profile_1" name="gstinProfile_1" type="file" accept=".json" /><br>
 
-                    <label for="gstr1_b2b_invoice">GSTR-1 B2B Invoice</label><br>
-                    <input required id="gstr1_b2b_invoice" name="gstr1-b2b-invoice" type="file" accept=".json"/><br>
+                    <label for="gstr1_b2b_invoice_1">1) GSTR-1 B2B Invoice</label><br>
+                    <input required id="gstr1_b2b_invoice_1" name="gstr1-b2b-invoice_1" type="file" accept=".json" /><br>
 
-                    <label for="gstr1_b2b_cdnr">GSTR-1 CDNR</label><br>
-                    <input required id="gstr1_b2b_cdnr" name="gstr1-b2b-cdnr" type="file" accept=".json"/><br>
+                    <label for="gstr1_b2b_cdnr_1">1) GSTR-1 CDNR</label><br>
+                    <input required id="gstr1_b2b_cdnr_1" name="gstr1-b2b-cdnr_1" type="file" accept=".json" /><br>
 
-                    <label for="gstr2a_b2b_invoices">GSTR-2A B2B Invoices</label><br>
-                    <input required id="gstr2a_b2b_invoices" name="gstr2A-b2b-invoices" type="file" accept=".json"/><br>
+                    <label for="gstr2a_b2b_invoices_1">1) GSTR-2A B2B Invoices</label><br>
+                    <input required id="gstr2a_b2b_invoices_1" name="gstr2A-b2b-invoices_1" type="file" accept=".json" /><br>
 
-                    <label for="gstr3b_summary">GSTR-3B Summary</label><br>
-                    <input required id="gstr3b_summary" name="gstr3B-summary" type="file" accept=".json"/><br>
+                    <label for="gstr3b_summary_1">1) GSTR-3B Summary</label><br>
+                    <input required id="gstr3b_summary_1" name="gstr3B-summary_1" type="file" accept=".json" /><br>
 
-                    <label for="bank_statement_files">Upload Last 12 Months Bank Statements:</label><br>
-                    <input required id="bank_statement_files" type="file" name="bank_statement_files" accept=".pdf, .xlsx, .xls"><br>
+                    <label for="bank_statement_files_1">1) Upload Last 12 Months Bank Statements:</label><br>
+                    <input required id="bank_statement_files_1" type="file" name="bank_statement_files_1"
+                        accept=".pdf, .xlsx, .xls"><br>
 
-                    <label for="mime_type">Select Bank Statement format</label><br>
-                    <select required id="mime_type" name="mime_type">
-                  <option value="">Select File Type</option>
-                  <option value="application/pdf">PDF</option>
-                  <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (XLSX)</option>
-                  <option value="application/vnd.ms-excel">Excel (XLS)</option>
-                </select><br>
+                    <label for="mime_type_1">1) Select Bank Statement format</label><br>
+                    <select required id="mime_type_1" name="mime_type_1">
+                        <option value="">Select File Type</option>
+                        <option value="application/pdf">PDF</option>
+                        <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (XLSX)</option>
+                        <option value="application/vnd.ms-excel">Excel (XLS)</option>
+                    </select><br>
+
+                    <!-- 1 copy -->
+
+                    <label for="gstin_profile_2">2) GSTN public profile</label><br>
+                    <input required id="gstin_profile_2" name="gstinProfile_2" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_invoice_2">2) GSTR-1 B2B Invoice</label><br>
+                    <input required id="gstr1_b2b_invoice_2" name="gstr1-b2b-invoice_2" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_cdnr_2">2) GSTR-1 CDNR</label><br>
+                    <input required id="gstr1_b2b_cdnr_2" name="gstr1-b2b-cdnr_2" type="file" accept=".json" /><br>
+
+                    <label for="gstr2a_b2b_invoices_2">2) GSTR-2A B2B Invoices</label><br>
+                    <input required id="gstr2a_b2b_invoices_2" name="gstr2A-b2b-invoices_2" type="file" accept=".json" /><br>
+
+                    <label for="gstr3b_summary_2">2) GSTR-3B Summary</label><br>
+                    <input required id="gstr3b_summary_2" name="gstr3B-summary_2" type="file" accept=".json" /><br>
+
+                    <label for="bank_statement_files_2">2) Upload Last 12 Months Bank Statements:</label><br>
+                    <input required id="bank_statement_files_2" type="file" name="bank_statement_files_2"
+                        accept=".pdf, .xlsx, .xls"><br>
+
+                    <label for="mime_type_2">2) Select Bank Statement format</label><br>
+                    <select required id="mime_type_2" name="mime_type_2">
+                        <option value="">Select File Type</option>
+                        <option value="application/pdf">PDF</option>
+                        <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (XLSX)</option>
+                        <option value="application/vnd.ms-excel">Excel (XLS)</option>
+                    </select><br>
+
+                    <!-- 2 copy -->
+
+                    <label for="gstin_profile_3">3) GSTN public profile</label><br>
+                    <input required id="gstin_profile_3" name="gstinProfile_3" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_invoice_3">3) GSTR-1 B2B Invoice</label><br>
+                    <input required id="gstr1_b2b_invoice_3" name="gstr1-b2b-invoice_3" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_cdnr_3">3) GSTR-1 CDNR</label><br>
+                    <input required id="gstr1_b2b_cdnr_3" name="gstr1-b2b-cdnr_3" type="file" accept=".json" /><br>
+
+                    <label for="gstr2a_b2b_invoices_3">3) GSTR-2A B2B Invoices</label><br>
+                    <input required id="gstr2a_b2b_invoices_3" name="gstr2A-b2b-invoices_3" type="file" accept=".json" /><br>
+
+                    <label for="gstr3b_summary_3">3) GSTR-3B Summary</label><br>
+                    <input required id="gstr3b_summary_3" name="gstr3B-summary_3" type="file" accept=".json" /><br>
+
+                    <label for="bank_statement_files_3">3) Upload Last 12 Months Bank Statements:</label><br>
+                    <input required id="bank_statement_files_3" type="file" name="bank_statement_files_3"
+                        accept=".pdf, .xlsx, .xls"><br>
+
+                    <label for="mime_type_3">3) Select Bank Statement format</label><br>
+                    <select required id="mime_type_3" name="mime_type_3">
+                        <option value="">Select File Type</option>
+                        <option value="application/pdf">PDF</option>
+                        <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (XLSX)</option>
+                        <option value="application/vnd.ms-excel">Excel (XLS)</option>
+                    </select><br>
+
+                    <!-- 3 copy -->
+
+                    <label for="gstin_profile_4">4) GSTN public profile</label><br>
+                    <input required id="gstin_profile_4" name="gstinProfile_4" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_invoice_4">4) GSTR-1 B2B Invoice</label><br>
+                    <input required id="gstr1_b2b_invoice_4" name="gstr1-b2b-invoice_4" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_cdnr_4">4) GSTR-1 CDNR</label><br>
+                    <input required id="gstr1_b2b_cdnr_4" name="gstr1-b2b-cdnr_4" type="file" accept=".json" /><br>
+
+                    <label for="gstr2a_b2b_invoices_4">4) GSTR-2A B2B Invoices</label><br>
+                    <input required id="gstr2a_b2b_invoices_4" name="gstr2A-b2b-invoices_4" type="file" accept=".json" /><br>
+
+                    <label for="gstr3b_summary_4">4) GSTR-3B Summary</label><br>
+                    <input required id="gstr3b_summary_4" name="gstr3B-summary_4" type="file" accept=".json" /><br>
+
+                    <label for="bank_statement_files_4">4) Upload Last 12 Months Bank Statements:</label><br>
+                    <input required id="bank_statement_files_4" type="file" name="bank_statement_files_4"
+                        accept=".pdf, .xlsx, .xls"><br>
+
+                    <label for="mime_type_4">4) Select Bank Statement format</label><br>
+                    <select required id="mime_type_4" name="mime_type_4">
+                        <option value="">Select File Type</option>
+                        <option value="application/pdf">PDF</option>
+                        <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (XLSX)</option>
+                        <option value="application/vnd.ms-excel">Excel (XLS)</option>
+                    </select><br>
+
+                    <!-- 4 copy -->
+
+                    <label for="gstin_profile_5">5) GSTN public profile</label><br>
+                    <input required id="gstin_profile_5" name="gstinProfile_5" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_invoice_5">5) GSTR-1 B2B Invoice</label><br>
+                    <input required id="gstr1_b2b_invoice_5" name="gstr1-b2b-invoice_5" type="file" accept=".json" /><br>
+
+                    <label for="gstr1_b2b_cdnr_5">5) GSTR-1 CDNR</label><br>
+                    <input required id="gstr1_b2b_cdnr_5" name="gstr1-b2b-cdnr_5" type="file" accept=".json" /><br>
+
+                    <label for="gstr2a_b2b_invoices_5">5) GSTR-2A B2B Invoices</label><br>
+                    <input required id="gstr2a_b2b_invoices_5" name="gstr2A-b2b-invoices_5" type="file" accept=".json" /><br>
+
+                    <label for="gstr3b_summary_5">5) GSTR-3B Summary</label><br>
+                    <input required id="gstr3b_summary_5" name="gstr3B-summary_5" type="file" accept=".json" /><br>
+
+                    <label for="bank_statement_files_5">5) Upload Last 12 Months Bank Statements:</label><br>
+                    <input required id="bank_statement_files_5" type="file" name="bank_statement_files_5"
+                        accept=".pdf, .xlsx, .xls"><br>
+
+                    <label for="mime_type_5">5) Select Bank Statement format</label><br>
+                    <select required id="mime_type_5" name="mime_type_5">
+                        <option value="">Select File Type</option>
+                        <option value="application/pdf">PDF</option>
+                        <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (XLSX)</option>
+                        <option value="application/vnd.ms-excel">Excel (XLS)</option>
+                    </select><br>
 
                     <label for="bureau_consent">Bureau Consent</label>
-                    <input required id="bureau_consent" type="checkbox" name="bureauConsent"/><br>
+                    <input required id="bureau_consent" type="checkbox" name="bureauConsent" /><br>
 
                     <input required type="hidden" id="form_id" name="formId" value="FO1"><br>
                     <input required type="submit" value="Submit"><br>
@@ -21975,3 +22117,6 @@ x-featureui:
 x-testcasesui:
   filenames:
     - log-verification.md
+x-changeLog:
+  filenames:
+    - FIS12_2.3.0_151024.md
