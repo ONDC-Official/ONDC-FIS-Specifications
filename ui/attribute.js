@@ -16,7 +16,7 @@ function updateSetsAttribute() {
 }
 
 function loadAttributes(data) {
-  console.log("data?", data)
+  console.log("data?", data);
   // To fix: attributes are getting appended to list on branch change.
   var elements = document.getElementsByClassName("test");
   while (elements.length > 0) {
@@ -33,6 +33,29 @@ function loadAttributes(data) {
   });
   const indexKey = Object.keys(attributes);
   addAttributeSets(indexKey[0]);
+
+  console.log("done loading.........");
+
+  const veriosnDropdown = document.getElementById("version-dropdown")
+  const content = document.getElementById("content")
+  const home = document.getElementById("home")
+  const loader = document.getElementById("loader")
+
+  veriosnDropdown.style.display = "block"
+  content.style.display = "block"
+  home.style.display = "none"
+  loader.style.display = "none"
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabId = urlParams.get('tabId');
+
+  if(tabId) {
+    const anchorTag = document.querySelector(`a[href="${tabId}"]`);
+    anchorTag.click();
+  } else {
+    const anchorTag = document.querySelector(`a[href="#swagger"]`);
+    anchorTag.click();
+  }
 }
 
 function emptyAttributeTreeDiv() {
@@ -70,61 +93,65 @@ function addAttributeSets(option) {
 
 function flattenObject(obj, prefix = "", result = {},requiredAttr) {
   if ("required" in obj) {
-     var input = document.getElementById("attribute-search").value;
-     var isSearchMatched = input
-     ? prefix?.includes(input)
-     ? true
-     : false
-     : true;
+    var input = document.getElementById("attribute-search").value;
+    var isSearchMatched = input
+      ? prefix?.includes(input)
+        ? true
+        : false
+      : true;
 
-    if(isSearchMatched && (requiredAttr===undefined || requiredAttr.includes(prefix))){
-    var table = document.getElementById("tableset");
-    const newRow = document.createElement("tr");
-    newRow.classList.add("test");
-    newRow.style.wordBreak = "break-all";
-    const cell1 = document.createElement("td");
-    const cell2 = document.createElement("td");
-    const cell3 = document.createElement("td");
-    const cell4 = document.createElement("td");
-    const cell5 = document.createElement("td");
-    const cell6 = document.createElement("td");
+    if (
+      isSearchMatched &&
+      (requiredAttr === undefined || requiredAttr.includes(prefix))
+    ) {
+      var table = document.getElementById("tableset");
+      const newRow = document.createElement("tr");
+      newRow.classList.add("test");
+      newRow.style.wordBreak = "break-all";
+      const cell1 = document.createElement("td");
+      const cell2 = document.createElement("td");
+      const cell3 = document.createElement("td");
+      const cell4 = document.createElement("td");
+      const cell5 = document.createElement("td");
+      const cell6 = document.createElement("td");
 
-    cell1.textContent = prefix;
-    cell2.textContent = obj["required"];
-    cell3.textContent = obj["usage"];
-    cell4.textContent = obj["owner"];
-    cell5.textContent = obj["type"];
-    cell6.textContent = obj["description"];
+      cell1.textContent = prefix;
+      cell2.textContent = obj["required"];
+      cell3.textContent = obj["usage"];
+      cell4.textContent = obj["owner"];
+      cell5.textContent = obj["type"];
+      cell6.textContent = obj["description"];
 
-    newRow.appendChild(cell1);
-    newRow.appendChild(cell2);
-    newRow.appendChild(cell3);
-    newRow.appendChild(cell4);
-    newRow.appendChild(cell5);
-    newRow.appendChild(cell6);
+      newRow.appendChild(cell1);
+      newRow.appendChild(cell2);
+      newRow.appendChild(cell3);
+      newRow.appendChild(cell4);
+      newRow.appendChild(cell5);
+      newRow.appendChild(cell6);
 
-    table.appendChild(newRow);
+      table.appendChild(newRow);
     }
-    
-    if(Object.keys(obj).length===5){ // return if only 5 keys are present (5 metadata keys)
+
+    if (Object.keys(obj).length === 5) {
+      // return if only 5 keys are present (5 metadata keys)
       return;
     }
   }
-  
+
   for (const key in obj) {
-    if ((typeof (obj[key]) === 'string') ){ // pass for attribute metadata keys
-      continue
+    if (typeof obj[key] === "string") {
+      // pass for attribute metadata keys
+      continue;
     }
 
-    if (obj.hasOwnProperty(key) && key!=='required_attributes') {
+    if (obj.hasOwnProperty(key) && key !== "required_attributes") {
       const newKey = prefix ? prefix + "." + key : key;
       if (Array.isArray(obj[key])) {
         result[newKey] = obj[key];
       } else if (typeof obj[key] === "object" && obj[key] !== null) {
-        if(key !== "_description"){
-          flattenObject(obj[key], newKey, result,requiredAttr);
+        if (key !== "_description") {
+          flattenObject(obj[key], newKey, result, requiredAttr);
         }
-        
       } else {
         result[newKey] = obj[key];
       }

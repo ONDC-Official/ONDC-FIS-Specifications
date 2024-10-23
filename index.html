@@ -212,9 +212,33 @@
         width: 100%;
       }
 
-      .code-section {
+    .code-section {
       position: relative;
+      padding: 10px;
+      max-height: 500px;
+      overflow-y: auto;
+      background-color: #000000;
     }
+
+    .json-formatter-key {
+      color: #fff !important;
+      font-weight: bold;
+    }
+
+    .json-formatter-toggler-link,
+    .json-formatter-value,
+    .json-formatter-string,
+    .json-formatter-number,
+    .json-formatter-boolean,
+    .json-formatter-null,
+    .json-formatter-bracket {
+      color: #fff !important;
+    }
+
+    .json-formatter-constructor-name {
+      color: #119e4a;
+    }
+
 
     .copy-code-button {
       height: 32px;
@@ -225,25 +249,48 @@
       right: 15px;
       cursor: pointer;
     }
+
+      .branchLink {
+        color: blue !important;          
+        text-decoration: none;
+        font-weight: bold;     
+      }
+
+      .branchLink:hover {
+        color: darkblue;       
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .loader-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
       /* tr:nth-child(even) {
         background-color: #dddddd;
       } */
+    #home{
+      display: none;
+      width: 100%;
+    }
     </style>
   </head>
   <body>
     <header class="bg-dark text-white py-3">
-      <h1 class="text-center">ONDC Financial Services Developer Guide</h1>
-      <div class="me-5 mt-1 ms-3">
-        <label for="api-contracts"> Version:</label>
-        <select id="contract-dropdown" onchange="upadteContract()">
-          <!-- <option value="draft-1.x">draft-1.x</option> -->
-          <option value="draft-2.x">draft-2.x</option>
-          <option value="master">master</option>
-        </select>
+      <div class="d-flex justify-content-between align-items-center px-3">
+        <img onclick="toggleHomePage()" height="25" width="25" src="./icons/home.png"/>
+        <h1 class="text-center flex-grow-1">ONDC Financial Services Developer Guide</h1>
+        <div id="version-dropdown">
+          <label for="api-contracts"> Branch:</label>
+          <select id="contract-dropdown" onchange="upadteContract()">
+            <option value="master">master</option>
+          </select>
+        </div>
       </div>
     </header>
     <div id="mermaid-renderer"></div>
-    <div class="container-fluid">
+    <div id="content" class="container-fluid">
       <div class="row">
         <div class="col-lg-8">
           <div>
@@ -256,6 +303,7 @@
                   href="#swagger"
                   role="tab"
                   aria-selected="true"
+                  onClick="tabClicked('#swagger')"
                   >Swagger-UI</a
                 >
               </li>
@@ -267,6 +315,7 @@
                   href="#flow"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#flow')"
                   >Flow-UI</a
                 >
               </li>
@@ -278,6 +327,7 @@
                   href="#attribute"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#attribute')"
                   >Attribute-UI</a
                 >
               </li>
@@ -289,6 +339,7 @@
                   href="#error"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#error')"
                   >Error-UI</a
                 >
               </li>
@@ -300,6 +351,7 @@
                   href="#tlc"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#tlc')"
                   >TLC-UI</a
                 >
               </li>
@@ -311,6 +363,7 @@
                   href="#feature"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#feature')"
                   >Feature-UI</a
                 >
               </li>
@@ -322,6 +375,7 @@
                   href="#changeLog"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#changeLog')"
                   >Change-Log-UI</a
                 >
               </li>
@@ -333,6 +387,7 @@
                   href="#sandbox-ui"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#sandbox-ui')"
                   >SandBox-UI</a
                 >
               </li>
@@ -344,6 +399,7 @@
                   href="#logSubmission"
                   role="tab"
                   aria-selected="false"
+                  onClick="tabClicked('#logSubmission')"
                   >LogSubmission-UI</a
                 >
               </li>
@@ -642,6 +698,28 @@
         </div>
       </div>
     </div>
+    <div id="home" class="container-fluid">
+      <h3>Branches</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Usecase </th>
+            <th scope="col">Description</th>
+            <th scope="col">Status</th>
+            <th scope="col">Branch name</th>
+          </tr>
+        </thead>
+        <tbody id="branchesTableBody">
+        </tbody>
+      </table>
+    </div>
+
+      <div id="loader" class="loader-wrapper py-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
 
     <!-- Bootstrap JS files (placed at the end for faster page load) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -651,7 +729,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/lib/marked.umd.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/json-formatter-js@2.3.3/dist/json-formatter.umd.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
 
@@ -671,6 +749,7 @@
     <script src="ui/sandboxui.js"></script>
     <script src="ui/log-submission.js"></script>
     <script src="ui/change-log.js"></script>
+    <script src="ui/branches.js"></script>
     <!-- Your existing scripts here -->
   </body>
 </html>
