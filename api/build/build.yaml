@@ -275,6 +275,10 @@ paths:
                       $ref: '#/components/schemas/Option/properties/id'
                     descriptor:
                       $ref: '#/components/schemas/Descriptor'
+                    tags:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/TagGroup'
                   required:
                     - order_id
               required:
@@ -1893,6 +1897,7 @@ components:
             - ACCEPTED
             - REJECTED
             - CREATED
+            - COMPLETED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -12626,7 +12631,8 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                 items:
-                  - id: ITEM_ID_INVOICE_LOAN
+                  - id: CHILD_ITEM_ID_INVOICE_LOAN
+                    parent_item_id: ITEM_ID_INVOICE_LOAN
                     descriptor:
                       code: INVOICE_BASED_LOAN
                       name: 'Invoice Based Loan Offer: INR 2,00,000'
@@ -12635,8 +12641,8 @@ x-flows:
                       value: '232800'
                     tags:
                       - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
+                          code: INFO
+                          name: Information
                         list:
                           - descriptor:
                               code: INTEREST_RATE
@@ -12665,7 +12671,7 @@ x-flows:
                           - descriptor:
                               code: INTEREST_RATE_CONVERSION_CHARGE
                               name: interest rate conversion charges
-                            value: 1000 INR
+                            value: NA
                           - descriptor:
                               code: DELAY_PENALTY_FEE
                               name: Delayed payments penalty
@@ -12677,30 +12683,20 @@ x-flows:
                               short_desc: Other Penal Charges
                             value: 1%
                           - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
                               code: TNC_LINK
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
+                            value: https://bpp.credit.becknprotocol.org/loan/tnc.html
+                          - descriptor:
+                              code: INVOICE_NUMBER
+                              name: Invoice Number
+                              short_desc: Describes the invoice number
+                            value: INV-24-04-009
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: 46360 INR
                           - descriptor:
                               code: COOL_OFF_PERIOD
                               name: cool off period
@@ -12709,10 +12705,39 @@ x-flows:
                                 shall not be charged any penalty
                             value: P30D
                           - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: 46360 INR
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
                         display: true
                 quote:
                   id: LOAN_LEAD_ID_OR_SIMILAR
@@ -12763,11 +12788,16 @@ x-flows:
                   ttl: PT15D
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                      contact:
-                        phone: +91-9999999999
-                        email: john.doe@example.com
+                      organization:
+                        address: Industrial Park, Bangalore
+                        state:
+                          name: Karnataka
+                        city:
+                          name: Bangalore
+                          code: '560045'
+                        contact:
+                          phone: '+919876543210'
+                          email: alpha.manufacturing@gmail.com
                     state:
                       descriptor:
                         code: DISBURSED
@@ -12820,6 +12850,9 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_INVOICE_LOAN
                     params:
@@ -13031,7 +13064,8 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                 items:
-                  - id: ITEM_ID_INVOICE_LOAN
+                  - id: CHILD_ITEM_ID_INVOICE_LOAN
+                    parent_item_id: ITEM_ID_INVOICE_LOAN
                     descriptor:
                       code: INVOICE_BASED_LOAN
                       name: 'Invoice Based Loan Offer: INR 2,00,000'
@@ -13040,8 +13074,8 @@ x-flows:
                       value: '232800'
                     tags:
                       - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
+                          code: INFO
+                          name: Information
                         list:
                           - descriptor:
                               code: INTEREST_RATE
@@ -13070,7 +13104,7 @@ x-flows:
                           - descriptor:
                               code: INTEREST_RATE_CONVERSION_CHARGE
                               name: interest rate conversion charges
-                            value: 1000 INR
+                            value: NA
                           - descriptor:
                               code: DELAY_PENALTY_FEE
                               name: Delayed payments penalty
@@ -13082,30 +13116,20 @@ x-flows:
                               short_desc: Other Penal Charges
                             value: 1%
                           - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
                               code: TNC_LINK
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
+                            value: https://bpp.credit.becknprotocol.org/loan/tnc.html
+                          - descriptor:
+                              code: INVOICE_NUMBER
+                              name: Invoice Number
+                              short_desc: Describes the invoice number
+                            value: INV-24-04-009
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: 46360 INR
                           - descriptor:
                               code: COOL_OFF_PERIOD
                               name: cool off period
@@ -13114,10 +13138,39 @@ x-flows:
                                 shall not be charged any penalty
                             value: P30D
                           - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: 46360 INR
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
                         display: true
                 quote:
                   id: LOAN_LEAD_ID_OR_SIMILAR
@@ -13168,11 +13221,16 @@ x-flows:
                   ttl: PT15D
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                      contact:
-                        phone: +91-9999999999
-                        email: john.doe@example.com
+                      organization:
+                        address: Industrial Park, Bangalore
+                        state:
+                          name: Karnataka
+                        city:
+                          name: Bangalore
+                          code: '560045'
+                        contact:
+                          phone: '+919876543210'
+                          email: alpha.manufacturing@gmail.com
                     state:
                       descriptor:
                         code: COMPLETE
@@ -13223,6 +13281,9 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_INVOICE_LOAN
                     params:
@@ -13513,7 +13574,8 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                 items:
-                  - id: ITEM_ID_INVOICE_LOAN
+                  - id: CHILD_ITEM_ID_INVOICE_LOAN
+                    parent_item_id: ITEM_ID_INVOICE_LOAN
                     descriptor:
                       code: INVOICE_BASED_LOAN
                       name: 'Invoice Based Loan Offer: INR 2,00,000'
@@ -13522,8 +13584,8 @@ x-flows:
                       value: '232800'
                     tags:
                       - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
+                          code: INFO
+                          name: Information
                         list:
                           - descriptor:
                               code: INTEREST_RATE
@@ -13552,7 +13614,7 @@ x-flows:
                           - descriptor:
                               code: INTEREST_RATE_CONVERSION_CHARGE
                               name: interest rate conversion charges
-                            value: 1000 INR
+                            value: NA
                           - descriptor:
                               code: DELAY_PENALTY_FEE
                               name: Delayed payments penalty
@@ -13564,30 +13626,20 @@ x-flows:
                               short_desc: Other Penal Charges
                             value: 1%
                           - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
                               code: TNC_LINK
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
+                            value: https://bpp.credit.becknprotocol.org/loan/tnc.html
+                          - descriptor:
+                              code: INVOICE_NUMBER
+                              name: Invoice Number
+                              short_desc: Describes the invoice number
+                            value: INV-24-04-009
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: 46360 INR
                           - descriptor:
                               code: COOL_OFF_PERIOD
                               name: cool off period
@@ -13596,10 +13648,39 @@ x-flows:
                                 shall not be charged any penalty
                             value: P30D
                           - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: 46360 INR
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
                         display: true
                 quote:
                   id: LOAN_LEAD_ID_OR_SIMILAR
@@ -13642,11 +13723,16 @@ x-flows:
                   ttl: PT15D
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                      contact:
-                        phone: +91-9999999999
-                        email: john.doe@example.com
+                      organization:
+                        address: Industrial Park, Bangalore
+                        state:
+                          name: Karnataka
+                        city:
+                          name: Bangalore
+                          code: '560045'
+                        contact:
+                          phone: '+919876543210'
+                          email: alpha.manufacturing@gmail.com
                     state:
                       descriptor:
                         code: DISBURSED
@@ -13702,6 +13788,9 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_INVOICE_LOAN
                     params:
@@ -13913,7 +14002,8 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                 items:
-                  - id: ITEM_ID_INVOICE_LOAN
+                  - id: CHILD_ITEM_ID_INVOICE_LOAN
+                    parent_item_id: ITEM_ID_INVOICE_LOAN
                     descriptor:
                       code: INVOICE_BASED_LOAN
                       name: 'Invoice Based Loan Offer: INR 2,00,000'
@@ -13922,8 +14012,8 @@ x-flows:
                       value: '232800'
                     tags:
                       - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
+                          code: INFO
+                          name: Information
                         list:
                           - descriptor:
                               code: INTEREST_RATE
@@ -13952,7 +14042,7 @@ x-flows:
                           - descriptor:
                               code: INTEREST_RATE_CONVERSION_CHARGE
                               name: interest rate conversion charges
-                            value: 1000 INR
+                            value: NA
                           - descriptor:
                               code: DELAY_PENALTY_FEE
                               name: Delayed payments penalty
@@ -13964,30 +14054,20 @@ x-flows:
                               short_desc: Other Penal Charges
                             value: 1%
                           - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
                               code: TNC_LINK
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
+                            value: https://bpp.credit.becknprotocol.org/loan/tnc.html
+                          - descriptor:
+                              code: INVOICE_NUMBER
+                              name: Invoice Number
+                              short_desc: Describes the invoice number
+                            value: INV-24-04-009
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: 46360 INR
                           - descriptor:
                               code: COOL_OFF_PERIOD
                               name: cool off period
@@ -13996,10 +14076,39 @@ x-flows:
                                 shall not be charged any penalty
                             value: P30D
                           - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: 46360 INR
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
                         display: true
                 quote:
                   id: LOAN_LEAD_ID_OR_SIMILAR
@@ -14042,11 +14151,16 @@ x-flows:
                   ttl: PT15D
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                      contact:
-                        phone: +91-9999999999
-                        email: john.doe@example.com
+                      organization:
+                        address: Industrial Park, Bangalore
+                        state:
+                          name: Karnataka
+                        city:
+                          name: Bangalore
+                          code: '560045'
+                        contact:
+                          phone: '+919876543210'
+                          email: alpha.manufacturing@gmail.com
                     state:
                       descriptor:
                         code: DISBURSED
@@ -14100,6 +14214,9 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_INVOICE_LOAN
                     params:
@@ -14392,7 +14509,8 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                 items:
-                  - id: ITEM_ID_INVOICE_LOAN
+                  - id: CHILD_ITEM_ID_INVOICE_LOAN
+                    parent_item_id: ITEM_ID_INVOICE_LOAN
                     descriptor:
                       code: INVOICE_BASED_LOAN
                       name: 'Invoice Based Loan Offer: INR 2,00,000'
@@ -14401,8 +14519,8 @@ x-flows:
                       value: '232800'
                     tags:
                       - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
+                          code: INFO
+                          name: Information
                         list:
                           - descriptor:
                               code: INTEREST_RATE
@@ -14431,7 +14549,7 @@ x-flows:
                           - descriptor:
                               code: INTEREST_RATE_CONVERSION_CHARGE
                               name: interest rate conversion charges
-                            value: 1000 INR
+                            value: NA
                           - descriptor:
                               code: DELAY_PENALTY_FEE
                               name: Delayed payments penalty
@@ -14443,30 +14561,20 @@ x-flows:
                               short_desc: Other Penal Charges
                             value: 1%
                           - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
                               code: TNC_LINK
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
+                            value: https://bpp.credit.becknprotocol.org/loan/tnc.html
+                          - descriptor:
+                              code: INVOICE_NUMBER
+                              name: Invoice Number
+                              short_desc: Describes the invoice number
+                            value: INV-24-04-009
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: 46360 INR
                           - descriptor:
                               code: COOL_OFF_PERIOD
                               name: cool off period
@@ -14475,10 +14583,39 @@ x-flows:
                                 shall not be charged any penalty
                             value: P30D
                           - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: 46360 INR
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
                         display: true
                 quote:
                   id: LOAN_LEAD_ID_OR_SIMILAR
@@ -14529,11 +14666,16 @@ x-flows:
                   ttl: PT15D
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                      contact:
-                        phone: +91-9999999999
-                        email: john.doe@example.com
+                      organization:
+                        address: Industrial Park, Bangalore
+                        state:
+                          name: Karnataka
+                        city:
+                          name: Bangalore
+                          code: '560045'
+                        contact:
+                          phone: '+919876543210'
+                          email: alpha.manufacturing@gmail.com
                     state:
                       descriptor:
                         code: DISBURSED
@@ -14586,6 +14728,9 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_INVOICE_LOAN
                     params:
@@ -14795,7 +14940,8 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                 items:
-                  - id: ITEM_ID_INVOICE_LOAN
+                  - id: CHILD_ITEM_ID_INVOICE_LOAN
+                    parent_item_id: ITEM_ID_INVOICE_LOAN
                     descriptor:
                       code: INVOICE_BASED_LOAN
                       name: 'Invoice Based Loan Offer: INR 2,00,000'
@@ -14804,8 +14950,8 @@ x-flows:
                       value: '232800'
                     tags:
                       - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
+                          code: INFO
+                          name: Information
                         list:
                           - descriptor:
                               code: INTEREST_RATE
@@ -14834,7 +14980,7 @@ x-flows:
                           - descriptor:
                               code: INTEREST_RATE_CONVERSION_CHARGE
                               name: interest rate conversion charges
-                            value: 1000 INR
+                            value: NA
                           - descriptor:
                               code: DELAY_PENALTY_FEE
                               name: Delayed payments penalty
@@ -14846,30 +14992,20 @@ x-flows:
                               short_desc: Other Penal Charges
                             value: 1%
                           - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
                               code: TNC_LINK
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
+                            value: https://bpp.credit.becknprotocol.org/loan/tnc.html
+                          - descriptor:
+                              code: INVOICE_NUMBER
+                              name: Invoice Number
+                              short_desc: Describes the invoice number
+                            value: INV-24-04-009
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: 46360 INR
                           - descriptor:
                               code: COOL_OFF_PERIOD
                               name: cool off period
@@ -14878,10 +15014,39 @@ x-flows:
                                 shall not be charged any penalty
                             value: P30D
                           - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: 46360 INR
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5 %
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
                         display: true
                 quote:
                   id: LOAN_LEAD_ID_OR_SIMILAR
@@ -14932,11 +15097,16 @@ x-flows:
                   ttl: PT15D
                 fulfillments:
                   - customer:
-                      person:
-                        name: John Doe
-                      contact:
-                        phone: +91-9999999999
-                        email: john.doe@example.com
+                      organization:
+                        address: Industrial Park, Bangalore
+                        state:
+                          name: Karnataka
+                        city:
+                          name: Bangalore
+                          code: '560045'
+                        contact:
+                          phone: '+919876543210'
+                          email: alpha.manufacturing@gmail.com
                     state:
                       descriptor:
                         code: DISBURSED
@@ -14987,6 +15157,9 @@ x-flows:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_INVOICE_LOAN
                     params:
