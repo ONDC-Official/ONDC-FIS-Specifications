@@ -75,6 +75,12 @@ async function loadSteps(steps) {
       "</pre>";
     content.innerHTML = "<div>" + "<h3>" + step.summary + "</h3>" + "</div>";
 
+    // if(step?.api === "form") {
+    //   yamlDiv.innerHTML = '<div>'+'<pre class="yaml-content">'+'<xmp>'+step.example.value+'</xmp>'+'</pre>'+'<div class="flow-forms">'+step.example.value+'</div>'+'</div>'
+    // } else {
+    //   const formatter = new JSONFormatter(step.example.value, Infinity);
+    //   yamlDiv.appendChild(formatter.render());
+    // }
     content.appendChild(mermaidDiv);
     content.appendChild(yamlDiv);
     yamlDiv.appendChild(copyButton);
@@ -91,9 +97,20 @@ async function loadSteps(steps) {
       });
       link.classList.add("active");
       content.classList.add("active");
+
+      const url = new URL(window.location);
+      url.searchParams.set('callId', link.getAttribute('href'));
+      window.history.pushState({}, '', url);
     });
     stepPane.appendChild(link);
     contentPane.appendChild(content);
+  }
+  const urlParams = new URLSearchParams(window.location.search);
+  const callId = urlParams.get('callId');
+
+  if(callId) {
+    const anchorTag = document.querySelector(`a[href="${callId}"]`);
+    anchorTag.click();
   }
 }
 
@@ -106,6 +123,11 @@ async function loadSteps(steps) {
 function updateFlow() {
   var flowDropdown = document.getElementById("flow-dropdown");
   var selectedValue = flowDropdown.value;
+
+  const url = new URL(window.location);
+  url.searchParams.set('flowId', selectedValue);
+  window.history.pushState({}, '', url);
+
   loadFlow(selectedValue);
 }
 
@@ -145,11 +167,25 @@ function loadFlows(data) {
   flows = data;
   const flowDropdown = document.getElementById("flow-dropdown");
   flowDropdown.innerHTML = "";
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const flowID = urlParams.get('flowId');
+
   // Render the steps list
-  flows.forEach((flow) => {
+  flows.forEach((flow, index) => {
+    if(index === 0 && !flowID) {
+      const url = new URL(window.location);
+      url.searchParams.set('flowId', flow.summary);
+      window.history.pushState({}, '', url);
+    }
     var option = document.createElement("option");
     option.text = flow.summary;
     flowDropdown.add(option);
   });
-  loadFlow(flows[0].summary);
+
+  if(flowID) {
+    loadFlow(flowID)
+  } else {
+    loadFlow(flows[0].summary);
+  }
 }
