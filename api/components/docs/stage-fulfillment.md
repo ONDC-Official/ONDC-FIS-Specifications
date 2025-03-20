@@ -70,4 +70,4 @@ Confirmed orders can be cancelled if allowed by the provider/bpp
 #### redemption
 1. cancellation is not possible as the fulfillment gets started immediately after the order is accepted
 
-Cancellation reasons are provided as enums
+Cancellation reasons are provided as pre-defined tags
