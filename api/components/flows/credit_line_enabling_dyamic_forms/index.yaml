@@ -274,7 +274,7 @@ steps:
     api: on_search
     example:
       value:
-        $ref: ../../examples/Working-Capital-Loan/on_search/on_search-loan_offer.yaml
+        $ref: ../../examples/Working-Capital-Loan/on_search/on_search-loan_offer_dynamic_offer.yaml
     details:
       - description: The lender will provide working capital loan offer with all the
           loan details
@@ -312,22 +312,46 @@ steps:
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             participant Lender Form Service
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_search (offer)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255) 
             Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             end
             Lender Platform (BPP)->>Borrower Platform (BAP):on_select
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  - summary: The lender will share the form for manual KYC, e-mandate, and e-sign
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Manual Verification)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+  - summary: The lender will share the form for manual verification
     reference: if any
     api: on_select
     example:
       value:
         $ref: ../../examples/Working-Capital-Loan/on_select/on_select_dyamic_form.yaml
     details:
-      - description: The lender will share the form for manual KYC, e-mandate, and e-sign
+      - description: The lender will share the form for manual verification
+        mermaid: >-
+          sequenceDiagram
+            title  Order creation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            
+            Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Manual Verification)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+ 
+  - summary: The borrower receives the form link for manual verification
+    reference: if any
+    api: form
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/forms/Individual KYC.html
+    details:
+      - description: The borrower receives the form link for manual verification
         mermaid: >-
           sequenceDiagram
             title  Order creation
@@ -336,35 +360,14 @@ steps:
             participant Lender Form Service
             Borrower Platform (BAP)-->>Lender Platform (BPP): select (offer selection)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            rect rgb(191, 223, 255) 
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
-           Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-  - summary: The borrower receives the form link for manual KYC, e-mandate, and e-sign
-    reference: if any
-    api: form
-    example:
-      value:
-        $ref: ../../examples/Working-Capital-Loan/forms/Individual KYC.html
-    details:
-      - description: The borrower receives the form link for manual KYC, e-mandate, and e-sign
-        mermaid: >-
-          sequenceDiagram
-            title  Order creation
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            participant Lender Form Service
             Lender Platform (BPP)->>Borrower Platform (BAP):on_select
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255) 
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Manual Verification)
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  - summary: The lender sends the status of manual kyc,e-mandate & e-sign through
+ 
+  - summary: The lender sends the status of manual verification through
       unsolicited on_status call
     reference: if any
     api: on_status
@@ -379,15 +382,14 @@ steps:
             title  Order creation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            participant Lender Form Service
-           Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-           rect rgb(191, 223, 255) 
-           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
             end
-            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Borrower Platform (BAP)->>Lender Platform (BPP):status
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
   
   - summary: The brrower check the latest order status
     reference: if any
@@ -396,24 +398,28 @@ steps:
       value:
         $ref: ../../examples/Working-Capital-Loan/status/index.yaml
     details:
-      - sequenceDiagram
-          title  Order creation
-          participant Borrower Platform (BAP)
-          participant Lender Platform (BPP)
-         
-          rect rgb(191, 223, 255) 
-          Borrower Platform (BAP)->>Lender Platform (BPP):status
-          Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-          end
-          Lender Platform (BPP)->>Borrower Platform (BAP):on_status
-          Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
-  - summary: The lender sends the completion status of manual kyc,e-mandate & e-sign
+      - mermaid: >-
+          sequenceDiagram
+            title  Order creation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
+
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP):status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
+  - summary: The lender sends the completion status of manual verification
       through on_status call
     reference: if any
     api: on_status
     example:
       value:
-        $ref: ../../examples/Working-Capital-Loan/on_status/on_statys_dynamic_form_completion.yaml
+        $ref: ../../examples/Working-Capital-Loan/on_status/on_status_dynamic_form_completion.yaml
     details:
       - description: The lender sends the completion status of manual kyc,e-mandate & e-sign
           through on_status call
@@ -422,139 +428,56 @@ steps:
             title  Order creation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            participant Lender Form Service
-           Borrower Platform (BAP)->>Lender Form Service: Get Form(Individual KYC)
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-           rect rgb(191, 223, 255) 
-           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP):status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP):ACK
+            end
+  
+
+  - summary: The Borrower shares the submission id of the manual verification form
+    reference: if any
+    api: select
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/select/select_loan_offer_completion.yaml
+    details:
+      - description: The Borrower shares the submission id of the manual verification form
+        mermaid: >-
+          sequenceDiagram
+            title  Order creation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)-->>Lender Platform (BPP): select(form submission id)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK           
+  - summary: The lender will share the status of form manual verification
+    reference: if any
+    api: on_select
+    example:
+      value:
+        $ref: ../../examples/Working-Capital-Loan/on_select/on_select_manul_verification_completed.yaml
+    details:
+      - description: The lender will share the form for manual verification
+        mermaid: >-
+          sequenceDiagram
+            title  Order creation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): select(form submission id)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
-            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  
-  # - summary: The borrower submits the form for Individual KYC
-  #   reference: if any
-  #   api: select
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/select/select-individual-kyc.yaml
-  #   details:
-  #     - description: The borrower submits the form for Individual KYC
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Order creation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #          Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #          rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  # - summary: The borrower receives form for entity KYC
-  #   reference: if any
-  #   api: on_select
-  #   example: &a1
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_select/on_select_entity_kyc.yaml
-  #   details:
-  #     - description: The borrower receives form for entity KYC
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Order creation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #          Lender Platform (BPP)->>Borrower Platform (BAP):on_status(Individual KYC status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  # - summary: The borrower fetches the form for entity KYC
-  #   reference: if any
-  #   api: form
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/forms/Entity KYC.html
-  #   details:
-  #     - description: The borrower fetches the form for entity KYC
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Order creation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           end
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  # - summary: The borrower submits the Entity KYC form
-  #   reference: if any
-  #   api: select
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/select/select_business_kyc.yaml
-  #   details:
-  #     - description: The borrower submits the Entity KYC form
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Order creation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #          rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  # - summary: "The lender will acknowledge the borrower's completion of entity KYC in
-  #     Checklists "
-  #   reference: if any
-  #   api: on_select
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_select/on_select_entity_kyc_submission.yaml
-  #   details:
-  #     - description: "The lender will acknowledge the borrower's completion of entity
-  #         KYC in Checklists "
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Order creation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Entity KYC)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
  
+  
   - summary: The borrower initiates the order for confirmation
     reference: if any
     api: init
@@ -567,276 +490,12 @@ steps:
           sequenceDiagram
             title Initializing Order
             participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            participant Lender Form Service
             rect rgb(191, 223, 255) 
             Borrower Platform (BAP)->>Lender Platform (BPP): init
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             end
             Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
- 
-  # - summary: The borrower receives form details for account information
-  #   reference: if any
-  #   api: on_init
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_init/on_init_account_information.yaml
-  #   details:
-  #     - description: The borrower receives form details for account information
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title  Order creation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  # - summary: Borrower fetches form details for Account Information
-  #   reference: if any
-  #   api: form
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/forms/Borrower's Bank Account
-  #         Information.html
-  #   details:
-  #     - description: Borrower fetches form details for Account Information
-  #       mermaid: >+
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           end
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-
-  # - summary: The borrower shares the submission_id of bank account form
-  #   reference: if any
-  #   api: init
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/init/init_bank_account_information.yaml
-  #   details:
-  #     - description: The borrower shares the submission_id of bank account form
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Account Information)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  # - summary: The lender shares the information for e-nach and payment link for
-  #     processing fee payment collection
-  #   reference: if any
-  #   api: on_init
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_init/on_init_e_mandate.yaml
-  #   details:
-  #     - description: The lender shares the information for e-nach and payment link for
-  #         processing fee payment collection
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Enach)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  # - summary: The borrower fetches link for e-mandate
-  #   reference: if any
-  #   api: form
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/forms/E-Mandate.html
-  #   details:
-  #     - description: The borrower fetches link for e-mandate
-  #       mermaid: >
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  # - summary: The lender sends the completion status of e-mandate and payment through
-  #     unsolicited on_status call
-  #   reference: if any
-  #   api: on_status
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_status/on_status_e-mandate.yaml
-  #   details:
-  #     - description: The lender sends the completion status of e-mandate and payment
-  #         through unsolicited on_status call
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(e-mandate)
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           Borrower Platform (BAP)->>Lender Form Service: Form Submission
-  #           Lender Form Service-->>Borrower Platform (BAP): Submission ID
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  # - summary: The borrower submits the form for e-mandate
-  #   reference: if any
-  #   api: init
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/init/init-e-mandate.yaml
-  #   details:
-  #     - description: The borrower submits the form for e-mandate
-  #       mermaid: >
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  # - summary: The lender sends the form input for e signing the loan agreement
-  #   reference: if any
-  #   api: on_init
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_init/on_init_e_sign.yaml
-  #   details:
-  #     - description: The lender sends the form input for e signing the loan agreement
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  
-  # - summary: The borrower fetches the form for e-sign agreement
-  #   reference: if any
-  #   api: form
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/forms/E-sign.html
-  #   details:
-  #     - description: The borrower fetches the form for e-sign agreement
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Order Confirmation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #          rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Esign Loan Agreement )
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(E-Sign status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  # - summary: The lender sends the completion status of e-sign and payment through
-  #     unsolicited on_status call
-  #   reference: if any
-  #   api: on_status
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/on_status/on_status_e-sign.yaml
-  #   details:
-  #     - description: The lender sends the completion status of e-sign and payment
-  #         through unsolicited on_status call
-  #       mermaid: >-
-  #         sequenceDiagram
-  #           title Order Confirmation
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Borrower Platform (BAP)->>Lender Form Service: Get Form(Esign Loan Agreement )
-  #           Lender Form Service-->>Borrower Platform (BAP): Form Received
-  #          rect rgb(191, 223, 255) 
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(E-Sign status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           end
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  
-  # - summary: The borrower submits the form for e-mandate
-  #   reference: if any
-  #   api: init
-  #   example:
-  #     value:
-  #       $ref: ../../examples/Working-Capital-Loan/init/init_request-emandate-submission.yaml
-  #   details:
-  #     - description: The borrower submits the form for e-mandate
-  #       mermaid: >
-  #         sequenceDiagram
-  #           title Initializing Order
-  #           participant Borrower Platform (BAP)
-  #           participant Lender Platform (BPP)
-  #           participant Lender Form Service
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_status(e-mandate status)
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  #           rect rgb(191, 223, 255) 
-  #           Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-  #           Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-  #           end
-  #           Lender Platform (BPP)->>Borrower Platform (BAP):on_init
-  #           Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-  
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK 
   - summary: The lender update the order with payments details.
     reference: if any
     api: on_init
@@ -850,7 +509,6 @@ steps:
             title Initializing Order
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            participant Lender Form Service
             Borrower Platform (BAP)->>Lender Platform (BPP): init
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             rect rgb(191, 223, 255) 
@@ -858,28 +516,21 @@ steps:
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
   
-  - summary: The borrower confirms the working capital line using the submission id
-      from e sign
+  - summary: The borrower confirms the working capital line
     reference: if any
     api: confirm
     example:
       value:
         $ref: ../../examples/Working-Capital-Loan/confirm/confirm_loan_offer.yaml
     details:
-      - description: The borrower confirms the working capital line using the submission
-          id from e sign
+      - description: The borrower confirms the working capital line
         mermaid: >-
           sequenceDiagram
             title Order Confirmation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Esign Loan Agreement )
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status(E-Sign status)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255) 
-            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             end
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
@@ -897,12 +548,7 @@ steps:
             title Order Confirmation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Esign Loan Agreement )
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status(E-Sign status)
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             rect rgb(191, 223, 255) 
             Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm

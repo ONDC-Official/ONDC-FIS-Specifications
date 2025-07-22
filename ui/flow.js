@@ -18,6 +18,17 @@ async function loadSteps(steps) {
     );
     link.textContent = index + 1 + ". " + step.api;
 
+    if (step.stepName) {
+      link.appendChild(document.createElement("br"));
+      const span = document.createElement('span');
+      span.className = 'step-space';
+      span.textContent = step.stepName;
+      link.appendChild(span);
+    }
+
+    // link.appendChild(document.createElement("br"));
+    // step.stepName && link.insertAdjacentHTML("beforeend", `&nbsp;&nbsp;&nbsp;${step.stepName}`);
+
     const content = document.createElement("div");
     content.id = step.summary;
     content.classList.add("step-content", "p-4");
