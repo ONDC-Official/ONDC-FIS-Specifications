@@ -1,0 +1,322 @@
+summary: Transit Insurance
+description: BAP buys Transit insurance cover to allocate from already purchased sachet with BPP.
+details:
+  - description: Discovery of Transit insurance .
+    mermaid: >-
+      sequenceDiagram
+        title Transit insurance Discovery
+        Buyer Platform (BAP)->>Gateway (BG): search
+        Gateway (BG) ->> Buyer Platform (BAP): ACK
+        Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+        Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+        Gateway (BG)->>Insurer Platform (BPP): search
+        Insurer Platform (BPP)->>Gateway (BG) : ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): ACK
+  - description: Ordering
+    mermaid: >-
+      sequenceDiagram
+        title  Selection
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Platform (BPP): Selects an Offer (select)
+        Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Responds with KYC/consent form link (on_select)
+        Buyer Platform (BAP)->> Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+  - description: Initializing the order
+    mermaid: >-
+      sequenceDiagram
+        title Initializing Order
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Platform (BPP): Sends submission ID(init)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Sends form link for nomination details<br/>and payment link if applicable(on_init)
+        Buyer Platform (BAP)->>Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  - description: Order Confirmation
+    mermaid: >-
+      sequenceDiagram
+        title  Order Confirmation
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  - description: Fulfillment
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+references: if any
+steps:
+  - summary: Buyer app search for available Transit insurance providers
+    api: search
+    details:
+      - description: Buyer app explore Transit insurance options by searching for insurers over the network.
+        mermaid: >-
+          sequenceDiagram
+            title Transit insurance Discovery
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Buyer Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+            Gateway (BG)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Gateway (BG) : ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/search/search_request_1.yaml"
+  - summary: Insurer provides a catalog of insurance products
+    api: on_search
+    details:
+      - description: Insurer sends a comprehensive catalog of various insurance products specifically tailored for Transit insurance.
+        mermaid: >-
+          sequenceDiagram
+            title Transit insurance Discovery
+            Buyer Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Buyer Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Insurer Platforms (lookup)
+            Registry->>Gateway (BG): List of Insurer Platforms (200 OK)
+            Gateway (BG)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Gateway (BG) : ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Insurer 1 (on_search)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): ACK  
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_search/on_search_request_1.yaml"
+  
+  - summary: Buyer app select the master policy
+    api: search
+    details:
+      - description: Buyer app select the master policy
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP): on_search
+            Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/search/search_request_2.yaml"
+  - summary: Insurer provides a catalog for a specific master policy
+    api: on_search
+    details:
+      - description: Insurer provides a catalog for a specific master policy deatils
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+
+            Buyer Platform (BAP)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): on_search
+            Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
+            end
+           
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_search/on_search_request_2.yaml"
+  
+  - summary: Buyer app shares personal & other details.
+    api: search
+    details:
+      - description: Buyer app shares personal & other details.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP): on_search
+            Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/search/search_request_3.yaml"
+  - summary: Insurer provides the offer response
+    api: on_search
+    details:
+      - description: Insurer provides the offer response
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_search
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_search/on_search_request_3.yaml"
+
+
+  - summary: Buyer app selects a insurance item
+    api: select
+    details:
+      - description: Buyer app selects a specific insurance plan that suits their needs
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): Selects an Offer (select)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/select/select_request_1.yaml"
+  - summary: Insurer returns the response to selected Transit insurance plan
+    api: on_select
+    details:
+      - description: Insurer responds to the buyer app requests by sending the details of the selected Transit insurance plan.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): Selects an Offer (select)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_select/on_select_request_1.yaml"
+ 
+
+  - summary: The buyer app initiates the Transit insurance request
+    api: init
+    details:
+      - description: The buyer app initiates the Transit insurance request.
+        mermaid: >-
+
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/init/init_request_1.yaml"
+  - summary: Insurer returns the response to initialized Transit insurance plan
+    api: on_init
+    details:
+      - description: Insurer returns the response to initialized Transit insurance plan.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_init/on_init_request_1.yaml"
+  
+  
+  - summary: Buyer app confirms the Transit insurance request
+    api: confirm
+    details:
+      - description: Buyer app confirms the Transit insurance request and provides all the necessary information as per the terms.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): on_confirm
+            Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/confirm/confirm_request_1.yaml"
+  - summary: Insurer confirms the Transit insurance order
+    api: on_confirm
+    details:
+      - description: Insurer confirms the Transit insurance and provides the confirmation details.
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_confirm/on_confirm_request_1.yaml"
+  
