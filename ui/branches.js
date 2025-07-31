@@ -47,12 +47,12 @@ const BRANCHES = [
     short_desc: "Credit - Working Capital Line use case",
     status: "RELEASED",
   },
-  {
-    code: "draft-FIS13-sachet",
-    name: "Sachet Insurance",
-    short_desc: "Insurance Sachet",
-    status: "DRAFT",
-  },
+  // {
+  //   code: "draft-FIS13-sachet",
+  //   name: "Sachet Insurance",
+  //   short_desc: "Insurance Sachet",
+  //   status: "DRAFT",
+  // },
   {
     code: "release-FIS13-health",
     name: "Health Insurance",
