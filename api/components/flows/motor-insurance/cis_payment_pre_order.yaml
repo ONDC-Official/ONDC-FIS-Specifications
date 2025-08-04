@@ -1,4 +1,4 @@
-summary: Motor Insurance Application
+summary: Motor Insurance Application(PRE-ORDER)
 details:
   - description: Discovery of motor insurance.
     mermaid: >-
@@ -430,6 +430,7 @@ steps:
     example:
       value: 
         $ref: "../../examples/motor-insurance/form/manual-review.html"
+  
   - summary: The buyer app initiates the motor insurance request
     api: init
     details:
@@ -453,7 +454,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/motor-insurance/init/init-request-vehicle-nominee.yaml"
+        $ref: "../../examples/motor-insurance/init/init-request-vehicle-nominee_pre_oreder.yaml"
   - summary: Insurer returns the response to initailized motor insurance plan.
     api: on_init
     details:
@@ -477,7 +478,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/motor-insurance/on_init/on_init-request-vehicle-info.yaml"      
+        $ref: "../../examples/motor-insurance/on_init/on_init-request-vehicle-info_pre_order.yaml"      
   - summary: Buyer app fetches the vehicle information form
     api: form
     details:
@@ -526,7 +527,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/motor-insurance/init/init-request-personal.yaml"
+        $ref: "../../examples/motor-insurance/init/init-request-personal_pre_order.yaml"
   - summary: Insurer returns the response to initailized motor insurance plan
     api: on_init
     details:
@@ -550,7 +551,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/motor-insurance/on_init/on_init-request-personal-info.yaml"
+        $ref: "../../examples/motor-insurance/on_init/on_init-request-personal-info_pre_oreder.yaml"
   - summary: Buyer app fetches the insured personal details form
     api: form
     details:
@@ -601,11 +602,11 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/motor-insurance/init/init-request-cis-info.yaml"
-  - summary: Insurer returns the CIS form link
+        $ref: "../../examples/motor-insurance/init/init-request-cis-info_pre_order.yaml"
+  - summary: The insurer returns a response containing the CIS form with an embedded payment link within the form.
     api: on_init
     details:
-      - description: Insurer returns the CIS form link
+      - description: The insurer returns a response containing the CIS form with an embedded payment link within the form.
         mermaid: >-
           sequenceDiagram
             title Initializing Order
@@ -625,11 +626,11 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/motor-insurance/on_init/on_init-request-cis-info.yaml"
+        $ref: "../../examples/motor-insurance/on_init/on_init-request-cis-info_pre_order.yaml"
   - summary: Buyer app fetches the CIS details form
     api: form
     details:
-      - description: Buyer app fetches the CIS details form from the insurer using the link provided in the previous step.
+      - description: Buyer app fetches the CIS details & an embedded payment link within the form from the insurer using the link provided in the previous step.
         mermaid: >-
           sequenceDiagram
             title Initializing Order
@@ -646,6 +647,9 @@ steps:
             Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
       
@@ -681,7 +685,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/motor-insurance/confirm/confirm-request.yaml"         
+        $ref: "../../examples/motor-insurance/confirm/confirm-request_pre_order.yaml"         
   - summary: Insurer confirms the motor insurance order
     api: on_confirm
     details:
@@ -703,78 +707,49 @@ steps:
             Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
             end
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/motor-insurance/on_confirm/on_confirm-request.yaml"  
-  - summary: Provider platform sends unsolicated update.
-    api: on_update
-    details:
-      - description: The insurer initiates an unsolicited on_update API call to notify the updated payment status
-        mermaid: >-
-          sequenceDiagram
-            title Initializing Order
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            participant Insurer Form Service
-            Buyer Platform (BAP)->>Insurer Form Service: Get Form
-            Insurer Form Service-->>Buyer Platform (BAP): Form Received
-            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
-            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
-            
-            Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
-            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-            rect rgb(191, 223, 255)
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
-            end
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/motor-insurance/on_update/on_update_payment_confirmation.yaml"  
-  - summary: Buyer app sends the update request to update phone number
-    api: update
-    details:
-      - description: Buyer app sends the update request along with request to update phone number.
-        mermaid: >-
-         sequenceDiagram
-            title  Order Confirmation
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            rect rgb(191, 223, 255)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): update
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            end
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/motor-insurance/update/update-request.yaml"         
-  - summary: Insurer responds to the update request
-    api: on_update
-    details:
-      - description: Insurer updates the phone number and send back on_update call.
-        mermaid: >-
-         sequenceDiagram
-            title  Order Confirmation
-            participant Buyer Platform (BAP)
-            participant Insurer Platform (BPP)
-            Buyer Platform (BAP)->>Insurer Platform (BPP): update
-            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            rect rgb(191, 223, 255)
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
-            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
-            end
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/motor-insurance/on_update/on_update_fulfilment.yaml"  
+        $ref: "../../examples/motor-insurance/on_confirm/on_confirm-request_pre_order.yaml"  
+  
+  # - summary: Buyer app sends the update request to update phone number
+  #   api: update
+  #   details:
+  #     - description: Buyer app sends the update request along with request to update phone number.
+  #       mermaid: >-
+  #        sequenceDiagram
+  #           title  Order Confirmation
+  #           participant Buyer Platform (BAP)
+  #           participant Insurer Platform (BPP)
+  #           rect rgb(191, 223, 255)
+  #           Buyer Platform (BAP)->>Insurer Platform (BPP): update
+  #           Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+  #           end
+  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/motor-insurance/update/update-request.yaml"         
+  # - summary: Insurer responds to the update request
+  #   api: on_update
+  #   details:
+  #     - description: Insurer updates the phone number and send back on_update call.
+  #       mermaid: >-
+  #        sequenceDiagram
+  #           title  Order Confirmation
+  #           participant Buyer Platform (BAP)
+  #           participant Insurer Platform (BPP)
+  #           Buyer Platform (BAP)->>Insurer Platform (BPP): update
+  #           Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+  #           rect rgb(191, 223, 255)
+  #           Insurer Platform (BPP)->>Buyer Platform (BAP):on_update
+  #           Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+  #           end
+  #   reference: if any
+  #   example:
+  #     value:
+  #       $ref: "../../examples/motor-insurance/on_update/on_update_fulfilment.yaml"  
 
 
   
