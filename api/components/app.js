@@ -122,7 +122,7 @@ async function matchKeyType(
   const exampleArray = currentExamplePos[currentAttrib];
   const schemaType = currentSchemaPos[currentAttrib]?.type;
   const allOfType = currentSchemaPos[currentAttrib]?.allOf?.[0]?.type;
-  const itemType = currentSchemaPos[currentAttrib]?.items?.allOf?.[0]?.type;
+  const itemType = currentSchemaPos[currentAttrib]?.items?.allOf?.[0]?.type || currentSchemaPos[currentAttrib]?.items?.type;
 
   for (let i = 0; i < exampleArray?.length; i++) {
     const checkEnum = exampleArray[i];
@@ -541,6 +541,7 @@ async function comapreObjects(examples, attributes, example_sets) {
     //console.log('key', key, examples[key])
     if(key == "tags"){
       if (Array.isArray(examples[key])) {
+        //console.log('examples[key]', examples[key], attributes[key], attributes)
         await iterateTags(examples[key], attributes[key], example_sets);
       }
     }else{
