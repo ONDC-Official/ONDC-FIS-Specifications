@@ -65,11 +65,30 @@ const BRANCHES = [
     short_desc: "Insurance - Marine Insurance",
     status: "RELEASED",
   },
+  
   {
     code: "release-FIS13-motor",
     name: "Motor Insurance",
     short_desc: "Insurance - Motor Insurance",
     status: "RELEASED",
+  },
+  {
+    code: "draft-FIS13-health-2.0.1",
+    name: "Health Insurance",
+    short_desc: "Insurance - Health Insurance",
+    status: "DRAFT",
+  },
+  {
+    code: "draft-FIS13-marine-2.0.1",
+    name: "Marine Insurance",
+    short_desc: "Insurance - Marine Insurance",
+    status: "DRAFT",
+  },
+  {
+    code: "draft-FIS13-motor-2.0.1",
+    name: "Motor Insurance",
+    short_desc: "Insurance - Motor Insurance",
+    status: "DRAFT",
   },
   {
     code: "draft-FIS13-life",
