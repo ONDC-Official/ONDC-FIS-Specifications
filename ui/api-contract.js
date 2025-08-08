@@ -30,15 +30,37 @@ async function readBuildFile(branchName) {
     // build_spec = JSON.parse(getStringAfterEquals(splitedText));
     // onFirstLoad(build_spec);
     
-    if(formattedResponse?.download_url){
+    // if(formattedResponse?.download_url){
+    //   setTimeout(async ()=>{
+    //     const rawResponse = await fetch(formattedResponse.download_url, {
+    //       // headers: {
+    //       //   Authorization: "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",
+    //       // },
+    //     });
+    //     const formattedrawResponse = await rawResponse?.text();
+    //     build_spec = JSON.parse(getStringAfterEquals(formattedrawResponse));
+    //     onFirstLoad(build_spec);
+    //   },1200)
+    // }
+    // else{
+    //   const urlWithoutQuery = window.location.origin + window.location.pathname;
+    //   window.history.replaceState(null, '', urlWithoutQuery);
+    //   const home = document.getElementById("home")
+    //   const loader = document.getElementById("loader")
+    //   home.style.display = "block"
+    //   loader.style.display = "none"
+    // }
+     if(formattedResponse?.git_url){
       setTimeout(async ()=>{
-        const rawResponse = await fetch(formattedResponse.download_url, {
+        const rawResponse = await fetch(formattedResponse.git_url, {
           // headers: {
           //   Authorization: "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",
           // },
         });
-        const formattedrawResponse = await rawResponse?.text();
-        build_spec = JSON.parse(getStringAfterEquals(formattedrawResponse));
+        let formattedrawResponse = await rawResponse?.text();
+        formattedrawResponse =  JSON.parse(formattedrawResponse)
+        let splitedText = atob(formattedrawResponse?.content);
+        build_spec = JSON.parse(getStringAfterEquals(splitedText));
         onFirstLoad(build_spec);
       },1200)
     }
