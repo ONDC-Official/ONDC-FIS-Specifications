@@ -1,0 +1,182 @@
+summary: CD Balance - Error
+description: Insurer returns the error when there is insufficient CD Balance
+details:
+  - description: Ordering (Insurer returns the error when there is insufficient CD Balance)
+    mermaid: >-
+      sequenceDiagram
+        title  Selection
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Platform (BPP): Selects an Offer (select)
+        Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Responds with KYC/consent form link (on_select)
+        Buyer Platform (BAP)->> Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID 
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+  - description: Initializing the order
+    mermaid: >-
+      sequenceDiagram
+        title Initializing Order
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Platform (BPP): Sends submission ID(init)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP): Sends form link for nomination details<br/>and payment link if applicable(on_init)
+        Buyer Platform (BAP)->>Insurer Form Service: Get Form
+        Insurer Form Service-->>Buyer Platform (BAP): Form Received
+        Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+        Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  - description: Order Confirmation
+    mermaid: >-
+      sequenceDiagram
+        title  Order Confirmation
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        participant Insurer Form Service
+        Buyer Platform (BAP)->>Insurer Platform (BPP): confirm(with submissionID)
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_confirm
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+  - description: Fulfillment
+    mermaid: >-
+      sequenceDiagram
+        title Order Fulfillment
+        participant Buyer Platform (BAP)
+        participant Insurer Platform (BPP)
+        Buyer Platform (BAP)->>Insurer Platform (BPP): status-Request application status
+        Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+        Insurer Platform (BPP)->>Buyer Platform (BAP):on_status - Provide application status
+        Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+references: if any
+steps:
+  - summary: Buyer app shares personal & other details.
+    api: search
+    details:
+      - description: Buyer app shares personal & other details.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP): on_search
+            Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/hospicash-insurance/search/search_request_3.yaml"
+  - summary: Insurer provides the offer response
+    api: on_search
+    details:
+      - description: Insurer provides the offer response
+        mermaid: >-
+          sequenceDiagram
+            title  Order Confirmation
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): search
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_search
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/hospicash-insurance/on_search/on_search_request_3.yaml"
+
+
+  - summary: Buyer app selects a insurance item
+    api: select
+    details:
+      - description: Buyer app selects a specific insurance plan that suits their needs
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): Selects an Offer (select)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/hospicash-insurance/select/select_request_1.yaml"
+  - summary: Insurer returns the response to selected Hospicash insurance plan
+    api: on_select
+    details:
+      - description: Insurer responds to the buyer app requests by sending the details of the selected Hospicash insurance plan.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): Selects an Offer (select)
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/hospicash-insurance/on_select/on_select_request_1.yaml"
+ 
+
+  - summary: The buyer app initiates the Hospicash insurance request
+    api: init
+    details:
+      - description: The buyer app initiates the Hospicash insurance request.
+        mermaid: >-
+
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/hospicash-insurance/init/init_request_1.yaml"
+  - summary: The insurer returns the error code when there is insufficient CD Balance
+    api: on_init
+    details:
+      - description: The insurer returns the error code when there is insufficient CD Balance.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            Buyer Platform (BAP)->>Insurer Platform (BPP): init
+            Insurer Platform (BPP)->>Buyer Platform (BAP): ACK
+            
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/transit-insurance/on_init/on_init_request_cd_error.yaml"
+  
+  
