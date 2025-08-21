@@ -118,6 +118,7 @@ paths:
               schema:
                 type: object
                 properties:
+                  context: null
                   message:
                     type: object
                     properties:
@@ -275,6 +276,10 @@ paths:
                       $ref: '#/components/schemas/Option/properties/id'
                     descriptor:
                       $ref: '#/components/schemas/Descriptor'
+                    tags:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/TagGroup'
                   required:
                     - order_id
               required:
@@ -531,7 +536,6 @@ paths:
                   $ref: '#/components/schemas/Error'
               required:
                 - context
-                - message
       responses:
         default:
           $ref: '#/paths/~1init/post/responses/default'
@@ -2085,6 +2089,7 @@ components:
           format: uri
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2105,6 +2110,10 @@ components:
               type: string
             source_virtual_payment_address:
               type: string
+            source_bank_account_name:
+              type: string
+            bank_account_name:
+              type: string
         type:
           type: string
           enum:
@@ -2118,7 +2127,6 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
-            - REFUND
         status:
           type: string
           enum:
@@ -4134,6 +4142,18 @@ x-flows:
         api: search
         details:
           - description: Search for all mutual fund schemes
+            mermaid: |-
+              sequenceDiagram
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Buyer Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Seller Platforms (lookup)
+                Registry->>Gateway (BG): List of Seller Platforms (200 OK)
+                Gateway (BG)->>Seller Platform (BPP): search
+                Seller Platform (BPP)->>Gateway (BG) : ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Seller 1 (on_search)
+                Buyer Platform (BAP)->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_65
@@ -4182,6 +4202,18 @@ x-flows:
         api: on_search
         details:
           - description: Returns the schemes on offer
+            mermaid: |-
+              sequenceDiagram
+                Buyer Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Buyer Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Seller Platforms (lookup)
+                Registry->>Gateway (BG): List of Seller Platforms (200 OK)
+                Gateway (BG)->>Seller Platform (BPP): search
+                Seller Platform (BPP)->>Gateway (BG) : ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Seller 1 (on_search)
+                Buyer Platform (BAP)->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_35
@@ -4521,6 +4553,19 @@ x-flows:
           - description: >-
               Search for all mutual fund schemes and also register to
               incremental updates
+            mermaid: |-
+              sequenceDiagram
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Buyer Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Seller Platforms (lookup)
+                Registry->>Gateway (BG): List of Seller Platforms (200 OK)
+                Gateway (BG)->>Seller Platform (BPP): search
+                Seller Platform (BPP)->>Gateway (BG) : ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Seller 1 (on_search)
+                Buyer Platform (BAP)->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_66
@@ -4578,6 +4623,18 @@ x-flows:
         api: on_search
         details:
           - description: Returns the schemes on offer
+            mermaid: |-
+              sequenceDiagram
+                Buyer Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Buyer Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Seller Platforms (lookup)
+                Registry->>Gateway (BG): List of Seller Platforms (200 OK)
+                Gateway (BG)->>Seller Platform (BPP): search
+                Seller Platform (BPP)->>Gateway (BG) : ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): Publish Catalog of Seller 1 (on_search)
+                Buyer Platform (BAP)->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_35
@@ -4593,6 +4650,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_36
@@ -4662,6 +4729,18 @@ x-flows:
         api: on_select
         details:
           - description: Send back new account input required
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+
+                rect rgb(191, 223, 255)
+                  Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                  Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_37
@@ -4839,6 +4918,22 @@ x-flows:
         api: form
         details:
           - description: Get the form for account opening
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                end
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: |-
@@ -8453,6 +8548,22 @@ x-flows:
         api: select
         details:
           - description: Send folio information as form submission
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_38
@@ -8529,6 +8640,22 @@ x-flows:
         api: on_select
         details:
           - description: Send success status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_39
@@ -8871,6 +8998,17 @@ x-flows:
         api: init
         details:
           - description: Send order details and payment selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_40
@@ -8983,6 +9121,16 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_41
@@ -9220,6 +9368,17 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_42
@@ -9351,6 +9510,16 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_43
@@ -9622,6 +9791,17 @@ x-flows:
         api: on_status
         details:
           - description: Send payment success
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_74
@@ -9895,6 +10075,16 @@ x-flows:
         api: on_update
         details:
           - description: Send fulfillment started notification with ongoing status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -10190,6 +10380,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_36
@@ -10197,6 +10397,16 @@ x-flows:
         api: on_select
         details:
           - description: Send back new folio + kyc input required
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -10377,6 +10587,21 @@ x-flows:
         api: form
         details:
           - description: Get the form for folio+kyc
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                end
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: |-
@@ -14531,6 +14756,22 @@ x-flows:
         api: select
         details:
           - description: Send folio information as form submission
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_67
@@ -14607,6 +14848,23 @@ x-flows:
         api: on_select
         details:
           - description: Ask for digilocker fetch
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -14804,6 +15062,20 @@ x-flows:
         api: form
         details:
           - description: Get the form for digilocker fetch
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                end
+               
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: This will redirect to different html page for digilocker fetch
@@ -14813,6 +15085,20 @@ x-flows:
           - description: >-
               Seller provides the buyer with latest update of form status from
               unsolicited call.
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -15000,6 +15286,16 @@ x-flows:
         api: select
         details:
           - description: Send digilocker fetch as form submission
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_68
@@ -15076,6 +15372,16 @@ x-flows:
         api: on_select
         details:
           - description: Ask for esign
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_70
@@ -15273,6 +15579,20 @@ x-flows:
         api: form
         details:
           - description: Get the form for esign
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: This will redirect to different html page for esign
@@ -15282,6 +15602,20 @@ x-flows:
           - description: >-
               Seller provides the buyer with latest update of form status from
               unsolicited call.
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -15469,6 +15803,17 @@ x-flows:
         api: select
         details:
           - description: Send esign fetch as form submission
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_69
@@ -15545,6 +15890,16 @@ x-flows:
         api: on_select
         details:
           - description: Send success status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -15839,6 +16194,17 @@ x-flows:
         api: init
         details:
           - description: Send order details and payment selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value:
@@ -15951,6 +16317,16 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -16196,6 +16572,16 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -16327,6 +16713,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -16606,6 +17003,16 @@ x-flows:
         api: on_status
         details:
           - description: Send payment success and order in accepted state
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -16887,6 +17294,16 @@ x-flows:
         api: on_update
         details:
           - description: Send fulfillment started notification with ongoing status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -17190,6 +17607,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_36
@@ -17197,6 +17624,17 @@ x-flows:
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_61
@@ -17596,6 +18034,16 @@ x-flows:
         api: init
         details:
           - description: Send order details and folio details
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_71
@@ -17705,6 +18153,16 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_72
@@ -17958,6 +18416,16 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -18086,6 +18554,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -18373,6 +18852,16 @@ x-flows:
         api: on_status
         details:
           - description: Send payment success notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -18662,6 +19151,16 @@ x-flows:
         api: on_update
         details:
           - description: Send fulfillment started notification with ongoing status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -18969,6 +19468,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_36
@@ -18976,6 +19485,17 @@ x-flows:
         api: on_select
         details:
           - description: Send back new folio input required
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_37
@@ -18983,6 +19503,24 @@ x-flows:
         api: form
         details:
           - description: Get the form for folio opening
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                end
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: |-
@@ -22597,6 +23135,23 @@ x-flows:
         api: select
         details:
           - description: Send folio information as form submission
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: *ref_38
@@ -22604,6 +23159,23 @@ x-flows:
         api: on_select
         details:
           - description: Send success status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_39
@@ -22611,6 +23183,16 @@ x-flows:
         api: init
         details:
           - description: Send order details and payment selection
+            mermaid: |-
+              sequenceDiagram
+                 participant Buyer Platform (BAP)
+                 participant Seller Platform (BPP)
+                 rect rgb(191, 223, 255)
+                 Buyer Platform (BAP)->>Seller Platform (BPP): init
+                 Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                 end
+                 Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                 Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_40
@@ -22618,6 +23200,17 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_41
@@ -22625,6 +23218,16 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_42
@@ -22632,6 +23235,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+               
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_43
@@ -22922,6 +23536,16 @@ x-flows:
         api: on_update
         details:
           - description: Send parent order fulfillment ongoing status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_44
@@ -23254,6 +23878,16 @@ x-flows:
         api: on_confirm
         details:
           - description: Send instalment order generation notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_45
@@ -23447,6 +24081,19 @@ x-flows:
         api: on_update
         details:
           - description: Send instalment order with payment details for processing
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_46
@@ -23680,6 +24327,19 @@ x-flows:
         api: on_status
         details:
           - description: Successful sip instalment payment notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_47
@@ -23887,12 +24547,55 @@ x-flows:
                     external_ref:
                       url: https://api.sellerapp.com/cterms?id=214werw3w4
                       mimetype: text/html
+                tags:
+                  - display: false
+                    descriptor:
+                      name: BAP Terms of Engagement
+                      code: BAP_TERMS
+                    list:
+                      - descriptor:
+                          name: Static Terms (Transaction Level)
+                          code: STATIC_TERMS
+                        value: >-
+                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
+                      - descriptor:
+                          name: Offline Contract
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - display: false
+                    descriptor:
+                      name: BPP Terms of Engagement
+                      code: BPP_TERMS
+                    list:
+                      - descriptor:
+                          name: Static Terms (Transaction Level)
+                          code: STATIC_TERMS
+                        value: >-
+                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
+                      - descriptor:
+                          name: Offline Contract
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: On Update (successful instalment)
         api: on_update
         details:
           - description: Successful sip instalment notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_81
@@ -24178,6 +24881,16 @@ x-flows:
         api: on_update
         details:
           - description: Send parent order fulfillment ongoing status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_44
@@ -24185,6 +24898,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send instalment order generation notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_45
@@ -24192,6 +24916,17 @@ x-flows:
         api: on_update
         details:
           - description: Send instalment order with payment details for processing
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: *ref_46
@@ -24199,6 +24934,16 @@ x-flows:
         api: on_update
         details:
           - description: Failed sip instalment payment notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_80
@@ -24458,6 +25203,16 @@ x-flows:
         api: on_update
         details:
           - description: Send parent order fulfillment ongoing status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_44
@@ -24465,6 +25220,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send instalment order acceptance notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_45
@@ -24472,6 +25238,19 @@ x-flows:
         api: on_update
         details:
           - description: Send instalment order with payment details for processing
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: *ref_46
@@ -24479,6 +25258,19 @@ x-flows:
         api: on_status
         details:
           - description: Successful sip instalment payment notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_47
@@ -24486,6 +25278,20 @@ x-flows:
         api: on_update
         details:
           - description: Failed sip instalment notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_status
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_82
@@ -24759,6 +25565,13 @@ x-flows:
         api: on_update
         details:
           - description: Send parent order fulfillment cancellation status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_84
@@ -25065,6 +25878,17 @@ x-flows:
         api: update
         details:
           - description: Send sip order update request with cancellation detais
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): update
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value:
@@ -25121,6 +25945,16 @@ x-flows:
         api: on_update
         details:
           - description: Send sip order fulfillment cancellation status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): update
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -25145,6 +25979,10 @@ x-flows:
               order:
                 id: mfp_213adf123af
                 status: ACCEPTED
+                provider:
+                  id: sellerapp_id
+                  descriptor:
+                    name: Seller App Name
                 items:
                   - id: '12391'
                     parent_item_id: '138'
@@ -25622,6 +26460,13 @@ x-flows:
         api: on_update
         details:
           - description: Send parent order fulfillment completion status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_83
@@ -25922,6 +26767,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_48
@@ -25989,6 +26844,17 @@ x-flows:
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_49
@@ -26261,6 +27127,17 @@ x-flows:
         api: init
         details:
           - description: Send order details and folio details
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
         reference: if any
         example:
           value: &ref_50
@@ -26360,6 +27237,17 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_51
@@ -26590,6 +27478,16 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_52
@@ -26708,6 +27606,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_53
@@ -26981,6 +27890,16 @@ x-flows:
         api: on_status
         details:
           - description: Send payment success notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_73
@@ -27244,6 +28163,16 @@ x-flows:
         api: on_update
         details:
           - description: Send fulfillment success notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_64
@@ -27521,6 +28450,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_48
@@ -27528,6 +28467,17 @@ x-flows:
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_49
@@ -27535,6 +28485,16 @@ x-flows:
         api: init
         details:
           - description: Send order details and folio details
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_50
@@ -27542,6 +28502,17 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_51
@@ -27549,6 +28520,16 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_52
@@ -27556,6 +28537,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: *ref_53
@@ -27573,6 +28565,19 @@ x-flows:
         api: on_update
         details:
           - description: Send payment failure notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
+                Buyer Platform (BAP)->>Seller Platform (BPP): update
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_76
@@ -27840,6 +28845,18 @@ x-flows:
         api: update
         details:
           - description: Ask for new payment
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): update
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: &ref_62
@@ -27896,6 +28913,19 @@ x-flows:
         api: on_update
         details:
           - description: Receive new payment
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): update
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value: &ref_75
@@ -28198,6 +29228,16 @@ x-flows:
         api: select
         details:
           - description: Scheme selection
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_48
@@ -28205,6 +29245,16 @@ x-flows:
         api: on_select
         details:
           - description: Send back new account input required
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -28358,6 +29408,21 @@ x-flows:
         api: form
         details:
           - description: Get the form for account opening
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                end
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value: |-
@@ -31972,6 +33037,22 @@ x-flows:
         api: select
         details:
           - description: Send folio information as form submission
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+               
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -32044,6 +33125,23 @@ x-flows:
         api: on_select
         details:
           - description: Send success status
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                participant Seller Form Service
+               
+                Buyer Platform (BAP)->> Seller Form Service: Get Form
+                Seller Form Service-->>Buyer Platform (BAP): Form Received
+                Buyer Platform (BAP)->>Seller Form Service: Form Submission
+                Seller Form Service-->>Buyer Platform (BAP): Submission ID   
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): select
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_select
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -32259,6 +33357,16 @@ x-flows:
         api: init
         details:
           - description: Send order details and folio details
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -32361,6 +33469,16 @@ x-flows:
         api: on_init
         details:
           - description: Draft order is sent back with payment url
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): init
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_init
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -32575,6 +33693,16 @@ x-flows:
         api: confirm
         details:
           - description: Send order confirmation
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -32696,6 +33824,17 @@ x-flows:
         api: on_confirm
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                
+                Buyer Platform (BAP)->>Seller Platform (BPP): confirm
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP): on_confirm
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -32953,6 +34092,16 @@ x-flows:
         api: on_status
         details:
           - description: Send order acceptance
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                rect rgb(191, 223, 255)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                end
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
         reference: if any
         example:
           value:
@@ -33231,6 +34380,16 @@ x-flows:
         api: on_update
         details:
           - description: Send payment failure notification
+            mermaid: |-
+              sequenceDiagram
+                participant Buyer Platform (BAP)
+                participant Seller Platform (BPP)
+                Buyer Platform (BAP)->>Seller Platform (BPP): on_status
+                Seller Platform (BPP)-->>Buyer Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Seller Platform (BPP)->>Buyer Platform (BAP):on_update
+                Buyer Platform (BAP)-->>Seller Platform (BPP): ACK
+                end
         reference: if any
         example:
           value:
@@ -45004,6 +46163,7 @@ x-flows:
               action: confirm
             message:
               order:
+                id: mfp_213adf123af
                 provider:
                   id: sellerapp_id
                 items:
@@ -48752,6 +49912,7 @@ x-flows:
               action: confirm
             message:
               order:
+                id: mfp_213adf123af
                 provider:
                   id: sellerapp_id
                 items:
@@ -53949,6 +55110,7 @@ x-flows:
               action: confirm
             message:
               order:
+                id: mfp_213adf123af
                 provider:
                   id: sellerapp_id
                 items:
@@ -57831,6 +58993,7 @@ x-flows:
                 payments:
                   - id: pmt_234
                     collected_by: BPP
+                    status: NOT-PAID
                     params:
                       amount: '3000'
                       currency: INR
@@ -58856,6 +60019,8 @@ x-flows:
                       price:
                         currency: INR
                         value: '0.15'
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: Confirm
         api: confirm
         details:
@@ -58882,6 +60047,7 @@ x-flows:
               action: confirm
             message:
               order:
+                id: mfp_213adf123af
                 provider:
                   id: sellerapp_id
                 items:
@@ -58954,6 +60120,8 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: On Confirm
         api: on_confirm
         details:
@@ -59265,6 +60433,8 @@ x-flows:
                       price:
                         currency: INR
                         value: '0.15'
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: On Update
         api: on_update
         details:
@@ -59599,6 +60769,8 @@ x-flows:
                       price:
                         currency: INR
                         value: '0.15'
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: STP - by amount
     references: if any
     steps:
@@ -61132,6 +62304,8 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: On Confirm
         api: on_confirm
         details:
@@ -64968,20 +66142,6 @@ x-flows:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT
                         value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -68756,20 +69916,6 @@ x-flows:
                           code: STATIC_TERMS
                         value: >-
                           https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
                       - descriptor:
                           name: Offline Contract
                           code: OFFLINE_CONTRACT

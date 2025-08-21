@@ -1,0 +1,1240 @@
+x-validations:
+  _TESTS_:
+    search:
+      - _NAME_: SEARCH_CONTEXT
+        action:
+          - search
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+        _RETURN_: &COMMON_CONTEXT
+          - _NAME_: CONTEXT_REQUIRED
+            _RETURN_:
+              - _NAME_: REQUIRED_CONTEXT_LOCATION_COUNTRY_CODE
+                attr: $.context.location.country.code
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_LOCATION_CITY_CODE
+                attr: $.context.location.city.code
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_DOMAIN
+                attr: $.context.domain
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_TIMESTAMP
+                attr: $.context.timestamp
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_BAP_ID
+                attr: $.context.bap_id
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_BAP_URI
+                attr: $.context.bap_uri
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_BPP_ID
+                attr: $.context.bpp_id
+                var_search:
+                  - search
+                _CONTINUE_: (action all in var_search)
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_BPP_URI
+                attr: $.context.bpp_uri
+                var_search:
+                  - search
+                _CONTINUE_: (action all in var_search)
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_TRANSACTION_ID
+                attr: $.context.transaction_id
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_MESSAGE_ID
+                attr: $.context.message_id
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_VERSION
+                attr: $.context.version
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_CONTEXT_TTL
+                attr: $.context.ttl
+                _RETURN_: attr are present
+          - _NAME_: CONTEXT_ENUM
+            _RETURN_:
+              - _NAME_: VALID_CONTEXT_LOCATION_COUNTRY_CODE
+                attr: $.context.location.country.code
+                _CONTINUE_: '!(attr are present)'
+                enumList:
+                  - IND
+                _RETURN_: attr any in enumList
+              - _NAME_: VALID_CONTEXT_DOMAIN
+                attr: $.context.domain
+                enumList:
+                  - ONDC:FIS14
+                _CONTINUE_: '!(attr are present)'
+                _RETURN_: attr all in enumList
+          - _NAME_: CONTEXT_REGEX
+            _RETURN_:
+              - _NAME_: REGEX_CONTEXT_LOCATION_CITY_CODE
+                attr: $.context.location.city.code
+                reg:
+                  - (\\*)|(^std\\:[0-9]{2,4}$)
+                _CONTINUE_: '!(attr are present)'
+                _RETURN_: attr follow regex reg
+              - _NAME_: REGEX_CONTEXT_TIMESTAMP_1
+                attr: $.context.timestamp
+                reg:
+                  - >-
+                    ^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$
+                _CONTINUE_: '!(attr are present)'
+                _RETURN_: attr follow regex reg
+              - _NAME_: REGEX_CONTEXT_BAP_ID
+                attr: $.context.bap_id
+                reg:
+                  - >-
+                    ^(?!.*\b(?:http|https|www)\b)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$
+                _CONTINUE_: '!(attr are present)'
+                _RETURN_: attr follow regex reg
+              - _NAME_: REGEX_CONTEXT_BAP_URI
+                attr: $.context.bap_uri
+                reg:
+                  - ^https:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$
+                _CONTINUE_: '!(attr are present)'
+                _RETURN_: attr follow regex reg
+              - _NAME_: REQUIRED_CONTEXT_TTL
+                attr: $.context.ttl
+                reg:
+                  - >-
+                    ^P(?=\\d|T\\d)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$
+                _CONTINUE_: '!(attr are present)'
+                _RETURN_: attr follow regex reg
+      - _NAME_: SEARCH_CATEGORY_CODE
+        action:
+          - search
+        _RETURN_:
+          - _NAME_: REQUIRED_CATEGORY_CODE
+            attr: $.message.intent.category.descriptor.code
+            _RETURN_: attr are present
+          - _NAME_: VALID_ENUM_CATEGORY_CODE
+            attr: $.message.intent.category.descriptor.code
+            enumList:
+              - MICRO_HOSPICASH_INSURANCE
+              - MICRO_TRANSIT_INSURANCE
+              - MICRO_INSURANCE
+            _CONTINUE_: '!(attr are present)'
+            _RETURN_: attr all in enumList
+      
+      - _NAME_: SEARCH_PROVIDER_MASTER_POLICY_DISCOVERY
+        #THIS WILL CHECK FOR BOTH PRODUCT DISCOVERY & PURCHASE JOURNEY, BOTH HAVE SAME ATTRIBUTES
+        action:
+          - search
+        usecasepath: $.message.intent.provider.id
+        _CONTINUE_: '!(usecasepath are present)'  
+        _RETURN_:
+          - _NAME_: REQUIRED_PROVIDER_ITEMS
+            _RETURN_:
+              - _NAME: REQUIRED_PROVIDER_ID
+                attr: $.message.intent.provider.id
+                _RETURN_: attr are present
+
+              - _NAME_: REQUIRED_MASTER_POLICY_TAG_GROUP
+                validTags:
+                  - MASTER_POLICY
+                tagPath: $.message.intent.provider.tags[*].descriptor.code
+                _RETURN_: tagPath any in validTags
+
+              - _NAME_: REQUIRED_MASTER_POLICY_ID
+                _SCOPE_: $.message.intent.provider.tags[?(@.descriptor.code=='MASTER_POLICY')]
+                subTags: $.list[*].descriptor.code
+                validValues:
+                  - POLICY_ID
+                _CONTINUE_: '!(subTags are present)'
+                _RETURN_: subTags all in validValues    
+      
+      - _NAME_: SEARCH_PROVIDER_PURCHASE_JOURNEY
+        action:
+          - search
+        usecasepath: $.message.intent.provider.items[*].id
+        _CONTINUE_: '!(usecasepath are present)'  
+        _RETURN_:
+           - _NAME_: REQUIRED_PROVIDER_ITEMS
+             _RETURN_:
+                - _NAME: REQUIRED_PROVIDER_ID
+                  attr: $.message.intent.provider.id
+                  _RETURN_: attr are present
+                - _NAME: REQUIRED_PROVIDER_ITEM_ID
+                  attr: $.message.intent.provider.items[*].id
+                  _RETURN_: attr are present
+
+                - _NAME_: REQUIRED_TRANSIT_ITEMS_TAG_GROUP
+                  category_code_path: $.message.intent.category.descriptor.code
+                  var_category_code: MICRO_TRANSIT_INSURANCE
+                  _CONTINUE_: '!(category_code_path equal to var_category_code)'
+                  _RETURN_:
+                    - _NAME_: REQUIRED_ITEMS_TAG_GROUP
+                      validTags:
+                        - BAP_INPUTS
+                      tagPath: $.message.intent.provider.items[*].tags[*].descriptor.code
+                      _RETURN_: tagPath any in validTags
+                    - _NAME_: REQUIRED_MASTER_POLICY_ID  
+                      _SCOPE_: $.message.intent.provider.items[*].tags[?(@.descriptor.code=='BAP_INPUTS')]
+                      subTags: $.list[*].descriptor.code
+                      validValues:
+                        - BUYER_NAME
+                        - BUYER_PHONE_NUMBER
+                        - BUYER_PAN_NUMBER
+                        - DERIVED_DATA
+                        - PRODUCT_CATEGORY
+                        - ORDER_ID
+                        - ORDER_VALUE
+                        - ORDER_TYPE
+                        - ORDER_WEIGHT
+                        - START_ADDRESS
+                        - END_ADDRESS
+                        - PAYMENT_MODE
+                        - TRANSIT_START_DATE
+                        - TRANSIT_END_DATE
+                        - PACKAGING_TYPE
+                        - PACKAGING_VIDEO
+                        - SEALING_TYPE
+                        - WATERPROOFING
+                        - MODE_OF_TRANSPORT
+                        - LOGISTICS_COST
+                        - ORDERS_ONTIME_PCT
+                        - LOGISTICS_PARTNER_GSTIN
+                        - DELIVERY_EXECUTIVE_NAME
+                        - DELIVERY_EXECUTIVE_PHONE_NO
+                        - DELIVERY_EXECUTIVE_UNIQUE_ID
+                        - DELIVERY_EXECUTIVE_VEHICLE_NO
+                      _CONTINUE_: '!(subTags are present)'
+                      _RETURN_: subTags all in validValues      
+
+                - _NAME_: REQUIRED_HOSPICASH_ITEMS_TAG_GROUP
+                  category_code_path: $.message.intent.category.descriptor.code
+                  var_category_code: MICRO_HOSPICASH_INSURANCE
+                  _CONTINUE_: '!(category_code_path equal to var_category_code)'
+                  _RETURN_:
+                    - _NAME_: REQUIRED_ITEMS_TAG_GROUP
+                      validTags:
+                        - BAP_INPUTS
+                      tagPath: $.message.intent.provider.items[*].tags[*].descriptor.code
+                      _RETURN_: tagPath any in validTags
+                    - _NAME_: REQUIRED_MASTER_POLICY_ID  
+                      _SCOPE_: $.message.intent.provider.items[*].tags[?(@.descriptor.code=='BAP_INPUTS')]
+                      subTags: $.list[*].descriptor.code
+                      validValues:
+                        - BUYER_NAME
+                        - BUYER_PHONE_NUMBER
+                        - BUYER_PAN_NUMBER
+                        - BUYER_DOB
+                        - BUYER_GENDER
+                        - SUM_INSURED
+                        - BUYER_EMAIL
+                        - TENURE
+                      _CONTINUE_: '!(subTags are present)'
+                      _RETURN_: subTags all in validValues      
+
+
+      - _NAME_: SEARCH_FULFILMENT
+        action:
+          - search
+        _RETURN_:
+          - _NAME_: SEARCH_REQUIRED_FULFILLMENTS
+            _RETURN_:
+              - _NAME_: REQUIRED_FULFILMENT_AGENT_ID
+                attr: $.message.intent.fulfillment.agent.person.id
+                _RETURN_: attr are present         
+
+      - &COMMON_SEARCH_PAYMENT
+        _NAME_: SEARCH_PAYMENT
+        action:
+          - search
+        _RETURN_:
+          - _NAME_: REQUIRED_PAYMENT_ITEMS
+            _RETURN_:
+              - _NAME_: REQUIRED_PAYMENT_COLLECTED_BY
+                attr: $.message.intent.payment.collected_by
+                _RETURN_: attr are present   
+    
+    on_search:
+      - _NAME_: SEARCH_CONTEXT
+        action:
+          - search
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+        _RETURN_: *COMMON_CONTEXT
+
+      - _NAME_: ON_SEARCH_CATALOG_NAME
+        attr: $.message.catalog.descriptor.name
+        _RETURN_: attr are present
+
+      - _NAME_: ON_SEARCH_CATEGORIES
+        _RETURN_:
+        - _NAME_: ON_SEARCH_CATEGORIES_NAME
+          attr:  $.message.catalog.providers[*].categories[*].descriptor.name
+          _RETURN_: attr are present
+        - _NAME_: ON_SEARCH_CATEGORIES_CODE
+          attr:  $.message.catalog.providers[*].categories[*].descriptor.code
+          _RETURN_: attr are present
+        - _NAME_: ON_SEARCH_CATEGORIES_ID
+          attr:  $.message.catalog.providers[*].categories[*].id
+          _RETURN_: attr are present
+        - _NAME_: ON_SEARCH_CATEGORIES_PARENT_ID
+          attr:  $.message.catalog.providers[*].categories[*].parent_category_id
+          category_code_path: $.message.intent.category.descriptor.code
+          var_category_code: MICRO_INSURANCE
+          _CONTINUE_: '(category_code_path equal to var_category_code)'
+          _RETURN_: attr are present
+
+      - _NAME_: ON_SEARCH_PROVIDER
+        _RETURN_:
+          - _NAME_: ON_SEARCH_PROVIDER_ID
+            attr:  $.message.catalog.providers[*].id
+            _RETURN_: attr are present
+          - _NAME_: ON_SEARCH_PROVIDER_NAME
+            attr:  $.message.catalog.providers[*].descriptor.name
+            _RETURN_: attr are present
+          - _NAME_: ON_SEARCH_PROVIDER_IMAGES_URL
+            attr:  $.message.catalog.providers[*].descriptor.images[*].url
+            _RETURN_: attr are present
+          - _NAME_: ON_SEARCH_PROVIDER_IMAGES_SIZE_TYPE
+            attr:  $.message.catalog.providers[*].descriptor.images[*].size_type
+            _RETURN_: attr are present
+
+          - _NAME_: REQUIRED_MASTER_POLICY_TAG_GROUP
+            validTags:
+              - MASTER_POLICY
+            tagPath: $.message.catalog.providers.tags[*].descriptor.code
+            _RETURN_: tagPath any in validTags
+
+          - _NAME_: REQUIRED_MASTER_POLICY_ID
+            _SCOPE_: $.message.catalog.providers.tags[?(@.descriptor.code=='MASTER_POLICY')]
+            subTags: $.list[*].descriptor.code
+            validValues:
+              - POLICY_ID
+            _CONTINUE_: '!(subTags are present)'
+            _RETURN_: subTags all in validValues
+
+      - *COMMON_SEARCH_PAYMENT
+
+      - _NAME_: ON_SEARCH_ITEMS
+        usecasepath: $.message.catalog.providers[*].items[*].id
+        _CONTINUE_: '!(usecasepath are present)'
+        _RETURN_:
+          - _NAME_: REQUIRED_ITEMS
+            _RETURN_:
+              - _NAME_: REQUIRED_ITEM_ID
+                attr: $.message.catalog.providers[*].items[*].id
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_ITEM_CATEGORY_ID
+                attr: $.message.catalog.providers[*].items[*].category_ids[*]
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_ITEM_DESCRIPTOR_NAME
+                attr: $.message.catalog.providers[*].items[*].descriptor.name
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_ITEM_TIME_DURATION
+                attr: $.message.catalog.providers[*].items[*].time.duration
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_ITEM_TIME_LABEL
+                attr: $.message.catalog.providers[*].items[*].time.label
+                _RETURN_: attr are present
+
+              - _NAME_: REQUIRED_ITEM_TIME_LABEL
+                attr: $.message.catalog.providers[*].items[*].time.label
+                enumList:
+                  - TENURE
+                _RETURN_: attr all in enumList        
+
+          - _NAME_: REQUIRED_TRANSIT_ITEMS_TAG_GROUP
+            category_code_path: $.message.catalog.providers[*].categories[*].descriptor.code
+            var_category_code: MICRO_TRANSIT_INSURANCE
+            _CONTINUE_: '!(category_code_path equal to var_category_code)'
+            _RETURN_:
+              - _NAME_: REQUIRED_ITEMS_TAG_GROUP
+                validTags:
+                  - BAP_INPUTS
+                tagPath: $.message.catalog.providers[*].items[*].tags[*].descriptor.code
+                _RETURN_: tagPath any in validTags
+              - _NAME_: REQUIRED_MASTER_POLICY_ID  
+                _SCOPE_: $.message.catalog.providers[*].items[*].tags[?(@.descriptor.code=='BAP_INPUTS')]
+                subTags: $.list[*].descriptor.code
+                validValues:
+                  - BUYER_NAME
+                  - BUYER_PHONE_NUMBER
+                  - BUYER_PAN_NUMBER
+                  - DERIVED_DATA
+                  - PRODUCT_CATEGORY
+                  - ORDER_ID
+                  - ORDER_VALUE
+                  - ORDER_TYPE
+                  - ORDER_WEIGHT
+                  - START_ADDRESS
+                  - END_ADDRESS
+                  - PAYMENT_MODE
+                  - TRANSIT_START_DATE
+                  - TRANSIT_END_DATE
+                  - PACKAGING_TYPE
+                  - PACKAGING_VIDEO
+                  - SEALING_TYPE
+                  - WATERPROOFING
+                  - MODE_OF_TRANSPORT
+                  - LOGISTICS_COST
+                  - ORDERS_ONTIME_PCT
+                  - LOGISTICS_PARTNER_GSTIN
+                  - DELIVERY_EXECUTIVE_NAME
+                  - DELIVERY_EXECUTIVE_PHONE_NO
+                  - DELIVERY_EXECUTIVE_UNIQUE_ID
+                  - DELIVERY_EXECUTIVE_VEHICLE_NO
+                _CONTINUE_: '!(subTags are present)'
+                _RETURN_: subTags all in validValues      
+
+          - _NAME_: REQUIRED_HOSPICASH_ITEMS_TAG_GROUP
+            category_code_path: $.message.catalog.providers[*].categories[*].descriptor.code
+            var_category_code: MICRO_HOSPICASH_INSURANCE
+            _CONTINUE_: '!(category_code_path equal to var_category_code)'
+            _RETURN_:
+              - _NAME_: REQUIRED_ITEMS_TAG_GROUP
+                validTags:
+                  - BAP_INPUTS
+                tagPath: $.message.catalog.providers[*].items[*].tags[*].descriptor.code
+                _RETURN_: tagPath any in validTags
+              - _NAME_: REQUIRED_MASTER_POLICY_ID  
+                _SCOPE_: $.message.catalog.providers[*].items[*].tags[?(@.descriptor.code=='BAP_INPUTS')]
+                subTags: $.list[*].descriptor.code
+                validValues:
+                  - BUYER_NAME
+                  - BUYER_PHONE_NUMBER
+                  - BUYER_PAN_NUMBER
+                  - BUYER_DOB
+                  - BUYER_GENDER
+                  - SUM_INSURED
+                  - BUYER_EMAIL
+                  - TENURE
+                _CONTINUE_: '!(subTags are present)'
+                _RETURN_: subTags all in validValues      
+
+          - _NAME_: ON_SEARCH_PURCHASE_JOURNEY
+            usecasepath: $.message.catalog.providers[*].items[*].parent_item_id
+            _CONTINUE_: '!(usecasepath are present)'
+            _RETURN_:
+              
+              - _NAME_: ON_SEARCH_PARENT_ITEM_ID
+                attr:  $.message.catalog.providers[*].items[*].parent_item_id
+                _RETURN_: attr are present
+              - _NAME_: ON_SEARCH_ITEM_PRICE_CURRENCY
+                attr:  $.message.catalog.providers[*].items[*].price.currency
+                _RETURN_: attr are present
+              - _NAME_: ON_SEARCH_ITEM_PRICE_VALUE
+                attr:  $.message.catalog.providers[*].items[*].price.value
+                _RETURN_: attr are present
+
+              - _NAME_: VALID_ENUM_ON_SEARCH_ITEM_PRICE_CURRENCY
+                attr:  $.message.catalog.providers[*].items[*].price.currency
+                enumList:
+                  - INR
+                _RETURN_: attr all in enumList       
+
+              - _NAME_: REQUIRED_TRANSIT_ITEMS_TAG_GENERAL_INFO_GROUP
+                category_code_path: $.message.catalog.providers[*].categories[*].descriptor.code
+                var_category_code: MICRO_TRANSIT_INSURANCE
+                _CONTINUE_: '!(category_code_path equal to var_category_code)'
+                _RETURN_:
+                    - _NAME_: REQUIRED_GENERAL_INFO_TAG_GROUP
+                      validTags:
+                        - GENERAL_INFO
+                        - INCLUSIONS
+                        - EXCLUSIONS
+                      tagPath: $.message.catalog.providers[*].items[*].tags[*].descriptor.code
+                      _RETURN_: tagPath any in validTags
+                    - _NAME_: REQUIRED_GENERAL_INFO
+                      _SCOPE_: $.message.catalog.providers[*].items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                      subTags: $.list[*].descriptor.code
+                      validValues:
+                        - COVERAGE_AMOUNT
+                        - BASE_PRICE
+                        - CONVIENCE_FEE
+                        - PROCESSING_FEE
+                        - TAX
+                        - OFFER_VALIDITY
+                      _RETURN_: validValues any in subTags  
+
+              - _NAME_: REQUIRED_HOSPICASH_ITEMS_TAG_GENERAL_INFO_GROUP
+                category_code_path: $.message.catalog.providers[*].categories[*].descriptor.code
+                var_category_code: MICRO_HOSPICASH_INSURANCE
+                _CONTINUE_: '!(category_code_path equal to var_category_code)'
+                _RETURN_:
+                    - _NAME_: REQUIRED_GENERAL_INFO_TAG_GROUP
+                      validTags:
+                        - GENERAL_INFO
+                        - INCLUSIONS
+                        - EXCLUSIONS
+                      tagPath: $.message.catalog.providers[*].items[*].tags[*].descriptor.code
+                      _RETURN_: tagPath any in validTags
+                    - _NAME_: REQUIRED_GENERAL_INFO
+                      _SCOPE_: $.message.catalog.providers[*].items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                      subTags: $.list[*].descriptor.code
+                      validValues:
+                        - COVERAGE_AMOUNT
+                        - DAILY_CASH_BENEFIT
+                        - MAX_HOSPITALIZATION_DAYS
+                        - ICU_BENEFIT_PER_DAY
+                        - SURGICAL_BENEFIT
+                        - CONVALESCENCE_BENEFIT
+                        - MINIMUM_DAYS_FOR_CONVALESCENCE_BENEFIT
+                        - INITIAL_WAITING_PERIOD
+                        - DURATION_OF_COVER
+                        - MINIMUM_AGE_LIMIT
+                        - MAXIMUM_AGE_LIMIT
+                        - BASE_PRICE
+                        - CONVIENCE_FEE
+                        - PROCESSING_FEE
+                        - TAX
+                        - OFFER_VALIDITY
+                      _RETURN_: validValues any in subTags    
+
+
+    select:
+      - _NAME_: SELECT_CONTEXT
+        action:
+          - select
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+        _RETURN_: *COMMON_CONTEXT
+
+      - &COMMON_ACTION_ITEMS
+        _NAME_: SELECT_ITEMS
+        _RETURN_:
+          - _NAME_: REQUIRED_ITEM_ID
+            attr: $.message.order.items[*].id
+            _RETURN_: attr are present
+          - _NAME_: REQUIRED_PARENT_ITEM_ID
+            attr: $.message.order.items[*].parent_item_id
+            _RETURN_: attr are present
+
+      - &COMMON_ACTION_PROVIDER
+        _NAME_: REQUIRED_PROVIDER_ID
+        attr: $.message.order.provider.id
+        _RETURN_: attr are present
+
+    on_select:
+      - _NAME_: ON_SELECT_CONTEXT
+        action:
+          - on_select
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+        _RETURN_: *COMMON_CONTEXT
+
+      - _NAME_: ON_SELECT_ITEMS
+        _RETURN_:
+          - _NAME_: REQUIRED_ITEMS
+            _RETURN_:
+                - &REQUIRED_ITEM_ID
+                  _NAME_: REQUIRED_ITEM_ID
+                  attr: $.message.order.items[*].id
+                  _RETURN_: attr are present
+                - &REQUIRED_ITEM_CATEGORY_ID
+                  _NAME_: REQUIRED_ITEM_CATEGORY_ID
+                  attr: $.message.order.items[*].category_ids[*]
+                  _RETURN_: attr are present
+                - &REQUIRED_ITEM_DESCRIPTOR_NAME
+                  _NAME_: REQUIRED_ITEM_DESCRIPTOR_NAME
+                  attr: $.message.order.items[*].descriptor.name
+                  _RETURN_: attr are present
+                - &REQUIRED_ITEM_TIME_DURATION
+                  _NAME_: REQUIRED_ITEM_TIME_DURATION
+                  attr: $.message.order.items[*].time.duration
+                  _RETURN_: attr are present
+                - &REQUIRED_ITEM_TIME_LABEL
+                  _NAME_: REQUIRED_ITEM_TIME_LABEL
+                  attr: $.message.order.items[*].time.label
+                  _RETURN_: attr are present
+                - &ON_SEARCH_PARENT_ITEM_ID
+                  _NAME_: ON_SEARCH_PARENT_ITEM_ID
+                  attr:  $.message.order.items[*].parent_item_id
+                  _RETURN_: attr are present
+                - &ON_SEARCH_ITEM_PRICE_CURRENCY
+                  _NAME_: ON_SEARCH_ITEM_PRICE_CURRENCY
+                  attr:  $.message.order.items[*].price.currency
+                  _RETURN_: attr are present
+                - &ON_SEARCH_ITEM_PRICE_VALUE
+                  _NAME_: ON_SEARCH_ITEM_PRICE_VALUE
+                  attr:  $.message.order.items[*].price.value
+                  _RETURN_: attr are present
+                        
+          - &VALID_ENUMS
+            _NAME_: VALID_ENUMS
+            _RETURN_:
+              - _NAME_: VALID_ENUM_ON_SEARCH_ITEM_PRICE_CURRENCY
+                attr:  $.message.order.items[*].price.currency
+                enumList:
+                  - INR
+                _RETURN_: attr all in enumList 
+              - _NAME_: VALID_ENUM_ITEM_TIME_LABEL
+                attr:  $.message.order.items[*].time.label
+                enumList:
+                  - TENURE
+                _RETURN_: attr all in enumList   
+
+      - &ON_SELECT_ITEM_TAGS
+        _NAME_: ON_SELECT_ITEM_TAGS
+        _RETURN_: 
+          - _NAME_: REQUIRED_TRANSIT_ITEMS_TAG_GENERAL_INFO_GROUP
+            validTagPath: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+            subTagsPath: $.list[*].descriptor.code
+            validValuesList:
+              - MAX_HOSPITALIZATION_DAYS
+            _CONTINUE_: '(validValuesList any in subTagsPath)'
+            _RETURN_:
+                - _NAME_: REQUIRED_GENERAL_INFO_TAG_GROUP
+                  validTags:
+                    - GENERAL_INFO
+                    - INCLUSIONS
+                    - EXCLUSIONS
+                  tagPath: $.message.order.items[*].tags[*].descriptor.code
+                  _RETURN_: tagPath any in validTags
+                - _NAME_: REQUIRED_GENERAL_INFO
+                  _SCOPE_: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                  subTags: $.list[*].descriptor.code
+                  validValues:
+                    - COVERAGE_AMOUNT
+          
+          - _NAME_: REQUIRED_HOSPICASH_ITEMS_TAG_GENERAL_INFO_GROUP_1
+            tagPath: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+            subTagsPath: $.list[*].descriptor.code
+            validValuesList:
+              - MAX_HOSPITALIZATION_DAYS
+            _CONTINUE_: '!(validValuesList any in subTagsPath)'
+            _RETURN_:
+                - _NAME_: REQUIRED_GENERAL_INFO_TAG_GROUP
+                  validTags:
+                    - GENERAL_INFO
+                    - INCLUSIONS
+                    - EXCLUSIONS
+                  tagPath: $.message.order.items[*].tags[*].descriptor.code
+                  _RETURN_: tagPath any in validTags
+                - _NAME_: REQUIRED_GENERAL_INFO
+                  _SCOPE_: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                  subTags: $.list[*].descriptor.code
+                  validValues:
+                    - COVERAGE_AMOUNT
+                    - DAILY_CASH_BENEFIT
+                    - MAX_HOSPITALIZATION_DAYS
+                    - ICU_BENEFIT_PER_DAY
+                    - SURGICAL_BENEFIT
+                    - CONVALESCENCE_BENEFIT
+                    - MINIMUM_DAYS_FOR_CONVALESCENCE_BENEFIT
+                    - INITIAL_WAITING_PERIOD
+                    - DURATION_OF_COVER
+                    - MINIMUM_AGE_LIMIT
+                    - MAXIMUM_AGE_LIMIT
+                    
+      - &ON_ACTION_PROVIDER
+        _NAME_: ON_SELECT_PROVIDER
+        usecasepath: $.message.order.provider.id
+        _CONTINUE_: '!(usecasepath are present)'
+        _RETURN_:
+          - _NAME_: ON_SELECT_PROVIDER_ID
+            attr:  $.message.order.provider.id
+            _RETURN_: attr are present
+          - _NAME_: ON_SELECT_PROVIDER_NAME
+            attr:  $.message.order.provider.descriptor.name
+            _RETURN_: attr are present
+          - _NAME_: ON_SELECT_PROVIDER_IMAGES_URL
+            attr:  $.message.order.provider.descriptor.images[*].url
+            _RETURN_: attr are present
+          - _NAME_: ON_SELECT_PROVIDER_IMAGES_SIZE_TYPE
+            attr:  $.message.order.provider.descriptor.images[*].size_type
+            _RETURN_: attr are present
+
+          - _NAME_: REQUIRED_MASTER_POLICY_TAG_GROUP
+            validTags:
+              - MASTER_POLICY
+            tagPath: $.message.order.provider.tags[*].descriptor.code
+            _RETURN_: tagPath any in validTags
+
+          - _NAME_: REQUIRED_MASTER_POLICY_ID
+            _SCOPE_: $.message.order.provider.tags[?(@.descriptor.code=='MASTER_POLICY')]
+            subTags: $.list[*].descriptor.code
+            validValues:
+              - POLICY_ID
+            _CONTINUE_: '!(subTags are present)'
+            _RETURN_: subTags all in validValues
+
+      - _NAME_: ON_SELECT_FULFILLMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_FULFILLMENTS
+            _RETURN_:
+              - &REQUIRED_FULFILLMENT_ID
+                _NAME_: REQUIRED_FULFILLMENT_ID
+                attr: $.message.order.fulfillments[*].id
+                _RETURN_: attr are present
+              - &REQUIRED_FULFILLMENT_TYPE
+                _NAME_: REQUIRED_FULFILLMENT_TYPE
+                attr: $.message.order.fulfillments[*].type
+                _RETURN_: attr are present
+            
+          - &VALID_FULFILLMENTS_ENUMS
+            _NAME_: VALID_FULFILLMENTS_ENUMS
+            _RETURN_:  
+              - _NAME_: VALID_FULFILLMENT_TYPE
+                attr: $.message.order.fulfillments[*].type
+                enumList:
+                  - POLICY
+                _RETURN_: attr all in enumList
+
+          - _NAME_: REQUIRED_TRANSIT_FULFILLMENTS_TAG_GROUP
+            validTagPath: $.message.order.fulfillments[*].tags[?(@.descriptor.code=='NOMINEE_DETAILS')]
+            subTagsPath: $.list[*].descriptor.code
+            validValuesList:
+              - APPOINTEE_NAME
+            _CONTINUE_: '(validValuesList any in subTagsPath)'
+            _RETURN_:
+                - _NAME_: REQUIRED_FULFILLMENTS_TAG_GROUP
+                  validTags:
+                    - NOMINEE_DETAILS
+                  tagPath: $.message.order.fulfillments[*].tags[*].descriptor.code
+                  _RETURN_: tagPath any in validTags
+                - _NAME_: REQUIRED_NOMINEE_DETAILS
+                  _SCOPE_: $.message.order.fulfillments[*].tags[?(@.descriptor.code=='NOMINEE_DETAILS')]
+                  subTags: $.list[*].descriptor.code
+                  validValues:
+                    - NOMINEE_NAME
+                  _RETURN_: validValues all in validTags   
+                  
+
+          - _NAME_: REQUIRED_HOSPICASH_FULFILLMENTS_TAG_GROUP
+            validTagPath: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+            subTagsPath: $.list[*].descriptor.code
+            validValuesList:
+              - MAX_HOSPITALIZATION_DAYS
+            _CONTINUE_: '!(validValuesList any in subTagsPath)'
+            _RETURN_:
+                - _NAME_: REQUIRED_FULFILLMENTS_TAG_GROUP
+                  validTags:
+                    - NOMINEE_DETAILS
+                  tagPath: $.message.order.fulfillments[*].tags[*].descriptor.code
+                  _RETURN_: tagPath any in validTags
+                - _NAME_: REQUIRED_NOMINEE_DETAILS
+                  _SCOPE_: $.message.order.fulfillments[*].tags[?(@.descriptor.code=='NOMINEE_DETAILS')]
+                  subTags: $.list[*].descriptor.code
+                  validValues:
+                    - NOMINEE_NAME
+                    - NOMINEE_DOB
+                    - APPOINTEE_NAME
+                    - APPOINTEE_DOB
+                    - GOOD_HEALTH_DECLARATION
+                  _RETURN_: validValues any in subTags  
+      
+      - &COMMON_QUOTE_ITEMS
+        _NAME_: ON_SELECT_QUOTE
+        _RETURN_:    
+            - _NAME_: REQUIRED_COMMON_QUOTE_ITEMS
+              _RETURN_:
+                - _NAME_: REQUIRED_QUOTE_ID
+                  attr: $.message.order.quote.id
+                  _RETURN_: attr are present
+                - _NAME_: REQUIRED_QUOTE_PRICE_VALUE
+                  attr: $.message.order.quote.price.value
+                  _RETURN_: attr are present
+                - _NAME_: REQUIRED_QUOTE_PRICE_CURRENCY
+                  attr: $.message.order.quote.price.currency
+                  _RETURN_: attr are present    
+                - _NAME_: REQUIRED_BREAKUP_TITLE
+                  attr: $.message.order.quote.breakup[*].title
+                  _RETURN_: attr are present
+                - _NAME_: REQUIRED_BREAKUP_PRICE_VALUE
+                  attr: $.message.order.quote.breakup[*].price.value
+                  _RETURN_: attr are present
+                - _NAME_: REQUIRED_BREAKUP_PRICE_CURRENCY
+                  attr: $.message.order.quote.breakup[*].price.currency
+                  _RETURN_: attr are present      
+
+            - _NAME_: VALID_COMMON_QUOTE_ITEMS
+              _RETURN_:
+                - _NAME_: VALID_ENUM_BREAKUP_PRICE_CURRENCY
+                  attr: $.message.order.quote.breakup[*].price.currency
+                  enumList:
+                  - IND
+                  _RETURN_: attr any in enumList
+                - _NAME_: VALID_ENUM_QUOTE_PRICE_CURRENCY
+                  attr: $.message.order.quote.price.currency
+                  enumList:
+                  - IND
+                  _RETURN_: attr any in enumList   
+
+    init:
+      - _NAME_: INIT_CONTEXT
+        action:
+          - init
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+        _RETURN_: *COMMON_CONTEXT
+      - *COMMON_ACTION_ITEMS
+      - *COMMON_ACTION_PROVIDER
+
+      - _NAME_: INIT_FULFILLMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_FULFILLMENTS
+            _RETURN_:
+              - _NAME_: REQUIRED_FULFILLMENT_ID
+                attr: $.message.order.fulfillments[*].id
+                _RETURN_: attr are present
+              - _NAME_: REQUIRED_FULFILLMENT_TYPE
+                attr: $.message.order.fulfillments[*].type
+                _RETURN_: attr are present
+            
+          - _NAME_: VALID_FULFILLMENTS_ENUMS
+            _RETURN_:  
+              - _NAME_: VALID_FULFILLMENT_TYPE
+                attr: $.message.order.fulfillments[*].type
+                enumList:
+                  - POLICY
+                _RETURN_: attr all in enumList
+
+          - _NAME_: REQUIRED_TRANSIT_FULFILLMENTS_TAG_GROUP
+            validTagPath: $.message.order.fulfillments[*].tags[?(@.descriptor.code=='NOMINEE_DETAILS')]
+            subTagsPath: $.list[*].descriptor.code
+            validValuesList:
+              - APPOINTEE_NAME
+            _CONTINUE_: '(validValuesList any in subTagsPath)'
+            _RETURN_:
+                - _NAME_: REQUIRED_FULFILLMENTS_TAG_GROUP
+                  validTags:
+                    - NOMINEE_DETAILS
+                  tagPath: $.message.order.fulfillments[*].tags[*].descriptor.code
+                  _CONTINUE_: '!(tagPath are present)'
+                  _RETURN_: tagPath any in validTags
+                - _NAME_: REQUIRED_NOMINEE_DETAILS
+                  _SCOPE_: $.message.order.fulfillments[*].tags[?(@.descriptor.code=='NOMINEE_DETAILS')]
+                  subTags: $.list[*].descriptor.code
+                  validValues:
+                    - NOMINEE_NAME
+                  _CONTINUE_: '!(subTags are present)'
+                  _RETURN_: subTags all in validValues  
+
+          - _NAME_: REQUIRED_HOSPICASH_FULFILLMENTS_TAG_GROUP
+            validTagPath: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+            subTagsPath: $.list[*].descriptor.code
+            validValuesList:
+              - MAX_HOSPITALIZATION_DAYS
+            _CONTINUE_: '!(validValuesList any in subTagsPath)'
+            _RETURN_:
+                - _NAME_: REQUIRED_FULFILLMENTS_TAG_GROUP
+                  validTags:
+                    - NOMINEE_DETAILS
+                  tagPath: $.message.order.fulfillments[*].tags[*].descriptor.code
+                  _CONTINUE_: '!(tagPath are present)'
+                  _RETURN_: tagPath any in validTags
+                - _NAME_: REQUIRED_NOMINEE_DETAILS
+                  _SCOPE_: $.message.order.fulfillments[*].tags[?(@.descriptor.code=='NOMINEE_DETAILS')]
+                  subTags: $.list[*].descriptor.code
+                  validValues:
+                    - NOMINEE_NAME
+                    - NOMINEE_DOB
+                    - APPOINTEE_NAME
+                    - APPOINTEE_DOB
+                    - GOOD_HEALTH_DECLARATION
+                  _CONTINUE_: '!(subTags are present)'
+                  _ RETURN_: subTags all in validValues  
+      
+      - _NAME_: INIT_PAYMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_PAYMENT_ITEMS
+            _RETURN_:
+              - &REQUIRED_COLLECTED_BY
+                _NAME_: REQUIRED_COLLECTED_BY
+                attr: $.message.payments[*].collected_by
+                _RETURN_: attr are present
+              - &REQUIRED_STATUS
+                _NAME_: REQUIRED_STATUS
+                attr: $.message.payments[*].status
+                _RETURN_: attr are present
+              - &REQUIRED_TYPE
+                _NAME_: REQUIRED_TYPE
+                attr: $.message.payments[*].type
+                _RETURN_: attr are present    
+
+          - &VALID_ENUM_ITEMS
+            _NAME_: VALID_ENUM_ITEMS
+            _RETURN_:
+              - _NAME_: VALID_REQUIRED_STATUS
+                attr: $.message.payments[*].status
+                enumList:
+                  - PAID
+                  - NOT-PAID
+                  - FAILED
+                  - OVERDUE
+                  - OVERDUE
+                _RETURN_: attr all in enumList
+              - _NAME_: REQUIRED_TYPE
+                attr: $.message.payments[*].type
+                enumList:
+                  - PRE-FULFILLMENT
+                  - ON-ORDER
+                  - PRE-ORDER
+                  - ON-FULFILLMENT
+                RETURN_: attr all in enumList
+      
+    on_init:
+      - _NAME_: ON_INIT_CONTEXT
+        action:
+          - on_init
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+
+      - &ON_INIT_ITEMS
+        _NAME_: ON_INIT_ITEMS
+        usecasepath: $.message.order.items[*].id
+        _CONTINUE_: '!(usecasepath are present)'
+        _RETURN_:
+          - _NAME_: REQUIRED_ITEMS
+            _RETURN_: 
+              - *REQUIRED_ITEM_ID 
+              - *REQUIRED_ITEM_CATEGORY_ID
+              - *REQUIRED_ITEM_DESCRIPTOR_NAME
+              - *REQUIRED_ITEM_TIME_DURATION
+              - *REQUIRED_ITEM_TIME_LABEL
+              - *ON_SEARCH_PARENT_ITEM_ID
+              - *ON_SEARCH_ITEM_PRICE_CURRENCY
+              - *ON_SEARCH_ITEM_PRICE_VALUE
+
+              - &REQUIRED_FULFILLMENT_IDS
+                _NAME_: REQUIRED_FULFILLMENT_IDS
+                attr: $.message.order.items[*].fulfillment_ids[*]
+                _RETURN_: attr are present
+              - &REQUIRED_PAYMENT_IDS
+                _NAME_: REQUIRED_PAYMENT_IDS
+                attr: $.message.order.items[*].payment_ids[*]
+                _RETURN_: attr are present   
+
+          - *VALID_ENUMS
+          - *ON_SELECT_ITEM_TAGS
+
+      - *ON_ACTION_PROVIDER
+
+      - &ON_INIT_FULFILLMENTS
+        _NAME_: ON_INIT_FULFILLMENTS
+        usecasepath: $.message.order.fulfillments[*].id
+        _CONTINUE_: '!(usecasepath are present)'
+        _RETURN_: 
+          - _NAME_: REQUIRED_FULFILLMENTS
+            _RETURN_:
+              - *REQUIRED_FULFILLMENT_ID 
+              - *REQUIRED_FULFILLMENT_TYPE   
+              - &REQUIRED_CUSTOMER_NAME
+                _NAME_: REQUIRED_CUSTOMER_NAME
+                attr: $.message.order.fulfillments[*].person.name 
+                _RETURN_: attr are present
+              - &REQUIRED_CUSTOMER_PHONE
+                _NAME_: REQUIRED_CUSTOMER_PHONE
+                attr: $.message.order.fulfillments[*].contact.phone 
+                _RETURN_: attr are present
+          - *VALID_FULFILLMENTS_ENUMS        
+
+      - &ON_INIT_CANCELLATION_TERMS
+        _NAME_: ON_INIT_CANCELLATION_TERMS
+        _RETURN_:
+          - _NAME_: REQUIRED_EXTERNAL_REF_MIME_TYPE
+            attr: $.message.cancellation_terms[*].external_ref.mimetype
+            _RETURN_: attr are present
+
+          - _NAME_: REQUIRED_EXTERNAL_REF_URL
+            attr: $.message.cancellation_terms[*].external_ref.url
+            _RETURN_: attr are present  
+      - *COMMON_QUOTE_ITEMS
+      - _NAME_: ON_INIT_PAYMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_PAYMENT_ITEMS
+            _RETURN_:
+              - *REQUIRED_COLLECTED_BY
+              - *REQUIRED_STATUS
+              - *REQUIRED_TYPE
+              - &REQUIRED_PAYMENT_ID
+                _NAME_: REQUIRED_PAYMENT_ID
+                attr: $.message.order.payments[*].id
+                _RETURN_: attr are present
+
+              - _NAME_: REQUIRED_PAYMENT_URL
+                attr: $.message.order.payments[*].url
+                _RETURN_: attr are present
+
+              - _NAME_: SAME_PAYMENT_ID_ITEMS
+                attr: $.message.order.payments[*].id
+                usecasepath: $.message.order.items[*].payment_ids[*]
+                _CONTINUE_: '!(usecasepath equal to attr)'
+                _RETURN_: attr are present 
+                
+          - *VALID_ENUM_ITEMS    
+
+      - _NAME_: REQUIRED_CD_CODE
+        usecasepath: $.error.code
+        _CONTINUE_: '!(usecasepath are present)'
+        _RETURN_:
+          - _NAME_: ERROR_CODE_CD_BALANCE_CODE
+            attr: $.error.code
+            _RETURN_: attr are present
+          - _NAME_: ERROR_CODE_CD_BALANCE_MESSAGE
+            attr: $.error.message
+            _RETURN_: attr are present 
+
+
+    confirm:
+      - _NAME_: CONFIRM_CONTEXT
+        action:
+          - confirm
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+        _RETURN_: *COMMON_CONTEXT
+      - *COMMON_ACTION_ITEMS
+      - *COMMON_ACTION_PROVIDER
+      - *ON_INIT_FULFILLMENTS
+
+      - _NAME_: CONFIRM_PAYMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_PAYMENT_ITEMS
+            _RETURN_:
+              - *REQUIRED_COLLECTED_BY
+              - *REQUIRED_STATUS
+              - *REQUIRED_TYPE
+              - &REQUIRED_PAYMENT_ID
+          - *VALID_ENUM_ITEMS   
+
+    on_confirm:
+      - _NAME_: ON_CONFIRM_CONTEXT
+        action:
+          - on_confirm
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+
+      - &REQUIRED_ORDER_ITEMS
+        _NAME_: REQUIRED_ORDER_ITEMS
+        _RETURN_:
+          - _NAME_: REQUIRED_ITEMS
+            _RETURN_: 
+              - _NAME: REQUIRED_ORDER_ID
+                attr: $.message.order.id
+                _RETURN_: attr are present
+
+              - _NAME: REQUIRED_ORDER_STATUS
+                attr: $.message.order.status
+                _RETURN_: attr are present
+
+              - _NAME: REQUIRED_ORDER_CREATED_AT
+                attr: $.message.order.created_at
+                _RETURN_: attr are present
+
+              - _NAME: REQUIRED_ORDER_UPDATED_AT
+                attr: $.message.order.created_at
+                _RETURN_: attr are present
+
+          - _NAME_: VALID_ENUM_ITEMS
+            _RETURN_:
+              - _NAME_: VALID_ENUM_ORDER_STATUS
+                attr: $.message.order.status
+                enumList:
+                  - ACTIVE
+                  - COMPLETED
+                  - CANCELLED
+                  - CANCELLATION_INITIATED
+                _RETURN_: attr any in enumList
+              - _NAME_: REGEX_ON_CONFIRM_CREATED_AT
+                attr: $.message.order.created_at
+                reg:
+                  - >-
+                    ^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$
+                _RETURN_: attr follow regex reg
+              - _NAME_: REGEX_ON_CONFIRM_UPDATED_AT
+                attr: $.message.order.updated_at
+                reg:
+                  - >-
+                    ^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$
+                _RETURN_: attr follow regex reg
+
+      - &ON_CONFIRM_ITEMS
+        _NAME_: ON_CONFIRM_ITEMS
+        _RETURN_:
+          - _NAME_: REQUIRED_ITEMS
+            _RETURN_: 
+              - *REQUIRED_ITEM_ID 
+              - *REQUIRED_ITEM_CATEGORY_ID
+              - *REQUIRED_ITEM_DESCRIPTOR_NAME
+              - *REQUIRED_ITEM_TIME_DURATION
+              - *REQUIRED_ITEM_TIME_LABEL
+              - *ON_SEARCH_PARENT_ITEM_ID
+              - *ON_SEARCH_ITEM_PRICE_CURRENCY
+              - *ON_SEARCH_ITEM_PRICE_VALUE
+              - &REQUIRED_FULFILLMENT_IDS
+              - &REQUIRED_PAYMENT_IDS
+          - *VALID_ENUMS 
+
+          
+          - _NAME_: ON_CONFIRM_ITEM_TAGS
+            _RETURN_: 
+              - _NAME_: REQUIRED_TRANSIT_ITEMS_TAG_GENERAL_INFO_GROUP
+                validTagPath: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                subTagsPath: $.list[*].descriptor.code
+                validValuesList:
+                  - MAX_HOSPITALIZATION_DAYS
+                _CONTINUE_: '(validValuesList any in subTagsPath)'
+                _RETURN_:
+                    - _NAME_: REQUIRED_GENERAL_INFO_TAG_GROUP
+                      validTags:
+                        - GENERAL_INFO
+                        - INCLUSIONS
+                        - EXCLUSIONS
+                        - POLICY_INFO
+                      tagPath: $.message.order.items[*].tags[*].descriptor.code
+                      _RETURN_: tagPath any in validTags
+                    - _NAME_: REQUIRED_GENERAL_INFO
+                      _SCOPE_: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                      subTags: $.list[*].descriptor.code
+                      validValues:
+                        - COVERAGE_AMOUNT
+                      _RETURN_: subTags any in validValues  
+                    - _NAME_: REQUIRED_POLICY_INFO
+                      _SCOPE_: $.message.order.items[*].tags[?(@.descriptor.code=='POLICY_INFO')]
+                      subTags: $.list[*].descriptor.code
+                      validValues:
+                        - POLICY_START_DATE
+                        - POLICY_END_DATE
+                        - CLAIMS_HELPDESK_CONTACT_NUMBER
+                        - CLAIMS_HELPDESK_EMAIL_ID 
+                      _RETURN_: subTags any in validValues       
+              
+              - _NAME_: REQUIRED_HOSPICASH_ITEMS_TAG_GENERAL_INFO_GROUP_1
+                tagPath: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                subTagsPath: $.list[*].descriptor.code
+                validValuesList:
+                  - MAX_HOSPITALIZATION_DAYS
+                _CONTINUE_: '!(validValuesList any in subTagsPath)'
+                _RETURN_:
+                  - _NAME_: REQUIRED_GENERAL_INFO_TAG_GROUP
+                    validTags:
+                      - GENERAL_INFO
+                      - INCLUSIONS
+                      - EXCLUSIONS
+                      - POLICY_INFO
+                    tagPath: $.message.order.items[*].tags[*].descriptor.code
+                    _RETURN_: tagPath any in validTags
+                  - _NAME_: REQUIRED_GENERAL_INFO
+                    _SCOPE_: $.message.order.items[*].tags[?(@.descriptor.code=='GENERAL_INFO')]
+                    subTags: $.list[*].descriptor.code
+                    validValues:
+                      - COVERAGE_AMOUNT
+                      - DAILY_CASH_BENEFIT
+                      - MAX_HOSPITALIZATION_DAYS
+                      - ICU_BENEFIT_PER_DAY
+                      - SURGICAL_BENEFIT
+                      - CONVALESCENCE_BENEFIT
+                      - MINIMUM_DAYS_FOR_CONVALESCENCE_BENEFIT
+                      - INITIAL_WAITING_PERIOD
+                      - DURATION_OF_COVER
+                      - MINIMUM_AGE_LIMIT
+                      - MAXIMUM_AGE_LIMIT
+                    _RETURN_: subTags any in validValues
+
+                  - _NAME_: REQUIRED_POLICY_INFO
+                    _SCOPE_: $.message.order.items[*].tags[?(@.descriptor.code=='POLICY_INFO')]
+                    subTags: $.list[*].descriptor.code
+                    validValues:
+                      - POLICY_START_DATE
+                      - POLICY_END_DATE
+                      - POLICY_RENEWAL_DATE
+                      - CLAIMS_HELPDESK_CONTACT_NUMBER
+                      - CLAIMS_HELPDESK_EMAIL_ID 
+                    _RETURN_: subTags any in validValues   
+                  
+      - *ON_ACTION_PROVIDER
+      - *ON_INIT_CANCELLATION_TERMS
+      - *COMMON_QUOTE_ITEMS
+      
+      - &ON_CONFIRM_PAYMENTS
+        _NAME_: ON_CONFIRM_PAYMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_PAYMENT_ITEMS
+            _RETURN_:
+              - *REQUIRED_COLLECTED_BY
+              - *REQUIRED_STATUS
+              - *REQUIRED_TYPE
+              - &REQUIRED_PAYMENT_ID
+              - _NAME_: REUIRED_PAYMENT_PARAMS_AMOUNT
+                attr: $.message.order.payments[*].params.amount
+                _RETURN_: attr are present
+              - _NAME_: REUIRED_PAYMENT_PARAMS_CURRENCY
+                attr: $.message.order.payments[*].params.currency
+                _RETURN_: attr are present
+              - _NAME_: REUIRED_PAYMENT_PARAMS_TRANSACTION_ID
+                attr: $.message.order.payments[*].params.transaction_id
+                _RETURN_: attr are present
+          - *VALID_ENUM_ITEMS
+
+      - &ON_CONFIRM_FULFILLMENTS
+        _NAME_: ON_CONFIRM_FULFILLMENTS
+        _RETURN_: 
+          - _NAME_: REQUIRED_FULFILLMENTS
+            _RETURN_:
+              - *REQUIRED_FULFILLMENT_ID 
+              - *REQUIRED_FULFILLMENT_TYPE   
+              - *REQUIRED_CUSTOMER_NAME
+              - *REQUIRED_CUSTOMER_PHONE
+              - _NAME_: REQUIRED_FULFILLMENT_STATE
+                attr: $.message.order.fulfillments[*].state.descriptor.code
+                _RETURN_: attr are present
+          - _NAME_: VALID_FULFILLMENTS_ENUMS
+            _RETURN_:  
+              - _NAME_: VALID_FULFILLMENT_TYPE
+                attr: $.message.order.fulfillments[*].type
+                enumList:
+                  - POLICY
+                _RETURN_: attr all in enumList
+
+              - _NAME_: VALID_FULFILLMENT_STATE
+                attr: $.message.order.fulfillments[*].type
+                enumList:
+                  - INITIATED
+                  - GRANTED
+                _RETURN_: attr all in enumList     
+
+
+    on_update:
+      - _NAME_: ON_UPDATE_CONTEXT
+        action:
+          - on_update
+        domain:
+          - ONDC:FIS13
+        version:
+          - 2.0.0
+      - *REQUIRED_ORDER_ITEMS
+      
+      - *ON_CONFIRM_ITEMS         
+      - *ON_ACTION_PROVIDER
+      - *ON_INIT_CANCELLATION_TERMS
+      - *COMMON_QUOTE_ITEMS
+      - *ON_CONFIRM_PAYMENTS
+      - *ON_CONFIRM_FULFILLMENTS
+      - _NAME_: REQUIRED_ORDER_DOCUMENTS
+        _RETURN_:
+          - _NAME_: REQUIRED_DOCUMENT_CODE
+            attr: $.message.order.documents[*].descriptor.code
+            _RETURN_: attr are present
+
+          - _NAME_: REQUIRED_DOCUMENT_NAME
+            attr: $.message.order.documents[*].descriptor.name
+            _RETURN_: attr are present
+
+          - _NAME_: REQUIRED_DOCUMENT_TYPE
+            attr: $.message.order.documents[*].mime_type
+            _RETURN_: attr are present
+
+          - _NAME_: REQUIRED_DOCUMENT_URL
+            attr: $.message.order.documents[*].url
+            _RETURN_: attr are present      
+
