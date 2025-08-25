@@ -743,6 +743,10 @@ components:
           $ref: '#/components/schemas/Price'
         quantity:
           $ref: '#/components/schemas/ItemQuantity'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Address:
       description: Describes a postal address.
       type: string
@@ -2016,6 +2020,7 @@ components:
           format: uri
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2035,6 +2040,10 @@ components:
             source_bank_account_number:
               type: string
             source_virtual_payment_address:
+              type: string
+            source_bank_account_name:
+              type: string
+            bank_account_name:
               type: string
         type:
           type: string
@@ -3420,6 +3429,32 @@ x-tags:
                       Previous policy end date is the date at which last
                       insurance policy of the vehicle ended
                     reference: <PR/Issue/Discussion Links md format text>
+            add_ons:
+              tags:
+                - code: INFO
+                  description: Describes the add ons info
+                  reference: <PR/Issue/Discussion Links md format text>
+                  list:
+                    - code: REQUIRED
+                      description: Describes the add-on type
+                      reference: <PR/Issue/Discussion Links md format text>
+                    - code: CUSTOMER_SELECTION
+                      description: Describes the customer selection.
+                      reference: <PR/Issue/Discussion Links md format text>
+                - code: BAP_INPUTS
+                  description: Describes the bap inputs for add ons
+                  reference: <PR/Issue/Discussion Links md format text>
+                  list:
+                    - code: SUM_INSURED
+                      description: Describes the type as sum insured
+                      reference: <PR/Issue/Discussion Links md format text>
+                    - code: NOMINEE_DETAILS
+                      description: >-
+                        Describes the format as 'Salutation | First Name |
+                        Middle Name | Last Name | Relationship | Contact Number'
+                        represents a full name structure, where the values are
+                        separated by a pipe (|) symbol
+                      reference: <PR/Issue/Discussion Links md format text>
           payments: *ref_9
   on_select:
     message:
@@ -3729,50 +3764,6 @@ x-flows:
                             - url: >-
                                 https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
                               size_type: xs
-                        tags:
-                          - descriptor:
-                              name: General Information
-                              code: GENERAL_INFO
-                            list:
-                              - descriptor:
-                                  code: PERSONAL_ACCIDENT_COVER
-                                value: '10000000'
-                              - descriptor:
-                                  code: DEPRECIATION_COVER
-                                value: 'Yes'
-                              - descriptor:
-                                  code: ROAD_SIDE_ASSISTANCE
-                                value: '25000'
-                              - descriptor:
-                                  code: CONSUMABLES_COVER
-                                value: 'No'
-                              - descriptor:
-                                  code: ELECTRICAL_ACCESSORIES_COVER
-                                value: '0.8'
-                              - descriptor:
-                                  code: NON_ELECTRICAL_ACCESSORIES_COVER
-                                value: '2'
-                              - descriptor:
-                                  code: ENGINE_COVER
-                                value: '5'
-                              - descriptor:
-                                  code: EXTERNAL_CNG_OR_LPG_COVER
-                                value: 'Yes'
-                              - descriptor:
-                                  code: KEY_COVER
-                                value: 'No'
-                              - descriptor:
-                                  code: PERSONAL_BAGGAGE_COVER
-                                value: '50'
-                              - descriptor:
-                                  code: TYRE_COVER
-                                value: '50'
-                              - descriptor:
-                                  code: RETURN_TO_INVOICE
-                                value: '50'
-                              - descriptor:
-                                  code: PER_DAY_CASH
-                                value: '50'
                         time:
                           duration: P1Y
                           label: TENURE
@@ -3796,9 +3787,6 @@ x-flows:
                           required: true
                         add_ons:
                           - id: A1
-                            price:
-                              currency: INR
-                              value: '900'
                             quantity:
                               available:
                                 count: 1
@@ -3808,9 +3796,6 @@ x-flows:
                               name: Consumables Cover
                               code: CONSUMABLES_COVER
                           - id: A2
-                            price:
-                              currency: INR
-                              value: '500'
                             quantity:
                               available:
                                 count: 1
@@ -3820,9 +3805,6 @@ x-flows:
                               name: Depreciation Cover
                               code: DEPRECIATION_COVER
                           - id: A3
-                            price:
-                              currency: INR
-                              value: '400'
                             quantity:
                               available:
                                 count: 1
@@ -3832,9 +3814,6 @@ x-flows:
                               name: Electrical Accessories Cover
                               code: ELECTRICAL_ACCESSORIES_COVER
                           - id: A4
-                            price:
-                              currency: INR
-                              value: '410'
                             quantity:
                               available:
                                 count: 1
@@ -3844,9 +3823,6 @@ x-flows:
                               name: KEY COVER
                               code: KEY_COVER
                           - id: A5
-                            price:
-                              currency: INR
-                              value: '850'
                             quantity:
                               available:
                                 count: 1
@@ -3856,9 +3832,6 @@ x-flows:
                               name: Non Electrical Accessories Cover
                               code: NON_ELECTRICAL_ACCESSORIES_COVER
                           - id: A6
-                            price:
-                              currency: INR
-                              value: '1000'
                             quantity:
                               available:
                                 count: 1
@@ -3868,9 +3841,6 @@ x-flows:
                               name: Tyre Cover
                               code: TYRE_COVER
                           - id: A7
-                            price:
-                              currency: INR
-                              value: '1200'
                             quantity:
                               available:
                                 count: 1
@@ -3880,9 +3850,6 @@ x-flows:
                               name: Personal Baggage Cover
                               code: PERSONAL_BAGGAGE_COVER
                           - id: A8
-                            price:
-                              currency: INR
-                              value: '1000'
                             quantity:
                               available:
                                 count: 1
@@ -3892,9 +3859,6 @@ x-flows:
                               name: Return To Invoice
                               code: RETURN_TO_INVOICE
                           - id: A9
-                            price:
-                              currency: INR
-                              value: '900'
                             quantity:
                               available:
                                 count: 1
@@ -3917,50 +3881,6 @@ x-flows:
                             - url: >-
                                 https://www.abcinsurance.com/content/dam/abc/india/assets/images/header/logo.png
                               size_type: xs
-                        tags:
-                          - descriptor:
-                              name: General Information
-                              code: GENERAL_INFO
-                            list:
-                              - descriptor:
-                                  code: PERSONAL_ACCIDENT_COVER
-                                value: '10000000'
-                              - descriptor:
-                                  code: DEPRECIATION_COVER
-                                value: 'Yes'
-                              - descriptor:
-                                  code: ROAD_SIDE_ASSISTANCE
-                                value: '25000'
-                              - descriptor:
-                                  code: CONSUMABLES_COVER
-                                value: 'No'
-                              - descriptor:
-                                  code: ELECTRICAL_ACCESSORIES_COVER
-                                value: '0.8'
-                              - descriptor:
-                                  code: NON_ELECTRICAL_ACCESSORIES_COVER
-                                value: '2'
-                              - descriptor:
-                                  code: ENGINE_COVER
-                                value: '5'
-                              - descriptor:
-                                  code: EXTERNAL_CNG_OR_LPG_COVER
-                                value: 'Yes'
-                              - descriptor:
-                                  code: KEY_COVER
-                                value: 'No'
-                              - descriptor:
-                                  code: PERSONAL_BAGGAGE_COVER
-                                value: '50'
-                              - descriptor:
-                                  code: TYRE_COVER
-                                value: '50'
-                              - descriptor:
-                                  code: RETURN_TO_INVOICE
-                                value: '50'
-                              - descriptor:
-                                  code: PER_DAY_CASH
-                                value: '50'
                         time:
                           duration: P1Y
                           label: TENURE
@@ -3984,9 +3904,6 @@ x-flows:
                           required: true
                         add_ons:
                           - id: A1
-                            price:
-                              currency: INR
-                              value: '900'
                             quantity:
                               available:
                                 count: 1
@@ -3996,9 +3913,6 @@ x-flows:
                               name: Consumables Cover
                               code: CONSUMABLES_COVER
                           - id: A2
-                            price:
-                              currency: INR
-                              value: '500'
                             quantity:
                               available:
                                 count: 1
@@ -4008,9 +3922,6 @@ x-flows:
                               name: Depreciation Cover
                               code: DEPRECIATION_COVER
                           - id: A3
-                            price:
-                              currency: INR
-                              value: '400'
                             quantity:
                               available:
                                 count: 1
@@ -4020,9 +3931,6 @@ x-flows:
                               name: Electrical Accessories Cover
                               code: ELECTRICAL_ACCESSORIES_COVER
                           - id: A4
-                            price:
-                              currency: INR
-                              value: '410'
                             quantity:
                               available:
                                 count: 1
@@ -4032,9 +3940,6 @@ x-flows:
                               name: KEY COVER
                               code: KEY_COVER
                           - id: A5
-                            price:
-                              currency: INR
-                              value: '850'
                             quantity:
                               available:
                                 count: 1
@@ -4044,9 +3949,6 @@ x-flows:
                               name: Non Electrical Accessories Cover
                               code: NON_ELECTRICAL_ACCESSORIES_COVER
                           - id: A6
-                            price:
-                              currency: INR
-                              value: '1000'
                             quantity:
                               available:
                                 count: 1
@@ -4056,9 +3958,6 @@ x-flows:
                               name: Tyre Cover
                               code: TYRE_COVER
                           - id: A7
-                            price:
-                              currency: INR
-                              value: '1200'
                             quantity:
                               available:
                                 count: 1
@@ -4068,9 +3967,6 @@ x-flows:
                               name: Personal Baggage Cover
                               code: PERSONAL_BAGGAGE_COVER
                           - id: A8
-                            price:
-                              currency: INR
-                              value: '1000'
                             quantity:
                               available:
                                 count: 1
@@ -4080,9 +3976,6 @@ x-flows:
                               name: Return To Invoice
                               code: RETURN_TO_INVOICE
                           - id: A9
-                            price:
-                              currency: INR
-                              value: '900'
                             quantity:
                               available:
                                 count: 1
@@ -4535,6 +4428,34 @@ x-flows:
                             descriptor:
                               name: Consumables Cover
                               code: CONSUMABLES_COVER
+                            tags:
+                              - descriptor:
+                                  name: BAP Inputs
+                                  code: BAP_INPUTS
+                                list:
+                                  - descriptor:
+                                      code: SUM_INSURED
+                                    value: ''
+                                  - descriptor:
+                                      code: NOMINEE_DETAILS
+                                      short_desc: >-
+                                        Describes the format as 'Salutation |
+                                        First Name | Middle Name | Last Name |
+                                        Relationship | Contact Number'
+                                        represents a full name structure, where
+                                        the values are separated by a pipe (|)
+                                        symbol
+                                    value: ''
+                              - descriptor:
+                                  name: Info
+                                  code: INFO
+                                list:
+                                  - descriptor:
+                                      code: REQUIRED
+                                    value: 'TRUE'
+                                  - descriptor:
+                                      code: CUSTOMER_SELECTION
+                                    value: 'YES'
                           - id: A2
                             price:
                               currency: INR
@@ -4936,6 +4857,25 @@ x-flows:
                         quantity:
                           selected:
                             count: 1
+                        tags:
+                          - descriptor:
+                              name: BAP Inputs
+                              code: BAP_INPUTS
+                            list:
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     tags:
                       - descriptor:
                           name: General Information
@@ -5126,6 +5066,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                 provider:
                   descriptor:
                     long_desc: >-
@@ -5404,6 +5369,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                 provider:
                   descriptor:
                     long_desc: >-
@@ -5678,6 +5668,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6014,6 +6029,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6291,6 +6331,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       head:
                         descriptor:
@@ -6775,6 +6840,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       head:
                         descriptor:
@@ -7250,6 +7340,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       head:
                         descriptor:
@@ -7663,12 +7778,40 @@ x-flows:
                 items:
                   - add_ons:
                       - id: A1
+                        price:
+                          currency: INR
+                          value: '900'
                         quantity:
                           selected:
                             count: 1
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -7950,6 +8093,34 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        price:
+                          currency: INR
+                          value: '900'
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -8282,12 +8453,40 @@ x-flows:
                 items:
                   - add_ons:
                       - id: A1
+                        price:
+                          currency: INR
+                          value: '900'
                         quantity:
                           selected:
                             count: 1
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -9317,6 +9516,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       head:
                         descriptor:
@@ -9801,6 +10025,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       head:
                         descriptor:
@@ -10280,6 +10529,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       head:
                         descriptor:
@@ -10699,12 +10973,40 @@ x-flows:
                 items:
                   - add_ons:
                       - id: A1
+                        price:
+                          currency: INR
+                          value: '900'
                         quantity:
                           selected:
                             count: 1
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -11284,6 +11586,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     xinput:
                       form:
                         id: F07
@@ -11716,6 +12043,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                 provider:
                   descriptor:
                     long_desc: >-
@@ -11948,6 +12300,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                 provider:
                   descriptor:
                     long_desc: >-
@@ -12131,12 +12508,40 @@ x-flows:
                 items:
                   - add_ons:
                       - id: A1
+                        price:
+                          currency: INR
+                          value: '900'
                         quantity:
                           selected:
                             count: 1
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -12455,6 +12860,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -12774,6 +13204,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -13095,6 +13550,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -13471,6 +13951,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
@@ -13768,6 +14273,31 @@ x-flows:
                         descriptor:
                           name: Consumables Cover
                           code: CONSUMABLES_COVER
+                        tags:
+                          - descriptor:
+                              name: Info
+                              code: INFO
+                            list:
+                              - descriptor:
+                                  code: REQUIRED
+                                value: 'TRUE'
+                              - descriptor:
+                                  code: CUSTOMER_SELECTION
+                                value: 'YES'
+                              - descriptor:
+                                  code: SUM_INSURED
+                                value: '50000'
+                              - descriptor:
+                                  code: NOMINEE_DETAILS
+                                  short_desc: >-
+                                    Describes the format as 'Salutation | First
+                                    Name | Middle Name | Last Name |
+                                    Relationship | Contact Number' represents a
+                                    full name structure, where the values are
+                                    separated by a pipe (|) symbol
+                                value: >-
+                                  Mr. | Joe | Wick | Adams | Son |
+                                  +91-9988776655
                     descriptor:
                       name: 2-Wheeler 3rd Party Motor Insurance
                       short_desc: >-
