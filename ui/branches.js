@@ -21,7 +21,7 @@ const BRANCHES = [
     code: "release-FIS12-2.0.1",
     name: "Personal Loan",
     short_desc: "Credit - Personal Loan use case patch to 2.0.0",
-    status: "RELEASED",
+    status: "TO_BE_DEPRECATED",
   },
    {
     code: "release-FIS12-2.0.2",
@@ -57,20 +57,20 @@ const BRANCHES = [
     code: "release-FIS13-health",
     name: "Health Insurance",
     short_desc: "Insurance - Health Insurance",
-    status: "RELEASED",
+    status: "TO_BE_DEPRECATED",
   },
   {
     code: "release-FIS13-marine",
     name: "Marine Insurance",
     short_desc: "Insurance - Marine Insurance",
-    status: "RELEASED",
+    status: "TO_BE_DEPRECATED",
   },
   
   {
     code: "release-FIS13-motor",
     name: "Motor Insurance",
     short_desc: "Insurance - Motor Insurance",
-    status: "RELEASED",
+    status: "TO_BE_DEPRECATED",
   },
   {
     code: "release-FIS13-2.0.1-health",
