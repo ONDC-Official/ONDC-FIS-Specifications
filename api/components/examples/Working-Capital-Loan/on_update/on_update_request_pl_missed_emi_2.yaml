@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_select
+  action: on_update
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -17,6 +17,8 @@ context:
   ttl: P30M
 message:
   order:
+    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+    status: ACTIVE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -94,9 +96,11 @@ message:
         category_ids:
           - '101111'
           - '101211'
+        fulfillment_ids:
+          - F1 
         price:
           currency: INR
-          value: '441800'
+          value: '441800'  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -203,23 +207,23 @@ message:
               - descriptor:
                   code: SET_LOAN_AMOUNT
                   name: Set Loan Amount
-                value: F03_SUBMISSION_ID
+                value: F02_SUBMISSION_ID
               - descriptor:
                   code: KYC
                   name: Know Your Customer
-                value: F04_SUBMISSION_ID
+                value: F03_SUBMISSION_ID
               - descriptor:
                   code: ACCOUNT_INFORMATION
                   name: Account Information
-                value: PENDING
+                value: F04_SUBMISSION_ID
               - descriptor:
                   code: EMANDATE
                   name: Emandate
-                value: PENDING
+                value: F05_SUBMISSION_ID
               - descriptor:
                   code: LOAN_AGREEMENT
                   name: Loan Agreement
-                value: PENDING                                       
+                value: F06_SUBMISSION_ID                                       
     tags:
       - descriptor:
           code: CONTACT_INFO
@@ -278,7 +282,7 @@ message:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "232800"
+        value: "242336"
       breakup:
         - title: PRINCIPAL
           price:
@@ -308,4 +312,304 @@ message:
           price:
             value: "0"
             currency: INR
+        - title: FORCLOSUER_CHARGES
+          price:
+            value: "9536"
+            currency: INR
+        - title: OUTSTANDING_INTEREST
+          price:
+            value: "0"
+            currency: INR
+        - title: LATE_FEE_AMOUNT
+          price:
+            value: "1500"
+            currency: INR
+        - title: OUTSTANDING_PRINCIPAL
+          price:
+            value: "185440"
+            currency: INR         
+
+               
       ttl: PT15D
+
+    fulfillments:
+      - customer:
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
+        state:
+          descriptor:
+            code: DISBURSED
+        type: LOAN
+        id: F1    
+    payments:
+      - id: PAYMENT_ID_PERSONAL_LOAN
+        type: ON_ORDER
+        status: NOT-PAID
+        collected_by: BPP
+      - id: PAYMENT_ID_PERSONAL_LOAN
+        type: POST_FULFILLMENT
+        status: PAID
+        time: 
+          label: MISSED_EMI_PAYMENT
+          duration: P15D
+          timestamp: 023-10-01T00:00:00.000Z
+          range:
+            start: 2023-09-01T00:00:00.000Z
+            end: 2023-09-30T23:59:59.999Z
+        params:
+          amount: 
+            currency: INR
+            value: "46360"
+          transaction_id: 08ce323e-fdb5-46da-b5fd-748fff2c0315  
+        tags:
+          - display: false
+            descriptor:
+              name: Emi Breakup
+              code: BREAKUP
+            list:
+              - descriptor:
+                  code: PRINCIPAL_AMOUNT
+                  name: Principal
+                  short_desc: Loan Principal
+                value: "46000"
+              - descriptor:
+                  code: INTEREST_AMOUNT
+                  name: Interest
+                  short_desc: Interest Amount
+                value: "360"      
+        #Added payment object for loan disbursal
+      - id: PAYMENT_ID_PERSONAL_LOAN_DISBURSMENT
+        type: POST_FULFILLMENT
+        status: PAID
+        time: 
+          timestamp: 2024-10-01T04:00:00.000Z
+          label: LOAN_DISBURSMENT
+        params:
+          transaction_id: 15cab578-4182-4392-83a9-04ad0a0dccce
+          amount: 
+            currency: INR
+            value: "197700"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+          transaction_id: f80a3cb4-9990-4342-b982-9bc9929f1407"
+        status: PAID
+        time:
+          label: INSTALLMENT
+          timestamp: 2025-06-01T04:00:00.000Z
+          range:
+            start: 2025-06-01T00:00:00.000Z
+            end: 2025-06-30T23:59:59.999Z
+        tags:
+          - display: false
+            descriptor:
+              name: Emi Breakup
+              code: BREAKUP
+            list:
+              - descriptor:
+                  code: PRINCIPAL_AMOUNT
+                  name: Principal
+                  short_desc: Loan Principal
+                value: "46000"
+              - descriptor:
+                  code: INTEREST_AMOUNT
+                  name: Interest
+                  short_desc: Interest Amount
+                value: "360"       
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+          transaction_id: f80a3cb4-9990-4342-b982-9bc9929f1407
+        status: PAID
+        time:
+          label: INSTALLMENT
+          timestamp: 2025-07-01T00:00:00.000Z
+          range:
+            start: 2025-07-01T00:00:00.000Z
+            end: 2025-07-31T23:59:59.999Z
+        tags:
+          - display: false
+            descriptor:
+              name: Emi Breakup
+              code: BREAKUP
+            list:
+              - descriptor:
+                  code: PRINCIPAL_AMOUNT
+                  name: Principal
+                  short_desc: Loan Principal
+                value: "46000"
+              - descriptor:
+                  code: INTEREST_AMOUNT
+                  name: Interest
+                  short_desc: Interest Amount
+                value: "360"    
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+          transaction_id: af725901-67ad-450f-8b5c-0d4b837b0c6e
+        status: PAID
+        time:
+          label: INSTALLMENT
+          timestamp: 2025-07-01T00:00:00.000Z
+          range:
+            start: 2025-08-01T00:00:00.000Z
+            end: 2025-08-31T23:59:59.999Z
+        tags:
+          - display: false
+            descriptor:
+              name: Emi Breakup
+              code: BREAKUP
+            list:
+              - descriptor:
+                  code: PRINCIPAL_AMOUNT
+                  name: Principal
+                  short_desc: Loan Principal
+                value: "46000"
+              - descriptor:
+                  code: INTEREST_AMOUNT
+                  name: Interest
+                  short_desc: Interest Amount
+                value: "360"    
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: DEFERRED
+        time:
+          label: INSTALLMENT
+          range:
+            start: 2023-09-01T00:00:00.000Z
+            end: 2023-09-30T23:59:59.999Z
+        tags:
+          - display: false
+            descriptor:
+              name: Emi Breakup
+              code: BREAKUP
+            list:
+              - descriptor:
+                  code: PRINCIPAL_AMOUNT
+                  name: Principal
+                  short_desc: Loan Principal
+                value: "46000"
+              - descriptor:
+                  code: INTEREST_AMOUNT
+                  name: Interest
+                  short_desc: Interest Amount
+                value: "360"    
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: 2023-10-01T00:00:00.000Z
+            end: 2023-10-31T23:59:59.999Z
+        tags:
+          - display: false
+            descriptor:
+              name: Emi Breakup
+              code: BREAKUP
+            list:
+              - descriptor:
+                  code: PRINCIPAL_AMOUNT
+                  name: Principal
+                  short_desc: Loan Principal
+                value: "46000"
+              - descriptor:
+                  code: INTEREST_AMOUNT
+                  name: Interest
+                  short_desc: Interest Amount
+                value: "360"     
+    
+    cancellation_terms:
+      - fulfillment_state:
+          descriptor:
+            code: SANCTIONED
+        cancellation_fee:
+          percentage: 3%
+      - external_ref:
+          mimetype: text/html
+          url: https://bpp.credit.becknprotocol.org/tnc.html
+      - fulfillment_state:
+          descriptor:
+            code: DISBURSED
+        cancellation_fee:
+          percentage: 5%
+    tags:
+      - display: false
+        descriptor:
+          name: BAP Terms of Engagement
+          code: BAP_TERMS
+        list:
+          - descriptor:
+              code: BUYER_FINDER_FEES_TYPE
+            value: percent-annualized
+          - descriptor:
+              code: BUYER_FINDER_FEES_PERCENTAGE
+            value: '1'
+          - descriptor:
+              code: SETTLEMENT_TYPE
+            value: neft
+          - descriptor:
+              code: DELAY_INTEREST
+            value: '5'
+          - descriptor:
+              code: STATIC_TERMS
+            value: >-
+              https://bap.credit.becknprotocol.io/working-capital/loans/working-capital
+          - descriptor:
+              code: OFFLINE_CONTRACT
+            value: 'true'
+      - display: false
+        descriptor:
+          name: BPP Terms of Engagement
+          code: BPP_TERMS
+        list:
+          - descriptor:
+              code: BUYER_FINDER_FEES_TYPE
+            value: PERCENT_ANNUALIZED
+          - descriptor:
+              code: BUYER_FINDER_FEES_PERCENTAGE
+            value: '1'
+          - descriptor:
+              code: SETTLEMENT_WINDOW
+            value: PT30D
+          - descriptor:
+              code: SETTLEMENT_BASIS
+            value: INVOICE_RECEIPT
+          - descriptor:
+              code: MANDATORY_ARBITRATION
+            value: 'TRUE'
+          - descriptor:
+              code: COURT_JURISDICTION
+            value: New Delhi
+          - descriptor:
+              code: STATIC_TERMS
+            value: >-
+              https://bpp.credit.becknprotocol.org/working-capital/loans/working-capital
+          - descriptor:
+              code: OFFLINE_CONTRACT
+            value: 'true'  
+    documents:
+      - descriptor:
+          code: LOAN_AGREEMENT
+          name: Loan Agreement Document
+          short_desc: Download your Loan Agreement document here,
+          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, interest rate, repayment schedule, and collateral, binding a lender and borrower in a formal financial arrangement.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-agreement/O1.pdf   
+    created_at: 2023-05-25T05:23:03.443Z
+    updated_at: 2023-05-25T05:23:03.443Z
