@@ -69,7 +69,7 @@ details:
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
 references: if any
 steps:
-  - summary: User search for available Gold Loan services.  
+  - summary: User search for available Gold Loan services.
     api: search
     details:
       - description: User explore loan options by searching for Gold Loan services over the network
@@ -135,7 +135,69 @@ steps:
     example:
       value: 
         $ref: ../../examples/gold-loan/forms/personal-info.html
-  - summary: The borrower chooses the Gold Loan service.
+  - summary: Approval of consent request
+    api: select
+    details:
+      - description: The BAP approves the consent request and sends the loan product, the loan provider, and the customer's identity to the BPP.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/gold-loan/select/select-request_3.yaml"
+  - summary: The lender offers the required form for the chosen Gold Loan service.
+    api: on_select
+    details:
+      - description: The lender platform responds with detailed information and the necessary application form for the selected Gold Loan service.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/gold-loan/on_select/on_select_request_2.yaml"        
+  - summary: The borrower adjusts the loan amount in the form by the lender.
+    api: form
+    details:
+      - description: The borrower can reduce/change loan amount/term in the form provided by lender.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(loan amount)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/personal-loans/forms/personal-loans-loan-amount.html
+  - summary: The borrower chooses the Gold Loan service.  
     api: select
     details:
       - description: The borrower selects the specific Gold Loan service they are interested in.
@@ -149,7 +211,7 @@ steps:
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            rect rgb(191, 223, 255) 
+            rect rgb(191, 223, 255)
             Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             end
@@ -158,31 +220,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/gold-loan/select/select-request_2.yaml"
-  - summary: Creates a consent request with selected product
-    api: on_select
-    details:
-      - description: The lender platform generates a consent request for capturing borrower's consent.
-        mermaid: >-
-          sequenceDiagram
-            title  Selection
-            participant Borrower Platform (BAP)
-            participant Lender Platform (BPP)
-            participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
-            Lender Form Service-->>Borrower Platform (BAP): Form Received
-            Borrower Platform (BAP)->>Lender Form Service: Form Submission
-            Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            rect rgb(191, 223, 255) 
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
-    reference: if any
-    example:
-      value:
-        $ref: "../../examples/gold-loan/on_select/on_select_request_1.yaml"    
+        $ref: "../../examples/gold-loan/select/select-request_4.yaml"
   - summary: The lender sends available loan offers for the chosen Gold Loan service.
     api: on_select
     details:
@@ -320,3 +358,4 @@ steps:
     example:
       value:
         $ref: "../../examples/gold-loan/on_confirm/on_confirm_request_1.yaml"
+        
