@@ -3411,11 +3411,71 @@ x-tags:
                       Describes the tenure in ISO 8601 duration format like P6M
                       = 6 months &  P1Y = 1 year etc.
                     reference: <PR/Issue/Discussion Links md format text>
+        tags: &ref_11
+          - &ref_13
+            code: BAP_TERMS
+            description: Describes the settlement terms
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: BUYER_FINDER_FEES_TYPE
+                description: Buyer finder fee type
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: BUYER_FINDER_FEES_PERCENTAGE
+                description: Buyer finder fee in percentage
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: BUYER_FINDER_FEES_AMOUNT
+                description: Buyer finder fee in amount
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_WINDOW
+                description: Time window to complete settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_BASIS
+                description: Basis required to complete settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_BANK_CODE
+                description: Denotes settlement bank code
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                description: Denotes settlement bank account number
+                reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
         providers:
           items: *ref_9
+        tags: &ref_12
+          - &ref_14
+            code: BPP_TERMS
+            description: Describes the settlement terms
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: SETTLEMENT_WINDOW
+                description: Time window to complete settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_BASIS
+                description: Basis required to complete settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_TYPE
+                description: Payment method to complete settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: MANDATORY_ARBITRATION
+                description: Flag to denote if dispute can be resolved through arbitration
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: COURT_JURISDICTION
+                description: Denotes court that will have jurisdiction for the case
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: DELAY_INTEREST
+                description: Denotes interest to be paid as a delay charge
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SETTLEMENT_AMOUNT
+                description: Denotes settlement amount
+                reference: <PR/Issue/Discussion Links md format text>
   on_select:
     message:
       order:
@@ -3470,20 +3530,29 @@ x-tags:
     message:
       order:
         fulfillments: *ref_10
-  on_init: &ref_11
+        tags: *ref_11
+  on_init:
     message:
       order:
         items: *ref_9
         fulfillments: *ref_10
-  confirm: *ref_11
-  on_confirm: *ref_11
-  on_status: &ref_12
+        tags: *ref_12
+  confirm: &ref_15
     message:
       order:
         items: *ref_9
         fulfillments: *ref_10
-  on_cancel: *ref_12
-  on_update: *ref_12
+        tags:
+          - *ref_13
+          - *ref_14
+  on_confirm: *ref_15
+  on_status: &ref_16
+    message:
+      order:
+        items: *ref_9
+        fulfillments: *ref_10
+  on_cancel: *ref_16
+  on_update: *ref_16
 x-flows:
   - summary: Discovery of Insurer Providers & Master Policies
     description: >-
@@ -3525,7 +3594,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_31
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3552,6 +3621,33 @@ x-flows:
                       id: 0120TRVK
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer provides a catalog of insurance products
         api: on_search
         details:
@@ -3573,7 +3669,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_33
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -3626,6 +3722,39 @@ x-flows:
                             value: e103b4a5-10f8-42c7-b888-dbf0e2edd696
                     payments:
                       - collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
   - summary: Discovery of Products from Master Policies(Hospicash Insurance)
     description: >-
       BAP buys Insurance cover to allocate from already purchased sachet with
@@ -3660,7 +3789,7 @@ x-flows:
                 Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_32
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3694,6 +3823,33 @@ x-flows:
                           value: e103b4a5-10f8-42c7-b888-dbf0e2edd696
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer provides a catalog for a specific master policy
         api: on_search
         details:
@@ -3713,7 +3869,7 @@ x-flows:
                
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_34
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -3830,6 +3986,39 @@ x-flows:
                                 value: ''
                     payments:
                       - collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
   - summary: Discovery of Products from Master Policies(Transit Insurance)
     description: >-
       BAP buys Insurance cover to allocate from already purchased sachet with
@@ -3864,7 +4053,7 @@ x-flows:
                 Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_22
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3898,6 +4087,33 @@ x-flows:
                           value: e103b4a5-10f8-42c7-b888-dbf0e2edd696
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer provides a catalog for a specific master policy
         api: on_search
         details:
@@ -3917,7 +4133,7 @@ x-flows:
                
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_24
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -4078,6 +4294,39 @@ x-flows:
                                 value: ''
                     payments:
                       - collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
   - summary: Purchase Journey - Transit Insurance
     description: >-
       BAP buys Transit insurance cover to allocate from already purchased sachet
@@ -4166,7 +4415,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_23
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -4302,6 +4551,33 @@ x-flows:
                           value: e103b4a5-10f8-42c7-b888-dbf0e2edd696
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer provides the offer response
         api: on_search
         details:
@@ -4319,7 +4595,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_25
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -4521,6 +4797,39 @@ x-flows:
                           label: TENURE
                     payments:
                       - collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
       - summary: Buyer app selects a insurance item
         api: select
         details:
@@ -4538,7 +4847,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_26
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -4582,7 +4891,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_27
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -4763,6 +5072,39 @@ x-flows:
                   - collected_by: BPP
                     status: NOT-PAID
                     type: PRE-ORDER
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer returns the response to initialized Transit insurance plan
         api: on_init
         details:
@@ -4784,7 +5126,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_28
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -4911,6 +5253,39 @@ x-flows:
                       https://fis.test.bpp.io/pg-gateway/payment?amount=1000&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
                     status: NOT-PAID
                     type: PRE-ORDER
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
       - summary: Buyer app confirms the Transit insurance request
         api: confirm
         details:
@@ -4932,7 +5307,7 @@ x-flows:
                 Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_29
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -4970,6 +5345,71 @@ x-flows:
                     collected_by: BPP
                     status: NOT-PAID
                     type: PRE-ORDER
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
       - summary: Insurer confirms the Transit insurance order
         api: on_confirm
         details:
@@ -4992,7 +5432,7 @@ x-flows:
                 Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_30
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -5146,6 +5586,71 @@ x-flows:
                       amount: '1000'
                       currency: INR
                       transaction_id: c24dda6f-20e5-4de2-8ca3-f5421a028bff
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
                 created_at: '2025-07-24T05:39:40.104Z'
                 updated_at: '2025-07-24T05:39:40.104Z'
       - summary: Insurer provides the unsolicited on_update
@@ -5338,6 +5843,71 @@ x-flows:
                     url: https://fis.test.bpp/policies/O1.pdf
                 created_at: '2025-07-24T05:39:40.104Z'
                 updated_at: '2025-07-24T05:39:40.104Z'
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
   - summary: Purchase Journey - Hospicash Insurance
     description: >-
       BAP buys Hospicash insurance cover to allocate from already purchased
@@ -5426,7 +5996,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_17
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -5490,6 +6060,33 @@ x-flows:
                           value: e103b4a5-10f8-42c7-b888-dbf0e2edd696
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer provides the offer response
         api: on_search
         details:
@@ -5507,7 +6104,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_18
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -5758,6 +6355,39 @@ x-flows:
                           label: TENURE
                     payments:
                       - collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
       - summary: Buyer app selects a insurance item
         api: select
         details:
@@ -5775,7 +6405,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_19
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5819,7 +6449,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_20
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -6006,7 +6636,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_21
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6059,6 +6689,39 @@ x-flows:
                   - collected_by: BPP
                     status: NOT-PAID
                     type: PRE-ORDER
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: Insurer returns the response to initialized Hospicash insurance plan
         api: on_init
         details:
@@ -6080,7 +6743,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_35
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6234,6 +6897,39 @@ x-flows:
                         email: john.doe@example.com
                     id: F1
                     type: POLICY
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
       - summary: Buyer app confirms the Hospicash insurance request
         api: confirm
         details:
@@ -6255,7 +6951,7 @@ x-flows:
                 Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_36
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -6296,6 +6992,71 @@ x-flows:
                     collected_by: BPP
                     status: NOT-PAID
                     type: PRE-ORDER
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
       - summary: Insurer confirms the Hospicash insurance order
         api: on_confirm
         details:
@@ -6318,7 +7079,7 @@ x-flows:
                 Buyer Platform (BAP)->> Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_37
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -6503,6 +7264,71 @@ x-flows:
                         code: INITIATED
                     id: F1
                     type: POLICY
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
                 created_at: '2025-07-24T05:39:40.104Z'
                 updated_at: '2025-07-24T05:39:40.104Z'
       - summary: Insurer provides the unsolicited on_update
@@ -6726,6 +7552,71 @@ x-flows:
                     url: https://fis.test.bpp/policies/O1.pdf
                 created_at: '2025-07-24T05:39:40.104Z'
                 updated_at: '2025-07-24T05:39:40.104Z'
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
+                      - descriptor:
+                          code: SETTLEMENT_BANK_CODE
+                        value: XXXXXXXX
+                      - descriptor:
+                          code: SETTLEMENT_BANK_ACCOUNT_NUMBER
+                        value: xxxxxxxxxxxxxx
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_PERCENTAGE
+                        value: '1'
+                      - descriptor:
+                          code: BUYER_FINDER_FEES_TYPE
+                        value: percent-annualized
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://api.example-bap.com/booking/terms
+                      - descriptor:
+                          code: MANDATORY_ARBITRATION
+                        value: 'true'
+                      - descriptor:
+                          code: COURT_JURISDICTION
+                        value: std:011
+                      - descriptor:
+                          code: SETTLEMENT_BASIS
+                        value: Delivery
+                      - descriptor:
+                          code: SETTLEMENT_WINDOW
+                        value: P30D
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                      - descriptor:
+                          code: DELAY_INTEREST
+                        value: 2.5 %
   - summary: CD Balance - Error
     description: Insurer returns the error when there is insufficient CD Balance
     details:
@@ -6802,7 +7693,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_17
       - summary: Insurer provides the offer response
         api: on_search
         details:
@@ -6820,7 +7711,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_18
       - summary: Buyer app selects a insurance item
         api: select
         details:
@@ -6838,7 +7729,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_19
       - summary: Insurer returns the response to selected Hospicash insurance plan
         api: on_select
         details:
@@ -6858,7 +7749,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_20
       - summary: The buyer app initiates the Hospicash insurance request
         api: init
         details:
@@ -6878,7 +7769,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_21
       - summary: >-
           The insurer returns the error code when there is insufficient CD
           Balance
@@ -6959,12 +7850,39 @@ x-examples:
                         id: 0120TRVK
                   payment:
                     collected_by: BPP
+                  tags:
+                    - descriptor:
+                        code: BAP_TERMS
+                        name: BAP Terms of Engagement
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: percent-annualized
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: https://api.example-bap.com/booking/terms
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: P30D
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: 2.5 %
+                        - descriptor:
+                            code: OFFLINE_CONTRACT
+                          value: 'true'
           - summary: search 2
             description: TBD
-            value: *ref_18
+            value: *ref_22
           - summary: search 3
             description: TBD
-            value: *ref_19
+            value: *ref_23
       on_search:
         examples:
           - summary: on_search 1
@@ -7022,37 +7940,70 @@ x-examples:
                               value: e103b4a5-10f8-42c7-b888-dbf0e2edd696
                       payments:
                         - collected_by: BPP
+                  tags:
+                    - descriptor:
+                        code: BPP_TERMS
+                        name: BPP Terms of Engagement
+                      display: false
+                      list:
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_PERCENTAGE
+                          value: '1'
+                        - descriptor:
+                            code: BUYER_FINDER_FEES_TYPE
+                          value: percent-annualized
+                        - descriptor:
+                            code: STATIC_TERMS
+                          value: https://api.example-bap.com/booking/terms
+                        - descriptor:
+                            code: MANDATORY_ARBITRATION
+                          value: 'true'
+                        - descriptor:
+                            code: COURT_JURISDICTION
+                          value: std:011
+                        - descriptor:
+                            code: SETTLEMENT_BASIS
+                          value: Delivery
+                        - descriptor:
+                            code: SETTLEMENT_WINDOW
+                          value: P30D
+                        - descriptor:
+                            code: OFFLINE_CONTRACT
+                          value: 'true'
+                        - descriptor:
+                            code: DELAY_INTEREST
+                          value: 2.5 %
           - summary: on_search 2
             description: TBD
-            value: *ref_20
+            value: *ref_24
           - summary: on_search 3
             description: TBD
-            value: *ref_21
+            value: *ref_25
       select:
         examples:
           - summary: select-request
             description: TBD
-            value: *ref_22
+            value: *ref_26
       on_select:
         examples:
           - summary: on_select-request
             description: TBD
-            value: *ref_23
+            value: *ref_27
       on_init:
         examples:
           - summary: on_init_request
             description: TBD
-            value: *ref_24
+            value: *ref_28
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_25
+            value: *ref_29
       on_confirm:
         examples:
           - summary: on_confirm_1
             description: TBD
-            value: *ref_26
+            value: *ref_30
   hospicash-insurance:
     summary: hospicash-insurance
     description: hospicash-insurance
@@ -7061,51 +8012,54 @@ x-examples:
         examples:
           - summary: search 1
             description: TBD
-            value: *ref_27
+            value: *ref_31
           - summary: search 2
             description: TBD
-            value: *ref_28
+            value: *ref_32
           - summary: search 3
             description: TBD
-            value: *ref_13
+            value: *ref_17
       on_search:
         examples:
           - summary: on_search 1
             description: TBD
-            value: *ref_29
+            value: *ref_33
           - summary: on_search 2
             description: TBD
-            value: *ref_30
+            value: *ref_34
           - summary: on_search 3
             description: TBD
-            value: *ref_14
+            value: *ref_18
       select:
         examples:
           - summary: select-request
             description: TBD
-            value: *ref_15
+            value: *ref_19
       on_select:
         examples:
           - summary: on_select-request
             description: TBD
-            value: *ref_16
+            value: *ref_20
       init:
         examples:
           - summary: init-request
             description: TBD
-            value: *ref_17
+            value: *ref_21
       on_init:
         examples:
           - summary: on_init_request
             description: TBD
-            value: *ref_31
+            value: *ref_35
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_32
+            value: *ref_36
       on_confirm:
         examples:
           - summary: on_confirm_1
             description: TBD
-            value: *ref_33
+            value: *ref_37
+x-changeLog:
+  filenames:
+    - FIS13_2.0.0_080925.md
