@@ -6,9 +6,9 @@ context:
     city:
       code: "*"
   version: 2.0.0
-  action: on_init
-  ttl: PT10M
-  timestamp: 2025-08-18T14:20:14.148Z
+  action: on_status
+  ttl: PT15M
+  timestamp: '2025-08-18T14:20:14.368Z'
   bap_id: pramaan.ondc.org
   bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
   transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
@@ -17,6 +17,7 @@ context:
   bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
 message:
   order:
+    id: REFERENCE_NO
     provider:
       id: "101"
       descriptor:
@@ -141,6 +142,12 @@ message:
                   short_desc: 1% fuel surcharge waiver on transactions
                 value: Up to ₹250 per billing cycle
             display: true
+        xinput:
+          form:
+            id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
+          form_response:
+            status: COMPLETED
+            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
     fulfillments:
       - id: F1
         customer:
@@ -151,13 +158,53 @@ message:
             email: john.doe@example.com
         state:
           descriptor:
-            code: INITIATED
+            code: DISPATCHED
+        tags:
+          - descriptor:
+              code: SHIPPING_DETAILS
+              name: SHIPPING DETAILS
+            list:
+              - descriptor:
+                  code: AWB_NO
+                  name: AWB No
+                value: "3394367709098"
+              - descriptor:
+                  code: SHIPPING_PARTNER
+                  name: Shipping Partner
+                value: EcomExpress
+              - descriptor:
+                  code: SHIPPING_ADRESS
+                  name: Shipping Address
+                value: 102, New Colony Navi Mumbai 400081
     payments:
       - id: PAYMENT_ID_PURCHASE_FINANCE
         type: ON_ORDER
         status: NOT-PAID
         collected_by: BPP
         tags:
+          - descriptor:
+              code: BAP_TERMS
+              name: BAP Terms of Engagement
+            display: false
+            list:
+              - descriptor:
+                  code: BUYER_FINDER_FEES_TYPE
+                value: percent-annualized
+              - descriptor:
+                  code: BUYER_FINDER_FEES_PERCENTAGE
+                value: "1"
+              - descriptor:
+                  code: SETTLEMENT_TYPE
+                value: neft
+              - descriptor:
+                  code: DELAY_INTEREST
+                value: "5"
+              - descriptor:
+                  code: STATIC_TERMS
+                value: https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+              - descriptor:
+                  code: OFFLINE_CONTRACT
+                value: "true"
           - descriptor:
               code: BPP_TERMS
               name: BPP Terms of Engagement

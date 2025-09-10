@@ -49,11 +49,7 @@ details:
         participant Borrower Platform (BAP)
         participant Lender Platform (BPP)
         participant Lender Form Service
-        Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
-        Lender Form Service-->>Borrower Platform (BAP): Form Received
-        Borrower Platform (BAP)->>Lender Form Service: Form Submission
-        Lender Form Service-->>Borrower Platform (BAP): Submission ID
-        Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+        Borrower Platform (BAP)->>Lender Platform (BPP): confirm
         Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
@@ -134,7 +130,7 @@ steps:
     reference: if any
     example:
       value: 
-        $ref: ../../examples/credit-card/forms/credit-card/-personal-info.html
+        $ref: ../../examples/credit-card/forms/credit-card-personal-info.html
   - summary: The applicant chooses the credit card.
     api: select
     details:
@@ -206,7 +202,67 @@ steps:
     reference: if any
     example:
       value: 
-        $ref: ../../examples/credit-card/forms/credit-card-kyc.html                        
+        $ref: ../../examples/credit-card/forms/credit-card-kyc.html
+  - summary: The lender sends the form status
+    api: on_status
+    details:
+      - description: The lender sends the form status
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/credit-card/on_status/on_status-form-pending.yaml
+  - summary: The borrower request for order status
+    api: status
+    details:
+      - description: The borrower request for order status
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/credit-card/status/status-request.yaml
+  - summary: The lender sends the latest order status of the form
+    api: on_status
+    details:
+      - description: The lender sends the latest order status of the form
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/credit-card/on_status/on_status-form-completed.yaml                     
   - summary: The borrower initiates the credit card request by filling the form.
     api: init
     details:
@@ -341,4 +397,4 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/credit-card/on_status/on_status-form-completed.yaml"
+        $ref: "../../examples/credit-card/on_status/on_status-request.yaml"
