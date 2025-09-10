@@ -54,30 +54,6 @@ message:
               name: Account Aggregator Loan     
                
         items:
-          - id: ITEM_ID_LOAN_1
-            descriptor:
-              code: LOAN
-              name: Personal Loan without AA
-            category_ids:
-              - '101111'
-              - '101211'
-          
-            matched: true
-            recommended: true
-            xinput:
-              head:
-                descriptor:
-                  name: Personal Information
-                headings:
-                  - PERSONAL_INFORMATION
-                  - CONSNET_APPROVAL
-              form:
-                id: F01
-                mime_type: text/html
-                url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F01'
-                resubmit: false
-                multiple_sumbissions: false
-              required: true
           - id: ITEM_ID_PERSONAL_LOAN_2
             descriptor:
               code: LOAN
@@ -86,21 +62,71 @@ message:
               - '101111'
               - '101212'
             matched: true
+            fulfillment_ids:
+              - F1
             recommended: true
             xinput:
               head:
                 descriptor:
-                  name: Personal Information
+                  name: Consent Approval
                 headings:
                   - PERSONAL_INFORMATION
+                  - CONSENT_APPROVAL
               form:
                 id: F01
-                mime_type: text/html
-                url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F01'
+                mime_type: none
+                data:
+                  consent_handler: d4cabdca-f621-43f7-9c8b-b5331d329e09
                 resubmit: false
                 multiple_sumbissions: false
               required: true
-          
+           
+        fulfillments:
+          - id: F1
+            type: LOAN
+            tags:
+            - display: false
+              descriptor:
+                name: Checklist
+                code: CHECKLISTS
+              list:
+                - descriptor:
+                    code: PERSONAL_INFORMATION
+                    name: Personal Information
+                  value: COMPLETED
+                - descriptor:
+                    code: CONSENT_APPROVAL
+                    name: Consent Approval
+                  value: PENDING
+                - descriptor:
+                    code: SET_LOAN_AMOUNT
+                    name: Set Loan Amount
+                  value: PENDING
+                - descriptor:
+                    code: KYC
+                    name: Know Your Customer
+                  value: PENDING
+                - descriptor:
+                    code: EMANDATE
+                    name: Emandate
+                  value: PENDING
+                - descriptor:
+                    code: LOAN_AGREEMENT
+                    name: Loan Agreement
+                  value: PENDING   
+        payments:
+          - type: POST_FULFILLMENT
+            id: INSTALLMENT_ID_PERSONAL_LOAN
+            status: NOT-PAID
+            collected_by: BPP
+            time:
+              label: INSTALLMENT
+          - type: ON_FULFILLMENT
+            id: INSTALLMENT_ID_PERSONAL_LOAN_DISBURSMENT
+            status: NOT-PAID
+            collected_by: CONSUMER
+            time:
+              label: LOAN_DISBURSMENT
         tags:
           - descriptor:
               code: CONTACT_INFO

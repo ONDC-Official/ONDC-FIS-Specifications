@@ -95,10 +95,16 @@ message:
           - '101111'
           - '101211'
         fulfillment_ids:
-          - F1  
+          - F1   
         price:
           currency: INR
-          value: '441800'  
+          value: '232800'
+        xinput:
+          form:
+            id: F06
+          form_response:
+            status: SUCCESS
+            submission_id: F06_SUBMISSION_ID   
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -199,7 +205,7 @@ message:
                   name: Personal Information
                 value: F01_SUBMISSION_ID
               - descriptor:
-                  code: CONSNET_APPROVAL
+                  code: CONSENT_APPROVAL
                   name: Consent Approval
                 value: COMPLETED
               - descriptor:
@@ -221,7 +227,7 @@ message:
               - descriptor:
                   code: LOAN_AGREEMENT
                   name: Loan Agreement
-                value: F06_SUBMISSION_ID                                       
+                value: PENDING                                       
     tags:
       - descriptor:
           code: CONTACT_INFO
@@ -312,6 +318,7 @@ message:
             currency: INR
       ttl: P15D
 
+    
     fulfillments:
       - customer:
           person:
@@ -323,12 +330,48 @@ message:
           descriptor:
             code: INITIATED
         type: LOAN
-        id: F1    
+        id: F1 
+        tags:
+          - display: false
+            descriptor:
+              name: Checklist
+              code: CHECKLISTS
+            list:
+              - descriptor:
+                  code: PERSONAL_INFORMATION
+                  name: Personal Information
+                value: COMPLETED
+              - descriptor:
+                  code: CONSENT_APPROVAL
+                  name: Consent Approval
+                value: COMPLETED
+              - descriptor:
+                  code: SET_LOAN_AMOUNT
+                  name: Set Loan Amount
+                value: COMPLETED
+              - descriptor:
+                  code: KYC
+                  name: Know Your Customer
+                value: COMPLETED
+              - descriptor:
+                  code: EMANDATE
+                  name: Emandate
+                value: COMPLETED
+              - descriptor:
+                  code: LOAN_AGREEMENT
+                  name: Loan Agreement
+                value: COMPLETED   
+   
     payments:
-      - id: PAYMENT_ID_PERSONAL_LOAN
-        type: ON_ORDER
+      - type: ON_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN_DISBURSMENT
         status: NOT-PAID
-        collected_by: BPP
+        collected_by: CONSUMER
+        params:
+          bank_account_number: 'XXXXXXXX'
+          bank_code: 'XXXXXXXX'
+        time:
+          label: LOAN_DISBURSMENT
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PERSONAL_LOAN
         params:
