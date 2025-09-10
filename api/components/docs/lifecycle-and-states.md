@@ -122,6 +122,8 @@ nach mandate registration using debit card. `url` in payment params contains the
 nach mandate registration using aadhaar number. `url` in payment params contains the redirect url. `MANDATE_LIMIT` tag captures the max mandate limit.
 - mode: `NACH`, auth: `EXISTING_MANDATE`  
 use existing nach mandate for the payment (both onetime and recurring). other tags capture the details of the mandate - `MANDATE_IDENTIFIER`, `MASKED_BANK_ACCOUNT_NUMBER`, `BANK_ACCOUNT_NAME`, `BANK_NAME`, `MANDATE_LIMIT`  
+- mode: `DIGITAL_RUPEE`, auth: `URI`  
+Digital Rupee payment through intent/qrcode. `url` in payment params contains the Digital Rupee uri  
 <!-- - mode: `NEFT`  
 offline bank transfer through NEFT. `bank_account_number` and `bank_code` contains BPP's bank a/c details for transfer.
 - mode: `RTGS`  
