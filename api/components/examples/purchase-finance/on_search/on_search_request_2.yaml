@@ -29,63 +29,37 @@ message:
           name: ICICI Bank
           short_desc: ICICI Bank Ltd
           long_desc: ICICI Bank Ltd, India.
-        categories:
-          - id: '101110'
-            descriptor:
-              code: LOAN
-              name: Loan
-
-          - id: '101113'
-            parent_category_id: "101110"
-            descriptor:
-              code: PURCHASE_FINANCE
-              name: Purchase Finance
-
-          - id: '101211'
-            parent_category_id: "101110"
-            descriptor:
-              code: BUREAU_LOAN
-              name: Bureau Loan
-
-          - id: '101212'
-            parent_category_id: "101110"
-            descriptor:
-              code: AA_LOAN
-              name: Account Aggregator Loan
-
-          - id: '101213'
-            parent_category_id: "101113"
-            descriptor:
-              code: AGRI_PURCHASE_FINANCE
-              name: Agri Purchase Finance
-          - id: '101214'
-            parent_category_id: "101113"
-            descriptor:
-              code: ELECTRONICS_PURCHASE_FINANCE
-              name: Electronics Purchase Finance             
-               
+              
         items:
-          - id: ITEM_ID_AGRI_2
+          - id: ITEM_ID_ELECTRONICS
             descriptor:
               code: LOAN
-              name: Loan
+              name: Loan with AA
+            fulfillment_ids:
+              - F4  
             category_ids:
-              - "101213"
+              - "101214"
               - "101212"
             xinput:
               head:
                 descriptor:
-                  name: Personal Information
+                  name: consent approval
                 headings:
-                  - MERCHANT_AND_PRDOUCT_DEATILS
+                  - MERCHANT_AND_PRDOUCT_DETAILS
                   - PERSONAL_INFORMATION
+                  - CONSENT_APPROVAL
               form:
                 id: F02
-                mime_type: text/html
-                url: https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F02
+                mime_type: none
+                data:
+                  consent_handler: d4cabdca-f621-43f7-9c8b-b5331d329e09
                 resubmit: false
                 multiple_sumbissions: false
               required: true
+        fulfillments:
+         #PF
+          - id: F4
+            type: LOAN
             tags:
               - display: false
                 descriptor:
@@ -93,13 +67,13 @@ message:
                   code: CHECKLISTS
                 list:
                   - descriptor:
-                      code: MERCHANT_AND_PRDOUCT_DEATILS
+                      code: MERCHANT_AND_PRDOUCT_DETAILS
                       name: Organization Information
-                    value: F01_SUBMISSION_ID
+                    value: COMPLETED
                   - descriptor:
                       code: PERSONAL_INFORMATION
                       name: Personal Information
-                    value: PENDING
+                    value: COMPLETED
                   - descriptor:
                       code: CONSENT_APPROVAL
                       name: Consent Approval
@@ -120,7 +94,7 @@ message:
                       code: ESIGN
                       name: Esign
                     value: PENDING   
-         
+            
         tags:
           - descriptor:
               code: CONTACT_INFO
@@ -174,7 +148,19 @@ message:
                   One Indiabulls centre, Tower 1, 18th Floor Jupiter mill
                   compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai
                   400013
-    
+        payments:
+          - type: POST_FULFILLMENT
+            id: INSTALLMENT_ID_PERSONAL_LOAN
+            status: NOT-PAID
+            collected_by: BPP
+            time:
+              label: INSTALLMENT
+          - type: ON_FULFILLMENT
+            id: INSTALLMENT_ID_PERSONAL_LOAN_DISBURSMENT
+            status: NOT-PAID
+            collected_by: BAP
+            time:
+              label: LOAN_DISBURSMENT
        
     tags:
       - display: false

@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_select
+  action: on_init
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -94,24 +94,26 @@ message:
         category_ids:
           - "101214"
           - "101212"
-        fulfillment_ids:
-          - F4 
         price:
           currency: INR
-          value: '70000' 
+          value: '70000'
+        fulfillment_ids:
+          - F4    
         xinput:
           head:
             descriptor:
-              name: set downpayment
+              name: KYC
             headings:
-              - SET_DOWN_PAYMENT
+              - KYC
+              - EMANDATE
+              - ESIGN
           form:
-            id: F04
-            mime_type: text/html
-            url: https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F04
+            id: F05
+            mime_type: application/html
+            url: https://bpp.purchase-finance.becknprotoco.org/xinput/formid/F05
             resubmit: false
             multiple_sumbissions: false
-          required: true   
+          required: true  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -209,9 +211,17 @@ message:
                 value: "2 %"                       
 
     fulfillments:
-      #PF
       - id: F4
         type: LOAN
+        customer:
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
+        state:
+          descriptor:
+            code: INITIATED
         tags:
           - display: false
             descriptor:
@@ -233,7 +243,7 @@ message:
               - descriptor:
                   code: SET_DOWN_PAYMENT
                   name: Set Down Payment
-                value: PENDING
+                value: COMPLETED
               - descriptor:
                   code: KYC
                   name: KYC
@@ -282,3 +292,41 @@ message:
             value: "0"
             currency: INR
       ttl: P15D
+    payments:
+      - type: ON_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN_DISBURSMENT
+        status: NOT-PAID
+        collected_by: BAP
+        params:
+          bank_account_number: 'XXXXXXXX'
+          bank_code: 'XXXXXXXX'
+        time:
+          label: LOAN_DISBURSMENT
+    cancellation_terms:
+      - fulfillment_state:
+          descriptor:
+            code: SANCTIONED
+        cancellation_fee:
+          percentage: 3%
+      - external_ref:
+          mimetype: text/html
+          url: https://bpp.credit.becknprotocol.org/tnc.html
+      - fulfillment_state:
+          descriptor:
+            code: DISBURSED
+        cancellation_fee:
+          percentage: 5%
+    tags:
+      - display: false
+        descriptor:
+          name: BPP Terms of Engagement
+          code: BPP_TERMS
+        list:
+          - descriptor:
+              code: STATIC_TERMS
+            value: >-
+              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+          - descriptor:
+              code: OFFLINE_CONTRACT
+            value: 'true'  
+    
