@@ -2820,6 +2820,26 @@ x-enum:
                   history, repayment capacity, income level, profession, and
                   credit history.
                 reference: <PR/Issue/Discussion Links md format text
+              - code: PREMIUIM_CARDS
+                description: >-
+                  High-end cards offering exclusive privileges, luxury benefits,
+                  and superior services.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: TRAVEL_CARDS
+                description: >-
+                  Cards designed for frequent travelers with rewards on flights,
+                  hotels, and bookings.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: REWARDS_CARDS
+                description: >-
+                  Cards that earn reward points on everyday purchases,
+                  redeemable for various benefits.
+                reference: <PR/Issue/Discussion Links md format text
+              - code: LIFESTYLE_CARDS
+                description: >-
+                  Cards offering perks on dining, shopping, entertainment, and
+                  lifestyle experiences.
+                reference: <PR/Issue/Discussion Links md format text
   on_search:
     context: *ref_0
     message:
@@ -2864,6 +2884,9 @@ x-enum:
                   - code: JOURNEY_OFFLINE
                     description: Describes the form heading as JOURNEY_OFFLINE
                     reference: <PR/Issue/Discussion Links md format text
+                  - code: PERSONAL_INFORMATION
+                    description: Describes the form heading as PERSONAL_INFORMATION
+                    reference: <PR/Issue/Discussion Links md format text
           categories: *ref_1
   select:
     context: *ref_0
@@ -2878,48 +2901,31 @@ x-enum:
     context: *ref_0
     message:
       order:
-        payments:
-          collected_by: &ref_4
-            - code: BPP
-              description: When seller app is collecting the payment
-              reference: <PR/Issue/Discussion Links md format text
-            - code: BAP
-              description: When buyer app is collecting the payment
-              reference: <PR/Issue/Discussion Links md format text
         items: *ref_2
   on_init:
     context: *ref_0
     message:
-      order: &ref_5
+      order: &ref_4
         items: *ref_2
-        payments: &ref_6
-          type:
-            - code: ON-ORDER
-              description: Payment happens on order placement
-              reference: <PR/Issue/Discussion Links md format text
-            - code: ON-FULFILLMENT
-              description: Payment happens on completion of the service
-              reference: <PR/Issue/Discussion Links md format text
-            - code: POST-FULFILLMENT
-              description: Payment happens post completion of the service
-              reference: <PR/Issue/Discussion Links md format text
-          collected_by: *ref_4
         fulfillments:
           state:
             descriptor:
               code:
                 - code: INITIATED
-                  description: When loan gets initiated by lender
+                  description: When loan gets initiated by issuer
                   reference: <PR/Issue/Discussion Links md format text
                 - code: DISPATCHED
-                  description: Credit card dispatched by the lender.
+                  description: Credit card dispatched by the issuer.
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: APPROVED
+                  description: When a credit card application is initiated by the issuer.
                   reference: <PR/Issue/Discussion Links md format text
                 - code: PENDING
                   description: When the credit card application is in pending state
                   reference: <PR/Issue/Discussion Links md format text
                 - code: REJECTED
                   description: >-
-                    When the credit card request gets rejected by lender due to
+                    When the credit card request gets rejected by issuer due to
                     some reason
                   reference: <PR/Issue/Discussion Links md format text
                 - code: COMPLETED
@@ -2930,26 +2936,24 @@ x-enum:
             descriptor:
               name:
                 - code: INITIATED
-                  description: When loan gets initiated by lender
+                  description: When a credit card application is initiated by the issuer.
                   reference: <PR/Issue/Discussion Links md format text
-                - code: SANCTIONED
-                  description: Loan sanction is the approval of the loan by lender
+                - code: APPROVED
+                  description: When a credit card application is approved by the issuer.
                   reference: <PR/Issue/Discussion Links md format text
-                - code: DISBURSED
-                  description: >-
-                    When the lender delivers the amount to the borrower after
-                    verification and approval
+                - code: DISPATCHED
+                  description: When a credit card is issued and dispatched by the issuer.
                   reference: <PR/Issue/Discussion Links md format text
                 - code: PENDING
-                  description: When the loan is in pending state
+                  description: When the credit card application is in pending state
                   reference: <PR/Issue/Discussion Links md format text
                 - code: REJECTED
                   description: >-
-                    When the loan request gets rejected by lender due to some
-                    reason
+                    When the credit card application gets rejected by issuer due
+                    to some reason
                   reference: <PR/Issue/Discussion Links md format text
                 - code: COMPLETED
-                  description: When the overall process for loan gets over
+                  description: When the overall process for credit card gets over
                   reference: <PR/Issue/Discussion Links md format text
   confirm:
     context: *ref_0
@@ -2959,110 +2963,31 @@ x-enum:
   on_confirm:
     context: *ref_0
     message:
-      order: *ref_5
+      order: *ref_4
   status:
     context: *ref_0
   on_status:
     context: *ref_0
     message:
-      order: *ref_5
-  update:
-    context: *ref_0
-    message:
-      order: &ref_7
-        payments: *ref_6
-        fulfillments:
-          state:
-            descriptor:
-              code:
-                - code: INITIATED
-                  description: When loan gets initiated by lender
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: DISPATCHED
-                  description: Credit card dispatched by the lender.
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: PENDING
-                  description: When the credit card application is in pending state
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: REJECTED
-                  description: >-
-                    When the credit card request gets rejected by lender due to
-                    some reason
-                  reference: <PR/Issue/Discussion Links md format text
-                - code: COMPLETED
-                  description: When the overall process for credit card over
-                  reference: <PR/Issue/Discussion Links md format text
-  on_update:
-    context: *ref_0
-    message:
-      order: *ref_7
+      order: *ref_4
 x-tags:
   search:
     message:
       intent:
-        payment: &ref_8
-          tags:
-            - code: BUYER_FINDER_FEES
-              description: Describes the finder fees of the loan for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type.
-                  reference: <PR/Issue/Discussion Links md format text>
-                  list:
-                    - code: amount
-                      description: Describes, the Buyer App’s fee is a flat amount in INR.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent- annualized
-                      description: >-
-                        Describes, the Buyer App’s fee is set as a percentage of
-                        the Total Loan Disbursed for a 12-month tenure loan.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent
-                      description: >-
-                        Describes, the Buyer App’s fee is an absolute
-                        percentage.
-                      reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: SETTLEMENT_TERMS
-              description: Describes the settlement terms of the loan
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: SETTLEMENT_WINDOW
-                  description: Time window to complete settlement for the loan
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_BASIS
-                  description: Basis required to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: MANDATORY_ARBITRATION
-                  description: >-
-                    Flag to denote if dispute can be resolved through
-                    arbitration
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: COURT_JURISDICTION
-                  description: Denotes court that will have jurisdiction for the case
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Denotes interest to be paid as a delay charge
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_AMOUNT
-                  description: Denotes settlement amount
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
+        tags: &ref_7
+          - code: BAP_TERMS
+            description: Describes the finder fees of the card for buyer
+            reference: <PR/Issue/Discussion Links md format text>
+            list: &ref_5
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
-        payments: *ref_8
         providers:
           items:
             tags:
@@ -3071,7 +2996,7 @@ x-tags:
                   Describes the general information of the credit card, such as
                   card type, annual fee and reward program.
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_9
+                list: &ref_6
                   - code: WELCOME_BENEFIT
                     description: >-
                       Introductory perks offered upon card activation, such as
@@ -3118,7 +3043,7 @@ x-tags:
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_11
+              list: &ref_10
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3150,7 +3075,7 @@ x-tags:
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_12
+              list: &ref_11
                 - code: LSP_NAME
                   description: >-
                     Name of lsp acting as recovery agent, authorised to approach
@@ -3171,30 +3096,48 @@ x-tags:
                     Address of lsp acting as recovery agent, authorised to
                     approach borrower
                   reference: <PR/Issue/Discussion Links md format text>
+        tags: &ref_9
+          - code: BPP_TERMS
+            description: Describes the settlement terms of the card
+            reference: <PR/Issue/Discussion Links md format text>
+            list: *ref_5
   on_select:
     message:
       order:
-        items: &ref_10
+        items: &ref_8
           tags:
             - code: GENERAL_INFO
               description: >-
                 Describes the general information of the credit card, such as
                 card type, annual fee and reward program.
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_9
+              list: *ref_6
   init:
     message:
       order:
-        payments: *ref_8
+        tags: *ref_7
   on_init:
     message:
       order:
-        items: *ref_10
-        payments: *ref_8
+        items: *ref_8
+        tags: *ref_9
+  confirm:
+    message:
+      order:
+        tags:
+          list: &ref_12
+            - code: BPP_TERMS
+              description: Describes the settlement terms of the card
+              reference: <PR/Issue/Discussion Links md format text>
+              list: *ref_5
+            - code: BAP_TERMS
+              description: Describes the finder fees of the card for buyer
+              reference: <PR/Issue/Discussion Links md format text>
+              list: *ref_5
   on_confirm:
     message:
       order:
-        items: *ref_10
+        items: *ref_8
         provider:
           tags:
             - code: CONTACT_INFO
@@ -3202,13 +3145,14 @@ x-tags:
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_11
+              list: *ref_10
             - code: LSP_INFO
               description: >-
                 Describes lsp details acting as recovert agent authorised to
                 approach applicant
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_12
+              list: *ref_11
+        tags: *ref_12
         fulfillments:
           tags:
             - code: SHIPPING_DETAILS
@@ -3223,21 +3167,17 @@ x-tags:
                     Name of the courier or logistics provider handling the
                     shipment
                   reference: <PR/Issue/Discussion Links md format text>
-                - code: SHIPPING_ADRESS
+                - code: SHIPPING_ADDRESS
                   description: Destination address where the shipment will be delivered
                   reference: <PR/Issue/Discussion Links md format text>
   on_status:
     message:
       order:
-        items: *ref_10
-  on_update:
-    message:
-      order:
-        items: *ref_10
+        items: *ref_8
 x-flows:
   - summary: Credit Card
     details:
-      - description: Discovery of Credit Card
+      - description: Discovery of credit card
         mermaid: |-
           sequenceDiagram
             title Credit Card Discovery
@@ -3296,9 +3236,9 @@ x-flows:
             title MF Ordering - Order Fulfillment
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request card application status
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide card application status
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     references: if any
     steps:
@@ -3344,30 +3284,19 @@ x-flows:
                 category:
                   descriptor:
                     code: CREDIT_CARD
-                payment:
-                  collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BAP_TERMS
-                        name: BAP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The lender offers a static catalog of credit card types, such as
           cashback cards, travel cards, and reward cards.
@@ -3391,7 +3320,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_20
             context:
               domain: ONDC:FIS15
               location:
@@ -3455,7 +3384,7 @@ x-flows:
                       - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
                         parent_item_id: '1001'
                         descriptor:
-                          code: HDFCCC01
+                          code: PREMIUIM_CARDS
                           name: HDFC Gold Credit Card
                           short_desc: Experience the Golden Side Of Life
                         category_ids:
@@ -3529,7 +3458,7 @@ x-flows:
                               cur: 0
                               max: 0
                             headings:
-                              - Personal Information
+                              - PERSONAL_INFORMATION
                           form:
                             id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
                             url: >-
@@ -3541,7 +3470,7 @@ x-flows:
                       - id: 418693c9-9e49-4ec2-8af9-5255f5d693fa
                         descriptor:
                           name: IndianOil HDFC Bank Credit Card
-                          code: HDFCPARTCC01
+                          code: REWARDS_CARDS
                           short_desc: Earn up to 50 Liters of Free fuel annually
                         category_ids:
                           - '1002'
@@ -3614,7 +3543,7 @@ x-flows:
                               cur: 0
                               max: 0
                             headings:
-                              - Personal Information
+                              - PERSONAL_INFORMATION
                           form:
                             id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
                             url: >-
@@ -3681,39 +3610,19 @@ x-flows:
                               code: LSP_ADDRESS
                               name: Lsp Address
                             value: Mumbai Maharashtra 400013
-                    payments:
-                      - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The applicant receives the credit card application form from the
           lender after providing details such as PAN, mobile number, name,
@@ -3802,12 +3711,296 @@ x-flows:
             </body>
 
             </html>
-      - summary: The applicant chooses the credit card.
+      - summary: User search for available credit cards.
+        api: search
+        details:
+          - description: >-
+              User explores credit card options by searching for credit card
+              services over the network
+            mermaid: |-
+              sequenceDiagram
+                title Credit Card Discovery
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform(BPP): search
+                Lender Platform(BPP)->>Gateway (BG) : ACK
+                end
+                Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+        reference: if any
+        example:
+          value: &ref_19
+            context:
+              domain: ONDC:FIS15
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.0
+              action: search
+              ttl: PT10M
+              timestamp: '2025-08-18T14:20:14.148Z'
+              bap_id: pramaan.ondc.org
+              bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
+              transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+              message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
+              bpp_id: hdfc-cc.refo.dev
+              bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
+            message:
+              intent:
+                category:
+                  descriptor:
+                    code: CREDIT_CARD
+                provider:
+                  id: '101'
+                  items:
+                    - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                      xinput:
+                        form:
+                          id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
+                        form_response:
+                          status: SUCCESS
+                          submission_id: f27ab737-bd34-48c2-af73-7efe6062087f
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+      - summary: >-
+          The lender offers a static catalog of credit card types, such as
+          cashback cards, travel cards, and reward cards.
+        api: on_search
+        details:
+          - description: >-
+              The lender platform provides a comprehensive catalog of various
+              credit card types, including cashback and rewards cards.
+            mermaid: |-
+              sequenceDiagram
+                title Credit Card Discovery
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform(BPP): search
+                Lender Platform(BPP)->>Gateway (BG) : ACK
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_21
+            context:
+              domain: ONDC:FIS15
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.0
+              action: on_search
+              ttl: PT5M
+              timestamp: '2025-08-18T14:20:11.983Z'
+              bap_id: pramaan.ondc.org
+              bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
+              transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+              message_id: 89df9a22-04ee-4399-8a7b-0182cd2b66df
+              bpp_id: hdfc-cc.refo.dev
+              bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
+            message:
+              catalog:
+                descriptor:
+                  name: ICICI Bank
+                providers:
+                  - id: '101'
+                    descriptor:
+                      name: HDFC Bank Limited
+                      images:
+                        - url: https://url.com/hdfc/hdfc-sm.png
+                          size_type: sm
+                        - url: https://url.com/hdfc/hdfc-md.png
+                          size_type: md
+                        - url: https://url.com/hdfc/hdfc-lg.png
+                          size_type: lg
+                      short_desc: HDFC Bank Limited
+                      long_desc: HDFC Bank Limited
+                    categories:
+                      - id: '1000'
+                        descriptor:
+                          code: CREDIT_CARD
+                          name: Credit Card
+                      - id: '1001'
+                        descriptor:
+                          name: Premium Cards
+                          code: PREMIUIM_CARDS
+                        parent_category_id: '1000'
+                    items:
+                      - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                        parent_item_id: '1001'
+                        descriptor:
+                          code: PREMIUIM_CARDS
+                          name: HDFC Gold Credit Card
+                          short_desc: Experience the Golden Side Of Life
+                        category_ids:
+                          - '1001'
+                        tags:
+                          - descriptor:
+                              name: General Information
+                              code: GENERAL_INFO
+                            list:
+                              - descriptor:
+                                  code: WELCOME_BENEFIT
+                                  name: Welcome Benefit
+                                  short_desc: Welcome Benefit
+                                value: >-
+                                  Complimentary Swiggy One and MMT Black Gold
+                                  membership as Welcome benefits
+                              - descriptor:
+                                  code: ANNUAL_FEE
+                                  name: Annual Fee
+                                  short_desc: Annual membership fee
+                                value: 1000 INR
+                              - descriptor:
+                                  code: JOINING_FEE
+                                  name: Joining Fee
+                                  short_desc: One-time joining fee
+                                value: 500 INR
+                              - descriptor:
+                                  code: APR
+                                  name: Annual Percentage Rate
+                                  short_desc: Annual Percentage Rate
+                                value: 20%
+                              - descriptor:
+                                  code: REWARDS
+                                  name: Rewards
+                                  short_desc: Reward points earned on spent
+                                value: 2 Points per ₹150 spent
+                              - descriptor:
+                                  code: TRAVEL_BENEFITS
+                                  name: Travel Benefits
+                                  short_desc: Travel Benefits
+                                value: 2 Points per ₹150 spent
+                              - descriptor:
+                                  code: LIFESTYLE_BENEFITS
+                                  name: Lifestyle Benefits
+                                  short_desc: Lifestyle Benefits
+                                value: >-
+                                  Enjoy the exclusive 24/7 Concierge Services on
+                                  your HDFC Bank Regalia Gold Credit Card.
+                                  Simply call us: toll-free on 1860 425 1188
+                                  (India) / Email ID:
+                                  regaliagold.support@smartbuyoffers.co
+                              - descriptor:
+                                  code: EVERYDAY_BENEFITS
+                                  name: Everyday Benefits
+                                  short_desc: 1% fuel surcharge waiver on transactions
+                                value: Up to ₹250 per billing cycle
+                              - descriptor:
+                                  code: TNC_LINK
+                                  name: Terms & Conditions
+                                  short_desc: Terms and Conditions
+                                value: https://hdfcbank.com/cc/tnc.html
+                            display: true
+                        matched: true
+                        recommended: true
+                        xinput:
+                          head:
+                            descriptor:
+                              name: Customer Information
+                          form:
+                            id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
+                          form_response:
+                            status: SUCCESS
+                            submission_id: f27ab737-bd34-48c2-af73-7efe6062087f
+                    tags:
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: Rishav Singh
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: support@hdfcbank.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: '18001600'
+                          - descriptor:
+                              code: GRO_DESIGNATION
+                              name: Gro Designation
+                            value: Grievance Redressal Officer
+                          - descriptor:
+                              code: GRO_ADDRESS
+                              name: Gro Address
+                            value: Mumbai Maharashtra 400013
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://www.hdfcbank.com/personal/need-help/contact-us
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: '18001600'
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: loansupport@example.com
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: HDFC BANK LIMITED
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: support@hdfcbank.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: '18001600'
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: Mumbai Maharashtra 400013
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+      - summary: The borrower chooses the credit card service.
         api: select
         details:
           - description: >-
-              The applicant selects the specific credit card they are interested
-              in.
+              The borrower selects the specific credit card service they are
+              interested in.
             mermaid: |-
               sequenceDiagram
                 title  Selection
@@ -3818,7 +4011,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                rect rgb(191, 223, 255) 
+                rect rgb(191, 223, 255)
                 Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
@@ -3826,7 +4019,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_22
             context:
               domain: ONDC:FIS15
               location:
@@ -3850,12 +4043,6 @@ x-flows:
                   id: '101'
                 items:
                   - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
-                    xinput:
-                      form:
-                        id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
-                      form_response:
-                        status: SUCCESS
-                        submission_id: f27ab737-bd34-48c2-af73-7efe6062087f
       - summary: The lender platform provides available credit cards.
         api: on_select
         details:
@@ -4047,7 +4234,7 @@ x-flows:
                           cur: 0
                           max: 0
                         headings:
-                          - Know your Customer
+                          - JOURNEY_OFFLINE
                       form:
                         id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
                         mime_type: application/html
@@ -4080,7 +4267,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: 'Individual KYC Redirect: This will redirected to different html page'
+          value: 'Redirect: This will redirected to different html page'
       - summary: The lender sends the form status
         api: on_status
         details:
@@ -4468,6 +4655,248 @@ x-flows:
                       form_response:
                         status: COMPLETED
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+      - summary: The borrower chooses the credit card service.
+        api: select
+        details:
+          - description: >-
+              The borrower selects the specific credit card service they are
+              interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_17
+            context:
+              domain: ONDC:FIS15
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.0
+              action: select
+              ttl: PT10M
+              timestamp: '2025-08-18T14:20:14.148Z'
+              bap_id: pramaan.ondc.org
+              bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
+              transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+              message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
+              bpp_id: hdfc-cc.refo.dev
+              bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
+            message:
+              order:
+                provider:
+                  id: '101'
+                items:
+                  - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                    xinput:
+                      form:
+                        id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
+                      form_response:
+                        status: SUCCESS
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+      - summary: The lender platform provides available credit cards.
+        api: on_select
+        details:
+          - description: >-
+              The lender platform responds with detailed information and the
+              necessary application form for the selected credit card service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_23
+            context:
+              domain: ONDC:FIS15
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.0
+              action: on_select
+              ttl: PT15M
+              timestamp: '2025-08-18T14:20:14.368Z'
+              bap_id: pramaan.ondc.org
+              bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
+              transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+              message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
+              bpp_id: hdfc-cc.refo.dev
+              bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
+            message:
+              order:
+                provider:
+                  id: '101'
+                  descriptor:
+                    images:
+                      - url: https://url.com/hdfc/hdfc-sm.png
+                        size_type: sm
+                      - url: https://url.com/hdfc/hdfc-md.png
+                        size_type: md
+                      - url: https://url.com/hdfc/hdfc-lg.png
+                        size_type: lg
+                    name: HDFC Bank Limited
+                    short_desc: HDFC Bank Limited
+                    long_desc: HDFC Bank Limited
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: Rishav Singh
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: support@hdfcbank.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: GRO_DESIGNATION
+                            name: Gro Designation
+                          value: Grievance Redressal Officer
+                        - descriptor:
+                            code: GRO_ADDRESS
+                            name: Gro Address
+                          value: Mumbai Maharashtra 400013
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://www.hdfcbank.com/personal/need-help/contact-us
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: loansupport@example.com
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: HDFC BANK LIMITED
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: support@hdfcbank.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: Mumbai Maharashtra 400013
+                items:
+                  - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                    descriptor:
+                      code: HDFCCC01
+                      name: HDFC Gold Credit Card
+                      short_desc: Experience the Golden Side Of Life
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: WELCOME_BENEFIT
+                              name: Welcome Benefit
+                              short_desc: Welcome Benefit
+                            value: >-
+                              Complimentary Swiggy One and MMT Black Gold
+                              membership as Welcome benefits
+                          - descriptor:
+                              code: ANNUAL_FEE
+                              name: Annual Fee
+                              short_desc: Annual membership fee
+                            value: 1000 INR
+                          - descriptor:
+                              code: JOINING_FEE
+                              name: Joining Fee
+                              short_desc: One-time joining fee
+                            value: 500 INR
+                          - descriptor:
+                              code: APR
+                              name: Annual Percentage Rate
+                              short_desc: Annual Percentage Rate
+                            value: 20%
+                          - descriptor:
+                              code: REWARDS
+                              name: Rewards
+                              short_desc: Reward points earned on spent
+                            value: 2 Points per ₹150 spent
+                          - descriptor:
+                              code: TRAVEL_BENEFITS
+                              name: Travel Benefits
+                              short_desc: Travel Benefits
+                            value: |-
+                              - 2 Points per ₹150 spent on MMT, 
+                               - 2 Points per ₹150 spent on others
+                          - descriptor:
+                              code: LIFESTYLE_BENEFITS
+                              name: Lifestyle Benefits
+                              short_desc: Lifestyle Benefits
+                            value: >-
+                              Enjoy the exclusive 24/7 Concierge Services on
+                              your HDFC Bank Regalia Gold Credit Card. Simply
+                              call us: toll-free on 1860 425 1188 (India) /
+                              Email ID: regaliagold.support@smartbuyoffers.co
+                          - descriptor:
+                              code: EVERYDAY_BENEFITS
+                              name: Everyday Benefits
+                              short_desc: 1% fuel surcharge waiver on transactions
+                            value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://hdfcbank.com/cc/tnc.html
+                        display: true
+                    matched: true
+                    recommended: true
+                    xinput:
+                      form:
+                        id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
+                      form_response:
+                        status: SUCCESS
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
       - summary: The borrower initiates the credit card request by filling the form.
         api: init
         details:
@@ -4492,7 +4921,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_24
             context:
               domain: ONDC:FIS15
               location:
@@ -4516,45 +4945,19 @@ x-flows:
                   id: '101'
                 items:
                   - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
-                    xinput:
-                      form:
-                        id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
-                      form_response:
-                        status: SUCCESS
-                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
-                payments:
-                  - collected_by: BPP
-                    type: ON_ORDER
-                    status: NOT-PAID
-                    params:
-                      bank_code: XXXXXXXX
-                      bank_account_number: xxxxxxxxxxxxxx
-                      virtual_payment_address: 9988199772@okicic
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The lender accepts the credit card request, displays the card details,
           and benefits.
@@ -4582,7 +4985,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_25
             context:
               domain: ONDC:FIS15
               location:
@@ -4742,42 +5145,19 @@ x-flows:
                     state:
                       descriptor:
                         code: INITIATED
-                payments:
-                  - id: PAYMENT_ID_PURCHASE_FINANCE
-                    type: ON_ORDER
-                    status: NOT-PAID
-                    collected_by: BPP
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: The borrower confirms the credit card request.
         api: confirm
         details:
@@ -4790,7 +5170,7 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -4802,7 +5182,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_26
             context:
               domain: ONDC:FIS15
               location:
@@ -4823,81 +5203,39 @@ x-flows:
             message:
               order:
                 provider:
-                  id: PROVIDER_ID
+                  id: '101'
                 items:
-                  - id: ITEM_ID_PERSONAL_LOAN_2
-                payments:
-                  - id: PAYMENT_ID_PURCHASE_FINANCE
-                    collected_by: BPP
-                    type: ON_ORDER
-                    status: NOT-PAID
-                    params:
-                      bank_code: XXXXXXXX
-                      bank_account_number: xxxxxxxxxxxxxx
-                      virtual_payment_address: 9988199772@okicic
-                    tags:
+                  - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
                       - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-      - summary: The lender confirms the Credit Card order.
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+      - summary: The lender confirms the credit card order.
         api: on_confirm
         details:
           - description: >-
-              The lender platform confirms the Credit Card order and provides
+              The lender platform confirms the credit card order and provides
               the final confirmation details.
             mermaid: |-
               sequenceDiagram
@@ -4905,7 +5243,7 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
                 Lender Form Service-->>Borrower Platform (BAP): Form Received
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -4917,7 +5255,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_27
             context:
               domain: ONDC:FIS15
               location:
@@ -4938,6 +5276,7 @@ x-flows:
             message:
               order:
                 id: REFERENCE_NO
+                status: ACTIVE
                 provider:
                   id: '101'
                   descriptor:
@@ -5092,69 +5431,36 @@ x-flows:
                               name: Shipping Partner
                             value: EcomExpress
                           - descriptor:
-                              code: SHIPPING_ADRESS
+                              code: SHIPPING_ADDRESS
                               name: Shipping Address
                             value: 102, New Colony Navi Mumbai 400081
-                payments:
-                  - id: PAYMENT_ID_PURCHASE_FINANCE
-                    type: ON_ORDER
-                    status: NOT-PAID
-                    collected_by: BPP
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
                       - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                created_at: '2024-05-06T04:19:20.443Z'
+                updated_at: '2024-05-06T04:19:20.443Z'
       - summary: The borrower seeks the most recent status update.
         api: status
         details:
@@ -5167,15 +5473,15 @@ x-flows:
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
                 rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request card application status
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 end
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide card application status
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: *ref_13
-      - summary: The lender shares the latest loan status with the borrower.
+      - summary: The lender shares the latest card status with the borrower.
         api: on_status
         details:
           - description: >-
@@ -5187,15 +5493,15 @@ x-flows:
                 title MF Ordering - Order Fulfillment
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
-                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request card application status
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
                 rect rgb(191, 223, 255)
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide card application status
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_28
             context:
               domain: ONDC:FIS15
               location:
@@ -5216,6 +5522,7 @@ x-flows:
             message:
               order:
                 id: REFERENCE_NO
+                status: ACTIVE
                 provider:
                   id: '101'
                   descriptor:
@@ -5344,12 +5651,6 @@ x-flows:
                               short_desc: 1% fuel surcharge waiver on transactions
                             value: Up to ₹250 per billing cycle
                         display: true
-                    xinput:
-                      form:
-                        id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
-                      form_response:
-                        status: COMPLETED
-                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
                 fulfillments:
                   - id: F1
                     customer:
@@ -5375,69 +5676,36 @@ x-flows:
                               name: Shipping Partner
                             value: EcomExpress
                           - descriptor:
-                              code: SHIPPING_ADRESS
+                              code: SHIPPING_ADDRESS
                               name: Shipping Address
                             value: 102, New Colony Navi Mumbai 400081
-                payments:
-                  - id: PAYMENT_ID_PURCHASE_FINANCE
-                    type: ON_ORDER
-                    status: NOT-PAID
-                    collected_by: BPP
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
                       - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                created_at: '2024-05-06T04:19:20.443Z'
+                updated_at: '2024-05-06T04:19:20.443Z'
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -5510,7 +5778,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK    
         reference: if any
         example:
-          value: 'Individual KYC Redirect: This will redirected to different html page'
+          value: 'Redirect: This will redirected to different html page'
       - summary: The lender shares the latest form status with the borrower.
         api: on_status
         details:
@@ -5620,12 +5888,12 @@ x-flows:
                 Lender Platform(BPP)->> Borrower Platform (BAP): on_status
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
                 end
-                Borrower Platform (BAP)->>Lender Platform(BPP): init
+                Borrower Platform (BAP)->>Lender Platform(BPP): select
         reference: if any
         example:
           value: *ref_15
       - summary: The borrower initiates the Credit Card request by filling the form
-        api: init
+        api: select
         details:
           - description: >-
               The borrower platform initiates the Credit Card request by filling
@@ -5641,7 +5909,7 @@ x-flows:
                 Lender Platform(BPP)->> Borrower Platform (BAP): on_status
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
                 rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Platform(BPP): init
+                Borrower Platform (BAP)->>Lender Platform(BPP): select
                 end
         reference: if any
         example:
@@ -5653,44 +5921,56 @@ x-examples:
     example_set:
       search:
         examples:
-          - summary: search for credit card
+          - summary: search-request-1
             description: TBD
             value: *ref_18
-      on_search:
-        examples:
-          - summary: credit card catalog
+          - summary: search-request-1
             description: TBD
             value: *ref_19
-      select:
+      on_search:
         examples:
-          - summary: select-request-personal-info
+          - summary: on_search-request-1
             description: TBD
             value: *ref_20
-      on_select:
-        examples:
-          - summary: on_select-request-with-kyc-form-offline
-            description: TBD
-            value: *ref_14
-      init:
-        examples:
-          - summary: init-request-kyc-approved
-            description: TBD
-            value: *ref_17
-      on_init:
-        examples:
-          - summary: on_init-request-offine
+          - summary: on_search-request-2
             description: TBD
             value: *ref_21
+      select:
+        examples:
+          - summary: select-request-1
+            description: TBD
+            value: *ref_22
+          - summary: select-request-2
+            description: TBD
+            value: *ref_17
+      on_select:
+        examples:
+          - summary: on_select-request-1
+            description: TBD
+            value: *ref_14
+          - summary: on_select-request-2
+            description: TBD
+            value: *ref_23
+      init:
+        examples:
+          - summary: init-request-1
+            description: TBD
+            value: *ref_24
+      on_init:
+        examples:
+          - summary: on_init-request-1
+            description: TBD
+            value: *ref_25
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_22
+            value: *ref_26
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_23
+            value: *ref_27
       status:
         examples:
           - summary: status-request
@@ -5706,7 +5986,7 @@ x-examples:
             value: *ref_15
           - summary: on_status-request
             description: TBD
-            value: *ref_24
+            value: *ref_28
       form/personal-info:
         examples:
           - summary: personal-info
@@ -5795,14 +6075,6 @@ x-attributes:
                    The ISO 3166-1 standard includes 249 countries, with 193 sovereign states as UN members. Dependent territories in ISO 3166-1 are often detailed as subdivisions in ISO 3166-2 under their administering state.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -5812,22 +6084,6 @@ x-attributes:
                   location or the area in which it is situated.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -5838,7 +6094,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: >-
               It specifies the time of request generation in RFC3339 format.
               RFC3339 is a date and time format defined by the Internet
@@ -5933,51 +6189,6 @@ x-attributes:
                     invoices.
                   owner: BAP
                   type: string
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    It refers to providing additional details about the
-                    characteristics, features and attributes of products.
-                  owner: BAP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute explains what Credit Card or invoice based
-                  loans are and how they function. It can provide the details
-                  into the nature of choosen loan
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This helps the system to find out the purpose of the user behind
-                choosing any product or service. By using this intent the system
-                can align relevant options from available products or service.
-              owner: BAP
-              type: object
-            payment:
-              collected_by:
-                required: Mandatory
-                usage: BPP
-                description: >-
-                  This field indicates the payment collector. If set to 'bap,'
-                  BAP collects first and settles with BPP. If BPP agrees, no
-                  payment link is sent. If set to 'bpp,' BPP collects payment
-                  directly.
-                owner: BAP
-                type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  The terms of settlement for this order. It describes that how
-                  the customer wants to pay for the order.
-                owner: BAP
-                type: object
       on_search:
         context:
           location:
@@ -5992,14 +6203,6 @@ x-attributes:
                    The ISO 3166-1 standard includes 249 countries, with 193 sovereign states as UN members. Dependent territories in ISO 3166-1 are often detailed as subdivisions in ISO 3166-2 under their administering state.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -6009,22 +6212,6 @@ x-attributes:
                   location or the area in which it is situated.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -6035,7 +6222,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: >-
               It specifies the time of request generation in RFC3339 format.
               RFC3339 is a date and time format defined by the Internet
@@ -6142,15 +6329,6 @@ x-attributes:
                   providing the loan.
                 owner: BPP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute amplifies the product details. It includes
-                  presenting a detailed description about the characteristics,
-                  features, and unique qualities of that particular product.
-                owner: BPP
-                type: object
             providers:
               id:
                 required: Mandatory
@@ -6187,14 +6365,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan provider.
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
                   size_type:
                     required: Optional
                     usage: sm
@@ -6203,14 +6373,6 @@ x-attributes:
                       determine the default dimensions for each type.
                     owner: BPP
                     type: string
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This describes the detailed description of the financial
-                    institution that is providing the loan.
-                  owner: BPP
-                  type: object
               categories:
                 id:
                   required: Mandatory
@@ -6233,24 +6395,6 @@ x-attributes:
                     description: It refers to the explanation of the type of the loan.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This refers to a label that can serve as a categorization
-                      tag for groupiing together a collection of items for
-                      easier identification and management.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This refers to a label that can serve as a categorization
-                    tag for groupiing together a collection of items for easier
-                    identification and management.
-                  owner: BPP
-                  type: object
               items:
                 id:
                   required: Mandatory
@@ -6289,23 +6433,6 @@ x-attributes:
                         provider.
                       owner: BPP
                       type: string
-                    _description:
-                      required: optional
-                      usage: '--'
-                      description: >-
-                        It encapsulates the detailed description of the used
-                        image.
-                      owner: BPP
-                      type: object
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This include the details about the distinctive features,
-                      benefits, or unique aspects of the products or service
-                      that has been offered to the end customer.
-                    owner: BPP
-                    type: object
                   code:
                     required: Mandatory
                     usage: CREDIT_CARD
@@ -6333,189 +6460,28 @@ x-attributes:
                           purchase / avail this item.
                         owner: BPP
                         type: string
-                      _description:
-                        required: Mandatory
-                        usage: '--'
-                        description: >-
-                          This refers to the header information of the input of
-                          additional information required from the customer to
-                          avail this item.
-                        owner: BPP
-                        type: object
-                    index:
-                      min:
-                        required: Optional
-                        usage: false
-                        description: >-
-                          This refers to the minimum integer value of the xinput
-                          header which describes the additional information
-                          required from the customer to purchase/avail the item.
-                        owner: BPP
-                        type: number
-                      max:
-                        required: Mandatory
-                        usage: false
-                        description: >-
-                          This refers to the maximum integer value of the xinput
-                          header which describes the additional information
-                          required from the customer to purchase/avail the item.
-                        owner: BPP
-                        type: number
-                      cur:
-                        required: Mandatory
-                        usage: false
-                        description: >-
-                          This refers to the current integer value of the xinput
-                          header which describes the additional information
-                          required from the customer to purchase/avail the item.
-                        owner: BPP
-                        type: number
-                      _description:
-                        required: Mandatory
-                        usage: '--'
-                        description: >-
-                          It refers to the integer value of the index number of
-                          required additional input.
-                        owner: BPP
-                        type: object
-                    _description:
-                      required: Mandatory
-                      usage: '--'
-                      description: >-
-                        This refers to the header information of the input of
-                        additional information required from the customer to
-                        avail this item.
-                      owner: BPP
-                      type: object
-                    headings:
-                      required: Mandatory
-                      usage: Personal Information
-                      description: This is the forms heading names.
-                      owner: BPP
-                      type: string
                   form:
-                    url:
-                      required: Mandatory
-                      usage: >-
-                        https://6vs8xnx5i7.hdfcbank.co.in/loans/xinput/formid/a23f2fdfbbb8ac402bf259d75
-                      description: >-
-                        This refers to the current integer value of the xinput
-                        header which describes the additional information
-                        required from the customer to purchase/avail the item.
-                      owner: BPP
-                      type: string
-                    mime_type:
-                      required: Mandatory
-                      usage: text/html
-                      description: This describes the type of the form generated.
-                      owner: BPP
-                      type: string
-                    resubmit:
-                      required: Mandatory
-                      usage: false
-                      description: >-
-                        After reopening the form, this attribute keeps in check
-                        whether the form has been resubmitted or not
-                      owner: BPP
-                      type: boolean
-                    multiple_sumbissions:
-                      required: Mandatory
-                      usage: false
-                      description: >-
-                        This attribute defines if the form can be submitted
-                        multiple times or not.
-                      owner: BPP
-                      type: boolean
                     id:
                       required: Mandatory
                       usage: d097c2f5-cb8d-42fe-900e-dfecdede16fb
                       description: This refers to the unique system id of the form
                       owner: BPP
                       type: string
-                    _description:
-                      required: Mandatory
-                      usage: '--'
+                  form_response:
+                    status:
+                      required: optional
+                      usage: SUCCESS
+                      description: It stores the status of form submission.
+                      owner: BAP
+                      type: string
+                    submission_id:
+                      required: optional
+                      usage: 73ef9742-c17d-4c4e-92e3-b057960863af
                       description: >-
-                        It refers to the detailed description of the used form
-                        for information of the user.
-                      owner: BPP
-                      type: object
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      It refers to those information columns that requires
-                      additional input from the customer to avail a particular
-                      product or item.
-                    owner: BPP
-                    type: object
-                  required:
-                    required: Mandatory
-                    usage: true
-                    description: >-
-                      This attribute specifies if the BPP requires the form data
-                      mandatorily for order confirmation.
-                    owner: BPP
-                    type: boolean
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This include the details about the distinctive features,
-                    benefits, or unique aspects of the products or service that
-                    has been offered to the end customer.
-                  owner: BPP
-                  type: object
-                matched:
-                  required: Optional
-                  usage: true
-                  description: It indicates if this item precisely matches the request.
-                  owner: BPP
-                  type: boolean
-                recommended:
-                  required: Optional
-                  usage: true
-                  description: >-
-                    It ndicates if this item is recommended in response to a
-                    request.
-                  owner: BPP
-                  type: boolean
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute describes a more detailed and comprehensive
-                  information that showcases the diverse range of products or
-                  services offered by the business.
-                owner: BPP
-                type: object
-              payments:
-                collected_by:
-                  required: Mandatory
-                  usage: BPP
-                  description: >-
-                    This field indicates the payment collector. If set to 'bap,'
-                    BAP collects first and settles with BPP. If BPP agrees, no
-                    payment link is sent. If set to 'bpp,' BPP collects payment
-                    directly.
-                  owner: BPP
-                  type: string
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    The terms of settlement for this order. It describes that
-                    how the customer wants to pay for the order.
-                  owner: BAP/BPP
-                  type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute describes the products or services that are sent
-                as the response to the search done by BAP.
-              owner: BPP
-              type: object
+                        This is the nique submission ID received by a borrower
+                        as a response upon successfully submitting the form.
+                      owner: BAP
+                      type: string
       select:
         context:
           location:
@@ -6530,14 +6496,6 @@ x-attributes:
                    The ISO 3166-1 standard includes 249 countries, with 193 sovereign states as UN members. Dependent territories in ISO 3166-1 are often detailed as subdivisions in ISO 3166-2 under their administering state.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -6547,22 +6505,6 @@ x-attributes:
                   location or the area in which it is situated.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -6573,7 +6515,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: >-
               It specifies the time of request generation in RFC3339 format.
               RFC3339 is a date and time format defined by the Internet
@@ -6680,14 +6622,6 @@ x-attributes:
                   items have been selected.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             items:
               id:
                 required: Mandatory
@@ -6697,73 +6631,6 @@ x-attributes:
                   availed in that order.
                 owner: BAP
                 type: string
-              xinput:
-                form_response:
-                  status:
-                    required: Mandatory
-                    usage: SUCCESS
-                    description: >-
-                      This refers to the submission status of the additional
-                      information form.
-                    owner: BAP
-                    type: string
-                  submission_id:
-                    required: Mandatory
-                    usage: c844d5f4-29c3-4398-b594-8b4716ef5dbf
-                    description: >-
-                      This refers to the id of the submitted form that a
-                      borrower gets after successful submission.
-                    owner: BAP
-                    type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This description outlines the feedback or system's
-                      reaction to the information provided following the
-                      submission of a form.
-                    owner: BAP
-                    type: object
-                form:
-                  id:
-                    required: Mandatory
-                    usage: F01
-                    description: This refers to the identifier of the generated form.
-                    owner: BAP
-                    type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This attribute refers to the information about additional
-                      input form generated from the system.
-                    owner: BAP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This attribute refers to the information about additional
-                    input required from the customer to confirm this order.
-                  owner: BAP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This decription refers to the comprehensive list of the
-                  products or services selected and obtained within the
-                  specified order.
-                owner: BAP/BPP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
       on_select:
         context:
           location:
@@ -6778,14 +6645,6 @@ x-attributes:
                    The ISO 3166-1 standard includes 249 countries, with 193 sovereign states as UN members. Dependent territories in ISO 3166-1 are often detailed as subdivisions in ISO 3166-2 under their administering state.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -6795,22 +6654,6 @@ x-attributes:
                   location or the area in which it is situated.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -6821,7 +6664,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: >-
               It specifies the time of request generation in RFC3339 format.
               RFC3339 is a date and time format defined by the Internet
@@ -6955,14 +6798,6 @@ x-attributes:
                     description: Describes the image url.
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
                   size_type:
                     required: Optional
                     usage: sm
@@ -6971,22 +6806,6 @@ x-attributes:
                       determine the default dimensions for each type.
                     owner: BPP
                     type: string
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This describes the detailed description of the financial
-                    institution that is providing the loan.
-                  owner: BPP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             items:
               id:
                 required: Mandatory
@@ -7021,23 +6840,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan item
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This include the details about the distinctive features,
-                    benefits, or unique aspects of the products or service that
-                    has been offered to the end customer.
-                  owner: BPP
-                  type: object
                 code:
                   required: Mandatory
                   usage: CREDIT_CARD
@@ -7056,120 +6858,13 @@ x-attributes:
                         purchase / avail this item.
                       owner: BPP
                       type: string
-                    _description:
-                      required: Optional
-                      usage: '--'
-                      description: >-
-                        This refers to the header information of the input of
-                        additional information required from the customer to
-                        avail this item.
-                      owner: BPP
-                      type: object
-                  index:
-                    min:
-                      required: Optional
-                      usage: false
-                      description: >-
-                        This refers to the minimum integer value of the xinput
-                        header which describes the additional information
-                        required from the customer to purchase/avail the item.
-                      owner: BPP
-                      type: number
-                    max:
-                      required: Optional
-                      usage: 1
-                      description: >-
-                        This refers to the maximum integer value of the xinput
-                        header which describes the additional information
-                        required from the customer to purchase/avail the item.
-                      owner: BPP
-                      type: number
-                    cur:
-                      required: Optional
-                      usage: 1
-                      description: >-
-                        This refers to the current integer value of the xinput
-                        header which describes the additional information
-                        required from the customer to purchase/avail the item.
-                      owner: BPP
-                      type: number
-                    _description:
-                      required: optional
-                      usage: '--'
-                      description: >-
-                        It refers to the integer value of the index number of
-                        required additional input.
-                      owner: BPP
-                      type: object
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      This refers to the header information of the input of
-                      additional information required from the customer to avail
-                      this item.
-                    owner: BPP
-                    type: object
-                  headings:
-                    required: optional
-                    usage: Personal Information
-                    description: This is the forms heading names.
-                    owner: BPP
-                    type: string
                 form:
-                  url:
-                    required: Optional
-                    usage: >-
-                      https://6vs8xnx5i7.hdfcbank.co.in/loans-kyc/xinput?formid=FO2
-                    description: >-
-                      This refers to the url of the form where additional
-                      requirements to buy from the user is taken.
-                    owner: BPP
-                    type: string
-                  mime_type:
-                    required: Optional
-                    usage: application/html
-                    description: This describes the type of the form generated.
-                    owner: BPP
-                    type: string
-                  resubmit:
-                    required: Optional
-                    usage: false
-                    description: >-
-                      After reopening the form, this attribute keeps in check
-                      whether the form has been resubmitted or not
-                    owner: BPP
-                    type: boolean
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This attribute refers to the information about additional
-                      input form generated from the system.
-                    owner: BPP
-                    type: object
                   id:
                     required: Mandatory
                     usage: F01
                     description: This refers to the identifier of the form.
                     owner: BPP
                     type: string
-                  multiple_sumbissions:
-                    required: optional
-                    usage: false
-                    description: >-
-                      It indicates if the form allows multiple submissions or
-                      not.
-                    owner: BPP
-                    type: boolean
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This attribute refers to the information about additional
-                    input required from the customer to confirm this order.
-                  owner: BPP
-                  type: object
                 form_response:
                   status:
                     required: optional
@@ -7185,38 +6880,7 @@ x-attributes:
                       a response upon successfully submitting the form.
                     owner: BAP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: It describes the outcome/response of submitting a form.
-                    owner: BPP
-                    type: object
-                required:
-                  required: optional
-                  usage: true
-                  description: >-
-                    This attribute specifies if the BPP requires the form data
-                    mandatorily for order confirmation.
-                  owner: BPP
-                  type: boolean
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This decription refers to the comprehensive list of the
-                  products or services selected and obtained within the
-                  specified order.
-                owner: BAP/BPP
-                type: object
               price:
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    It describes the cost of the item, considering its intrinsic
-                    value.
-                  owner: BPP
-                  type: object
                 value:
                   required: Optional
                   usage: 232800
@@ -7231,14 +6895,6 @@ x-attributes:
                   description: This attribute specifies the currency for the item.
                   owner: BPP
                   type: string
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
             quote:
               id:
                 required: Optional
@@ -7263,12 +6919,6 @@ x-attributes:
                   description: This refers to the value of used currency of quoted price.
                   owner: BPP
                   type: string
-                _description:
-                  required: Optional
-                  usage: '--'
-                  description: This refers to the value of used currency of quoted price.
-                  owner: BPP
-                  type: object
               breakup:
                 title:
                   required: Optional
@@ -7295,30 +6945,6 @@ x-attributes:
                       particular quoted price breakup.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Optional
-                    usage: '--'
-                    description: >-
-                      This describes the decimal value of the price of a product
-                      or service.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Optional
-                  usage: '--'
-                  description: >-
-                    This attribute describes the breakup of the total quoted
-                    price.
-                  owner: BPP
-                  type: object
-              _description:
-                required: Optional
-                usage: '--'
-                description: >-
-                  This refers to the complete description of the mutully agreed
-                  upon quotation for this order.
-                owner: BPP
-                type: object
               ttl:
                 required: Optional
                 usage: PT15D
@@ -7343,14 +6969,6 @@ x-attributes:
                    The ISO 3166-1 standard includes 249 countries, with 193 sovereign states as UN members. Dependent territories in ISO 3166-1 are often detailed as subdivisions in ISO 3166-2 under their administering state.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -7360,22 +6978,6 @@ x-attributes:
                   location or the area in which it is situated.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -7386,7 +6988,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: >-
               It specifies the time of request generation in RFC3339 format.
               RFC3339 is a date and time format defined by the Internet
@@ -7493,14 +7095,6 @@ x-attributes:
                   items have been selected.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             items:
               id:
                 required: Mandatory
@@ -7510,136 +7104,6 @@ x-attributes:
                   availed in that order.
                 owner: BAP
                 type: string
-              xinput:
-                form_response:
-                  status:
-                    required: Mandatory
-                    usage: SUCCESS
-                    description: >-
-                      This refers to the submission status of the additional
-                      information form.
-                    owner: BAP
-                    type: string
-                  submission_id:
-                    required: Mandatory
-                    usage: 73ef9742-c17d-4c4e-92e3-b057960863af
-                    description: >-
-                      This refers to the id of the submitted form that a
-                      borrower gets after successful submission.
-                    owner: BAP
-                    type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This description outlines the feedback or system's
-                      reaction to the information provided following the
-                      submission of a form.
-                    owner: BAP
-                    type: object
-                form:
-                  id:
-                    required: Mandatory
-                    usage: F02
-                    description: This refers to the identifier of the generated form.
-                    owner: BAP
-                    type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This attribute refers to the information about additional
-                      input form generated from the system.
-                    owner: BAP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This attribute refers to the information about additional
-                    input required from the customer to confirm this order.
-                  owner: BAP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This decription refers to the comprehensive list of the
-                  products or services selected and obtained within the
-                  specified order.
-                owner: BAP/BPP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
-            payments:
-              id:
-                required: optional
-                usage: |+
-                  3609ff0b-7192-4ec2-91c0-36b07eb445cd
-
-                description: >-
-                  It is a unique id for the payment term that can be referenced
-                  at either an item or order level within a catalog.
-                owner: BPP
-                type: string
-              type:
-                required: Mandatory
-                usage: ON-ORDER
-                description: >-
-                  This defines the type of the payment. In this case it is
-                  "On-ORDER".
-                   It can be: PRE-ORDER, PRE-FULFILLMENT, ON-FULFILLMENT, POST-FULFILLMENT, ON-ORDER, PRE_ORDER, PRE_FULFILLMENT, ON_FULFILLMENT, POST_FULFILLMENT, ON_ORDER.
-                owner: BAP
-                type: string
-              status:
-                required: Mandatory
-                usage: NOT-PAID
-                description: |-
-                  This attribute defines the status of the payment.
-                   It can be: PAID, NOT-PAID, DELAYED, DEFERRED.
-                owner: BAP
-                type: string
-              collected_by:
-                required: Mandatory
-                usage: BPP
-                description: >-
-                  This defines the payment collection mode. This field indicates
-                  the payment collector. If set to 'bap,' BAP collects first and
-                  settles with BPP. If BPP agrees, no payment link is sent. If
-                  set to 'bpp,' BPP collects payment directly.
-                owner: BAP
-                type: string
-              params:
-                bank_code:
-                  required: optional
-                  usage: SBION123
-                  description: It indicates the bank code.
-                  owner: BAP
-                  type: string
-                bank_account_number:
-                  required: optional
-                  usage: xxxxxxxxxxxxxx
-                  description: It defines the the bank account number.
-                  owner: BAP
-                  type: string
-                virtual_payment_address:
-                  required: optional
-                  usage: 9988199772@okici
-                  description: Explains the virtual payment address.
-                  owner: BAP
-                  type: string
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: This attribute defines the payment params for this order.
-                  owner: BAP/BPP
-                  type: object
       on_init:
         context:
           location:
@@ -7654,14 +7118,6 @@ x-attributes:
                    The ISO 3166-1 standard includes 249 countries, with 193 sovereign states as UN members. Dependent territories in ISO 3166-1 are often detailed as subdivisions in ISO 3166-2 under their administering state.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -7671,25 +7127,6 @@ x-attributes:
                   location or the area in which it is situated.
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                It encapsulates the chosen or specified venue or destination for
-                the completion of the transaction. This could involve details
-                such as a physical address, online platform, or any other
-                relevant location information, offering a clearer understanding
-                of where the intended transaction is expected to take place.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -7700,7 +7137,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: >-
               It specifies the time of request generation in RFC3339 format.
               RFC3339 is a date and time format defined by the Internet
@@ -7834,14 +7271,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan provider.
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
                   size_type:
                     required: Optional
                     usage: sm
@@ -7850,22 +7279,6 @@ x-attributes:
                       determine the default dimensions for each type.
                     owner: BPP
                     type: string
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This describes the detailed description of the financial
-                    institution that is providing the loan.
-                  owner: BPP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             items:
               id:
                 required: Mandatory
@@ -7902,23 +7315,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan provider.
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This include the details about the distinctive features,
-                    benefits, or unique aspects of the products or service that
-                    has been offered to the end customer.
-                  owner: BPP
-                  type: object
                 code:
                   required: Mandatory
                   usage: CREDIT_CARD
@@ -7927,15 +7323,6 @@ x-attributes:
                     it is the Credit Card or invoice based loan.
                   owner: BPP
                   type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This include the details about the distinctive features,
-                  benefits, or unique aspects of the products or service that
-                  has been offered to the end customer.
-                owner: BAP/BPP
-                type: object
             fulfillments:
               customer:
                 contact:
@@ -7955,15 +7342,6 @@ x-attributes:
                       entity.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      It includes essential information such as the customer's
-                      phone number, email address, and any other relevant
-                      contact information.
-                    owner: BAP
-                    type: object
                 person:
                   name:
                     required: Mandatory
@@ -7971,30 +7349,6 @@ x-attributes:
                     description: It describes the name that entity.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This refers to the description of the associated person as
-                      an individual entity.
-                    owner: BAP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This refers to the description of the person that will
-                    ulitmately receive the order.
-                  owner: BAP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This refers to the decription as to how that order will
-                  rendered/fulfilled to the end-customers.
-                owner: BAP/BPP
-                type: object
               state:
                 descriptor:
                   code:
@@ -8005,151 +7359,6 @@ x-attributes:
                       and completion status of the fulfillment process.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      It encapsulates the real time information on the progress
-                      and completion status of the fulfillment process.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    It encapsulates the real time information on the progress
-                    and completion status of the fulfillment process.
-                  owner: BPP
-                  type: object
-            payments:
-              id:
-                required: Mandatory
-                usage: |+
-                  3609ff0b-7192-4ec2-91c0-36b07eb445cd
-
-                description: >-
-                  This refers to the ID of the payment term that can be referred
-                  at an item or an order level in a catalog
-                owner: BPP
-                type: string
-              type:
-                required: Mandatory
-                usage: ON-ORDER
-                description: >-
-                  This refers to the type of the payment happens on order
-                  placement
-                owner: BPP
-                type: string
-              url:
-                required: Optional
-                usage: https://emandate.hdfcbank.in
-                description: >-
-                  This refers to the url used to complete the payment which is
-                  called by the BAP.
-                owner: BPP
-                type: string
-              params:
-                amount:
-                  required: Optional
-                  usage: 46360
-                  description: This refers to the sum of money required from a borrower.
-                  owner: BPP
-                  type: string
-                currency:
-                  required: Optional
-                  usage: INR
-                  description: This refers to the value of used currency of quoted price.
-                  owner: BPP
-                  type: string
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    It encompasses various details such as payment methods
-                    accepted, due dates, currency considerations, and any
-                    specific conditions or requirements related to completing
-                    the transaction.
-                  owner: BAP/BPP
-                  type: object
-              time:
-                range:
-                  start:
-                    required: Optional
-                    usage: '2023-06-01T00:00:00.000Z'
-                    description: >-
-                      This describes the start range time of the payment in
-                      various forms.
-                    owner: BPP
-                    type: string
-                  end:
-                    required: Optional
-                    usage: '2023-06-30T23:59:59.999Z'
-                    description: >-
-                      This describes the end range time of the payment in
-                      various forms.
-                    owner: BPP
-                    type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      This refers to the detailed description of time range that
-                      exist in two variants - start range & end range
-                    owner: BPP
-                    type: object
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    This refers to the detailed description of format of time
-                    used in the system, it can exist in single point in time,
-                    duration, or a structured timetable of operations.
-                  owner: BPP
-                  type: object
-                label:
-                  required: Optional
-                  usage: INSTALLMENT
-                  description: >-
-                    It refers to the involvment of identifying and categorizing
-                    the time- related information relevant to the payment
-                    process.
-                  owner: BPP
-                  type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute refers to the terms of settlement that a BAP
-                  insinuates to the BPP for a single transaction. These terms
-                  includes the amount, payment destination, time of settlement
-                  and a transaction reference ID.
-                owner: BAP/BPP
-                type: object
-              status:
-                required: Mandatory
-                usage: NOT-PAID
-                description: >-
-                  It provides details on whether the payment is pending,
-                  processed, completed, or if there are any specific issues or
-                  actions required.
-                owner: BAP
-                type: string
-              collected_by:
-                required: optional
-                usage: BPP
-                description: >-
-                  It encompasses the detailed process or mechanism employed for
-                  gathering payments.
-                owner: BAP
-                type: string
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
       confirm:
         context:
           location:
@@ -8160,14 +7369,6 @@ x-attributes:
                 description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -8175,22 +7376,6 @@ x-attributes:
                 description: Describes the city code this location is, or is located within
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This attribute defines the location where the transaction is
-                meant to be completed.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -8199,7 +7384,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: Describes tme of request generation in RFC3339 format
             owner: BAP
             type: string
@@ -8278,14 +7463,6 @@ x-attributes:
                   items have been selected.
                 owner: BAP
                 type: string
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             items:
               id:
                 required: Mandatory
@@ -8295,94 +7472,6 @@ x-attributes:
                   availed in that order.
                 owner: BAP
                 type: string
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This decription refers to the comprehensive list of the
-                  products or services selected and obtained within the
-                  specified order.
-                owner: BAP/BPP
-                type: object
-            _description:
-              required: mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
-            payments:
-              id:
-                required: mandatory
-                usage: |+
-                  3609ff0b-7192-4ec2-91c0-36b07eb445cd
-
-                description: >-
-                  It is a unique id for the payment term that can be referenced
-                  at either an item or order level within a catalog.
-                owner: BPP
-                type: string
-              type:
-                required: mandatory
-                usage: ON-ORDER
-                description: >-
-                  This defines the type of the payment. In this case it is
-                  "On-ORDER".
-                   It can be: PRE-ORDER, PRE-FULFILLMENT, ON-FULFILLMENT, POST-FULFILLMENT, ON-ORDER, PRE_ORDER, PRE_FULFILLMENT, ON_FULFILLMENT, POST_FULFILLMENT, ON_ORDER.
-                owner: BAP
-                type: string
-              status:
-                required: mandatory
-                usage: NOT-PAID
-                description: |-
-                  This attribute defines the status of the payment.
-                   It can be: PAID, NOT-PAID, DELAYED, DEFERRED.
-                owner: BAP
-                type: string
-              collected_by:
-                required: mandatory
-                usage: BPP
-                description: >-
-                  This defines the payment collection mode. This field indicates
-                  the payment collector. If set to 'bap,' BAP collects first and
-                  settles with BPP. If BPP agrees, no payment link is sent. If
-                  set to 'bpp,' BPP collects payment directly.
-                owner: BAP
-                type: string
-              params:
-                bank_code:
-                  required: optional
-                  usage: SBION123
-                  description: It indicates the bank code.
-                  owner: BAP
-                  type: string
-                bank_account_number:
-                  required: optional
-                  usage: xxxxxxxxxxxxxx
-                  description: It defines the the bank account number.
-                  owner: BAP
-                  type: string
-                virtual_payment_address:
-                  required: optional
-                  usage: 9988199772@okici
-                  description: Explains the virtual payment address.
-                  owner: BAP
-                  type: string
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: This attribute defines the payment params for this order.
-                  owner: BAP/BPP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  The terms of settlement for this order. It describes that how
-                  the customer wants to pay for the order.
-                owner: BAP/BPP
-                type: object
       on_confirm:
         context:
           location:
@@ -8393,14 +7482,6 @@ x-attributes:
                 description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -8408,25 +7489,6 @@ x-attributes:
                 description: Describes the city code this location is, or is located within
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                It encapsulates the chosen or specified venue or destination for
-                the completion of the transaction. This could involve details
-                such as a physical address, online platform, or any other
-                relevant location information, offering a clearer understanding
-                of where the intended transaction is expected to take place.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -8435,7 +7497,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: Describes tme of request generation in RFC3339 format
             owner: BAP
             type: string
@@ -8543,14 +7605,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan item
                     owner: BPP
                     type: string
-                  _description:
-                    required: Optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
                   size_type:
                     required: Optional
                     usage: sm
@@ -8559,22 +7613,6 @@ x-attributes:
                       determine the default dimensions for each type.
                     owner: BPP
                     type: string
-                _description:
-                  required: mandatory
-                  usage: '--'
-                  description: >-
-                    This describes the detailed description of the financial
-                    institution that is providing the loan.
-                  owner: BPP
-                  type: object
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             id:
               required: Mandatory
               usage: 66B7AEDF45
@@ -8617,22 +7655,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan item
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: mandatory
-                  usage: '--'
-                  description: >-
-                    This describes the detailed description of the financial
-                    institution that is providing the loan.
-                  owner: BPP
-                  type: object
                 code:
                   required: Mandatory
                   usage: CREDIT_CARD
@@ -8641,15 +7663,6 @@ x-attributes:
                     it is the Credit Card or invoice based loan.
                   owner: BPP
                   type: string
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This include the details about the distinctive features,
-                  benefits, or unique aspects of the products or service that
-                  has been offered to the end customer.
-                owner: BAP/BPP
-                type: object
             fulfillments:
               customer:
                 contact:
@@ -8669,15 +7682,6 @@ x-attributes:
                       entity.
                     owner: BPP
                     type: string
-                  _description:
-                    required: mandatory
-                    usage: '--'
-                    description: >-
-                      It includes essential information such as the customer's
-                      phone number, email address, and any other relevant
-                      contact information.
-                    owner: BAP
-                    type: object
                 person:
                   name:
                     required: Mandatory
@@ -8685,30 +7689,6 @@ x-attributes:
                     description: It describes the name that entity.
                     owner: BPP
                     type: string
-                  _description:
-                    required: mandatory
-                    usage: '--'
-                    description: >-
-                      This refers to the description of the associated person as
-                      an individual entity.
-                    owner: BAP
-                    type: object
-                _description:
-                  required: mandatory
-                  usage: '--'
-                  description: >-
-                    This refers to the description of the person that will
-                    ulitmately receive the order.
-                  owner: BAP
-                  type: object
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This refers to the decription as to how that order will
-                  rendered/fulfilled to the end-customers.
-                owner: BAP/BPP
-                type: object
               state:
                 descriptor:
                   code:
@@ -8720,145 +7700,6 @@ x-attributes:
                         It encapsulates the real time information on the progress and completion status of the fulfillment process.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Optional
-                    usage: '--'
-                    description: >-
-                      It refers to the portraying the present status of order
-                      fulfillments.
-                        It encapsulates the real time information on the progress and completion status of the fulfillment process.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    It refers to the portraying the present status of order
-                    fulfillments.
-                      It encapsulates the real time information on the progress and completion status of the fulfillment process.
-                  owner: BPP
-                  type: object
-            payments:
-              id:
-                required: Mandatory
-                usage: |+
-                  3609ff0b-7192-4ec2-91c0-36b07eb445cd
-
-                description: >-
-                  This refers to the ID of the payment term that can be referred
-                  at an item or an order level in a catalog
-                owner: BPP
-                type: string
-              type:
-                required: Mandatory
-                usage: ON-ORDER
-                description: >-
-                  This refers to the type of the payment happens on order
-                  placement
-                owner: BPP
-                type: string
-              url:
-                required: Optional
-                usage: https://emandate.hdfcbank.in
-                description: >-
-                  This refers to the url used to complete the payment which is
-                  called by the BAP.
-                owner: BPP
-                type: string
-              params:
-                amount:
-                  required: Optional
-                  usage: 46360
-                  description: This refers to the sum of money required from a borrower.
-                  owner: BPP
-                  type: string
-                currency:
-                  required: Optional
-                  usage: INR
-                  description: This refers to the value of used currency of quoted price.
-                  owner: BPP
-                  type: string
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    It encompasses various details such as payment methods
-                    accepted, due dates, currency considerations, and any
-                    specific conditions or requirements related to completing
-                    the transaction.
-                  owner: BAP/BPP
-                  type: object
-              time:
-                range:
-                  start:
-                    required: Optional
-                    usage: '2023-06-01T00:00:00.000Z'
-                    description: >-
-                      This describes the start range time of the payment in
-                      various forms.
-                    owner: BPP
-                    type: string
-                  end:
-                    required: Optional
-                    usage: '2023-06-30T23:59:59.999Z'
-                    description: >-
-                      This describes the end range time of the payment in
-                      various forms.
-                    owner: BPP
-                    type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      This refers to the detailed description of time range that
-                      exist in two variants - start range & end range
-                    owner: BPP
-                    type: object
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    This refers to the detailed description of format of time
-                    used in the system, it can exist in single point in time,
-                    duration, or a structured timetable of operations.
-                  owner: BPP
-                  type: object
-                label:
-                  required: Optional
-                  usage: INSTALLMENT
-                  description: >-
-                    It refers to the involvment of identifying and categorizing
-                    the time- related information relevant to the payment
-                    process.
-                  owner: BPP
-                  type: string
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This attribute refers to the terms of settlement that a BAP
-                  insinuates to the BPP for a single transaction. These terms
-                  includes the amount, payment destination, time of settlement
-                  and a transaction reference ID.
-                owner: BAP/BPP
-                type: object
-              status:
-                required: Mandatory
-                usage: NOT-PAID
-                description: >-
-                  It provides details on whether the payment is pending,
-                  processed, completed, or if there are any specific issues or
-                  actions required.
-                owner: BAP
-                type: string
-              collected_by:
-                required: optional
-                usage: BPP
-                description: >-
-                  It encompasses the detailed process or mechanism employed for
-                  gathering payments.
-                owner: BAP
-                type: string
             cancellation_terms:
               cancellation_fee:
                 percentage:
@@ -8869,14 +7710,6 @@ x-attributes:
                     particular entity as per its cancellation terms.
                   owner: BPP
                   type: number
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    This refers to the description of the applied fee on a
-                    particular entity.
-                  owner: BPP
-                  type: object
               external_ref:
                 mimetype:
                   required: Optional
@@ -8892,20 +7725,6 @@ x-attributes:
                   description: This refers to the url of cancellation terms file.
                   owner: BPP
                   type: string
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: This refers to the url of cancellation terms file.
-                  owner: BPP
-                  type: object
-              _description:
-                required: mandatory
-                usage: '--'
-                description: >-
-                  This refer to the set of terms for cancellation for an item or
-                  an order.
-                owner: BPP
-                type: object
               fulfillment_state:
                 descriptor:
                   code:
@@ -8917,32 +7736,6 @@ x-attributes:
                         It encapsulates the real time information on the progress and completion status of the fulfillment process.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Optional
-                    usage: '--'
-                    description: >-
-                      This refers to the symbolic identifier used for
-                      categorization, 
-                       identification, or referencing purposes.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Optional
-                  usage: '--'
-                  description: >-
-                    It refers to the portraying the present status of order
-                    fulfillments.
-                      It encapsulates the real time information on the progress and completion status of the fulfillment process.
-                  owner: BPP
-                  type: object
-            _description:
-              required: mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
       status:
         context:
           location:
@@ -8953,14 +7746,6 @@ x-attributes:
                 description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -8968,25 +7753,6 @@ x-attributes:
                 description: Describes the city code this location is, or is located within
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                It encapsulates the chosen or specified venue or destination for
-                the completion of the transaction. This could involve details
-                such as a physical address, online platform, or any other
-                relevant location information, offering a clearer understanding
-                of where the intended transaction is expected to take place.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -8995,7 +7761,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: Describes tme of request generation in RFC3339 format
             owner: BAP
             type: string
@@ -9092,14 +7858,6 @@ x-attributes:
                 description: Describes country code as per ISO 3166-1 and ISO 3166-2 format
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -9107,25 +7865,6 @@ x-attributes:
                 description: Describes the city code this location is, or is located within
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                It encapsulates the chosen or specified venue or destination for
-                the completion of the transaction. This could involve details
-                such as a physical address, online platform, or any other
-                relevant location information, offering a clearer understanding
-                of where the intended transaction is expected to take place.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -9134,7 +7873,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             description: Describes tme of request generation in RFC3339 format
             owner: BAP
             type: string
@@ -9242,14 +7981,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan item
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
                   size_type:
                     required: Optional
                     usage: sm
@@ -9258,22 +7989,6 @@ x-attributes:
                       determine the default dimensions for each type.
                     owner: BPP
                     type: string
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This describes the detailed description of the financial
-                    institution that is providing the loan.
-                  owner: BPP
-                  type: object
-              _description:
-                required: Mandatory
-                usage: '--'
-                description: >-
-                  This describes the complete formulated description of the loan
-                  provider whose catalog items have been selected.
-                owner: BPP
-                type: object
             items:
               id:
                 required: Mandatory
@@ -9310,23 +8025,6 @@ x-attributes:
                     description: This attribute defines the image url of the loan item
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the detailed description of the used
-                      image.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Mandatory
-                  usage: '--'
-                  description: >-
-                    This include the details about the distinctive features,
-                    benefits, or unique aspects of the products or service that
-                    has been offered to the end customer.
-                  owner: BPP
-                  type: object
                 code:
                   required: Optional
                   usage: CREDIT_CARD
@@ -9353,32 +8051,6 @@ x-attributes:
                       borrower gets after successful submission.
                     owner: BAP
                     type: string
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This description outlines the feedback or system's
-                      reaction to the information provided following the
-                      submission of a form.
-                    owner: BAP
-                    type: object
-                _description:
-                  required: Optional
-                  usage: '--'
-                  description: >-
-                    This attribute refers to the information about additional
-                    input required from the customer to confirm this order.
-                  owner: BAP
-                  type: object
-                form:
-                  _description:
-                    required: Mandatory
-                    usage: '--'
-                    description: >-
-                      This attribute refers to the information about additional
-                      input form generated from the system.
-                    owner: BAP
-                    type: object
             fulfillments:
               customer:
                 contact:
@@ -9398,15 +8070,6 @@ x-attributes:
                       entity.
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      It includes essential information such as the customer's
-                      phone number, email address, and any other relevant
-                      contact information.
-                    owner: BAP
-                    type: object
                 person:
                   name:
                     required: Optional
@@ -9414,30 +8077,6 @@ x-attributes:
                     description: It describes the name that entity.
                     owner: BPP
                     type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      This refers to the description of the associated person as
-                      an individual entity.
-                    owner: BAP
-                    type: object
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    This refers to the description of the person that will
-                    ulitmately receive the order.
-                  owner: BAP
-                  type: object
-              _description:
-                required: optional
-                usage: '--'
-                description: >-
-                  This refers to the decription as to how that order will
-                  rendered/fulfilled to the end-customers.
-                owner: BAP/BPP
-                type: object
               state:
                 descriptor:
                   code:
@@ -9457,177 +8096,6 @@ x-attributes:
                       and completion status of the fulfillment process.
                     owner: BPP
                     type: string
-                  _description:
-                    required: Optional
-                    usage: '--'
-                    description: >-
-                      It encapsulates the real time information on the progress
-                      and completion status of the fulfillment process.
-                    owner: BPP
-                    type: object
-                _description:
-                  required: Optional
-                  usage: '--'
-                  description: >-
-                    It encapsulates the real time information on the progress
-                    and completion status of the fulfillment process.
-                  owner: BPP
-                  type: object
-            payments:
-              id:
-                required: optional
-                usage: |+
-                  3609ff0b-7192-4ec2-91c0-36b07eb445cd
-
-                description: >-
-                  This refers to the ID of the payment term that can be referred
-                  at an item or an order level in a catalog
-                owner: BPP
-                type: string
-              type:
-                required: Optional
-                usage: ON-ORDER
-                description: >-
-                  This refers to the type of the payment happens on order
-                  placement
-                owner: BPP
-                type: string
-              url:
-                required: Optional
-                usage: https://emandate.hdfcbank.in
-                description: >-
-                  This refers to the url used to complete the payment which is
-                  called by the BAP.
-                owner: BPP
-                type: string
-              params:
-                amount:
-                  required: Optional
-                  usage: 46360
-                  description: This refers to the sum of money required from a borrower.
-                  owner: BPP
-                  type: string
-                currency:
-                  required: Optional
-                  usage: INR
-                  description: This refers to the value of used currency of quoted price.
-                  owner: BPP
-                  type: string
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    It encompasses various details such as payment methods
-                    accepted, due dates, currency considerations, and any
-                    specific conditions or requirements related to completing
-                    the transaction.
-                  owner: BAP/BPP
-                  type: object
-                bank_code:
-                  required: Optional
-                  usage: ICFE
-                  description: It indicates the bank code.
-                  owner: BPP
-                  type: string
-                bank_account_number:
-                  required: Optional
-                  usage: ICFE
-                  description: It defines the the bank account number.
-                  owner: BPP
-                  type: string
-                virtual_payment_address:
-                  required: Optional
-                  usage: 9988199772@okicic
-                  description: It defines the the bank account number.
-                  owner: BPP
-                  type: string
-                transaction_id:
-                  required: Optional
-                  usage: f1f66d4b-2f3c-4b13-ab47-d1349e843b4d
-                  description: >-
-                    It refers to the transaction id of the generated id of the
-                    payment
-                  owner: BPP
-                  type: string
-              time:
-                range:
-                  start:
-                    required: Optional
-                    usage: '2023-06-01T00:00:00.000Z'
-                    description: >-
-                      This describes the start range time of the payment in
-                      various forms.
-                    owner: BPP
-                    type: string
-                  end:
-                    required: Optional
-                    usage: '2023-06-30T23:59:59.999Z'
-                    description: >-
-                      This describes the end range time of the payment in
-                      various forms.
-                    owner: BPP
-                    type: string
-                  _description:
-                    required: optional
-                    usage: '--'
-                    description: >-
-                      This refers to the detailed description of time range that
-                      exist in two variants - start range & end range
-                    owner: BPP
-                    type: object
-                _description:
-                  required: optional
-                  usage: '--'
-                  description: >-
-                    This refers to the detailed description of format of time
-                    used in the system, it can exist in single point in time,
-                    duration, or a structured timetable of operations.
-                  owner: BPP
-                  type: object
-                label:
-                  required: Optional
-                  usage: INSTALLMENT
-                  description: >-
-                    It refers to the involvment of identifying and categorizing
-                    the time- related information relevant to the payment
-                    process.
-                  owner: BPP
-                  type: string
-              _description:
-                required: optional
-                usage: '--'
-                description: >-
-                  This attribute refers to the terms of settlement that a BAP
-                  insinuates to the BPP for a single transaction. These terms
-                  includes the amount, payment destination, time of settlement
-                  and a transaction reference ID.
-                owner: BAP/BPP
-                type: object
-              status:
-                required: optional
-                usage: NOT-PAID
-                description: >-
-                  It provides details on whether the payment is pending,
-                  processed, completed, or if there are any specific issues or
-                  actions required.
-                owner: BAP
-                type: string
-              collected_by:
-                required: optional
-                usage: BPP
-                description: >-
-                  It encompasses the detailed process or mechanism employed for
-                  gathering payments.
-                owner: BAP
-                type: string
-            _description:
-              required: Mandatory
-              usage: '--'
-              description: >-
-                This refers to the complete description of the legal contract
-                created between the buyer and the seller.
-              owner: BAP/BPP
-              type: object
             id:
               required: optional
               usage: 66B7AEDF45
@@ -9644,14 +8112,6 @@ x-attributes:
                 ' description': Describes country code as per ISO 3166-1 and ISO 3166-2 format
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                ' description': >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -9659,20 +8119,6 @@ x-attributes:
                 ' description': Describes the city code this location is, or is located within
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                ' description': >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              ' description': The location where the transaction is intended to be fulfilled.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -9681,7 +8127,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             ' description': Describes tme of request generation in RFC3339 format
             owner: BAP
             type: string
@@ -9769,12 +8215,6 @@ x-attributes:
               ' description': Email address of the contact
               owner: BAP
               type: string
-            _description:
-              required: mandatory
-              usage: '--'
-              ' description': Describes the details of customer support
-              owner: BAP
-              type: object
       on_support:
         context:
           location:
@@ -9785,14 +8225,6 @@ x-attributes:
                 ' description': Describes country code as per ISO 3166-1 and ISO 3166-2 format
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                ' description': >-
-                  This attribute defines the country of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
             city:
               code:
                 required: mandatory
@@ -9800,20 +8232,6 @@ x-attributes:
                 ' description': Describes the city code this location is, or is located within
                 owner: BAP
                 type: string
-              _description:
-                required: Mandatory
-                usage: '--'
-                ' description': >-
-                  This attribute defines the city of location where the
-                  transaction is meant to be completed.
-                owner: BAP
-                type: object
-            _description:
-              required: Mandatory
-              usage: '--'
-              ' description': The location where the transaction is intended to be fulfilled.
-              owner: BAP
-              type: object
           domain:
             required: mandatory
             usage: ONDC:FIS15
@@ -9822,7 +8240,7 @@ x-attributes:
             type: string
           timestamp:
             required: mandatory
-            usage: '2023-03-23T04:41:16Z'
+            usage: 2023-03-23T04:41:16.000Z
             ' description': Describes tme of request generation in RFC3339 format
             owner: BAP
             type: string
@@ -9916,12 +8334,6 @@ x-attributes:
               ' description': Url of support helpdesk
               owner: BAP
               type: string
-            _description:
-              required: mandatory
-              usage: '--'
-              ' description': Describes the details of customer support
-              owner: BAP
-              type: object
 x-errorcodes:
   code:
     - Event: Application submittion failure

@@ -1,6 +1,6 @@
 summary: Credit Card
 details:
-  - description: Discovery of Credit Card
+  - description: Discovery of credit card
     mermaid: >-
       sequenceDiagram
         title Credit Card Discovery
@@ -59,9 +59,9 @@ details:
         title MF Ordering - Order Fulfillment
         participant Borrower Platform (BAP)
         participant Lender Platform (BPP)
-        Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+        Borrower Platform (BAP)->>Lender Platform (BPP): status-Request card application status
         Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide card application status
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
 references: if any
 steps:
@@ -85,7 +85,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/credit-card/search/search-request.yaml"
+        $ref: "../../examples/credit-card/search/search-request-1.yaml"
   - summary: The lender offers a static catalog of credit card types, such as cashback cards, travel cards, and reward cards.
     api: on_search
     details:
@@ -106,7 +106,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/credit-card/on_search/on_search-request.yaml"
+        $ref: "../../examples/credit-card/on_search/on_search-request-1.yaml"
   - summary: The applicant receives the credit card application form from the lender after providing details such as PAN, mobile number, name, address, date of birth, salary, employment type, and company name.
     api: form
     details:
@@ -131,10 +131,52 @@ steps:
     example:
       value: 
         $ref: ../../examples/credit-card/forms/credit-card-personal-info.html
-  - summary: The applicant chooses the credit card.
+  - summary: User search for available credit cards.
+    api: search
+    details:
+      - description: User explores credit card options by searching for credit card services over the network
+        mermaid: >-
+          sequenceDiagram
+            title Credit Card Discovery
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Borrower Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+            Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+            Gateway (BG)->>Lender Platform(BPP): search
+            Lender Platform(BPP)->>Gateway (BG) : ACK
+            end
+            Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+            Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/credit-card/search/search-request-2.yaml"
+  - summary: The lender offers a static catalog of credit card types, such as cashback cards, travel cards, and reward cards.
+    api: on_search
+    details:
+      - description: The lender platform provides a comprehensive catalog of various credit card types, including cashback and rewards cards.
+        mermaid: >-
+          sequenceDiagram
+            title Credit Card Discovery
+            Borrower Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Borrower Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+            Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+            Gateway (BG)->>Lender Platform(BPP): search
+            Lender Platform(BPP)->>Gateway (BG) : ACK
+            rect rgb(191, 223, 255)
+            Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+            Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/credit-card/on_search/on_search-request-2.yaml" 
+  - summary: The borrower chooses the credit card service.
     api: select
     details:
-      - description: The applicant selects the specific credit card they are interested in.
+      - description: The borrower selects the specific credit card service they are interested in.
         mermaid: >-
           sequenceDiagram
             title  Selection
@@ -145,7 +187,7 @@ steps:
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
-            rect rgb(191, 223, 255) 
+            rect rgb(191, 223, 255)
             Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             end
@@ -154,7 +196,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/credit-card/select/select-request-personal-info.yaml"         
+        $ref: "../../examples/credit-card/select/select-request-1.yaml"  
   - summary: The lender platform provides available credit cards.
     api: on_select
     details:
@@ -178,7 +220,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/credit-card/on_select/on_select-request-with-kyc-form-offline.yaml" 
+        $ref: "../../examples/credit-card/on_select/on_select-request-1.yaml" 
   - summary: The lender provides the relevant forms, such as links for KYC etc.
     api: form
     details:
@@ -262,7 +304,55 @@ steps:
     reference: if any
     example:
       value: 
-        $ref: ../../examples/credit-card/on_status/on_status-form-completed.yaml                     
+        $ref: ../../examples/credit-card/on_status/on_status-form-completed.yaml   
+  - summary: The borrower chooses the credit card service.
+    api: select
+    details:
+      - description: The borrower selects the specific credit card service they are interested in.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/credit-card/select/select-request-2.yaml"   
+  - summary: The lender platform provides available credit cards.
+    api: on_select
+    details:
+      - description: The lender platform responds with detailed information and the necessary application form for the selected credit card service.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/credit-card/on_select/on_select-request-2.yaml"                    
   - summary: The borrower initiates the credit card request by filling the form.
     api: init
     details:
@@ -286,7 +376,7 @@ steps:
     reference: if any
     example: 
       value:
-        $ref: "../../examples/credit-card/init/init-request-kyc-approved.yaml"
+        $ref: "../../examples/credit-card/init/init-request-1.yaml"
   - summary: The lender accepts the credit card request, displays the card details, and benefits.
     api: on_init
     details:
@@ -310,7 +400,7 @@ steps:
     reference: if any
     example:
       value:
-        $ref: "../../examples/credit-card/on_init/on_init-request-offline.yaml"   
+        $ref: "../../examples/credit-card/on_init/on_init-request-1.yaml"   
   - summary: The borrower confirms the credit card request.
     api: confirm
     details:
@@ -321,7 +411,7 @@ steps:
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -335,17 +425,17 @@ steps:
     example:
       value:
         $ref: "../../examples/credit-card/confirm/confirm-request.yaml"         
-  - summary: The lender confirms the Credit Card order.
+  - summary: The lender confirms the credit card order.
     api: on_confirm
     details:
-      - description: The lender platform confirms the Credit Card order and provides the final confirmation details.
+      - description: The lender platform confirms the credit card order and provides the final confirmation details.
         mermaid: >-
           sequenceDiagram
             title Order Confirmation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             participant Lender Form Service
-            Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form
             Lender Form Service-->>Borrower Platform (BAP): Form Received
             Borrower Platform (BAP)->>Lender Form Service: Form Submission
             Lender Form Service-->>Borrower Platform (BAP): Submission ID
@@ -370,16 +460,16 @@ steps:
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request card application status
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide card application status
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
         $ref: "../../examples/credit-card/status/status-request.yaml" 
-  - summary: The lender shares the latest loan status with the borrower.
+  - summary: The lender shares the latest card status with the borrower.
     api: on_status
     details:
       - description: The lender platform updates the borrower with the most recent status of the Credit Card application including installment details.
@@ -388,10 +478,10 @@ steps:
             title MF Ordering - Order Fulfillment
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request card application status
             Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide card application status
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
     reference: if any
