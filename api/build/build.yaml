@@ -118,6 +118,7 @@ paths:
               schema:
                 type: object
                 properties:
+                  context: null
                   message:
                     type: object
                     properties:
@@ -275,6 +276,10 @@ paths:
                       $ref: '#/components/schemas/Option/properties/id'
                     descriptor:
                       $ref: '#/components/schemas/Descriptor'
+                    tags:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/TagGroup'
                   required:
                     - order_id
               required:
@@ -531,7 +536,6 @@ paths:
                   $ref: '#/components/schemas/Error'
               required:
                 - context
-                - message
       responses:
         default:
           $ref: '#/paths/~1init/post/responses/default'
@@ -812,6 +816,10 @@ components:
           $ref: '#/components/schemas/Price'
         quantity:
           $ref: '#/components/schemas/ItemQuantity'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Address:
       description: Describes a postal address.
       type: string
@@ -1016,6 +1024,10 @@ components:
         ttl:
           description: Duration in seconds after which this catalog will expire
           type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Category:
       description: A label under which a collection of items can be grouped.
       type: object
@@ -1348,6 +1360,7 @@ components:
             - application/html
             - application/xml
             - text/html-multi
+            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -1886,6 +1899,10 @@ components:
             - COMPLETE
             - CANCELLED
             - CANCELLATION_INITIATED
+            - ACCEPTED
+            - REJECTED
+            - CREATED
+            - COMPLETED
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2030,6 +2047,10 @@ components:
             - $ref: '#/components/schemas/City'
         contact:
           $ref: '#/components/schemas/Contact'
+        creds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Credential'
     Payment:
       description: >-
         Describes the terms of settlement between the BAP and the BPP for a
@@ -2073,6 +2094,7 @@ components:
           format: uri
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2092,6 +2114,10 @@ components:
             source_bank_account_number:
               type: string
             source_virtual_payment_address:
+              type: string
+            source_bank_account_name:
+              type: string
+            bank_account_name:
               type: string
         type:
           type: string
@@ -2113,6 +2139,7 @@ components:
             - NOT-PAID
             - DELAYED
             - DEFERRED
+            - FAILED
         time:
           $ref: '#/components/schemas/Time'
         tags:
@@ -8062,7 +8089,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_46
             context:
               domain: ONDC:FIS12
               location:
@@ -17470,7 +17497,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_49
             context:
               domain: ONDC:FIS12
               location:
@@ -17748,7 +17775,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_48
             context:
               domain: ONDC:FIS12
               location:
@@ -18027,7 +18054,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_47
             context:
               domain: ONDC:FIS12
               location:
@@ -21591,7 +21618,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -21645,7 +21672,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -21779,7 +21806,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -21809,384 +21836,6 @@ x-flows:
                       form_response:
                         status: APPROVED
                         submission_id: F01_SUBMISSION_ID
-      - summary: The lender offers the required form for the chosen Gold Loan service.
-        api: on_select
-        details:
-          - description: >-
-              The lender platform responds with detailed information and the
-              necessary application form for the selected Gold Loan service.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                rect rgb(191, 223, 255) 
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                end
-        reference: if any
-        example:
-          value: &ref_43
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              action: on_select
-              version: 2.0.2
-              bap_id: bap.credit.becknprotocol.io
-              bap_uri: https://bap.credit.becknprotocol.io/
-              bpp_id: bpp.credit.becknprotocol.org
-              bpp_uri: https://bpp.credit.becknprotocol.org
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
-              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
-              timestamp: '2023-05-25T05:23:03.443Z'
-              ttl: P30M
-            message:
-              order:
-                provider:
-                  id: PROVIDER_ID
-                  descriptor:
-                    images:
-                      - url: >-
-                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
-                        size_type: sm
-                    name: ICICI Bank
-                    short_desc: ICICI Bank Ltd
-                    long_desc: ICICI Bank Ltd, India.
-                  tags:
-                    - descriptor:
-                        code: CONTACT_INFO
-                        name: Contact Info
-                      list:
-                        - descriptor:
-                            code: GRO_NAME
-                            name: Gro name
-                          value: ICICI
-                        - descriptor:
-                            code: GRO_EMAIL
-                            name: Gro email
-                          value: lifeline@iciciprulife.com
-                        - descriptor:
-                            code: GRO_CONTACT_NUMBER
-                            name: Gro contact number
-                          value: 1860 266 7766
-                        - descriptor:
-                            code: GRO_DESIGNATION
-                            name: Gro Designation
-                          value: Nodal Grievance Redressal Officer
-                        - descriptor:
-                            code: GRO_ADDRESS
-                            name: Gro Address
-                          value: >-
-                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
-                            mill compound 841, Senapati Bapat Marg, Elphinstone
-                            Road, Mumbai 400013
-                        - descriptor:
-                            code: CUSTOMER_SUPPORT_LINK
-                            name: Customer support link
-                          value: >-
-                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
-                        - descriptor:
-                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
-                            name: Customer support contact number
-                          value: 1800 1080
-                        - descriptor:
-                            code: CUSTOMER_SUPPORT_EMAIL
-                            name: Customer support email
-                          value: customer.care@icicibank.com
-                    - descriptor:
-                        code: LSP_INFO
-                        name: Lsp Info
-                      list:
-                        - descriptor:
-                            code: LSP_NAME
-                            name: Lsp name
-                          value: ICICI_LSP
-                        - descriptor:
-                            code: LSP_EMAIL
-                            name: Lsp email
-                          value: lsp@iciciprulife.com
-                        - descriptor:
-                            code: LSP_CONTACT_NUMBER
-                            name: Lsp contact number
-                          value: 1860 266 7766
-                        - descriptor:
-                            code: LSP_ADDRESS
-                            name: Lsp Address
-                          value: >-
-                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
-                            mill compound 841, Senapati Bapat Marg, Elphinstone
-                            Road, Mumbai 400013
-                  locations:
-                    - id: L1
-                      gps: 28.574909, 77.194029
-                      descriptor:
-                        name: Mumbai Central
-                      address: 123 Marine Drive, Mumbai, Maharashtra
-                      area_code: '400001'
-                    - id: L2
-                      gps: 28.584909, 77.134029
-                      descriptor:
-                        name: Mumbai East
-                      address: 162 Dadar, Mumbai, Maharashtra
-                      area_code: '400001'
-                    - id: L3
-                      gps: 28.584909, 77.134029
-                      descriptor:
-                        name: Mumbai West
-                      address: 182 Juhu, Mumbai, Maharashtra
-                      area_code: '400001'
-                items:
-                  - id: ITEM_ID_GOLD_LOAN_2
-                    descriptor:
-                      code: LOAN
-                      name: Gold Loan
-                    price:
-                      currency: INR
-                      value: '441800'
-                    location_ids:
-                      - L1
-                      - L2
-                      - L3
-                    tags:
-                      - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
-                        list:
-                          - descriptor:
-                              code: INTEREST_RATE
-                              name: Interest Rate
-                              short_desc: Loans starting from 12% (p.a)
-                            value: 12%
-                          - descriptor:
-                              code: LTV_RATIO
-                              name: LTV Ratio
-                              short_desc: Loan to value ration (75%)
-                            value: 75%
-                          - descriptor:
-                              code: TERM
-                              name: Loan Term
-                              short_desc: Loans Duration 5 months
-                            value: 5 months
-                          - descriptor:
-                              code: INTEREST_RATE_TYPE
-                              name: Interest rate type
-                              short_desc: Fixed Interest type
-                            value: FIXED
-                          - descriptor:
-                              code: APPLICATION_FEE
-                              name: Application Fees
-                              short_desc: Application Fees
-                            value: 1000 INR
-                          - descriptor:
-                              code: FORECLOSURE_FEE
-                              name: Foreclosure Penalty
-                              short_desc: Loan Foreclosure Penalty
-                            value: 0.5%
-                          - descriptor:
-                              code: INTEREST_RATE_CONVERSION_CHARGE
-                              name: interest rate conversion charges
-                              short_desc: Interest rate conversion charges
-                            value: 1000 INR
-                          - descriptor:
-                              code: DELAY_PENALTY_FEE
-                              name: Delayed payments penalty
-                              short_desc: Delayed payments penalty
-                            value: 5%
-                          - descriptor:
-                              code: OTHER_PENALTY_FEE
-                              name: Other Penal Charges
-                              short_desc: Other Penal Charges
-                            value: 1%
-                          - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
-                              code: TNC_LINK
-                              name: Terms & Conditions
-                              short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
-                          - descriptor:
-                              code: COOL_OFF_PERIOD
-                              name: cool off period
-                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
-                            value: PT30D
-                          - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: '46360'
-                          - descriptor:
-                              code: KFS_LINK
-                              name: Key Facts Statement Link
-                              short_desc: >-
-                                A link provided by the BPP points to a Key Fact
-                                Statement (KFS) document related to a loan. When
-                                accessed, the document is returned in text/html
-                                format, with the loan details organized in a
-                                standard HTML table. This format makes it easy
-                                for the buyer's app to read and reformat the
-                                information as needed. For more details, refer
-                                to the "KFS_LINK format" document in the
-                                "feature-ui" section.
-                            value: https://icicibank.com/loan/kfs-terms
-                    xinput:
-                      head:
-                        descriptor:
-                          name: Set Loan Amount
-                        index:
-                          min: 0
-                          cur: 0
-                          max: 1
-                        headings:
-                          - SET_LOAN_AMOUNT
-                          - JOURNEY_OFFLINE
-                      form:
-                        id: FO2
-                        mime_type: text/html
-                        url: >-
-                          https://https://bpp.credit.becknprotocol.org/loans-details/xinput?formid=FO2
-                        resubmit: false
-                        multiple_sumbissions: false
-                      required: true
-                quote:
-                  id: LOAN_LEAD_ID_OR_SIMILAR
-                  price:
-                    currency: INR
-                    value: '442300'
-                  breakup:
-                    - title: PRINCIPAL
-                      price:
-                        value: '400000'
-                        currency: INR
-                    - title: INTEREST
-                      price:
-                        value: '40000'
-                        currency: INR
-                    - title: PROCESSING_FEE
-                      price:
-                        value: '1800'
-                        currency: INR
-                    - title: OTHER_UPFRONT_CHARGES
-                      price:
-                        value: '0'
-                        currency: INR
-                    - title: INSURANCE_CHARGES
-                      price:
-                        value: '500'
-                        currency: INR
-                    - title: NET_DISBURSED_AMOUNT
-                      price:
-                        value: '397700'
-                        currency: INR
-                    - title: OTHER_CHARGES
-                      price:
-                        value: '0'
-                        currency: INR
-                  ttl: PT15D
-      - summary: The borrower adjusts the loan amount in the form by the lender.
-        api: form
-        details:
-          - description: >-
-              The borrower can reduce/change loan amount/term in the form
-              provided by lender.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                participant Lender Form Service
-                rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(loan amount)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                end
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        reference: if any
-        example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The borrower chooses the Gold Loan service.
-        api: select
-        details:
-          - description: >-
-              The borrower selects the specific Gold Loan service they are
-              interested in.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                end
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        reference: if any
-        example:
-          value: &ref_38
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6609
-              action: select
-              timestamp: '2023-05-25T05:23:03.443Z'
-              version: 2.0.2
-              bap_uri: https://bap.credit.becknprotocol.io/
-              bap_id: bap.credit.becknprotocol.io
-              ttl: PT10M
-              bpp_id: bpp.credit.becknprotocol.org
-              bpp_uri: https://bpp.credit.becknprotocol.org
-            message:
-              order:
-                provider:
-                  id: PROVIDER_ID
-                items:
-                  - id: ITEM_ID_GOLD_LOAN_2
-                    location_ids:
-                      - L2
-                    xinput:
-                      form:
-                        id: FO2
-                      form_response:
-                        status: SUCCESS
-                        submission_id: F02_SUBMISSION_ID
       - summary: >-
           The lender sends available loan offers for the chosen Gold Loan
           service.
@@ -22213,7 +21862,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_51
             context:
               domain: ONDC:FIS12
               location:
@@ -22429,10 +22078,9 @@ x-flows:
                           name: JOURNEY_OFFLINE
                         index:
                           min: 0
-                          cur: 1
-                          max: 1
+                          cur: 0
+                          max: 0
                         headings:
-                          - SET_LOAN_AMOUNT
                           - JOURNEY_OFFLINE
                       form:
                         id: FO3
@@ -22504,13 +22152,601 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 end
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: 'Individual KYC Redirect: This will redirected to different html page'
+      - summary: The lender sends the form status
+        api: on_status
+        details:
+          - description: The lender sends the form status
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_38
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_status
+              version: 2.0.2
+              bap_id: bap.credit.becknprotocol.io
+              bap_uri: https://bap.credit.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: f0fb1163-0d6a-4dd2-9b91-145219b151c8
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: GRO_DESIGNATION
+                            name: Gro Designation
+                          value: Nodal Grievance Redressal Officer
+                        - descriptor:
+                            code: GRO_ADDRESS
+                            name: Gro Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                  locations:
+                    - id: L2
+                      gps: 28.584909, 77.134029
+                      descriptor:
+                        name: Mumbai East
+                      address: 162 Dadar, Mumbai, Maharashtra
+                      area_code: '400001'
+                items:
+                  - id: ITEM_ID_GOLD_LOAN_2
+                    descriptor:
+                      code: LOAN
+                      name: Gold Loan
+                    price:
+                      currency: INR
+                      value: '441800'
+                    location_ids:
+                      - L2
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                          name: Loan Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                              short_desc: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                              short_desc: Interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '46360'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
+                    xinput:
+                      form:
+                        id: F03
+                      form_response:
+                        status: OFFLINE_PENDING
+                        submission_id: F03_SUBMISSION_ID
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '442300'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '400000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '40000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '1800'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '397700'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                fulfillments:
+                  - type: LOAN
+                    agent:
+                      person:
+                        name: Rajesh Sharma
+                      contact:
+                        phone: +91-99xx99xx99xx
+      - summary: The borrower request for order status
+        api: status
+        details:
+          - description: The borrower request for order status
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_39
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+              action: status
+              timestamp: '2023-05-25T05:23:03.443Z'
+              version: 2.0.2
+              bap_uri: https://bap.credit.becknprotocol.io/
+              bap_id: bap.credit.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+            message:
+              ref_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+      - summary: The lender sends the latest order status of the form
+        api: on_status
+        details:
+          - description: The lender sends the latest order status of the form
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: &ref_40
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_status
+              version: 2.0.2
+              bap_id: bap.credit.becknprotocol.io
+              bap_uri: https://bap.credit.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: GRO_DESIGNATION
+                            name: Gro Designation
+                          value: Nodal Grievance Redressal Officer
+                        - descriptor:
+                            code: GRO_ADDRESS
+                            name: Gro Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                  locations:
+                    - id: L2
+                      gps: 28.584909, 77.134029
+                      descriptor:
+                        name: Mumbai East
+                      address: 162 Dadar, Mumbai, Maharashtra
+                      area_code: '400001'
+                items:
+                  - id: ITEM_ID_GOLD_LOAN_2
+                    descriptor:
+                      code: LOAN
+                      name: Gold Loan
+                    price:
+                      currency: INR
+                      value: '441800'
+                    location_ids:
+                      - L2
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                          name: Loan Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                              short_desc: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                              short_desc: Interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '46360'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
+                    xinput:
+                      form:
+                        id: F03
+                      form_response:
+                        status: COMPLETED
+                        submission_id: F03_SUBMISSION_ID
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '442300'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '400000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '40000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '1800'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '397700'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
+                fulfillments:
+                  - type: LOAN
+                    agent:
+                      person:
+                        name: Rajesh Sharma
+                      contact:
+                        phone: +91-99xx99xx99xx
       - summary: The borrower initiates the Gold Loan request by filling the form.
         api: init
         details:
@@ -22535,7 +22771,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_53
             context:
               domain: ONDC:FIS12
               location:
@@ -22631,7 +22867,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_55
             context:
               domain: ONDC:FIS12
               location:
@@ -23018,7 +23254,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_57
             context:
               domain: ONDC:FIS12
               location:
@@ -23102,7 +23338,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_45
             context:
               domain: ONDC:FIS12
               location:
@@ -23752,7 +23988,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -23782,353 +24018,6 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: F01_SUBMISSION_ID
-      - summary: The lender offers the required form for the chosen Gold Loan service.
-        api: on_select
-        details:
-          - description: >-
-              The lender platform responds with detailed information and the
-              necessary application form for the selected Gold Loan service.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                rect rgb(191, 223, 255) 
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                end
-        reference: if any
-        example:
-          value: &ref_50
-            context:
-              domain: ONDC:FIS12
-              location:
-                country:
-                  code: IND
-                city:
-                  code: '*'
-              action: on_select
-              version: 2.0.2
-              bap_id: bap.credit.becknprotocol.io
-              bap_uri: https://bap.credit.becknprotocol.io/
-              bpp_id: bpp.credit.becknprotocol.org
-              bpp_uri: https://bpp.credit.becknprotocol.org
-              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
-              message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-              timestamp: '2023-05-25T05:23:03.443Z'
-              ttl: P30M
-            message:
-              order:
-                provider:
-                  id: PROVIDER_ID
-                  descriptor:
-                    images:
-                      - url: >-
-                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
-                        size_type: sm
-                    name: ICICI Bank
-                    short_desc: ICICI Bank Ltd
-                    long_desc: ICICI Bank Ltd, India.
-                  tags:
-                    - descriptor:
-                        code: CONTACT_INFO
-                        name: Contact Info
-                      list:
-                        - descriptor:
-                            code: GRO_NAME
-                            name: Gro name
-                          value: ICICI
-                        - descriptor:
-                            code: GRO_EMAIL
-                            name: Gro email
-                          value: lifeline@iciciprulife.com
-                        - descriptor:
-                            code: GRO_CONTACT_NUMBER
-                            name: Gro contact number
-                          value: 1860 266 7766
-                        - descriptor:
-                            code: GRO_DESIGNATION
-                            name: Gro Designation
-                          value: Nodal Grievance Redressal Officer
-                        - descriptor:
-                            code: GRO_ADDRESS
-                            name: Gro Address
-                          value: >-
-                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
-                            mill compound 841, Senapati Bapat Marg, Elphinstone
-                            Road, Mumbai 400013
-                        - descriptor:
-                            code: CUSTOMER_SUPPORT_LINK
-                            name: Customer support link
-                          value: >-
-                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
-                        - descriptor:
-                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
-                            name: Customer support contact number
-                          value: 1800 1080
-                        - descriptor:
-                            code: CUSTOMER_SUPPORT_EMAIL
-                            name: Customer support email
-                          value: customer.care@icicibank.com
-                    - descriptor:
-                        code: LSP_INFO
-                        name: Lsp Info
-                      list:
-                        - descriptor:
-                            code: LSP_NAME
-                            name: Lsp name
-                          value: ICICI_LSP
-                        - descriptor:
-                            code: LSP_EMAIL
-                            name: Lsp email
-                          value: lsp@iciciprulife.com
-                        - descriptor:
-                            code: LSP_CONTACT_NUMBER
-                            name: Lsp contact number
-                          value: 1860 266 7766
-                        - descriptor:
-                            code: LSP_ADDRESS
-                            name: Lsp Address
-                          value: >-
-                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
-                            mill compound 841, Senapati Bapat Marg, Elphinstone
-                            Road, Mumbai 400013
-                  locations:
-                    - id: L1
-                      gps: 28.574909, 77.194029
-                      descriptor:
-                        name: Mumbai Central
-                      address: 123 Marine Drive, Mumbai, Maharashtra
-                      area_code: '400001'
-                    - id: L2
-                      gps: 28.584909, 77.134029
-                      descriptor:
-                        name: Mumbai East
-                      address: 162 Dadar, Mumbai, Maharashtra
-                      area_code: '400001'
-                    - id: L3
-                      gps: 28.584909, 77.134029
-                      descriptor:
-                        name: Mumbai West
-                      address: 182 Juhu, Mumbai, Maharashtra
-                      area_code: '400001'
-                items:
-                  - id: ITEM_ID_GOLD_LOAN_1
-                    descriptor:
-                      code: LOAN
-                      name: Gold Loan
-                    price:
-                      currency: INR
-                      value: '441800'
-                    location_ids:
-                      - L1
-                      - L2
-                      - L3
-                    tags:
-                      - descriptor:
-                          code: LOAN_INFO
-                          name: Loan Information
-                        list:
-                          - descriptor:
-                              code: INTEREST_RATE
-                              name: Interest Rate
-                              short_desc: Loans starting from 12% (p.a)
-                            value: 12%
-                          - descriptor:
-                              code: LTV_RATIO
-                              name: LTV Ratio
-                              short_desc: Loan to value ration (75%)
-                            value: 75%
-                          - descriptor:
-                              code: TERM
-                              name: Loan Term
-                              short_desc: Loans Duration 5 months
-                            value: 5 months
-                          - descriptor:
-                              code: INTEREST_RATE_TYPE
-                              name: Interest rate type
-                              short_desc: Fixed Interest type
-                            value: FIXED
-                          - descriptor:
-                              code: APPLICATION_FEE
-                              name: Application Fees
-                              short_desc: Application Fees
-                            value: 1000 INR
-                          - descriptor:
-                              code: FORECLOSURE_FEE
-                              name: Foreclosure Penalty
-                              short_desc: Loan Foreclosure Penalty
-                            value: 0.5%
-                          - descriptor:
-                              code: INTEREST_RATE_CONVERSION_CHARGE
-                              name: interest rate conversion charges
-                              short_desc: Interest rate conversion charges
-                            value: 1000 INR
-                          - descriptor:
-                              code: DELAY_PENALTY_FEE
-                              name: Delayed payments penalty
-                              short_desc: Delayed payments penalty
-                            value: 5%
-                          - descriptor:
-                              code: OTHER_PENALTY_FEE
-                              name: Other Penal Charges
-                              short_desc: Other Penal Charges
-                            value: 1%
-                          - descriptor:
-                              code: ANNUAL_PERCENTAGE_RATE
-                              name: Annual Percentage Rate
-                              short_desc: >-
-                                Effective annualized interest rate in percentage
-                                computed on net disbursed amount using IRR
-                                approach and reducing balance method
-                            value: 5%
-                          - descriptor:
-                              code: REPAYMENT_FREQUENCY
-                              name: Repayment Frequency
-                              short_desc: Repayment Frequency by borrower
-                            value: MONTHLY
-                          - descriptor:
-                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
-                              name: Number of installments of repayment
-                              short_desc: >-
-                                Number of installments borrower has to make to
-                                payback the loan
-                            value: '45'
-                          - descriptor:
-                              code: TNC_LINK
-                              name: Terms & Conditions
-                              short_desc: Terms and Conditions
-                            value: https://icicibank.com/loan/tnc.html
-                          - descriptor:
-                              code: COOL_OFF_PERIOD
-                              name: cool off period
-                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
-                            value: PT30D
-                          - descriptor:
-                              code: INSTALLMENT_AMOUNT
-                              name: Installment amount
-                              short_desc: Each installment amount of repayment
-                            value: '46360'
-                          - descriptor:
-                              code: KFS_LINK
-                              name: Key Facts Statement Link
-                              short_desc: >-
-                                A link provided by the BPP points to a Key Fact
-                                Statement (KFS) document related to a loan. When
-                                accessed, the document is returned in text/html
-                                format, with the loan details organized in a
-                                standard HTML table. This format makes it easy
-                                for the buyer's app to read and reformat the
-                                information as needed. For more details, refer
-                                to the "KFS_LINK format" document in the
-                                "feature-ui" section.
-                            value: https://icicibank.com/loan/kfs-terms
-                    xinput:
-                      head:
-                        descriptor:
-                          name: Set Loan Amount
-                        index:
-                          min: 0
-                          cur: 0
-                          max: 1
-                        headings:
-                          - SET_LOAN_AMOUNT
-                          - JOURNEY_OFFLINE
-                      form:
-                        id: FO2
-                        mime_type: text/html
-                        url: >-
-                          https://https://bpp.credit.becknprotocol.org/loans-details/xinput?formid=FO2
-                        resubmit: false
-                        multiple_sumbissions: false
-                      required: true
-                quote:
-                  id: LOAN_LEAD_ID_OR_SIMILAR
-                  price:
-                    currency: INR
-                    value: '442300'
-                  breakup:
-                    - title: PRINCIPAL
-                      price:
-                        value: '400000'
-                        currency: INR
-                    - title: INTEREST
-                      price:
-                        value: '40000'
-                        currency: INR
-                    - title: PROCESSING_FEE
-                      price:
-                        value: '1800'
-                        currency: INR
-                    - title: OTHER_UPFRONT_CHARGES
-                      price:
-                        value: '0'
-                        currency: INR
-                    - title: INSURANCE_CHARGES
-                      price:
-                        value: '500'
-                        currency: INR
-                    - title: NET_DISBURSED_AMOUNT
-                      price:
-                        value: '397700'
-                        currency: INR
-                    - title: OTHER_CHARGES
-                      price:
-                        value: '0'
-                        currency: INR
-                  ttl: PT15D
-      - summary: The borrower adjusts the loan amount in the form by the lender.
-        api: form
-        details:
-          - description: >-
-              The borrower can reduce/change loan amount/term in the form
-              provided by lender.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                participant Lender Form Service
-                rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(loan amount)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                end
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        reference: if any
-        example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
-      - summary: The borrower chooses the Gold Loan service.
-        api: select
-        details:
-          - description: >-
-              The borrower selects the specific Gold Loan service they are
-              interested in.
-            mermaid: |-
-              sequenceDiagram
-                title  Selection
-                participant Borrower Platform (BAP)
-                participant Lender Platform (BPP)
-                participant Lender Form Service
-                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
-                Lender Form Service-->>Borrower Platform (BAP): Form Received
-                Borrower Platform (BAP)->>Lender Form Service: Form Submission
-                Lender Form Service-->>Borrower Platform (BAP): Submission ID
-                rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                end
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
-                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        reference: if any
-        example:
-          value: *ref_38
       - summary: >-
           The lender sends available loan offers for the chosen Gold Loan
           service.
@@ -24155,7 +24044,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_52
             context:
               domain: ONDC:FIS12
               location:
@@ -24385,10 +24274,9 @@ x-flows:
                           name: JOURNEY_OFFLINE
                         index:
                           min: 0
-                          cur: 1
-                          max: 1
+                          cur: 0
+                          max: 0
                         headings:
-                          - SET_LOAN_AMOUNT
                           - JOURNEY_OFFLINE
                       form:
                         id: FO3
@@ -24460,13 +24348,68 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Form Service: Form Submission
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 end
-                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
           value: 'Individual KYC Redirect: This will redirected to different html page'
+      - summary: The lender sends the form status
+        api: on_status
+        details:
+          - description: The lender sends the form status
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_38
+      - summary: The borrower request for order status
+        api: status
+        details:
+          - description: The borrower request for order status
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_39
+      - summary: The lender sends the latest order status of the form
+        api: on_status
+        details:
+          - description: The lender sends the latest order status of the form
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_40
       - summary: The borrower initiates the Gold Loan request by filling the form.
         api: init
         details:
@@ -24491,7 +24434,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_54
             context:
               domain: ONDC:FIS12
               location:
@@ -24587,7 +24530,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_56
             context:
               domain: ONDC:FIS12
               location:
@@ -24974,7 +24917,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_58
             context:
               domain: ONDC:FIS12
               location:
@@ -25058,7 +25001,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_58
+          value: &ref_59
             context:
               domain: ONDC:FIS12
               location:
@@ -25610,7 +25553,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_39
+          value: *ref_41
       - summary: The lender offers the required form for the chosen Gold Loan service.
         api: on_select
         details:
@@ -25862,13 +25805,12 @@ x-flows:
                     xinput:
                       head:
                         descriptor:
-                          name: Set Loan Amount
+                          name: Journey Offline
                         index:
                           min: 0
                           cur: 0
-                          max: 1
+                          max: 0
                         headings:
-                          - SET_LOAN_AMOUNT
                           - JOURNEY_OFFLINE
                       form:
                         id: FO2
@@ -25965,7 +25907,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_42
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -25990,7 +25932,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_41
+          value: *ref_43
       - summary: Approval of consent request
         api: select
         details:
@@ -26010,7 +25952,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_42
+          value: *ref_44
       - summary: The lender offers the required form for the chosen Gold Loan service.
         api: on_select
         details:
@@ -26030,7 +25972,283 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_43
+          value: &ref_50
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              action: on_select
+              version: 2.0.2
+              bap_id: bap.credit.becknprotocol.io
+              bap_uri: https://bap.credit.becknprotocol.io/
+              bpp_id: bpp.credit.becknprotocol.org
+              bpp_uri: https://bpp.credit.becknprotocol.org
+              transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+              message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+              timestamp: '2023-05-25T05:23:03.443Z'
+              ttl: P30M
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    images:
+                      - url: >-
+                          https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                        size_type: sm
+                    name: ICICI Bank
+                    short_desc: ICICI Bank Ltd
+                    long_desc: ICICI Bank Ltd, India.
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: ICICI
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: lifeline@iciciprulife.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: GRO_DESIGNATION
+                            name: Gro Designation
+                          value: Nodal Grievance Redressal Officer
+                        - descriptor:
+                            code: GRO_ADDRESS
+                            name: Gro Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: 1800 1080
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: customer.care@icicibank.com
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: ICICI_LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: lsp@iciciprulife.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: 1860 266 7766
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: >-
+                            One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                            mill compound 841, Senapati Bapat Marg, Elphinstone
+                            Road, Mumbai 400013
+                  locations:
+                    - id: L1
+                      gps: 28.574909, 77.194029
+                      descriptor:
+                        name: Mumbai Central
+                      address: 123 Marine Drive, Mumbai, Maharashtra
+                      area_code: '400001'
+                    - id: L2
+                      gps: 28.584909, 77.134029
+                      descriptor:
+                        name: Mumbai East
+                      address: 162 Dadar, Mumbai, Maharashtra
+                      area_code: '400001'
+                    - id: L3
+                      gps: 28.584909, 77.134029
+                      descriptor:
+                        name: Mumbai West
+                      address: 182 Juhu, Mumbai, Maharashtra
+                      area_code: '400001'
+                items:
+                  - id: ITEM_ID_GOLD_LOAN_2
+                    descriptor:
+                      code: LOAN
+                      name: Gold Loan
+                    price:
+                      currency: INR
+                      value: '441800'
+                    location_ids:
+                      - L1
+                      - L2
+                      - L3
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                          name: Loan Information
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                              name: Interest Rate
+                              short_desc: Loans starting from 12% (p.a)
+                            value: 12%
+                          - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
+                          - descriptor:
+                              code: TERM
+                              name: Loan Term
+                              short_desc: Loans Duration 5 months
+                            value: 5 months
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                              name: Interest rate type
+                              short_desc: Fixed Interest type
+                            value: FIXED
+                          - descriptor:
+                              code: APPLICATION_FEE
+                              name: Application Fees
+                              short_desc: Application Fees
+                            value: 1000 INR
+                          - descriptor:
+                              code: FORECLOSURE_FEE
+                              name: Foreclosure Penalty
+                              short_desc: Loan Foreclosure Penalty
+                            value: 0.5%
+                          - descriptor:
+                              code: INTEREST_RATE_CONVERSION_CHARGE
+                              name: interest rate conversion charges
+                              short_desc: Interest rate conversion charges
+                            value: 1000 INR
+                          - descriptor:
+                              code: DELAY_PENALTY_FEE
+                              name: Delayed payments penalty
+                              short_desc: Delayed payments penalty
+                            value: 5%
+                          - descriptor:
+                              code: OTHER_PENALTY_FEE
+                              name: Other Penal Charges
+                              short_desc: Other Penal Charges
+                            value: 1%
+                          - descriptor:
+                              code: ANNUAL_PERCENTAGE_RATE
+                              name: Annual Percentage Rate
+                              short_desc: >-
+                                Effective annualized interest rate in percentage
+                                computed on net disbursed amount using IRR
+                                approach and reducing balance method
+                            value: 5%
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                              name: Repayment Frequency
+                              short_desc: Repayment Frequency by borrower
+                            value: MONTHLY
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                              name: Number of installments of repayment
+                              short_desc: >-
+                                Number of installments borrower has to make to
+                                payback the loan
+                            value: '45'
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: COOL_OFF_PERIOD
+                              name: cool off period
+                              short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                            value: PT30D
+                          - descriptor:
+                              code: INSTALLMENT_AMOUNT
+                              name: Installment amount
+                              short_desc: Each installment amount of repayment
+                            value: '46360'
+                          - descriptor:
+                              code: KFS_LINK
+                              name: Key Facts Statement Link
+                              short_desc: >-
+                                A link provided by the BPP points to a Key Fact
+                                Statement (KFS) document related to a loan. When
+                                accessed, the document is returned in text/html
+                                format, with the loan details organized in a
+                                standard HTML table. This format makes it easy
+                                for the buyer's app to read and reformat the
+                                information as needed. For more details, refer
+                                to the "KFS_LINK format" document in the
+                                "feature-ui" section.
+                            value: https://icicibank.com/loan/kfs-terms
+                    xinput:
+                      head:
+                        descriptor:
+                          name: Journey Offline
+                        index:
+                          min: 0
+                          cur: 0
+                          max: 0
+                        headings:
+                          - JOURNEY_OFFLINE
+                      form:
+                        id: FO2
+                        mime_type: text/html
+                        url: >-
+                          https://https://bpp.credit.becknprotocol.org/loans-details/xinput?formid=FO2
+                        resubmit: false
+                        multiple_sumbissions: false
+                      required: true
+                quote:
+                  id: LOAN_LEAD_ID_OR_SIMILAR
+                  price:
+                    currency: INR
+                    value: '442300'
+                  breakup:
+                    - title: PRINCIPAL
+                      price:
+                        value: '400000'
+                        currency: INR
+                    - title: INTEREST
+                      price:
+                        value: '40000'
+                        currency: INR
+                    - title: PROCESSING_FEE
+                      price:
+                        value: '1800'
+                        currency: INR
+                    - title: OTHER_UPFRONT_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                    - title: INSURANCE_CHARGES
+                      price:
+                        value: '500'
+                        currency: INR
+                    - title: NET_DISBURSED_AMOUNT
+                      price:
+                        value: '397700'
+                        currency: INR
+                    - title: OTHER_CHARGES
+                      price:
+                        value: '0'
+                        currency: INR
+                  ttl: PT15D
   - summary: Gold Loan - Loan Foreclosure
     details:
       - description: Detailed process for loan forclosure
@@ -26066,7 +26284,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_45
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -26086,7 +26304,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_59
+          value: &ref_60
             context:
               domain: ONDC:FIS12
               location:
@@ -26129,7 +26347,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_62
+          value: &ref_63
             context:
               domain: ONDC:FIS12
               location:
@@ -26545,7 +26763,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_63
+          value: &ref_64
             context:
               domain: ONDC:FIS12
               location:
@@ -26973,7 +27191,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_45
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -26993,7 +27211,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_61
+          value: &ref_62
             context:
               domain: ONDC:FIS12
               location:
@@ -27887,7 +28105,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_45
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -27907,7 +28125,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_60
+          value: &ref_61
             context:
               domain: ONDC:FIS12
               location:
@@ -27953,7 +28171,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_64
+          value: &ref_65
             context:
               domain: ONDC:FIS12
               location:
@@ -28777,7 +28995,7 @@ x-examples:
         examples:
           - summary: personal loan catalog
             description: TBD
-            value: *ref_45
+            value: *ref_46
       select:
         examples:
           - summary: select-request-personal-info
@@ -30763,13 +30981,13 @@ x-examples:
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
           - summary: on_status-form-completed
             description: TBD
-            value: *ref_46
+            value: *ref_47
           - summary: on_status-form-processing
             description: TBD
-            value: *ref_47
+            value: *ref_48
           - summary: on_status-form-submitted
             description: TBD
-            value: *ref_48
+            value: *ref_49
           - summary: on_status-request-prepayment
             description: TBD
             value:
@@ -31233,87 +31451,25 @@ x-examples:
         examples:
           - summary: select-request-gold-info
             description: TBD
-            value: *ref_39
+            value: *ref_41
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_40
+            value: *ref_42
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_42
+            value: *ref_44
       on_select:
         examples:
           - summary: on_select-request-consent-info
             description: TBD
-            value: *ref_41
+            value: *ref_43
           - summary: on_select-request-set-loan-amount
             description: TBD
-            value: *ref_43
+            value: *ref_50
           - summary: on_select-request-JOURNEY_OFFLINE
             description: TBD
-            value: *ref_49
-          - summary: on_select-request-set-loan-amount_2
-            description: TBD
-            value: *ref_50
-          - summary: on_select-request-JOURNEY_OFFLINE_2
-            description: TBD
             value: *ref_51
-      init:
-        examples:
-          - summary: init-request-kyc-approved
-            description: TBD
-            value: *ref_52
-          - summary: init-request-kyc-approved_2
-            description: TBD
-            value: *ref_53
-      on_init:
-        examples:
-          - summary: on_init-request-loan-agreement-form
-            description: TBD
-            value: *ref_54
-          - summary: on_init-request-loan-agreement-form_2
-            description: TBD
-            value: *ref_55
-      confirm:
-        examples:
-          - summary: confirm-request
-            description: TBD
-            value: *ref_56
-          - summary: confirm-request_2
-            description: TBD
-            value: *ref_57
-      on_confirm:
-        examples:
-          - summary: on_confirm-request
-            description: TBD
-            value: *ref_44
-          - summary: on_confirm-request_2
-            description: TBD
-            value: *ref_58
-      update:
-        examples:
-          - summary: update-request_foreclosure
-            description: TBD
-            value: *ref_59
-          - summary: update-request-pre-part
-            description: TBD
-            value: *ref_60
-          - summary: update-request-missed-emi
-            description: TBD
-            value: *ref_61
-      on_update:
-        examples:
-          - summary: on_update-request
-            description: TBD
-            value: *ref_62
-          - summary: on_update-request-prepayment
-            description: TBD
-            value: *ref_63
-          - summary: on_update-success-prepayment
-            description: TBD
-            value: *ref_64
-      status:
-        examples:
-          - summary: status-request
+          - summary: on_select-request-set-loan-amount_2
             description: TBD
             value:
               context:
@@ -31323,18 +31479,338 @@ x-examples:
                     code: IND
                   city:
                     code: '*'
-                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
-                action: status
-                timestamp: '2023-05-25T05:23:03.443Z'
+                action: on_select
                 version: 2.0.2
-                bap_uri: https://bap.credit.becknprotocol.io/
                 bap_id: bap.credit.becknprotocol.io
-                ttl: PT10M
+                bap_uri: https://bap.credit.becknprotocol.io/
                 bpp_id: bpp.credit.becknprotocol.org
                 bpp_uri: https://bpp.credit.becknprotocol.org
+                transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+                message_id: bb579fb8-cb82-4824-be12-fcbc405b6608
+                timestamp: '2023-05-25T05:23:03.443Z'
+                ttl: P30M
               message:
-                ref_id: a9aaecca-10b7-4d19-b640-b047a7c62196
+                order:
+                  provider:
+                    id: PROVIDER_ID
+                    descriptor:
+                      images:
+                        - url: >-
+                            https://www.icicibank.com/content/dam/icicibank/india/assets/images/header/logo.png
+                          size_type: sm
+                      name: ICICI Bank
+                      short_desc: ICICI Bank Ltd
+                      long_desc: ICICI Bank Ltd, India.
+                    tags:
+                      - descriptor:
+                          code: CONTACT_INFO
+                          name: Contact Info
+                        list:
+                          - descriptor:
+                              code: GRO_NAME
+                              name: Gro name
+                            value: ICICI
+                          - descriptor:
+                              code: GRO_EMAIL
+                              name: Gro email
+                            value: lifeline@iciciprulife.com
+                          - descriptor:
+                              code: GRO_CONTACT_NUMBER
+                              name: Gro contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: GRO_DESIGNATION
+                              name: Gro Designation
+                            value: Nodal Grievance Redressal Officer
+                          - descriptor:
+                              code: GRO_ADDRESS
+                              name: Gro Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_LINK
+                              name: Customer support link
+                            value: >-
+                              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                              name: Customer support contact number
+                            value: 1800 1080
+                          - descriptor:
+                              code: CUSTOMER_SUPPORT_EMAIL
+                              name: Customer support email
+                            value: customer.care@icicibank.com
+                      - descriptor:
+                          code: LSP_INFO
+                          name: Lsp Info
+                        list:
+                          - descriptor:
+                              code: LSP_NAME
+                              name: Lsp name
+                            value: ICICI_LSP
+                          - descriptor:
+                              code: LSP_EMAIL
+                              name: Lsp email
+                            value: lsp@iciciprulife.com
+                          - descriptor:
+                              code: LSP_CONTACT_NUMBER
+                              name: Lsp contact number
+                            value: 1860 266 7766
+                          - descriptor:
+                              code: LSP_ADDRESS
+                              name: Lsp Address
+                            value: >-
+                              One Indiabulls centre, Tower 1, 18th Floor Jupiter
+                              mill compound 841, Senapati Bapat Marg,
+                              Elphinstone Road, Mumbai 400013
+                    locations:
+                      - id: L1
+                        gps: 28.574909, 77.194029
+                        descriptor:
+                          name: Mumbai Central
+                        address: 123 Marine Drive, Mumbai, Maharashtra
+                        area_code: '400001'
+                      - id: L2
+                        gps: 28.584909, 77.134029
+                        descriptor:
+                          name: Mumbai East
+                        address: 162 Dadar, Mumbai, Maharashtra
+                        area_code: '400001'
+                      - id: L3
+                        gps: 28.584909, 77.134029
+                        descriptor:
+                          name: Mumbai West
+                        address: 182 Juhu, Mumbai, Maharashtra
+                        area_code: '400001'
+                  items:
+                    - id: ITEM_ID_GOLD_LOAN_1
+                      descriptor:
+                        code: LOAN
+                        name: Gold Loan
+                      price:
+                        currency: INR
+                        value: '441800'
+                      location_ids:
+                        - L1
+                        - L2
+                        - L3
+                      tags:
+                        - descriptor:
+                            code: LOAN_INFO
+                            name: Loan Information
+                          list:
+                            - descriptor:
+                                code: INTEREST_RATE
+                                name: Interest Rate
+                                short_desc: Loans starting from 12% (p.a)
+                              value: 12%
+                            - descriptor:
+                                code: LTV_RATIO
+                                name: LTV Ratio
+                                short_desc: Loan to value ration (75%)
+                              value: 75%
+                            - descriptor:
+                                code: TERM
+                                name: Loan Term
+                                short_desc: Loans Duration 5 months
+                              value: 5 months
+                            - descriptor:
+                                code: INTEREST_RATE_TYPE
+                                name: Interest rate type
+                                short_desc: Fixed Interest type
+                              value: FIXED
+                            - descriptor:
+                                code: APPLICATION_FEE
+                                name: Application Fees
+                                short_desc: Application Fees
+                              value: 1000 INR
+                            - descriptor:
+                                code: FORECLOSURE_FEE
+                                name: Foreclosure Penalty
+                                short_desc: Loan Foreclosure Penalty
+                              value: 0.5%
+                            - descriptor:
+                                code: INTEREST_RATE_CONVERSION_CHARGE
+                                name: interest rate conversion charges
+                                short_desc: Interest rate conversion charges
+                              value: 1000 INR
+                            - descriptor:
+                                code: DELAY_PENALTY_FEE
+                                name: Delayed payments penalty
+                                short_desc: Delayed payments penalty
+                              value: 5%
+                            - descriptor:
+                                code: OTHER_PENALTY_FEE
+                                name: Other Penal Charges
+                                short_desc: Other Penal Charges
+                              value: 1%
+                            - descriptor:
+                                code: ANNUAL_PERCENTAGE_RATE
+                                name: Annual Percentage Rate
+                                short_desc: >-
+                                  Effective annualized interest rate in
+                                  percentage computed on net disbursed amount
+                                  using IRR approach and reducing balance method
+                              value: 5%
+                            - descriptor:
+                                code: REPAYMENT_FREQUENCY
+                                name: Repayment Frequency
+                                short_desc: Repayment Frequency by borrower
+                              value: MONTHLY
+                            - descriptor:
+                                code: NUMBER_OF_INSTALLMENTS_OF_REPAYMENT
+                                name: Number of installments of repayment
+                                short_desc: >-
+                                  Number of installments borrower has to make to
+                                  payback the loan
+                              value: '45'
+                            - descriptor:
+                                code: TNC_LINK
+                                name: Terms & Conditions
+                                short_desc: Terms and Conditions
+                              value: https://icicibank.com/loan/tnc.html
+                            - descriptor:
+                                code: COOL_OFF_PERIOD
+                                name: cool off period
+                                short_desc: "Cooling off/look-up period during which borrower shall not be\tTAGS m jayega charged any penalty"
+                              value: PT30D
+                            - descriptor:
+                                code: INSTALLMENT_AMOUNT
+                                name: Installment amount
+                                short_desc: Each installment amount of repayment
+                              value: '46360'
+                            - descriptor:
+                                code: KFS_LINK
+                                name: Key Facts Statement Link
+                                short_desc: >-
+                                  A link provided by the BPP points to a Key
+                                  Fact Statement (KFS) document related to a
+                                  loan. When accessed, the document is returned
+                                  in text/html format, with the loan details
+                                  organized in a standard HTML table. This
+                                  format makes it easy for the buyer's app to
+                                  read and reformat the information as needed.
+                                  For more details, refer to the "KFS_LINK
+                                  format" document in the "feature-ui" section.
+                              value: https://icicibank.com/loan/kfs-terms
+                      xinput:
+                        head:
+                          descriptor:
+                            name: Set Loan Amount
+                          index:
+                            min: 0
+                            cur: 0
+                            max: 1
+                          headings:
+                            - SET_LOAN_AMOUNT
+                            - JOURNEY_OFFLINE
+                        form:
+                          id: FO2
+                          mime_type: text/html
+                          url: >-
+                            https://https://bpp.credit.becknprotocol.org/loans-details/xinput?formid=FO2
+                          resubmit: false
+                          multiple_sumbissions: false
+                        required: true
+                  quote:
+                    id: LOAN_LEAD_ID_OR_SIMILAR
+                    price:
+                      currency: INR
+                      value: '442300'
+                    breakup:
+                      - title: PRINCIPAL
+                        price:
+                          value: '400000'
+                          currency: INR
+                      - title: INTEREST
+                        price:
+                          value: '40000'
+                          currency: INR
+                      - title: PROCESSING_FEE
+                        price:
+                          value: '1800'
+                          currency: INR
+                      - title: OTHER_UPFRONT_CHARGES
+                        price:
+                          value: '0'
+                          currency: INR
+                      - title: INSURANCE_CHARGES
+                        price:
+                          value: '500'
+                          currency: INR
+                      - title: NET_DISBURSED_AMOUNT
+                        price:
+                          value: '397700'
+                          currency: INR
+                      - title: OTHER_CHARGES
+                        price:
+                          value: '0'
+                          currency: INR
+                    ttl: PT15D
+          - summary: on_select-request-JOURNEY_OFFLINE_2
+            description: TBD
+            value: *ref_52
+      init:
+        examples:
+          - summary: init-request-kyc-approved
+            description: TBD
+            value: *ref_53
+          - summary: init-request-kyc-approved_2
+            description: TBD
+            value: *ref_54
+      on_init:
+        examples:
+          - summary: on_init-request-loan-agreement-form
+            description: TBD
+            value: *ref_55
+          - summary: on_init-request-loan-agreement-form_2
+            description: TBD
+            value: *ref_56
+      confirm:
+        examples:
+          - summary: confirm-request
+            description: TBD
+            value: *ref_57
+          - summary: confirm-request_2
+            description: TBD
+            value: *ref_58
+      on_confirm:
+        examples:
+          - summary: on_confirm-request
+            description: TBD
+            value: *ref_45
+          - summary: on_confirm-request_2
+            description: TBD
+            value: *ref_59
+      update:
+        examples:
+          - summary: update-request_foreclosure
+            description: TBD
+            value: *ref_60
+          - summary: update-request-pre-part
+            description: TBD
+            value: *ref_61
+          - summary: update-request-missed-emi
+            description: TBD
+            value: *ref_62
+      on_update:
+        examples:
+          - summary: on_update-request
+            description: TBD
+            value: *ref_63
+          - summary: on_update-request-prepayment
+            description: TBD
+            value: *ref_64
+          - summary: on_update-success-prepayment
+            description: TBD
+            value: *ref_65
+      status:
+        examples:
+          - summary: status-request
+            description: TBD
+            value: *ref_39
       on_status:
         examples:
           - summary: on_status-request
