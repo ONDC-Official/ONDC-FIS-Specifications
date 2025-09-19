@@ -25,9 +25,15 @@ const BRANCHES = [
   },
    {
     code: "release-FIS12-2.0.2",
-    name: "Personal Loan",
-    short_desc: "Credit - Personal Loan use case",
+    name: "Personal Loan | Gold Loan",
+    short_desc: "Credit - Personal & Gold Loan use case",
     status: "RELEASED",
+  },
+   {
+    code: "draft-FIS12-2.0.3",
+    name: "Personal Loan | Gold Loan | Credit Card",
+    short_desc: "Credit - Personal, Gold Loan & Credit Card use case",
+    status: "DRAFT",
   },
   {
     code: "release-FIS12-invoice-2.1.0",
