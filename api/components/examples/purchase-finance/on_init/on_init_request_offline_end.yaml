@@ -4,11 +4,11 @@ context:
     country:
       code: IND
     city:
-      code: "*"
+      code: '*'
   transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
-  message_id: 980f2214-8b3b-4388-a511-55e922010f37
-  action: on_update
-  timestamp: "2024-05-06T04:20:25.443Z"
+  message_id: a9b64b7f-93c9-4059-bc89-e7f782dbe68d
+  action: on_init
+  timestamp: '2024-05-06T04:16:07.443Z'
   version: 2.2.1
   bap_uri: https://bap.purchase-finance.becknprotocol.io/
   bap_id: bap.purchase-finance.becknprotocol.io
@@ -17,8 +17,6 @@ context:
   bpp_uri: https://bpp.purchase-finance.becknprotoco.org
 message:
   order:
-    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
-    status: COMPLETE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -87,14 +85,13 @@ message:
           code: LOAN
           name: Loan
         category_ids:
-          - "101123"
+          - '101123'
           - '101125'
         price:
           currency: INR
-          value: "70000"
+          value: '70000'
         fulfillment_ids:
           - F1
-          - F2
         tags:
           - descriptor:
               code: INFO
@@ -157,7 +154,7 @@ message:
                   short_desc: >-
                     Number of installments borrower has to make to payback the
                     loan
-                value: "7"
+                value: '7'
               - descriptor:
                   code: TNC_LINK
                   name: Terms & Conditions
@@ -198,17 +195,9 @@ message:
                   code: SET_DOWN_PAYMENT
                 value: "F03_SUBMISSION_ID"
               - descriptor:
-                  name: KYC
-                  code: KYC
+                  name: KYC, enach, esign
+                  code: KYC_ENACH_ESIGN
                 value: "F04_SUBMISSION_ID"
-              - descriptor:
-                  name: Emandate
-                  code: EMANDATE
-                value: F05_SUBMISSION_ID
-              - descriptor:
-                  name: Esign
-                  code: ESIGN
-                value: F06_SUBMISSION_ID
     fulfillments:
       - customer:
           person:
@@ -218,123 +207,15 @@ message:
             email: john.doe@example.com
         state:
           descriptor:
-            code: SANCTIONED
+            code: INITIATED
         type: LOAN
         id: F1
-      - customer:
-          person:
-            name: John Doe
-            creds:
-              - type: IMEI
-                id: '324124135678567'
-          contact:
-            phone: +91-9999999999
-            email: john.doe@example.com
-        state:
-          descriptor:
-            code: PLACED
-        type: BASE_ORDER
-        id: F2
-    quote:
-      id: LOAN_LEAD_ID_OR_SIMILAR
-      price:
-        currency: INR
-        value: "70000"
-      breakup:
-        - title: PRINCIPAL_AMOUNT
-          price:
-            value: "65000"
-            currency: INR
-        - title: INTEREST_AMOUNT
-          price:
-            value: "4000"
-            currency: INR
-        - title: PROCESSING_FEE
-          price:
-            value: "500"
-            currency: INR
-        - title: OTHER_UPFRONT_CHARGES
-          price:
-            value: "0"
-            currency: INR
-        - title: INSURANCE_CHARGES
-          price:
-            value: "500"
-            currency: INR
-        - title: NET_DISBURSED_AMOUNT
-          price:
-            value: "64000"
-            currency: INR
-        - title: OTHER_CHARGES
-          price:
-            value: "0"
-            currency: INR
-      ttl: P15D
-    cancellation_terms:
-      - fulfillment_state:
-          descriptor:
-            code: SANCTIONED
-        cancellation_fee:
-          percentage: 3%
-      - external_ref:
-          mimetype: text/html
-          url: https://bpp.credit.becknprotocol.org/tnc.html
-      - fulfillment_state:
-          descriptor:
-            code: DISBURSED
-        cancellation_fee:
-          percentage: 5%
     payments:
       - id: PAYMENT_ID_PURCHASE_FINANCE
-        params:
-          amount: "29571"
-          currency: INR
-          transaction_id: "57aceecb-e73d-4b1e-9257-a69b10b33cd9"
-        status: PAID
-        time:
-          timestamp: "2024-10-01T04:00:00.000Z"
-          label: FORECLOSURE
-        type: POST_FULFILLMENT
-      - id: PAYMENT_ID_DOWNPAYMENT
-        type: PRE_ORDER
-        status: PAID
-        collected_by: BPP
-        params:
-          amount: '1000'
-          currency: INR
-          transaction_id: 3b5a664d-077e-47f0-96d1-06e68d397c78
-      - id: PAYMENT_ID_PURCHASE_FINANCE
         type: ON_ORDER
-        status: PAID
+        status: NOT-PAID
         collected_by: BPP
         tags:
-          - descriptor:
-              code: BAP_TERMS
-              name: BAP Terms of Engagement
-            display: false
-            list:
-              - descriptor:
-                  code: BUYER_FINDER_FEES_TYPE
-                value: percent-annualized
-              - descriptor:
-                  code: BUYER_FINDER_FEES_PERCENTAGE
-                value: '1'
-              - descriptor:
-                  code: SETTLEMENT_AMOUNT
-                value: '1159'
-              - descriptor:
-                  code: SETTLEMENT_TYPE
-                value: neft
-              - descriptor:
-                  code: DELAY_INTEREST
-                value: '5'
-              - descriptor:
-                  code: STATIC_TERMS
-                value: >-
-                  https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-              - descriptor:
-                  code: OFFLINE_CONTRACT
-                value: 'true'
           - descriptor:
               code: BPP_TERMS
               name: BPP Terms of Engagement
@@ -368,72 +249,25 @@ message:
               - descriptor:
                   code: OFFLINE_CONTRACT
                 value: 'true'
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_PURCHASE_FINANCE
-        params:
-          amount: "9857"
-          currency: INR
-          transaction_id: f80a3cb4-9990-4342-b982-9bc9929f1407
+      - id: PAYMENT_ID_DOWNPAYMENT
+        type: PRE_ORDER
         status: PAID
-        time:
-          label: INSTALLMENT
-          timestamp: "2024-06-01T04:00:00.000Z"
-          range:
-            start: "2024-06-01T04:00:00.000Z"
-            end: "2024-06-30T23:59:59.999Z"
-        tags:
-          - descriptor:
-              code: BREAKUP
-              name: Emi Breakup
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "9286 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Loan Interest
-                value: "571 INR" 
-              # - descriptor:
-              #     code: PROCESSING_FEE
-              #     name: Processing Fee
-              #     short_desc: Processing Fee
-              #   value: "200 INR"
-              # - descriptor:
-              #     code: OTHER_UPFRONT_CHARGES
-              #     name: other upfront charges
-              #     short_desc: other upfront charges
-              #   value: "0 INR" 
-              # - descriptor:
-              #     code: INSURANCE_CHARGES
-              #     name: Insurance Charges
-              #     short_desc: Insurance Charges
-              #   value: "300 INR"
-              # - descriptor:
-              #     code: NET_DISBURSED_AMOUNT
-              #     name: net disbursed amount
-              #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
-              # - descriptor:
-              #     code: OTHER_CHARGES
-              #     name: other charges
-              #     short_desc: other charges
-              #   value: "0 INR"           
+        collected_by: BPP
+        params:
+          amount: '1000'
+          currency: INR
+          transaction_id: 3b5a664d-077e-47f0-96d1-06e68d397c78
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PURCHASE_FINANCE
         params:
-          amount: "9857"
+          amount: '9857'
           currency: INR
-          transaction_id: d9629d04-c819-48a9-90e0-27b11dc0b177
-        status: PAID
+        status: NOT-PAID
         time:
           label: INSTALLMENT
-          timestamp: "2024-07-01T04:00:00.000Z"
           range:
-            start: "2024-07-01T04:00:00.000Z"
-            end: "2024-07-31T23:59:59.999Z"
+            start: '2024-06-01T04:00:00.000Z'
+            end: '2023-06-30T23:59:59.999Z'
         tags:
           - descriptor:
               code: BREAKUP
@@ -443,50 +277,48 @@ message:
                   code: PRINCIPAL_AMOUNT
                   name: Principal
                   short_desc: Loan Principal
-                value: "9286 INR"
+                value: 9286 INR
               - descriptor:
                   code: INTEREST_AMOUNT
                   name: Interest
                   short_desc: Loan Interest
-                value: "571 INR" 
+                value: 571 INR
               # - descriptor:
               #     code: PROCESSING_FEE
               #     name: Processing Fee
               #     short_desc: Processing Fee
-              #   value: "200 INR"
+              #   value: 200 INR
               # - descriptor:
               #     code: OTHER_UPFRONT_CHARGES
               #     name: other upfront charges
               #     short_desc: other upfront charges
-              #   value: "0 INR" 
+              #   value: 0 INR
               # - descriptor:
               #     code: INSURANCE_CHARGES
               #     name: Insurance Charges
               #     short_desc: Insurance Charges
-              #   value: "300 INR"
+              #   value: 300 INR
               # - descriptor:
               #     code: NET_DISBURSED_AMOUNT
               #     name: net disbursed amount
               #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
+              #   value: 8500 INR
               # - descriptor:
               #     code: OTHER_CHARGES
               #     name: other charges
               #     short_desc: other charges
-              #   value: "0 INR" 
+              #   value: 0 INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PURCHASE_FINANCE
         params:
-          amount: "9857"
+          amount: '9857'
           currency: INR
-          transaction_id: 07d6511d-1b0b-4fd5-a786-cb0676b9edb5
-        status: PAID
+        status: NOT-PAID
         time:
           label: INSTALLMENT
-          timestamp: "2024-08-01T04:00:00.000Z"
           range:
-            start: "2024-08-01T04:00:00.000Z"
-            end: "2024-08-31T23:59:59.999Z"
+            start: '2024-07-01T04:00:00.000Z'
+            end: '2023-07-31T23:59:59.999Z'
         tags:
           - descriptor:
               code: BREAKUP
@@ -496,50 +328,48 @@ message:
                   code: PRINCIPAL_AMOUNT
                   name: Principal
                   short_desc: Loan Principal
-                value: "9286 INR"
+                value: 9286 INR
               - descriptor:
                   code: INTEREST_AMOUNT
                   name: Interest
                   short_desc: Loan Interest
-                value: "571 INR" 
+                value: 571 INR
               # - descriptor:
               #     code: PROCESSING_FEE
               #     name: Processing Fee
               #     short_desc: Processing Fee
-              #   value: "200 INR"
+              #   value: 200 INR
               # - descriptor:
               #     code: OTHER_UPFRONT_CHARGES
               #     name: other upfront charges
               #     short_desc: other upfront charges
-              #   value: "0 INR" 
+              #   value: 0 INR
               # - descriptor:
               #     code: INSURANCE_CHARGES
               #     name: Insurance Charges
               #     short_desc: Insurance Charges
-              #   value: "300 INR"
+              #   value: 300 INR
               # - descriptor:
               #     code: NET_DISBURSED_AMOUNT
               #     name: net disbursed amount
               #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
+              #   value: 8500 INR
               # - descriptor:
               #     code: OTHER_CHARGES
               #     name: other charges
               #     short_desc: other charges
-              #   value: "0 INR" 
+              #   value: 0 INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PURCHASE_FINANCE
         params:
-          amount: "9857"
+          amount: '9857'
           currency: INR
-          transaction_id: 07d6511d-1b0b-4fd5-a786-cb0676b9edb5
-        status: PAID
+        status: NOT-PAID
         time:
           label: INSTALLMENT
-          timestamp: "2024-08-01T04:00:00.000Z"
           range:
-            start: "2024-09-01T04:00:00.000Z"
-            end: "2024-09-30T23:59:59.999Z"
+            start: '2024-08-01T04:00:00.000Z'
+            end: '2023-08-31T23:59:59.999Z'
         tags:
           - descriptor:
               code: BREAKUP
@@ -549,48 +379,48 @@ message:
                   code: PRINCIPAL_AMOUNT
                   name: Principal
                   short_desc: Loan Principal
-                value: "9286 INR"
+                value: 9286 INR
               - descriptor:
                   code: INTEREST_AMOUNT
                   name: Interest
                   short_desc: Loan Interest
-                value: "571 INR" 
+                value: 571 INR
               # - descriptor:
               #     code: PROCESSING_FEE
               #     name: Processing Fee
               #     short_desc: Processing Fee
-              #   value: "200 INR"
+              #   value: 200 INR
               # - descriptor:
               #     code: OTHER_UPFRONT_CHARGES
               #     name: other upfront charges
               #     short_desc: other upfront charges
-              #   value: "0 INR" 
+              #   value: 0 INR
               # - descriptor:
               #     code: INSURANCE_CHARGES
               #     name: Insurance Charges
               #     short_desc: Insurance Charges
-              #   value: "300 INR"
+              #   value: 300 INR
               # - descriptor:
               #     code: NET_DISBURSED_AMOUNT
               #     name: net disbursed amount
               #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
+              #   value: 8500 INR
               # - descriptor:
               #     code: OTHER_CHARGES
               #     name: other charges
               #     short_desc: other charges
-              #   value: "0 INR" 
+              #   value: 0 INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PURCHASE_FINANCE
         params:
-          amount: "9857"
+          amount: '9857'
           currency: INR
-        status: DEFERRED
+        status: NOT-PAID
         time:
           label: INSTALLMENT
           range:
-            start: "2024-10-01T04:00:00.000Z"
-            end: "2024-10-31T23:59:59.999Z"
+            start: '2024-09-01T04:00:00.000Z'
+            end: '2023-09-30T23:59:59.999Z'
         tags:
           - descriptor:
               code: BREAKUP
@@ -600,48 +430,48 @@ message:
                   code: PRINCIPAL_AMOUNT
                   name: Principal
                   short_desc: Loan Principal
-                value: "9286 INR"
+                value: 9286 INR
               - descriptor:
                   code: INTEREST_AMOUNT
                   name: Interest
                   short_desc: Loan Interest
-                value: "571 INR" 
+                value: 571 INR
               # - descriptor:
               #     code: PROCESSING_FEE
               #     name: Processing Fee
               #     short_desc: Processing Fee
-              #   value: "200 INR"
+              #   value: 200 INR
               # - descriptor:
               #     code: OTHER_UPFRONT_CHARGES
               #     name: other upfront charges
               #     short_desc: other upfront charges
-              #   value: "0 INR" 
+              #   value: 0 INR
               # - descriptor:
               #     code: INSURANCE_CHARGES
               #     name: Insurance Charges
               #     short_desc: Insurance Charges
-              #   value: "300 INR"
+              #   value: 300 INR
               # - descriptor:
               #     code: NET_DISBURSED_AMOUNT
               #     name: net disbursed amount
               #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
+              #   value: 8500 INR
               # - descriptor:
               #     code: OTHER_CHARGES
               #     name: other charges
               #     short_desc: other charges
-              #   value: "0 INR" 
+              #   value: 0 INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PURCHASE_FINANCE
         params:
-          amount: "9857"
+          amount: '9857'
           currency: INR
-        status: DEFERRED
+        status: NOT-PAID
         time:
           label: INSTALLMENT
           range:
-            start: "2024-11-01T04:00:00.000Z"
-            end: "2024-11-30T23:59:59.999Z"
+            start: '2024-10-01T04:00:00.000Z'
+            end: '2023-10-31T23:59:59.999Z'
         tags:
           - descriptor:
               code: BREAKUP
@@ -651,48 +481,48 @@ message:
                   code: PRINCIPAL_AMOUNT
                   name: Principal
                   short_desc: Loan Principal
-                value: "9286 INR"
+                value: 9286 INR
               - descriptor:
                   code: INTEREST_AMOUNT
                   name: Interest
                   short_desc: Loan Interest
-                value: "571 INR" 
+                value: 571 INR
               # - descriptor:
               #     code: PROCESSING_FEE
               #     name: Processing Fee
               #     short_desc: Processing Fee
-              #   value: "200 INR"
+              #   value: 200 INR
               # - descriptor:
               #     code: OTHER_UPFRONT_CHARGES
               #     name: other upfront charges
               #     short_desc: other upfront charges
-              #   value: "0 INR" 
+              #   value: 0 INR
               # - descriptor:
               #     code: INSURANCE_CHARGES
               #     name: Insurance Charges
               #     short_desc: Insurance Charges
-              #   value: "300 INR"
+              #   value: 300 INR
               # - descriptor:
               #     code: NET_DISBURSED_AMOUNT
               #     name: net disbursed amount
               #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
+              #   value: 8500 INR
               # - descriptor:
               #     code: OTHER_CHARGES
               #     name: other charges
               #     short_desc: other charges
-              #   value: "0 INR" 
+              #   value: 0 INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PURCHASE_FINANCE
         params:
-          amount: "9857"
+          amount: '9857'
           currency: INR
-        status: DEFERRED
+        status: NOT-PAID
         time:
           label: INSTALLMENT
           range:
-            start: "2024-12-01T04:00:00.000Z"
-            end: "2024-12-30T23:59:59.999Z"
+            start: '2024-11-01T04:00:00.000Z'
+            end: '2023-11-30T23:59:59.999Z'
         tags:
           - descriptor:
               code: BREAKUP
@@ -702,58 +532,83 @@ message:
                   code: PRINCIPAL_AMOUNT
                   name: Principal
                   short_desc: Loan Principal
-                value: "9286 INR"
+                value: 9286 INR
               - descriptor:
                   code: INTEREST_AMOUNT
                   name: Interest
                   short_desc: Loan Interest
-                value: "571 INR" 
+                value: 571 INR
               # - descriptor:
               #     code: PROCESSING_FEE
               #     name: Processing Fee
               #     short_desc: Processing Fee
-              #   value: "200 INR"
+              #   value: 200 INR
               # - descriptor:
               #     code: OTHER_UPFRONT_CHARGES
               #     name: other upfront charges
               #     short_desc: other upfront charges
-              #   value: "0 INR" 
+              #   value: 0 INR
               # - descriptor:
               #     code: INSURANCE_CHARGES
               #     name: Insurance Charges
               #     short_desc: Insurance Charges
-              #   value: "300 INR"
+              #   value: 300 INR
               # - descriptor:
               #     code: NET_DISBURSED_AMOUNT
               #     name: net disbursed amount
               #     short_desc: net disbursed amount
-              #   value: "8500 INR" 
+              #   value: 8500 INR
               # - descriptor:
               #     code: OTHER_CHARGES
               #     name: other charges
               #     short_desc: other charges
-              #   value: "0 INR" 
-                                                
-    documents:
-      - descriptor:
-          code: LOAN_AGREEMENT
-          name: Loan Agreement Document
-          short_desc: Download your Loan Agreement document here
-          long_desc: >-
-            A Loan Agreement Document is a legal contract outlining terms such
-            as loan amount, interest rate, repayment schedule, and collateral,
-            binding a lender and borrower in a formal financial arrangement.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-agreement/O1.pdf
-      - descriptor:
-          code: LOAN_CANCELLATION
-          name: Loan Cancellation Document
-          short_desc: Download your Loan Cancellation document here
-          long_desc: >-
-            A Loan Cancellation Document is a formal agreement used to terminate
-            an existing loan, releasing the borrower from repayment obligations
-            and confirming the loan's cancellation.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-cancellation/O1.pdf  
-    created_at: '2024-05-06T04:19:20.443Z'
-    updated_at: '2024-05-06T04:20:25.443Z' 
+              #   value: 0 INR
+    cancellation_terms:
+      - fulfillment_state:
+          descriptor:
+            code: SANCTIONED
+        cancellation_fee:
+          percentage: 3%
+      - external_ref:
+          mimetype: text/html
+          url: https://bpp.credit.becknprotocol.org/tnc.html
+      - fulfillment_state:
+          descriptor:
+            code: DISBURSED
+        cancellation_fee:
+          percentage: 5%
+    quote:
+      id: LOAN_LEAD_ID_OR_SIMILAR
+      price:
+        currency: INR
+        value: '70000'
+      breakup:
+        - title: PRINCIPAL_AMOUNT
+          price:
+            value: '65000'
+            currency: INR
+        - title: INTEREST_AMOUNT
+          price:
+            value: '4000'
+            currency: INR
+        - title: PROCESSING_FEE
+          price:
+            value: '500'
+            currency: INR
+        - title: OTHER_UPFRONT_CHARGES
+          price:
+            value: '0'
+            currency: INR
+        - title: INSURANCE_CHARGES
+          price:
+            value: '500'
+            currency: INR
+        - title: NET_DISBURSED_AMOUNT
+          price:
+            value: '64000'
+            currency: INR
+        - title: OTHER_CHARGES
+          price:
+            value: '0'
+            currency: INR
+      ttl: P15D
