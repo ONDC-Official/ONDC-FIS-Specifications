@@ -48,6 +48,12 @@ const BRANCHES = [
     status: "RELEASED",
   },
   {
+    code: "draft-FIS12-2.2.1",
+    name: "Purchase Finance",
+    short_desc: "Credit - Purchase Finance use case",
+    status: "DRAFT",
+  },
+  {
     code: "release-FIS12-2.3.0",
     name: "Credit Line",
     short_desc: "Credit - Working Capital Line use case",
