@@ -1360,6 +1360,7 @@ components:
             - application/html
             - application/xml
             - text/html-multi
+            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -2131,6 +2132,7 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
+            - REFUND
         status:
           type: string
           enum:
@@ -3188,10 +3190,34 @@ x-tags:
                 - code: OFFLINE_CONTRACT
                   description: Denotes offline contract
                   reference: <PR/Issue/Discussion Links md format text>
+        tags: &ref_11
+          - &ref_15
+            code: BAP_TERMS
+            description: Describes the BAP_TERMS
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
         payments: *ref_8
+        tags: &ref_14
+          - &ref_16
+            code: BPP_TERMS
+            description: Describes the BAP_TERMS
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
         providers:
           items:
             tags:
@@ -3200,7 +3226,7 @@ x-tags:
                   Describes the general information of the loan like interest
                   rate, tenure, amount etc
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_9
+                list: &ref_10
                   - code: WELCOME_BENEFIT
                     description: >-
                       Introductory perks offered upon card activation, such as
@@ -3254,13 +3280,19 @@ x-tags:
                   - code: MAX_LOAN_AMOUNT
                     description: Maximum amount for the loan which a borrower can take
                     reference: <PR/Issue/Discussion Links md format text>
-          tags:
+                  - code: TNC_LINK
+                    description: Describes the tnc link
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: APR
+                    description: Describes the APR details
+                    reference: <PR/Issue/Discussion Links md format text>
+          tags: &ref_9
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_11
+              list: &ref_18
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3292,7 +3324,7 @@ x-tags:
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_12
+              list: &ref_19
                 - code: LSP_NAME
                   description: >-
                     Name of lsp acting as recovery agent, authorised to approach
@@ -3316,14 +3348,16 @@ x-tags:
   on_select:
     message:
       order:
-        items: &ref_10
+        provider: &ref_12
+          tags: *ref_9
+        items: &ref_13
           tags:
             - code: GENERAL_INFO
               description: >-
                 Describes the general information of the loan like interest
                 rate, tenure, amount etc
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_9
+              list: *ref_10
             - code: LOAN_INFO
               description: >-
                 Describes the more specific information about loan like term,
@@ -3387,6 +3421,9 @@ x-tags:
                     information as needed. For more details, refer to the
                     "KFS_LINK format" document in the "feature-ui" section.
                   reference: <PR/Issue/Discussion Links md format text>
+                - code: LTV_RATIO
+                  description: Describes details about LTV ratio
+                  reference: <PR/Issue/Discussion Links md format text>
             - code: CONSENT_INFO
               description: >-
                 Describes specific permissions and agreements that a borrower
@@ -3403,30 +3440,42 @@ x-tags:
     message:
       order:
         payments: *ref_8
+        tags: *ref_11
   on_init:
     message:
       order:
-        items: *ref_10
+        provider: *ref_12
+        items: *ref_13
         payments: *ref_8
+        tags: *ref_14
+  confirm:
+    message:
+      order:
+        payments: *ref_8
+        tags: &ref_17
+          - *ref_15
+          - *ref_16
   on_confirm:
     message:
       order:
-        items: *ref_10
-        provider:
+        payments: *ref_8
+        tags: *ref_17
+        items: *ref_13
+        provider: &ref_20
           tags:
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_11
+              list: *ref_18
             - code: LSP_INFO
               description: >-
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_12
-        fulfillments:
+              list: *ref_19
+        fulfillments: &ref_21
           tags:
             - code: SHIPPING_DETAILS
               description: Describes the recipient's shipping information
@@ -3446,11 +3495,19 @@ x-tags:
   on_status:
     message:
       order:
-        items: *ref_10
+        payments: *ref_8
+        tags: *ref_17
+        items: *ref_13
+        provider: *ref_20
+        fulfillments: *ref_21
   on_update:
     message:
       order:
-        items: *ref_10
+        payments: *ref_8
+        tags: *ref_17
+        items: *ref_13
+        provider: *ref_20
+        fulfillments: *ref_21
 x-flows:
   - summary: Personal Loan with Account Aggregator & monitoring consent
     details:
@@ -3544,7 +3601,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_22
             context:
               domain: ONDC:FIS12
               location:
@@ -3615,7 +3672,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -3935,7 +3992,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -3989,7 +4046,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -4123,7 +4180,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -4174,7 +4231,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -4474,7 +4531,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -4530,7 +4587,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -4831,7 +4888,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -4927,7 +4984,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -5294,7 +5351,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -5386,7 +5443,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -5753,7 +5810,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -5847,7 +5904,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -6270,7 +6327,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -6364,7 +6421,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -6730,6 +6787,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform updates the consumer.
         api: on_update
         details:
@@ -7126,6 +7185,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -7591,6 +7652,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -7610,7 +7673,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -7650,7 +7713,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -8130,7 +8193,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -8154,7 +8217,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -8207,7 +8270,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -8258,7 +8321,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -10806,6 +10869,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform send the on_status to consumer.
         api: on_status
         details:
@@ -11208,6 +11273,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -11227,7 +11294,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_24
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -11626,6 +11693,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan without Account monitoring
     details:
       - description: Discovery of Funds
@@ -11718,7 +11787,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -11742,7 +11811,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -11795,7 +11864,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_25
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -11820,7 +11889,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_26
       - summary: Approval of consent request
         api: select
         details:
@@ -11840,7 +11909,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -11862,7 +11931,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_28
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -11912,7 +11981,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_29
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -11939,7 +12008,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_30
       - summary: >-
           The lender invoked the relevant forms like links for KYC, bank
           details, e-mandate etc.
@@ -11991,7 +12060,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_31
       - summary: >-
           The lender accepts the personal loan request and displays loan status
           details and requests for loan dispach account details.
@@ -12019,7 +12088,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_32
       - summary: The borrower receives the bank account mandate form details form.
         api: form
         details:
@@ -12069,7 +12138,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_33
       - summary: >-
           The lender accepts the personal loan request and displays loan status
           details and requests for e-mandate details.
@@ -12092,7 +12161,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_34
       - summary: The borrower will be redirected to the e-mandate details form.
         api: form
         details:
@@ -12142,7 +12211,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_35
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -12167,7 +12236,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_36
       - summary: The borrower receives the loan agreement details form.
         api: form
         details:
@@ -12218,7 +12287,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_37
       - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
@@ -12243,7 +12312,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_38
       - summary: The provider platform send the on_status to consumer.
         api: on_status
         details:
@@ -12656,6 +12725,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -12675,7 +12746,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -12715,7 +12786,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_39
   - summary: Personal Loan with Multiple offers(Bureau consent & AA)
     details:
       - description: Discovery of Funds
@@ -12808,7 +12879,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -12832,7 +12903,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -12885,7 +12956,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_40
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -12912,7 +12983,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_41
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -12965,7 +13036,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_25
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -12990,7 +13061,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_26
       - summary: Approval of consent request
         api: select
         details:
@@ -13010,7 +13081,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -13373,7 +13444,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -13397,7 +13468,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -13450,7 +13521,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_25
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -13475,7 +13546,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_26
       - summary: Approval of consent request
         api: select
         details:
@@ -13495,7 +13566,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -13517,7 +13588,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_28
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -13567,7 +13638,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_29
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -13889,7 +13960,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -14143,7 +14214,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_42
       - summary: The lender sends the latest order status of the form
         api: on_status
         details:
@@ -14161,7 +14232,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -14415,7 +14486,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_31
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -15262,6 +15333,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -15281,7 +15354,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_24
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -15302,7 +15375,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_39
   - summary: Personal Loan - Offline & Online
     details:
       - description: Discovery of Funds
@@ -15395,7 +15468,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -15419,7 +15492,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -15472,7 +15545,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_25
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -15497,7 +15570,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_26
       - summary: Approval of consent request
         api: select
         details:
@@ -15517,7 +15590,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -15539,7 +15612,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_28
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -15589,7 +15662,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_29
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -15911,7 +15984,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_34
+          value: *ref_43
       - summary: The borrower request for order status
         api: status
         details:
@@ -15929,7 +16002,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_42
       - summary: The lender sends the latest order status of the form
         api: on_status
         details:
@@ -15947,7 +16020,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_35
+          value: *ref_44
       - summary: The borrower initiates the personal loan request.
         api: init
         details:
@@ -15965,7 +16038,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_31
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -16406,7 +16479,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_37
       - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
@@ -16797,6 +16870,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -16816,7 +16891,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_24
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -16837,7 +16912,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_39
   - summary: Form Status for text/html
     details:
       - description: >-
@@ -16889,7 +16964,7 @@ x-flows:
                 Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_28
       - summary: Borrower fetches the loan amount form
         api: form
         details:
@@ -16937,7 +17012,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_29
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -16961,7 +17036,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_30
       - summary: Borrower get PAN deatails form from lender.
         api: form
         details:
@@ -17003,7 +17078,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK         
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_42
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -17024,7 +17099,7 @@ x-flows:
                 end     
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_39
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -17374,7 +17449,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_58
             context:
               domain: ONDC:FIS12
               location:
@@ -17629,7 +17704,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_42
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -17652,7 +17727,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_57
             context:
               domain: ONDC:FIS12
               location:
@@ -17908,7 +17983,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_42
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -17931,7 +18006,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_56
             context:
               domain: ONDC:FIS12
               location:
@@ -18187,7 +18262,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_31
   - summary: Personal Loan - Loan Foreclosure
     details:
       - description: Detailed process for loan forclosure
@@ -18224,7 +18299,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_38
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -18682,6 +18757,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -19094,6 +19171,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Pre-Part Payment
     details:
       - description: Detailed process for pre-part payment
@@ -19129,7 +19208,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_38
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -19590,6 +19669,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform updates the consumer with pre-part success.
         api: on_update
         details:
@@ -20001,6 +20082,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Missed-EMI Payment
     details:
       - description: Detailed process for Missed-EMI Payment
@@ -20037,7 +20120,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_38
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -20498,6 +20581,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -20914,6 +20999,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan with Account Aggregator
     details:
       - description: Discovery of Funds
@@ -21006,7 +21093,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_45
             context:
               domain: ONDC:FIS12
               location:
@@ -21077,7 +21164,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_46
             context:
               domain: ONDC:FIS12
               location:
@@ -21500,7 +21587,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_51
             context:
               domain: ONDC:FIS12
               location:
@@ -21554,7 +21641,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_52
             context:
               domain: ONDC:FIS12
               location:
@@ -21688,7 +21775,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_53
             context:
               domain: ONDC:FIS12
               location:
@@ -21744,7 +21831,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_60
             context:
               domain: ONDC:FIS12
               location:
@@ -22059,7 +22146,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_47
             context:
               domain: ONDC:FIS12
               location:
@@ -22334,7 +22421,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_48
             context:
               domain: ONDC:FIS12
               location:
@@ -22371,7 +22458,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_49
             context:
               domain: ONDC:FIS12
               location:
@@ -22653,7 +22740,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_62
             context:
               domain: ONDC:FIS12
               location:
@@ -22749,7 +22836,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_64
             context:
               domain: ONDC:FIS12
               location:
@@ -23136,7 +23223,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_66
             context:
               domain: ONDC:FIS12
               location:
@@ -23220,7 +23307,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_54
             context:
               domain: ONDC:FIS12
               location:
@@ -23603,6 +23690,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan without Account Aggregator
     details:
       - description: Discovery of Funds
@@ -23695,7 +23784,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_45
       - summary: >-
           The lender offers a static catalog details of loan types like Gold
           Loans etc.
@@ -23719,7 +23808,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_46
       - summary: >-
           The borrower receives the Gold Loan application form from lender after
           providing all details like PAN, mobile number, name, address, date of
@@ -23870,7 +23959,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_50
             context:
               domain: ONDC:FIS12
               location:
@@ -23926,7 +24015,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_61
             context:
               domain: ONDC:FIS12
               location:
@@ -24255,7 +24344,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_38
+          value: *ref_47
       - summary: The borrower request for order status
         api: status
         details:
@@ -24273,7 +24362,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_39
+          value: *ref_48
       - summary: The lender sends the latest order status of the form
         api: on_status
         details:
@@ -24291,7 +24380,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_49
       - summary: The borrower initiates the Gold Loan request by filling the form.
         api: init
         details:
@@ -24316,7 +24405,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_63
             context:
               domain: ONDC:FIS12
               location:
@@ -24412,7 +24501,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_65
             context:
               domain: ONDC:FIS12
               location:
@@ -24799,7 +24888,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_58
+          value: &ref_67
             context:
               domain: ONDC:FIS12
               location:
@@ -24883,7 +24972,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_59
+          value: &ref_68
             context:
               domain: ONDC:FIS12
               location:
@@ -25266,6 +25355,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan with Multiple offers(Bureau consent & AA)
     details:
       - description: Discovery of Funds
@@ -25358,7 +25449,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_45
       - summary: >-
           The lender offers a static catalog details of loan types like Gold
           Loans, gst-based loans etc.
@@ -25382,7 +25473,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_46
       - summary: >-
           The borrower receives the Gold Loan application form from lender after
           providing all details like PAN, mobile number, name, address, date of
@@ -25435,7 +25526,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_41
+          value: *ref_50
       - summary: The lender offers the required form for the chosen Gold Loan service.
         api: on_select
         details:
@@ -25789,7 +25880,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_42
+          value: *ref_51
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -25814,7 +25905,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_43
+          value: *ref_52
       - summary: Approval of consent request
         api: select
         details:
@@ -25834,7 +25925,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_53
       - summary: The lender offers the required form for the chosen Gold Loan service.
         api: on_select
         details:
@@ -25854,7 +25945,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_59
             context:
               domain: ONDC:FIS12
               location:
@@ -26166,7 +26257,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_54
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -26186,7 +26277,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_60
+          value: &ref_69
             context:
               domain: ONDC:FIS12
               location:
@@ -26229,7 +26320,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_63
+          value: &ref_72
             context:
               domain: ONDC:FIS12
               location:
@@ -26625,6 +26716,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -26645,7 +26738,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_64
+          value: &ref_73
             context:
               domain: ONDC:FIS12
               location:
@@ -27038,6 +27131,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan - Missed-EMI Payment
     details:
       - description: Detailed process for loan forclosure
@@ -27073,7 +27168,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_54
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -27093,7 +27188,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_62
+          value: &ref_71
             context:
               domain: ONDC:FIS12
               location:
@@ -27535,6 +27630,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -27952,6 +28049,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan - Pre-Part Payment
     details:
       - description: Detailed process for loan forclosure
@@ -27987,7 +28086,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_54
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -28007,7 +28106,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_61
+          value: &ref_70
             context:
               domain: ONDC:FIS12
               location:
@@ -28053,7 +28152,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_65
+          value: &ref_74
             context:
               domain: ONDC:FIS12
               location:
@@ -28449,6 +28548,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -28863,6 +28964,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Credit Card
     details:
       - description: Discovery of credit card
@@ -28951,7 +29054,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_66
+          value: &ref_75
             context:
               domain: ONDC:FIS12
               location:
@@ -29008,7 +29111,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_67
+          value: &ref_76
             context:
               domain: ONDC:FIS12
               location:
@@ -29437,7 +29540,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_68
+          value: &ref_77
             context:
               domain: ONDC:FIS12
               location:
@@ -29491,7 +29594,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_69
+          value: &ref_78
             context:
               domain: ONDC:FIS12
               location:
@@ -29714,7 +29817,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_74
+          value: &ref_83
             context:
               domain: ONDC:FIS12
               location:
@@ -29893,7 +29996,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_55
             context:
               domain: ONDC:FIS12
               location:
@@ -29930,7 +30033,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_75
+          value: &ref_84
             context:
               domain: ONDC:FIS12
               location:
@@ -30111,7 +30214,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_70
+          value: &ref_79
             context:
               domain: ONDC:FIS12
               location:
@@ -30181,7 +30284,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_71
+          value: &ref_80
             context:
               domain: ONDC:FIS12
               location:
@@ -30380,7 +30483,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_72
+          value: &ref_81
             context:
               domain: ONDC:FIS12
               location:
@@ -30453,7 +30556,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_73
+          value: &ref_82
             context:
               domain: ONDC:FIS12
               location:
@@ -30680,7 +30783,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_46
+          value: *ref_55
       - summary: The lender shares the latest card status with the borrower.
         api: on_status
         details:
@@ -30701,7 +30804,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_76
+          value: &ref_85
             context:
               domain: ONDC:FIS12
               location:
@@ -30918,7 +31021,7 @@ x-examples:
         examples:
           - summary: search for personal loan
             description: TBD
-            value: *ref_13
+            value: *ref_22
       on_search:
         examples:
           - summary: personal loan catalog
@@ -31121,56 +31224,56 @@ x-examples:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_16
+            value: *ref_25
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_20
+            value: *ref_29
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_18
+            value: *ref_27
       on_select:
         examples:
           - summary: on_select-request-financial-info-form
             description: TBD
-            value: *ref_19
+            value: *ref_28
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_21
+            value: *ref_30
           - summary: on_select-request-consent-created
             description: TBD
-            value: *ref_17
+            value: *ref_26
       init:
         examples:
           - summary: init-request-kyc-approved
             description: TBD
-            value: *ref_22
+            value: *ref_31
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_26
+            value: *ref_35
           - summary: init-request-emandate
             description: TBD
-            value: *ref_24
+            value: *ref_33
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_27
+            value: *ref_36
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_27
+            value: *ref_36
           - summary: on_init-request-emandate
             description: TBD
-            value: *ref_25
+            value: *ref_34
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_28
+            value: *ref_37
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_29
+            value: *ref_38
       update:
         examples:
           - summary: update-request
@@ -31600,6 +31703,8 @@ x-examples:
                           and borrower in a formal financial arrangement.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-agreement/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_update-request-prepayment
             description: TBD
             value:
@@ -31972,6 +32077,8 @@ x-examples:
                           and borrower in a formal financial arrangement.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-agreement/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_update-success-prepayment
             description: TBD
             value:
@@ -32344,16 +32451,18 @@ x-examples:
                           and borrower in a formal financial arrangement.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-agreement/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_33
+            value: *ref_42
       on_status:
         examples:
           - summary: on_status-request
             description: TBD
-            value: *ref_30
+            value: *ref_39
           - summary: on_status-request-full-repayment
             description: TBD
             value:
@@ -32737,6 +32846,8 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_status-request-late-repayment-installment
             description: TBD
             value:
@@ -33100,15 +33211,17 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_status-form-completed
             description: TBD
-            value: *ref_47
+            value: *ref_56
           - summary: on_status-form-processing
             description: TBD
-            value: *ref_48
+            value: *ref_57
           - summary: on_status-form-submitted
             description: TBD
-            value: *ref_49
+            value: *ref_58
           - summary: on_status-request-prepayment
             description: TBD
             value:
@@ -33488,6 +33601,8 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
       support:
         examples:
           - summary: support-request
@@ -33562,34 +33677,34 @@ x-examples:
         examples:
           - summary: search for gold loan
             description: TBD
-            value: *ref_36
+            value: *ref_45
       on_search:
         examples:
           - summary: gold loan catalog
             description: TBD
-            value: *ref_37
+            value: *ref_46
       select:
         examples:
           - summary: select-request-gold-info
             description: TBD
-            value: *ref_41
+            value: *ref_50
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_42
+            value: *ref_51
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_44
+            value: *ref_53
       on_select:
         examples:
           - summary: on_select-request-consent-info
             description: TBD
-            value: *ref_43
+            value: *ref_52
           - summary: on_select-request-set-loan-amount
             description: TBD
-            value: *ref_50
+            value: *ref_59
           - summary: on_select-request-JOURNEY_OFFLINE
             description: TBD
-            value: *ref_51
+            value: *ref_60
           - summary: on_select-request-set-loan-amount_2
             description: TBD
             value:
@@ -33872,66 +33987,66 @@ x-examples:
                     ttl: PT15D
           - summary: on_select-request-JOURNEY_OFFLINE_2
             description: TBD
-            value: *ref_52
+            value: *ref_61
       init:
         examples:
           - summary: init-request-kyc-approved
             description: TBD
-            value: *ref_53
+            value: *ref_62
           - summary: init-request-kyc-approved_2
             description: TBD
-            value: *ref_54
+            value: *ref_63
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_55
+            value: *ref_64
           - summary: on_init-request-loan-agreement-form_2
             description: TBD
-            value: *ref_56
+            value: *ref_65
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_57
+            value: *ref_66
           - summary: confirm-request_2
             description: TBD
-            value: *ref_58
+            value: *ref_67
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_45
+            value: *ref_54
           - summary: on_confirm-request_2
             description: TBD
-            value: *ref_59
+            value: *ref_68
       update:
         examples:
           - summary: update-request_foreclosure
             description: TBD
-            value: *ref_60
+            value: *ref_69
           - summary: update-request-pre-part
             description: TBD
-            value: *ref_61
+            value: *ref_70
           - summary: update-request-missed-emi
             description: TBD
-            value: *ref_62
+            value: *ref_71
       on_update:
         examples:
           - summary: on_update-request
             description: TBD
-            value: *ref_63
+            value: *ref_72
           - summary: on_update-request-prepayment
             description: TBD
-            value: *ref_64
+            value: *ref_73
           - summary: on_update-success-prepayment
             description: TBD
-            value: *ref_65
+            value: *ref_74
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_39
+            value: *ref_48
       on_status:
         examples:
           - summary: on_status-request
@@ -34320,6 +34435,8 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
   credit-card:
     summary: credit-card
     description: credit-card
@@ -34328,7 +34445,7 @@ x-examples:
         examples:
           - summary: search-request-1
             description: TBD
-            value: *ref_66
+            value: *ref_75
           - summary: search-request-1
             description: TBD
             value:
@@ -34378,7 +34495,7 @@ x-examples:
         examples:
           - summary: on_search-request-1
             description: TBD
-            value: *ref_67
+            value: *ref_76
           - summary: on_search-request-2
             description: TBD
             value:
@@ -34571,7 +34688,7 @@ x-examples:
         examples:
           - summary: select-request-1
             description: TBD
-            value: *ref_68
+            value: *ref_77
           - summary: select-request-2
             description: TBD
             value:
@@ -34608,7 +34725,7 @@ x-examples:
         examples:
           - summary: on_select-request-1
             description: TBD
-            value: *ref_69
+            value: *ref_78
           - summary: on_select-request-2
             description: TBD
             value:
@@ -34781,38 +34898,38 @@ x-examples:
         examples:
           - summary: init-request-1
             description: TBD
-            value: *ref_70
+            value: *ref_79
       on_init:
         examples:
           - summary: on_init-request-1
             description: TBD
-            value: *ref_71
+            value: *ref_80
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_72
+            value: *ref_81
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_73
+            value: *ref_82
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_46
+            value: *ref_55
       on_status:
         examples:
           - summary: on_status-form-pending
             description: TBD
-            value: *ref_74
+            value: *ref_83
           - summary: on_status-form-completed
             description: TBD
-            value: *ref_75
+            value: *ref_84
           - summary: on_status-request
             description: TBD
-            value: *ref_76
+            value: *ref_85
       form/personal-info:
         examples:
           - summary: personal-info
