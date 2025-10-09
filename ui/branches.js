@@ -1,6 +1,6 @@
 const BRANCHES = [
   {
-    code: "release-FIS10-2.0.0",
+    code: "release-FIS10-2.1.0",
     name: "Gift Card",
     short_desc: "Gift - Card",
     status: "RELEASED",
