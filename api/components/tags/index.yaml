@@ -9,9 +9,13 @@ on_search:
       $ref: "./tag-group.yaml#/catalog"
       payments:
         $ref: "./tag-group.yaml#/payment"
+        
 on_select:
   message:
     order:
+      provider: &providerTags
+        tags:
+          $ref: "./tag-group.yaml#/catalog/providers/tags"
       items: &items
         $ref: "./tag-group.yaml#/order/items"
 init:
@@ -22,17 +26,22 @@ init:
 on_init:
   message:
     order:
+      provider: *providerTags
       items: *items
       payments: *payments
+confirm:
+  message:
+    order:
+      payments: &payments
+        $ref: "./tag-group.yaml#/payment"     
 on_confirm:
   message:
-    order:
+    order: &order
       $ref: "./tag-group.yaml#/order"
+      payments: *payments
 on_status:
   message:
-    order:
-      items: *items
+    order: *order
 on_update:
   message:
-    order:
-      items: *items
+    order: *order
