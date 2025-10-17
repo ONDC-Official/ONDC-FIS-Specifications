@@ -118,6 +118,7 @@ paths:
               schema:
                 type: object
                 properties:
+                  context: null
                   message:
                     type: object
                     properties:
@@ -535,7 +536,6 @@ paths:
                   $ref: '#/components/schemas/Error'
               required:
                 - context
-                - message
       responses:
         default:
           $ref: '#/paths/~1init/post/responses/default'
@@ -816,6 +816,10 @@ components:
           $ref: '#/components/schemas/Price'
         quantity:
           $ref: '#/components/schemas/ItemQuantity'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Address:
       description: Describes a postal address.
       type: string
@@ -1356,6 +1360,7 @@ components:
             - application/html
             - application/xml
             - text/html-multi
+            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -2089,6 +2094,7 @@ components:
           format: uri
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2109,6 +2115,10 @@ components:
               type: string
             source_virtual_payment_address:
               type: string
+            source_bank_account_name:
+              type: string
+            bank_account_name:
+              type: string
         type:
           type: string
           enum:
@@ -2122,6 +2132,7 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
+            - REFUND
         status:
           type: string
           enum:
@@ -3119,16 +3130,15 @@ x-tags:
   on_search:
     message:
       catalog:
-        payments: *ref_8
         providers:
-          items:
+          items: &ref_10
             tags:
               - code: INFO
                 description: >-
-                  Describes the information of the loan like interest rate,
-                  tenure, amount etc
+                  Describes the general information of the loan like interest
+                  rate, tenure, amount etc
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_9
+                list:
                   - code: MIN_INTEREST_RATE
                     description: Minimum rate of interest for the loan
                     reference: <PR/Issue/Discussion Links md format text>
@@ -3219,13 +3229,37 @@ x-tags:
                       information as needed. For more details, refer to the
                       "KFS_LINK format" document in the "feature-ui" section.
                     reference: <PR/Issue/Discussion Links md format text>
-          tags:
+                  - code: INVOICE_NUMBER
+                    description: Describes the invoice number
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: OTHER_UPFRONT_CHARGES
+                    description: Describes the other upfront charges
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: NET_DISBURSED_AMOUNT
+                    description: Describes the net disbursed amount
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: INSURANCE_CHARGES
+                    description: Describes the insurance charges
+                    reference: <PR/Issue/Discussion Links md format text>
+              - code: CONSENT_INFO
+                description: >-
+                  Describes specific permissions and agreements that a borrower
+                  provides to a lender when entering into a loan agreement
+                reference: <PR/Issue/Discussion Links md format text>
+                list:
+                  - code: CONSENT_HANDLER
+                    description: >-
+                      Refers to a system or individual responsible for managing
+                      and processing the various consents and permissions
+                      associated with a loan application or agreement.
+                    reference: <PR/Issue/Discussion Links md format text>
+          tags: &ref_9
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_11
+              list:
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3257,7 +3291,7 @@ x-tags:
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_12
+              list:
                 - code: LSP_NAME
                   description: >-
                     Name of lsp acting as recovery agent, authorised to approach
@@ -3278,64 +3312,36 @@ x-tags:
                     Address of lsp acting as recovery agent, authorised to
                     approach borrower
                   reference: <PR/Issue/Discussion Links md format text>
+        payments: *ref_8
   on_select:
     message:
       order:
-        items: &ref_10
-          tags:
-            - code: INFO
-              description: >-
-                Describes the general information of the loan like interest
-                rate, tenure, amount etc
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_9
-            - code: CONSENT_INFO
-              description: >-
-                Describes specific permissions and agreements that a borrower
-                provides to a lender when entering into a loan agreement
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: CONSENT_HANDLER
-                  description: >-
-                    Refers to a system or individual responsible for managing
-                    and processing the various consents and permissions
-                    associated with a loan application or agreement.
-                  reference: <PR/Issue/Discussion Links md format text>
+        provider: &ref_11
+          tags: *ref_9
+        items: *ref_10
   init:
     message:
       order:
         payments: *ref_8
   on_init:
     message:
-      order:
+      order: &ref_12
         items: *ref_10
+        payments: *ref_8
+        provider: *ref_11
+  confirm:
+    message:
+      order:
         payments: *ref_8
   on_confirm:
     message:
-      order:
-        items: *ref_10
-        provider:
-          tags:
-            - code: CONTACT_INFO
-              description: >-
-                Describes the contact info of grievance redressal officer(GRO) &
-                customer support details
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_11
-            - code: LSP_INFO
-              description: >-
-                Describes lsp details acting as recovert agent authorised to
-                approach borrower
-              reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_12
+      order: *ref_12
   on_status:
     message:
-      order:
-        items: *ref_10
+      order: *ref_12
   on_update:
     message:
-      order:
-        items: *ref_10
+      order: *ref_12
 x-flows:
   - summary: Invoice Based Loans with Account Aggregator & monitoring consent
     details:
