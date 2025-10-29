@@ -118,7 +118,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  context: null
                   message:
                     type: object
                     properties:
@@ -276,10 +275,6 @@ paths:
                       $ref: '#/components/schemas/Option/properties/id'
                     descriptor:
                       $ref: '#/components/schemas/Descriptor'
-                    tags:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/TagGroup'
                   required:
                     - order_id
               required:
@@ -536,6 +531,7 @@ paths:
                   $ref: '#/components/schemas/Error'
               required:
                 - context
+                - message
       responses:
         default:
           $ref: '#/paths/~1init/post/responses/default'
@@ -816,10 +812,6 @@ components:
           $ref: '#/components/schemas/Price'
         quantity:
           $ref: '#/components/schemas/ItemQuantity'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagGroup'
     Address:
       description: Describes a postal address.
       type: string
@@ -1360,7 +1352,6 @@ components:
             - application/html
             - application/xml
             - text/html-multi
-            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -2094,7 +2085,6 @@ components:
           format: uri
         params:
           type: object
-          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2114,10 +2104,6 @@ components:
             source_bank_account_number:
               type: string
             source_virtual_payment_address:
-              type: string
-            source_bank_account_name:
-              type: string
-            bank_account_name:
               type: string
         type:
           type: string
@@ -3705,6 +3691,19 @@ x-tags:
                       - code: P1Y
                         description: Yearly
                         reference: <PR/Issue/Discussion Links md format text>
+                  - code: FREQUENCY_DAY_TYPE
+                    description: Type of days (applicable only for Daily SIPs)
+                    reference: <PR/Issue/Discussion Links md format text>
+                    list:
+                      - code: CALENDAR
+                        description: All calendar days are included for the Daily SIP
+                        reference: <PR/Issue/Discussion Links md format text>
+                      - code: BUSINESS
+                        description: >-
+                          Only business days are included for the Daily SIP.
+                          That means, typically Saturdays, Sundays and other
+                          market holidays are excluded.
+                        reference: <PR/Issue/Discussion Links md format text>
                   - code: FREQUENCY_DATES
                     description: Allowed dates as per the frequency for systematic orders
                     reference: <PR/Issue/Discussion Links md format text>
@@ -4493,6 +4492,50 @@ x-flows:
                                   name: Frequency
                                   code: FREQUENCY
                                 value: P1D
+                              - descriptor:
+                                  name: Frequency Day Type
+                                  code: FREQUENCY_DAY_TYPE
+                                value: BUSINESS
+                              - descriptor:
+                                  name: Amount Minimum
+                                  code: AMOUNT_MIN
+                                value: '1000'
+                              - descriptor:
+                                  name: Amount Maximum
+                                  code: AMOUNT_MAX
+                                value: '10000'
+                              - descriptor:
+                                  name: Amount Multiples
+                                  code: AMOUNT_MULTIPLES
+                                value: '1'
+                              - descriptor:
+                                  name: Installments Count Minimum
+                                  code: INSTALMENTS_COUNT_MIN
+                                value: '30'
+                              - descriptor:
+                                  name: Installments Count Maximum
+                                  code: INSTALMENTS_COUNT_MAX
+                                value: '300'
+                              - descriptor:
+                                  name: Cumulative Amount Minimum
+                                  code: CUMULATIVE_AMOUNT_MIN
+                                value: '30000'
+                      - id: ff_125
+                        type: SIP
+                        tags:
+                          - display: true
+                            descriptor:
+                              name: Thresholds
+                              code: THRESHOLDS
+                            list:
+                              - descriptor:
+                                  name: Frequency
+                                  code: FREQUENCY
+                                value: P1D
+                              - descriptor:
+                                  name: Frequency Day Type
+                                  code: FREQUENCY_DAY_TYPE
+                                value: CALENDAR
                               - descriptor:
                                   name: Amount Minimum
                                   code: AMOUNT_MIN
