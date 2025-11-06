@@ -25503,14 +25503,14 @@ x-flows:
             </body>
 
             </html>
-      - summary: Approval of consent request
+      - summary: The borrower chooses the Bureau Loan item
         api: select
         details:
           - description: >-
-              The BAP approves the consent request and sends the loan product,
-              the loan provider, and the customer's identity to the BPP.
+              The BAP selects the bureau item and shares the form submission_id
+              with the BPP
             mermaid: |-
-              sequenceDiagram
+              sequenceDiagram  
                 title  Selection
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
@@ -26042,23 +26042,11 @@ x-flows:
                             mill compound 841, Senapati Bapat Marg, Elphinstone
                             Road, Mumbai 400013
                   locations:
-                    - id: L1
-                      gps: 28.574909, 77.194029
-                      descriptor:
-                        name: Mumbai Central
-                      address: 123 Marine Drive, Mumbai, Maharashtra
-                      area_code: '400001'
                     - id: L2
                       gps: 28.584909, 77.134029
                       descriptor:
                         name: Mumbai East
                       address: 162 Dadar, Mumbai, Maharashtra
-                      area_code: '400001'
-                    - id: L3
-                      gps: 28.584909, 77.134029
-                      descriptor:
-                        name: Mumbai West
-                      address: 182 Juhu, Mumbai, Maharashtra
                       area_code: '400001'
                 items:
                   - id: ITEM_ID_GOLD_LOAN_1
@@ -27434,7 +27422,110 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>User Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/user-details\">\r\n    <label for=\"panName\">Name as Per PAN</label>\r\n    <input type=\"text\" id=\"panName\" name=\"panName\" required />\r\n    <label for=\"personalemail\">Personal Email</label>\r\n    <input type=\"text\" id=\"email\" name=\"personalemail\" />\r\n    <label for=\"officialemail\">Official Email</label>\r\n    <input type=\"text\" id=\"officialEmail\" name=\"officialemail\" />\r\n    <label for=\"dob\">Date of Birth</label>\r\n    <input type=\"date\" id=\"dob\" name=\"dob\" required />\r\n    <label for=\"gender\">Gender</label>\r\n    <select name=\"gender\" id=\"gender\" required>\r\n      <option value=\"male\">Male</option>\r\n      <option value=\"female\">Female</option>\r\n      <option value=\"transgender\">Transgender</option>\r\n    </select>\r\n    <label for=\"pan\">PAN</label>\r\n    <input type=\"text\" id=\"pan\" name=\"pan\" required />\r\n    <label for=\"contactNumber\">contact number</label>\r\n    <input type=\"text\" id=\"contactNumber\" name=\"contactNumber\" required />\r\n    <label for=\"employmentType\">Employment type</label>\r\n    <select name=\"employmentType\" id=\"employmentType\" required>\r\n      <option value=\"salaried\">Salaried</option>\r\n      <option value=\"selfEmployed\">Self Employment</option>\r\n    </select>\r\n    <label for=\"income\">Income</label>\r\n    <input type=\"number\" id=\"income\" name=\"income\" required />\r\n    <label for=\"companyName\">Company Name</label>\r\n    <input type=\"text\" id=\"companyName\" name=\"companyName\" required />\r\n    <label for=\"udyamNumber\">UDYAM Number</label>\r\n    <input type=\"text\" id=\"udyamNumber\" name=\"udyamNumber\" />\r\n    <label for=\"addressL1\">Address Line 1</label>\r\n    <input type=\"text\" id=\"addressL1\" name=\"addressL1\" />\r\n    <label for=\"addressL2\">Address Line 2</label>\r\n    <input type=\"text\" id=\"addressL2\" name=\"addressL2\" />\r\n    <label for=\"city\">City</label>\r\n    <input type=\"text\" id=\"city\" name=\"city\" />\r\n    <label for=\"state\">State</label>\r\n    <input type=\"text\" id=\"state\" name=\"state\" />\r\n    <label for=\"pincode\">Pin Code</label>\r\n    <input type=\"text\" id=\"pincode\" name=\"pincode\" />\r\n    <label for=\"aa_id\">Account Aggregator ID</label>\r\n    <input type=\"text\" id=\"aa_id\" name=\"aa_id\" optional/>\r\n    <label for=\"endUse\">End Use</label>\r\n    <select name=\"endUse\" id=\"endUse\" required>\r\n      <option value=\"consumerDurablePurchase\">Purchase of Consumer Durables</option>\r\n      <option value=\"education\">Education</option>\r\n      <option value=\"travel\">Travel</option>\r\n      <option value=\"health\">Health</option>\r\n      <option value=\"other\">Other Consumption Purposes</option>\r\n    </select>\r\n    <label for=\"bureauConsent\">Bureau Consent</label>\r\n    <input type=\"checkbox\" id=\"bureauConsent\" name=\"bureauConsent\" required/>\r\n\r\n    <label for=\"derivedData\">Derived Data</label>\r\n    <input name=\"derivedData\" name=\"derivedData\" type=\"file\" accept=\".json\" />\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO1\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: |-
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>User Details</title>
+            </head>
+
+            <body>
+              <form action="/form/submission/user-details">
+
+                <label for="userType">User Type</label>
+                <select name="userType" id="userType">
+                  <option value="individual">Individual</option>
+                  <option value="non-individual">Non-Individual</option>
+                </select>
+
+                <label for="pan">PAN</label>
+                <input type="text" id="pan" name="pan" required />
+
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" required />
+
+                <label for="constitution">Constitution</label>
+                <input type="text" id="constitution" name="constitution" />
+
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
+                
+                <label for="employmentType">Employment type</label>
+                <select name="employmentType" id="employmentType">
+                  <option value="salaried">Salaried</option>
+                  <option value="selfEmployed">Self Employment</option>
+                </select>
+
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required />
+
+                <label for="annualIncome">Annual Income</label>
+                <input type="number" id="annualIncome" name="annualIncome" />
+
+                <label for="contactNumber">Contact number</label>
+                <input type="text" id="contactNumber" name="contactNumber" required />
+
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" />
+
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" />
+
+                <label for="pincode">Pin Code</label>
+                <input type="text" id="pincode" name="pincode" required/>
+
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" />
+
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" />
+
+                <label for="jewellery">Jewellery (gms)</label>
+                <input type="text" id="jewellery" name="jewellery" required/>
+
+                <label for="purity">Purity</label>
+                <select name="purity" id="purity" required>
+                  <option value="24K">24K</option>
+                  <option value="22K">22K</option>
+                  <option value="21K">21K</option>
+                  <option value="18k">18k</option>
+                  <option value="14K">14K</option>
+                  <option value="9K">9K</option>
+                </select>
+
+                <label for="endUse">End Use</label>
+                <select name="endUse" id="endUse">
+                  <option value="marriage">Marriage</option>
+                  <option value="familyFunctions">Family Functions</option>
+                  <option value="medicalTreatmentAndEmergencies">Medical Treatment and Emergencies</option>
+                  <option value="travelEducationExpenses">Travel, Education Expenses</option>
+                  <option value="businessExpansion">Business Expansion</option>
+                  <option value="agricultureAndFarmRelatedNeeds">Agriculture and Farm-Related Needs</option>
+                  <option value="purchaseOfEquipment">Purchase of Equipment</option>
+                  <option value="other">Others</option>
+                </select>
+
+                <label for="bureauConsent">Bureau Consent</label>
+                <input type="checkbox" id="bureauConsent" name="bureauConsent"/>
+
+                <label for="aa_id">Account Aggregator ID</label>
+                <input type="text" id="aa_id" name="aa_id"/>
+
+
+                
+                <input type="hidden" id="formId" name="formId" value="FO1">
+                <input type="submit" value="Submit">
+              </form>
+            </body>
+
+            </html>
       - summary: The borrower chooses the Bureau Loan item
         api: select
         details:
@@ -28102,6 +28193,11 @@ x-flows:
                               short_desc: Fixed Interest type
                             value: FIXED
                           - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
+                          - descriptor:
                               code: APPLICATION_FEE
                               name: Application Fees
                               short_desc: Application Fees
@@ -28519,6 +28615,11 @@ x-flows:
                               name: Interest rate type
                               short_desc: Fixed Interest type
                             value: FIXED
+                          - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
                           - descriptor:
                               code: APPLICATION_FEE
                               name: Application Fees
@@ -29013,6 +29114,11 @@ x-flows:
                               short_desc: Fixed Interest type
                             value: FIXED
                           - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
+                          - descriptor:
                               code: APPLICATION_FEE
                               name: Application Fees
                               short_desc: Application Fees
@@ -29433,6 +29539,11 @@ x-flows:
                               name: Interest rate type
                               short_desc: Fixed Interest type
                             value: FIXED
+                          - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
                           - descriptor:
                               code: APPLICATION_FEE
                               name: Application Fees
@@ -29934,6 +30045,11 @@ x-flows:
                               short_desc: Fixed Interest type
                             value: FIXED
                           - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
+                          - descriptor:
                               code: APPLICATION_FEE
                               name: Application Fees
                               short_desc: Application Fees
@@ -30351,6 +30467,11 @@ x-flows:
                               name: Interest rate type
                               short_desc: Fixed Interest type
                             value: FIXED
+                          - descriptor:
+                              code: LTV_RATIO
+                              name: LTV Ratio
+                              short_desc: Loan to value ration (75%)
+                            value: 75%
                           - descriptor:
                               code: APPLICATION_FEE
                               name: Application Fees
