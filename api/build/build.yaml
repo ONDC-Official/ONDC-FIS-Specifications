@@ -1360,6 +1360,7 @@ components:
             - application/html
             - application/xml
             - text/html-multi
+            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -2131,6 +2132,7 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
+            - REFUND
         status:
           type: string
           enum:
@@ -3188,10 +3190,34 @@ x-tags:
                 - code: OFFLINE_CONTRACT
                   description: Denotes offline contract
                   reference: <PR/Issue/Discussion Links md format text>
+        tags: &ref_11
+          - &ref_15
+            code: BAP_TERMS
+            description: Describes the BAP_TERMS
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
         payments: *ref_8
+        tags: &ref_14
+          - &ref_16
+            code: BPP_TERMS
+            description: Describes the BAP_TERMS
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
         providers:
           items:
             tags:
@@ -3200,7 +3226,7 @@ x-tags:
                   Describes the general information of the loan like interest
                   rate, tenure, amount etc
                 reference: <PR/Issue/Discussion Links md format text>
-                list: &ref_9
+                list: &ref_10
                   - code: WELCOME_BENEFIT
                     description: >-
                       Introductory perks offered upon card activation, such as
@@ -3254,13 +3280,19 @@ x-tags:
                   - code: MAX_LOAN_AMOUNT
                     description: Maximum amount for the loan which a borrower can take
                     reference: <PR/Issue/Discussion Links md format text>
-          tags:
+                  - code: TNC_LINK
+                    description: Describes the tnc link
+                    reference: <PR/Issue/Discussion Links md format text>
+                  - code: APR
+                    description: Describes the APR details
+                    reference: <PR/Issue/Discussion Links md format text>
+          tags: &ref_9
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_11
+              list: &ref_18
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3292,7 +3324,7 @@ x-tags:
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_12
+              list: &ref_19
                 - code: LSP_NAME
                   description: >-
                     Name of lsp acting as recovery agent, authorised to approach
@@ -3316,14 +3348,16 @@ x-tags:
   on_select:
     message:
       order:
-        items: &ref_10
+        provider: &ref_12
+          tags: *ref_9
+        items: &ref_13
           tags:
             - code: GENERAL_INFO
               description: >-
                 Describes the general information of the loan like interest
                 rate, tenure, amount etc
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_9
+              list: *ref_10
             - code: LOAN_INFO
               description: >-
                 Describes the more specific information about loan like term,
@@ -3387,6 +3421,9 @@ x-tags:
                     information as needed. For more details, refer to the
                     "KFS_LINK format" document in the "feature-ui" section.
                   reference: <PR/Issue/Discussion Links md format text>
+                - code: LTV_RATIO
+                  description: Describes details about LTV ratio
+                  reference: <PR/Issue/Discussion Links md format text>
             - code: CONSENT_INFO
               description: >-
                 Describes specific permissions and agreements that a borrower
@@ -3403,30 +3440,42 @@ x-tags:
     message:
       order:
         payments: *ref_8
+        tags: *ref_11
   on_init:
     message:
       order:
-        items: *ref_10
+        provider: *ref_12
+        items: *ref_13
         payments: *ref_8
+        tags: *ref_14
+  confirm:
+    message:
+      order:
+        payments: *ref_8
+        tags: &ref_17
+          - *ref_15
+          - *ref_16
   on_confirm:
     message:
       order:
-        items: *ref_10
-        provider:
+        payments: *ref_8
+        tags: *ref_17
+        items: *ref_13
+        provider: &ref_20
           tags:
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_11
+              list: *ref_18
             - code: LSP_INFO
               description: >-
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_12
-        fulfillments:
+              list: *ref_19
+        fulfillments: &ref_21
           tags:
             - code: SHIPPING_DETAILS
               description: Describes the recipient's shipping information
@@ -3446,11 +3495,19 @@ x-tags:
   on_status:
     message:
       order:
-        items: *ref_10
+        payments: *ref_8
+        tags: *ref_17
+        items: *ref_13
+        provider: *ref_20
+        fulfillments: *ref_21
   on_update:
     message:
       order:
-        items: *ref_10
+        payments: *ref_8
+        tags: *ref_17
+        items: *ref_13
+        provider: *ref_20
+        fulfillments: *ref_21
 x-flows:
   - summary: Personal Loan with Account Aggregator & monitoring consent
     details:
@@ -3544,7 +3601,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_22
             context:
               domain: ONDC:FIS12
               location:
@@ -3615,7 +3672,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -3935,7 +3992,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -3989,7 +4046,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -4123,7 +4180,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -4174,7 +4231,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -4449,7 +4506,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: The borrower chooses the personal loan service.
         api: select
         details:
@@ -4474,7 +4531,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -4530,7 +4587,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -4631,7 +4688,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -4745,7 +4802,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -4778,6 +4835,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
       - summary: >-
@@ -4831,7 +4900,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -4927,7 +4996,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -5028,7 +5097,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -5148,7 +5217,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -5177,6 +5246,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -5294,7 +5375,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -5386,7 +5467,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -5487,7 +5568,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -5607,7 +5688,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -5636,6 +5717,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -5753,7 +5846,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -5847,7 +5940,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -5948,7 +6041,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -6068,7 +6161,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -6097,6 +6190,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -6270,7 +6375,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -6364,7 +6469,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -6466,7 +6571,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -6566,7 +6671,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -6595,6 +6700,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -6730,6 +6847,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform updates the consumer.
         api: on_update
         details:
@@ -6751,7 +6870,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value:
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -6853,7 +6972,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -6962,7 +7081,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -6991,6 +7110,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -7126,6 +7257,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -7149,7 +7282,7 @@ x-flows:
                
         reference: if any
         example:
-          value:
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -7197,7 +7330,7 @@ x-flows:
                
         reference: if any
         example:
-          value:
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -7299,7 +7432,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -7408,7 +7541,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -7445,6 +7578,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '30000'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -7591,6 +7736,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -7610,7 +7757,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -7650,7 +7797,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -7752,7 +7899,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -7856,7 +8003,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -7893,6 +8040,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '30000'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                 fulfillments:
                   - customer:
@@ -8038,6 +8197,736 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+  - summary: Personal Loan & Sachet Insurance with AA and Monitoring Consent
+    details:
+      - description: Discovery of Funds
+        mermaid: |-
+          sequenceDiagram
+            title Personal Loan Discovery
+            Borrower Platform (BAP)->>Gateway (BG): search
+            Gateway (BG) ->> Borrower Platform (BAP): ACK
+            Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+            Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+            Gateway (BG)->>Lender Platform(BPP): search
+            Lender Platform(BPP)->>Gateway (BG) : ACK
+            Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+            Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+      - description: Ordering
+        mermaid: |-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Initializing the order
+        mermaid: |-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Order Confirmation
+        mermaid: |-
+          sequenceDiagram
+            title Order Confirmation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      - description: Fulfillment
+        mermaid: |-
+          sequenceDiagram
+            title MF Ordering - Order Fulfillment
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    references: if any
+    steps:
+      - summary: User search for available personal loan services.
+        api: search
+        details:
+          - description: >-
+              User explore loan options by searching for personal loan services
+              over the network
+            mermaid: |-
+              sequenceDiagram
+                title Personal Loan Discovery
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform(BPP): search
+                Lender Platform(BPP)->>Gateway (BG) : ACK
+                end
+                Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+        reference: if any
+        example:
+          value: *ref_22
+      - summary: >-
+          The lender offers a static catalog details of loan types like personal
+          loans, gst-based loans etc.
+        api: on_search
+        details:
+          - description: >-
+              The lender platform provides a comprehensive catalog of various
+              loan types including personal loans.
+            mermaid: |-
+              sequenceDiagram
+                title Personal Loan Discovery
+                Borrower Platform (BAP)->>Gateway (BG): search
+                Gateway (BG) ->> Borrower Platform (BAP): ACK
+                Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+                Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+                Gateway (BG)->>Lender Platform(BPP): search
+                Lender Platform(BPP)->>Gateway (BG) : ACK
+                rect rgb(191, 223, 255)
+                Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+                Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_23
+      - summary: >-
+          The borrower receives the personal loan application form from lender
+          after providing all details like PAN, mobile number, name, address,
+          date of birth, salary, employment type and company name.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the application form for the personal
+              loan to the borrower.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(personal loan)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>User Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/user-details\">\r\n    <label for=\"panName\">Name as Per PAN</label>\r\n    <input type=\"text\" id=\"panName\" name=\"panName\" required />\r\n    <label for=\"personalemail\">Personal Email</label>\r\n    <input type=\"text\" id=\"email\" name=\"personalemail\" />\r\n    <label for=\"officialemail\">Official Email</label>\r\n    <input type=\"text\" id=\"officialEmail\" name=\"officialemail\" />\r\n    <label for=\"dob\">Date of Birth</label>\r\n    <input type=\"date\" id=\"dob\" name=\"dob\" required />\r\n    <label for=\"gender\">Gender</label>\r\n    <select name=\"gender\" id=\"gender\" required>\r\n      <option value=\"male\">Male</option>\r\n      <option value=\"female\">Female</option>\r\n      <option value=\"transgender\">Transgender</option>\r\n    </select>\r\n    <label for=\"pan\">PAN</label>\r\n    <input type=\"text\" id=\"pan\" name=\"pan\" required />\r\n    <label for=\"contactNumber\">contact number</label>\r\n    <input type=\"text\" id=\"contactNumber\" name=\"contactNumber\" required />\r\n    <label for=\"employmentType\">Employment type</label>\r\n    <select name=\"employmentType\" id=\"employmentType\" required>\r\n      <option value=\"salaried\">Salaried</option>\r\n      <option value=\"selfEmployed\">Self Employment</option>\r\n    </select>\r\n    <label for=\"income\">Income</label>\r\n    <input type=\"number\" id=\"income\" name=\"income\" required />\r\n    <label for=\"companyName\">Company Name</label>\r\n    <input type=\"text\" id=\"companyName\" name=\"companyName\" required />\r\n    <label for=\"udyamNumber\">UDYAM Number</label>\r\n    <input type=\"text\" id=\"udyamNumber\" name=\"udyamNumber\" />\r\n    <label for=\"addressL1\">Address Line 1</label>\r\n    <input type=\"text\" id=\"addressL1\" name=\"addressL1\" />\r\n    <label for=\"addressL2\">Address Line 2</label>\r\n    <input type=\"text\" id=\"addressL2\" name=\"addressL2\" />\r\n    <label for=\"city\">City</label>\r\n    <input type=\"text\" id=\"city\" name=\"city\" />\r\n    <label for=\"state\">State</label>\r\n    <input type=\"text\" id=\"state\" name=\"state\" />\r\n    <label for=\"pincode\">Pin Code</label>\r\n    <input type=\"text\" id=\"pincode\" name=\"pincode\" />\r\n    <label for=\"aa_id\">Account Aggregator ID</label>\r\n    <input type=\"text\" id=\"aa_id\" name=\"aa_id\" optional/>\r\n    <label for=\"endUse\">End Use</label>\r\n    <select name=\"endUse\" id=\"endUse\" required>\r\n      <option value=\"consumerDurablePurchase\">Purchase of Consumer Durables</option>\r\n      <option value=\"education\">Education</option>\r\n      <option value=\"travel\">Travel</option>\r\n      <option value=\"health\">Health</option>\r\n      <option value=\"other\">Other Consumption Purposes</option>\r\n    </select>\r\n    <label for=\"bureauConsent\">Bureau Consent</label>\r\n    <input type=\"checkbox\" id=\"bureauConsent\" name=\"bureauConsent\" required/>\r\n\r\n    <label for=\"derivedData\">Derived Data</label>\r\n    <input name=\"derivedData\" name=\"derivedData\" type=\"file\" accept=\".json\" />\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO1\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: The borrower chooses the personal loan service.
+        api: select
+        details:
+          - description: >-
+              The borrower selects the specific personal loan service they are
+              interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_24
+      - summary: Creates a consent request with selected product
+        api: on_select
+        details:
+          - description: >-
+              The lender platform generates a consent request for capturing
+              borrower's consent.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_25
+      - summary: Approval of consent request
+        api: select
+        details:
+          - description: >-
+              The BAP approves the consent request and sends the loan product,
+              the loan provider, and the customer's identity to the BPP.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255) 
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_26
+      - summary: >-
+          The lender offers the required form for the chosen personal loan
+          service.
+        api: on_select
+        details:
+          - description: >-
+              The lender platform responds with detailed information and the
+              necessary application form for the selected personal loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_27
+      - summary: The borrower adjusts the loan amount in the form by the lender.
+        api: form
+        details:
+          - description: >-
+              The borrower adjusts the loan amount in the form and provides
+              additional fields for insurance details. These fields are
+              optional, but once any one field is populated, all become
+              mandatory.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(loan amount)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: The borrower chooses the personal loan service.
+        api: select
+        details:
+          - description: >-
+              The borrower selects the specific personal loan service they are
+              interested in.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_28
+      - summary: >-
+          The lender sends available loan offers for the chosen personal loan
+          service.
+        api: on_select
+        details:
+          - description: >-
+              The lender platform responds with detailed information and the
+              necessary application form for the selected personal loan service.
+            mermaid: |-
+              sequenceDiagram
+                title  Selection
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255) 
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_29
+      - summary: >-
+          The lender invoked the relevant forms like links for KYC, bank
+          details, e-mandate etc.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to collect Know Your Customer
+              (KYC) details from the borrower.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: 'Individual KYC Redirect: This will redirected to different html page'
+      - summary: The borrower initiates the personal loan request by filling the form.
+        api: init
+        details:
+          - description: >-
+              The borrower platform initiates the personal loan request by
+              filling the form such as KYC detals, bank details and e-madate.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_30
+      - summary: >-
+          The lender accepts the personal loan request and displays loan status
+          details and requests for loan dispach account details.
+        api: on_init
+        details:
+          - description: >-
+              The lender platform accepts the borrower's request terms and and
+              displays loan status details amd may include additional terms if
+              any.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_31
+      - summary: The borrower receives the bank account mandate form details form.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to get dispachment account
+              details from the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account details)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Account Details</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/account-details\">\r\n    <label for=\"accHolderName\">Account Holder Name</label>\r\n    <input type=\"text\" id=\"accHolderName\" name=\"accHolderName\" />\r\n    <label for=\"acctype\">Account Type</label>\r\n    <select name=\"acctype\" id=\"acctype\" required>\r\n      <option value=\"current\">Current</option>\r\n      <option value=\"saving\">Saving</option>\r\n    </select>\r\n    <label for=\"accNo\">Bank Account Number</label>\r\n    <input type=\"text\" id=\"accNo\" name=\"accNo\" />\r\n    <label for=\"ifscCode\">Bank IFSC Code</label>\r\n    <input type=\"text\" id=\"ifscCode\" name=\"ifscCode\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO4\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+      - summary: The borrower initiates the personal loan request.
+        api: init
+        details:
+          - description: >-
+              The borrower platform initiates the personal loan request by
+              filling the forms.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Account details)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_32
+      - summary: >-
+          The lender accepts the personal loan request and displays loan status
+          details and requests for e-mandate details.
+        api: on_init
+        details:
+          - description: >-
+              The lender platform accepts the borrower's request terms and
+              displays loan status details amd may include additional terms if
+              any.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_33
+      - summary: The borrower will be redirected to the e-mandate details form.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to get dispachment e-mandate
+              details from the consumer.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The borrower initiates the personal loan request with account details.
+        api: init
+        details:
+          - description: >-
+              The borrower platform shares the request's terms and initializes
+              the personal loan application.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_34
+      - summary: The lender accepts and adds terms to the request.
+        api: on_init
+        details:
+          - description: >-
+              The lender platform accepts the borrower's request terms and may
+              include additional terms if needed.
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_35
+      - summary: The borrower receives the loan agreement details form.
+        api: form
+        details:
+          - description: >-
+              The lender platform sends the form to collect e-sign on loan
+              agreement from the borrower.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: This will redirected to different html page
+      - summary: The borrower confirms the personal loan request.
+        api: confirm
+        details:
+          - description: >-
+              The borrower platform confirms the personal loan request by
+              signing the agreement and provides all the necessary information
+              as per the terms.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_36
+      - summary: The lender confirms the personal loan order.
+        api: on_confirm
+        details:
+          - description: >-
+              The lender platform confirms the personal loan order and provides
+              the final confirmation details.
+            mermaid: |-
+              sequenceDiagram
+                title Order Confirmation
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_37
+      - summary: The provider platform updates the consumer.
+        api: on_update
+        details:
+          - description: >-
+              The provider platform updates the consumer with on_update request
+              response.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+                Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_38
+      - summary: The borrower (BAP) sends the update request by sending the order ID.
+        api: update
+        details:
+          - description: >-
+              The borrower (BAP) sends the update request by sending the order
+              ID to be updated along with the object in the order to be updated
+              as update_target.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+               
+        reference: if any
+        example:
+          value: *ref_39
+      - summary: The provider platform updates the consumer.
+        api: on_update
+        details:
+          - description: >-
+              The provider platform updates the consumer with on_update request
+              response.
+            mermaid: |-
+              sequenceDiagram
+                title Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+               
+        reference: if any
+        example:
+          value: *ref_40
+      - summary: The borrower seeks the most recent loan status update.
+        api: status
+        details:
+          - description: >-
+              The borrower platform requests the lender platform to provide the
+              latest status of the personal loan application.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: *ref_41
+      - summary: The lender shares the latest loan status with the borrower.
+        api: on_status
+        details:
+          - description: >-
+              The lender platform updates the borrower with the most recent
+              status of the personal loan application including installment
+              details.
+            mermaid: |-
+              sequenceDiagram
+                title MF Ordering - Order Fulfillment
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_42
   - summary: Personal Loan without Account Aggregator & monitoring consent
     details:
       - description: Discovery of Funds
@@ -8130,7 +9019,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -8154,7 +9043,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -8207,7 +9096,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -8258,7 +9147,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -8506,6 +9395,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
                   ttl: PT15D
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
@@ -8531,7 +9432,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: The borrower chooses the personal loan service.
         api: select
         details:
@@ -8713,7 +9614,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -8825,7 +9726,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -8858,6 +9759,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
       - summary: >-
@@ -9108,7 +10021,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -9226,7 +10139,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -9255,6 +10168,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -9565,7 +10490,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -9683,7 +10608,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -9712,6 +10637,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -10024,7 +10961,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -10142,7 +11079,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -10171,6 +11108,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -10544,7 +11493,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -10642,7 +11591,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -10671,6 +11620,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -10806,6 +11767,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform send the on_status to consumer.
         api: on_status
         details:
@@ -10935,7 +11898,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -11033,7 +11996,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -11062,6 +12025,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -11208,6 +12183,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -11227,7 +12204,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_41
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -11350,7 +12327,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -11452,7 +12429,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -11481,6 +12458,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                 fulfillments:
                   - customer:
@@ -11626,6 +12615,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan without Account monitoring
     details:
       - description: Discovery of Funds
@@ -11718,7 +12709,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -11742,7 +12733,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -11795,7 +12786,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_24
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -11820,7 +12811,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_25
       - summary: Approval of consent request
         api: select
         details:
@@ -11840,7 +12831,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_26
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -11862,7 +12853,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_27
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -11887,7 +12878,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: The borrower chooses the personal loan service.
         api: select
         details:
@@ -11912,7 +12903,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_28
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -11939,7 +12930,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_29
       - summary: >-
           The lender invoked the relevant forms like links for KYC, bank
           details, e-mandate etc.
@@ -11991,7 +12982,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_30
       - summary: >-
           The lender accepts the personal loan request and displays loan status
           details and requests for loan dispach account details.
@@ -12019,7 +13010,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_31
       - summary: The borrower receives the bank account mandate form details form.
         api: form
         details:
@@ -12069,7 +13060,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_32
       - summary: >-
           The lender accepts the personal loan request and displays loan status
           details and requests for e-mandate details.
@@ -12092,7 +13083,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_33
       - summary: The borrower will be redirected to the e-mandate details form.
         api: form
         details:
@@ -12142,7 +13133,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_34
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -12167,7 +13158,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_35
       - summary: The borrower receives the loan agreement details form.
         api: form
         details:
@@ -12218,7 +13209,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_36
       - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
@@ -12243,7 +13234,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_37
       - summary: The provider platform send the on_status to consumer.
         api: on_status
         details:
@@ -12373,7 +13364,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -12473,7 +13464,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -12510,6 +13501,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '30000'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -12656,6 +13659,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -12675,7 +13680,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_45
             context:
               domain: ONDC:FIS12
               location:
@@ -12715,7 +13720,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_42
   - summary: Personal Loan with Multiple offers(Bureau consent & AA)
     details:
       - description: Discovery of Funds
@@ -12808,7 +13813,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -12832,7 +13837,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -12885,7 +13890,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_43
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -12912,7 +13917,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_44
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -12965,7 +13970,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_24
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -12990,7 +13995,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_25
       - summary: Approval of consent request
         api: select
         details:
@@ -13010,7 +14015,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_26
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -13280,6 +14285,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
                   ttl: PT15D
   - summary: Personal Loan - Offline
     details:
@@ -13373,7 +14390,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -13397,7 +14414,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -13450,7 +14467,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_24
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -13475,7 +14492,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_25
       - summary: Approval of consent request
         api: select
         details:
@@ -13495,7 +14512,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_26
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -13517,7 +14534,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_27
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -13542,7 +14559,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: The borrower chooses the personal loan service.
         api: select
         details:
@@ -13567,7 +14584,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_28
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -13695,7 +14712,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -13809,7 +14826,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -13842,6 +14859,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
       - summary: >-
@@ -13889,7 +14918,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_46
             context:
               domain: ONDC:FIS12
               location:
@@ -13990,7 +15019,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -14091,7 +15120,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -14125,6 +15154,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
                   ttl: PT15D
       - summary: The borrower request for order status
         api: status
@@ -14143,7 +15184,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_45
       - summary: The lender sends the latest order status of the form
         api: on_status
         details:
@@ -14161,7 +15202,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_47
             context:
               domain: ONDC:FIS12
               location:
@@ -14262,7 +15303,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -14363,7 +15404,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -14397,6 +15438,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
                   ttl: PT15D
       - summary: The borrower initiates the personal loan request
         api: init
@@ -14415,7 +15468,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_30
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -14536,7 +15589,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -14636,7 +15689,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -14665,6 +15718,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -14998,7 +16063,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -15098,7 +16163,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -15127,6 +16192,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -15262,6 +16339,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -15281,7 +16360,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_41
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -15302,7 +16381,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_42
   - summary: Personal Loan - Offline & Online
     details:
       - description: Discovery of Funds
@@ -15395,7 +16474,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_22
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans, gst-based loans etc.
@@ -15419,7 +16498,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_23
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -15472,7 +16551,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_24
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -15497,7 +16576,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_25
       - summary: Approval of consent request
         api: select
         details:
@@ -15517,7 +16596,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_26
       - summary: >-
           The lender offers the required form for the chosen personal loan
           service.
@@ -15539,7 +16618,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_27
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -15564,7 +16643,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: The borrower chooses the personal loan service.
         api: select
         details:
@@ -15589,7 +16668,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_28
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -15717,7 +16796,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -15831,7 +16910,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -15864,6 +16943,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
       - summary: >-
@@ -15911,7 +17002,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_34
+          value: *ref_46
       - summary: The borrower request for order status
         api: status
         details:
@@ -15929,7 +17020,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_45
       - summary: The lender sends the latest order status of the form
         api: on_status
         details:
@@ -15947,7 +17038,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_35
+          value: *ref_47
       - summary: The borrower initiates the personal loan request.
         api: init
         details:
@@ -15965,7 +17056,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_30
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -16086,7 +17177,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     xinput:
                       head:
                         descriptor:
@@ -16204,7 +17295,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -16233,6 +17324,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -16406,7 +17509,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_36
       - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
@@ -16533,7 +17636,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -16633,7 +17736,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -16662,6 +17765,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -16797,6 +17912,8 @@ x-flows:
                         in a formal financial arrangement.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-agreement/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -16816,7 +17933,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_41
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -16837,7 +17954,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_42
   - summary: Form Status for text/html
     details:
       - description: >-
@@ -16889,7 +18006,7 @@ x-flows:
                 Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_27
       - summary: Borrower fetches the loan amount form
         api: form
         details:
@@ -16913,7 +18030,7 @@ x-flows:
                 Lender Platform(BPP)-->>Borrower Platform (BAP): ACK
         reference: if any
         example:
-          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
+          value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Update Required Loan Value</title>\r\n</head>\r\n\r\n<body>\r\n  <form action=\"/form/submission/loan-amount\">\r\n    <label for=\"requestAmount\">Requested Loan Amount</label>\r\n    <input type=\"text\" id=\"requestAmount\" name=\"requestAmount\" />\r\n\r\n    <label for=\"requestTerm\">Requested Loan Term</label>\r\n    <input type=\"text\" id=\"requestTerm\" name=\"requestTerm\" />\r\n\r\n    <label for=\"insuranceProductName\">Insurance Product Name</label>\r\n    <input type=\"text\" id=\"insuranceProductName\" name=\"insuranceProductName\" />\r\n\r\n    <label for=\"insuranceProductCoverAmount\">Insurance Product Cover Amount</label>\r\n    <input type=\"text\" id=\"insuranceProductCoverAmount\" name=\"insuranceProductCoverAmount\" />\r\n\r\n    <label for=\"insuranceProductFee\">Insurance Product Fee</label>\r\n    <input type=\"text\" id=\"insuranceProductFee\" name=\"insuranceProductFee\" />\r\n\r\n    <label for=\"insuranceTaxAmount\">Insurance Tax Amount</label>\r\n    <input type=\"text\" id=\"insuranceTaxAmount\" name=\"insuranceTaxAmount\" />\r\n\r\n    <label for=\"insuranceTotalFee\">Insurance Total Fee</label>\r\n    <input type=\"text\" id=\"insuranceTotalFee\" name=\"insuranceTotalFee\" />\r\n\r\n    <label for=\"deductFromLoanDisbursal\">Deduct from loan disbursal</label>\r\n    <input type=\"checkbox\" id=\"deductFromLoanDisbursal\" name=\"deductFromLoanDisbursal\"/>\r\n\r\n\r\n    <input type=\"hidden\" id=\"formId\" name=\"formId\" value=\"FO2\">\r\n    <input type=\"submit\" value=\"Submit\">\r\n  </form>\r\n</body>\r\n\r\n</html>"
       - summary: The borrower chooses the personal loan service.
         api: select
         details:
@@ -16937,7 +18054,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_28
       - summary: >-
           The lender sends available loan offers for the chosen personal loan
           service.
@@ -16961,7 +18078,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_29
       - summary: Borrower get PAN deatails form from lender.
         api: form
         details:
@@ -17003,7 +18120,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK         
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_45
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -17024,7 +18141,7 @@ x-flows:
                 end     
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_42
   - summary: Form Status for application/html
     details:
       - description: >-
@@ -17176,7 +18293,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -17295,7 +18412,7 @@ x-flows:
                   id: LOAN_LEAD_ID_OR_SIMILAR
                   price:
                     currency: INR
-                    value: '232800'
+                    value: '233900'
                   breakup:
                     - title: PRINCIPAL
                       price:
@@ -17324,6 +18441,18 @@ x-flows:
                     - title: OTHER_CHARGES
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
       - summary: Borrower platform fetches the EKYC form
@@ -17374,7 +18503,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_61
             context:
               domain: ONDC:FIS12
               location:
@@ -17609,6 +18738,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
       - summary: The borrower seeks the most recent loan status update.
         api: status
         details:
@@ -17629,7 +18770,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_45
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -17652,7 +18793,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_60
             context:
               domain: ONDC:FIS12
               location:
@@ -17887,6 +19028,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
       - summary: Borrower platform request the latest form status updates.
         api: status
         details:
@@ -17908,7 +19061,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_45
       - summary: The lender shares the latest loan status with the borrower.
         api: on_status
         details:
@@ -17931,7 +19084,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): init
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_59
             context:
               domain: ONDC:FIS12
               location:
@@ -18166,6 +19319,18 @@ x-flows:
                       price:
                         value: '0'
                         currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
+                        currency: INR
       - summary: The borrower initiates the personal loan request by filling the form
         api: init
         details:
@@ -18187,7 +19352,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_30
   - summary: Personal Loan - Loan Foreclosure
     details:
       - description: Detailed process for loan forclosure
@@ -18224,7 +19389,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_37
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -18389,7 +19554,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -18526,6 +19691,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -18682,6 +19859,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -18804,7 +19983,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -18940,6 +20119,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '0'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -19094,6 +20285,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Pre-Part Payment
     details:
       - description: Detailed process for pre-part payment
@@ -19129,7 +20322,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_37
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -19297,7 +20490,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -19434,6 +20627,18 @@ x-flows:
                     - title: PRE_PAYMENT_CHARGE
                       price:
                         value: '4500'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -19590,6 +20795,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform updates the consumer with pre-part success.
         api: on_update
         details:
@@ -19710,7 +20917,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -19847,6 +21054,18 @@ x-flows:
                     - title: PRE_PAYMENT_CHARGE
                       price:
                         value: '4500'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -20001,6 +21220,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Missed-EMI Payment
     details:
       - description: Detailed process for Missed-EMI Payment
@@ -20037,7 +21258,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_37
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -20202,7 +21423,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -20339,6 +21560,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '15000'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -20498,6 +21731,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -20620,7 +21855,7 @@ x-flows:
                       name: Personal Loan
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     tags:
                       - descriptor:
                           code: LOAN_INFO
@@ -20757,6 +21992,18 @@ x-flows:
                     - title: OUTSTANDING_INTEREST
                       price:
                         value: '10000'
+                        currency: INR
+                    - title: INSURANCE_PRODUCT_FEE
+                      price:
+                        value: '1000'
+                        currency: INR
+                    - title: TAX
+                      price:
+                        value: '100'
+                        currency: INR
+                    - title: INSURANCE_TOTAL_FEE
+                      price:
+                        value: '1100'
                         currency: INR
                   ttl: PT15D
                 fulfillments:
@@ -20914,6 +22161,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan with Account Aggregator
     details:
       - description: Discovery of Funds
@@ -21006,7 +22255,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_48
             context:
               domain: ONDC:FIS12
               location:
@@ -21077,7 +22326,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_49
             context:
               domain: ONDC:FIS12
               location:
@@ -21500,7 +22749,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_54
             context:
               domain: ONDC:FIS12
               location:
@@ -21554,7 +22803,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_55
             context:
               domain: ONDC:FIS12
               location:
@@ -21688,7 +22937,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_56
             context:
               domain: ONDC:FIS12
               location:
@@ -21744,7 +22993,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_63
             context:
               domain: ONDC:FIS12
               location:
@@ -22059,7 +23308,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_50
             context:
               domain: ONDC:FIS12
               location:
@@ -22334,7 +23583,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_51
             context:
               domain: ONDC:FIS12
               location:
@@ -22371,7 +23620,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_52
             context:
               domain: ONDC:FIS12
               location:
@@ -22653,7 +23902,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_65
             context:
               domain: ONDC:FIS12
               location:
@@ -22749,7 +23998,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_67
             context:
               domain: ONDC:FIS12
               location:
@@ -23136,7 +24385,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_69
             context:
               domain: ONDC:FIS12
               location:
@@ -23220,7 +24469,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_57
             context:
               domain: ONDC:FIS12
               location:
@@ -23603,6 +24852,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan without Account Aggregator
     details:
       - description: Discovery of Funds
@@ -23695,7 +24946,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_48
       - summary: >-
           The lender offers a static catalog details of loan types like Gold
           Loans etc.
@@ -23719,7 +24970,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_49
       - summary: >-
           The borrower receives the Gold Loan application form from lender after
           providing all details like PAN, mobile number, name, address, date of
@@ -23870,7 +25121,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_53
             context:
               domain: ONDC:FIS12
               location:
@@ -23926,7 +25177,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_64
             context:
               domain: ONDC:FIS12
               location:
@@ -24255,7 +25506,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_38
+          value: *ref_50
       - summary: The borrower request for order status
         api: status
         details:
@@ -24273,7 +25524,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_39
+          value: *ref_51
       - summary: The lender sends the latest order status of the form
         api: on_status
         details:
@@ -24291,7 +25542,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_52
       - summary: The borrower initiates the Gold Loan request by filling the form.
         api: init
         details:
@@ -24316,7 +25567,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_66
             context:
               domain: ONDC:FIS12
               location:
@@ -24412,7 +25663,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_68
             context:
               domain: ONDC:FIS12
               location:
@@ -24799,7 +26050,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_58
+          value: &ref_70
             context:
               domain: ONDC:FIS12
               location:
@@ -24883,7 +26134,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_59
+          value: &ref_71
             context:
               domain: ONDC:FIS12
               location:
@@ -25266,6 +26517,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan with Multiple offers(Bureau consent & AA)
     details:
       - description: Discovery of Funds
@@ -25358,7 +26611,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_48
       - summary: >-
           The lender offers a static catalog details of loan types like Gold
           Loans, gst-based loans etc.
@@ -25382,7 +26635,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_49
       - summary: >-
           The borrower receives the Gold Loan application form from lender after
           providing all details like PAN, mobile number, name, address, date of
@@ -25435,7 +26688,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_41
+          value: *ref_53
       - summary: The lender offers the required form for the chosen Gold Loan service.
         api: on_select
         details:
@@ -25789,7 +27042,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_42
+          value: *ref_54
       - summary: Creates a consent request with selected product
         api: on_select
         details:
@@ -25814,7 +27067,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_43
+          value: *ref_55
       - summary: Approval of consent request
         api: select
         details:
@@ -25834,7 +27087,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_56
       - summary: The lender offers the required form for the chosen Gold Loan service.
         api: on_select
         details:
@@ -25854,7 +27107,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_62
             context:
               domain: ONDC:FIS12
               location:
@@ -26166,7 +27419,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_57
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -26186,7 +27439,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_60
+          value: &ref_72
             context:
               domain: ONDC:FIS12
               location:
@@ -26229,7 +27482,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_63
+          value: &ref_75
             context:
               domain: ONDC:FIS12
               location:
@@ -26625,6 +27878,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -26645,7 +27900,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_64
+          value: &ref_76
             context:
               domain: ONDC:FIS12
               location:
@@ -27038,6 +28293,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan - Missed-EMI Payment
     details:
       - description: Detailed process for loan forclosure
@@ -27073,7 +28330,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_57
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -27093,7 +28350,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_62
+          value: &ref_74
             context:
               domain: ONDC:FIS12
               location:
@@ -27535,6 +28792,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -27952,6 +29211,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan - Pre-Part Payment
     details:
       - description: Detailed process for loan forclosure
@@ -27987,7 +29248,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_57
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -28007,7 +29268,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_61
+          value: &ref_73
             context:
               domain: ONDC:FIS12
               location:
@@ -28053,7 +29314,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_65
+          value: &ref_77
             context:
               domain: ONDC:FIS12
               location:
@@ -28449,6 +29710,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
           The provider platform updates the consumer with loan forclosure
           success.
@@ -28863,6 +30126,8 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                created_at: '2023-05-25T05:23:03.443Z'
+                updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Credit Card
     details:
       - description: Discovery of credit card
@@ -28951,7 +30216,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_66
+          value: &ref_78
             context:
               domain: ONDC:FIS12
               location:
@@ -29008,7 +30273,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_67
+          value: &ref_79
             context:
               domain: ONDC:FIS12
               location:
@@ -29437,7 +30702,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_68
+          value: &ref_80
             context:
               domain: ONDC:FIS12
               location:
@@ -29491,7 +30756,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_69
+          value: &ref_81
             context:
               domain: ONDC:FIS12
               location:
@@ -29714,7 +30979,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_74
+          value: &ref_86
             context:
               domain: ONDC:FIS12
               location:
@@ -29893,7 +31158,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_58
             context:
               domain: ONDC:FIS12
               location:
@@ -29930,7 +31195,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_75
+          value: &ref_87
             context:
               domain: ONDC:FIS12
               location:
@@ -30111,7 +31376,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_70
+          value: &ref_82
             context:
               domain: ONDC:FIS12
               location:
@@ -30181,7 +31446,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_71
+          value: &ref_83
             context:
               domain: ONDC:FIS12
               location:
@@ -30380,7 +31645,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_72
+          value: &ref_84
             context:
               domain: ONDC:FIS12
               location:
@@ -30453,7 +31718,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_73
+          value: &ref_85
             context:
               domain: ONDC:FIS12
               location:
@@ -30680,7 +31945,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_46
+          value: *ref_58
       - summary: The lender shares the latest card status with the borrower.
         api: on_status
         details:
@@ -30701,7 +31966,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_76
+          value: &ref_88
             context:
               domain: ONDC:FIS12
               location:
@@ -30918,7 +32183,7 @@ x-examples:
         examples:
           - summary: search for personal loan
             description: TBD
-            value: *ref_13
+            value: *ref_22
       on_search:
         examples:
           - summary: personal loan catalog
@@ -31121,56 +32386,56 @@ x-examples:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_16
+            value: *ref_24
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_20
+            value: *ref_28
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_18
+            value: *ref_26
       on_select:
         examples:
           - summary: on_select-request-financial-info-form
             description: TBD
-            value: *ref_19
+            value: *ref_27
           - summary: on_select-request-with-kyc-form
             description: TBD
-            value: *ref_21
+            value: *ref_29
           - summary: on_select-request-consent-created
             description: TBD
-            value: *ref_17
+            value: *ref_25
       init:
         examples:
           - summary: init-request-kyc-approved
             description: TBD
-            value: *ref_22
+            value: *ref_30
           - summary: init-request-account-info-complete
             description: TBD
-            value: *ref_26
+            value: *ref_34
           - summary: init-request-emandate
             description: TBD
-            value: *ref_24
+            value: *ref_32
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_27
+            value: *ref_35
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_27
+            value: *ref_35
           - summary: on_init-request-emandate
             description: TBD
-            value: *ref_25
+            value: *ref_33
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_28
+            value: *ref_36
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_29
+            value: *ref_37
       update:
         examples:
           - summary: update-request
@@ -31344,7 +32609,7 @@ x-examples:
                         name: Personal Loan
                       price:
                         currency: INR
-                        value: '232800'
+                        value: '233900'
                       tags:
                         - descriptor:
                             code: LOAN_INFO
@@ -31444,7 +32709,7 @@ x-examples:
                     id: LOAN_LEAD_ID_OR_SIMILAR
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     breakup:
                       - title: Late fee for the month of August
                         price:
@@ -31465,6 +32730,18 @@ x-examples:
                       - title: OTHER_CHARGES
                         price:
                           value: '0'
+                          currency: INR
+                      - title: INSURANCE_PRODUCT_FEE
+                        price:
+                          value: '1000'
+                          currency: INR
+                      - title: TAX
+                        price:
+                          value: '100'
+                          currency: INR
+                      - title: INSURANCE_TOTAL_FEE
+                        price:
+                          value: '1100'
                           currency: INR
                     ttl: PT15D
                   fulfillments:
@@ -31600,6 +32877,8 @@ x-examples:
                           and borrower in a formal financial arrangement.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-agreement/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_update-request-prepayment
             description: TBD
             value:
@@ -31704,7 +32983,7 @@ x-examples:
                         name: Personal Loan
                       price:
                         currency: INR
-                        value: '232800'
+                        value: '233900'
                       tags:
                         - descriptor:
                             code: LOAN_INFO
@@ -31804,7 +33083,7 @@ x-examples:
                     id: LOAN_LEAD_ID_OR_SIMILAR
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     breakup:
                       - title: Late fee for the month of August
                         price:
@@ -31825,6 +33104,18 @@ x-examples:
                       - title: OTHER_CHARGES
                         price:
                           value: '0'
+                          currency: INR
+                      - title: INSURANCE_PRODUCT_FEE
+                        price:
+                          value: '1000'
+                          currency: INR
+                      - title: TAX
+                        price:
+                          value: '100'
+                          currency: INR
+                      - title: INSURANCE_TOTAL_FEE
+                        price:
+                          value: '1100'
                           currency: INR
                     ttl: PT15D
                   fulfillments:
@@ -31972,6 +33263,8 @@ x-examples:
                           and borrower in a formal financial arrangement.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-agreement/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_update-success-prepayment
             description: TBD
             value:
@@ -32076,7 +33369,7 @@ x-examples:
                         name: Personal Loan
                       price:
                         currency: INR
-                        value: '232800'
+                        value: '233900'
                       tags:
                         - descriptor:
                             code: LOAN_INFO
@@ -32176,7 +33469,7 @@ x-examples:
                     id: LOAN_LEAD_ID_OR_SIMILAR
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     breakup:
                       - title: Late fee for the month of August
                         price:
@@ -32197,6 +33490,18 @@ x-examples:
                       - title: OTHER_CHARGES
                         price:
                           value: '0'
+                          currency: INR
+                      - title: INSURANCE_PRODUCT_FEE
+                        price:
+                          value: '1000'
+                          currency: INR
+                      - title: TAX
+                        price:
+                          value: '100'
+                          currency: INR
+                      - title: INSURANCE_TOTAL_FEE
+                        price:
+                          value: '1100'
                           currency: INR
                     ttl: PT15D
                   fulfillments:
@@ -32344,16 +33649,18 @@ x-examples:
                           and borrower in a formal financial arrangement.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-agreement/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_33
+            value: *ref_45
       on_status:
         examples:
           - summary: on_status-request
             description: TBD
-            value: *ref_30
+            value: *ref_42
           - summary: on_status-request-full-repayment
             description: TBD
             value:
@@ -32458,7 +33765,7 @@ x-examples:
                         name: Personal Loan
                       price:
                         currency: INR
-                        value: '232800'
+                        value: '233900'
                       tags:
                         - descriptor:
                             code: LOAN_INFO
@@ -32558,7 +33865,7 @@ x-examples:
                     id: LOAN_LEAD_ID_OR_SIMILAR
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     breakup:
                       - title: PRINCIPAL
                         price:
@@ -32575,6 +33882,18 @@ x-examples:
                       - title: OTHER_CHARGES
                         price:
                           value: '0'
+                          currency: INR
+                      - title: INSURANCE_PRODUCT_FEE
+                        price:
+                          value: '1000'
+                          currency: INR
+                      - title: TAX
+                        price:
+                          value: '100'
+                          currency: INR
+                      - title: INSURANCE_TOTAL_FEE
+                        price:
+                          value: '1100'
                           currency: INR
                   fulfillments:
                     - customer:
@@ -32737,6 +34056,8 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_status-request-late-repayment-installment
             description: TBD
             value:
@@ -32841,7 +34162,7 @@ x-examples:
                         name: Personal Loan
                       price:
                         currency: INR
-                        value: '232800'
+                        value: '233900'
                       tags:
                         - descriptor:
                             code: LOAN_INFO
@@ -32941,7 +34262,7 @@ x-examples:
                     id: LOAN_LEAD_ID_OR_SIMILAR
                     price:
                       currency: INR
-                      value: '232800'
+                      value: '233900'
                     breakup:
                       - title: Late fee for the month of August
                         price:
@@ -32962,6 +34283,18 @@ x-examples:
                       - title: OTHER_CHARGES
                         price:
                           value: '0'
+                          currency: INR
+                      - title: INSURANCE_PRODUCT_FEE
+                        price:
+                          value: '1000'
+                          currency: INR
+                      - title: TAX
+                        price:
+                          value: '100'
+                          currency: INR
+                      - title: INSURANCE_TOTAL_FEE
+                        price:
+                          value: '1100'
                           currency: INR
                   fulfillments:
                     - customer:
@@ -33100,15 +34433,17 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
           - summary: on_status-form-completed
             description: TBD
-            value: *ref_47
+            value: *ref_59
           - summary: on_status-form-processing
             description: TBD
-            value: *ref_48
+            value: *ref_60
           - summary: on_status-form-submitted
             description: TBD
-            value: *ref_49
+            value: *ref_61
           - summary: on_status-request-prepayment
             description: TBD
             value:
@@ -33213,7 +34548,7 @@ x-examples:
                         name: Personal Loan
                       price:
                         currency: INR
-                        value: '232800'
+                        value: '233900'
                       tags:
                         - descriptor:
                             code: LOAN_INFO
@@ -33334,6 +34669,18 @@ x-examples:
                       - title: OTHER_CHARGES
                         price:
                           value: '0'
+                          currency: INR
+                      - title: INSURANCE_PRODUCT_FEE
+                        price:
+                          value: '1000'
+                          currency: INR
+                      - title: TAX
+                        price:
+                          value: '100'
+                          currency: INR
+                      - title: INSURANCE_TOTAL_FEE
+                        price:
+                          value: '1100'
                           currency: INR
                   fulfillments:
                     - customer:
@@ -33488,6 +34835,8 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
       support:
         examples:
           - summary: support-request
@@ -33562,34 +34911,34 @@ x-examples:
         examples:
           - summary: search for gold loan
             description: TBD
-            value: *ref_36
+            value: *ref_48
       on_search:
         examples:
           - summary: gold loan catalog
             description: TBD
-            value: *ref_37
+            value: *ref_49
       select:
         examples:
           - summary: select-request-gold-info
             description: TBD
-            value: *ref_41
+            value: *ref_53
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_42
+            value: *ref_54
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_44
+            value: *ref_56
       on_select:
         examples:
           - summary: on_select-request-consent-info
             description: TBD
-            value: *ref_43
+            value: *ref_55
           - summary: on_select-request-set-loan-amount
             description: TBD
-            value: *ref_50
+            value: *ref_62
           - summary: on_select-request-JOURNEY_OFFLINE
             description: TBD
-            value: *ref_51
+            value: *ref_63
           - summary: on_select-request-set-loan-amount_2
             description: TBD
             value:
@@ -33872,66 +35221,66 @@ x-examples:
                     ttl: PT15D
           - summary: on_select-request-JOURNEY_OFFLINE_2
             description: TBD
-            value: *ref_52
+            value: *ref_64
       init:
         examples:
           - summary: init-request-kyc-approved
             description: TBD
-            value: *ref_53
+            value: *ref_65
           - summary: init-request-kyc-approved_2
             description: TBD
-            value: *ref_54
+            value: *ref_66
       on_init:
         examples:
           - summary: on_init-request-loan-agreement-form
             description: TBD
-            value: *ref_55
+            value: *ref_67
           - summary: on_init-request-loan-agreement-form_2
             description: TBD
-            value: *ref_56
+            value: *ref_68
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_57
+            value: *ref_69
           - summary: confirm-request_2
             description: TBD
-            value: *ref_58
+            value: *ref_70
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_45
+            value: *ref_57
           - summary: on_confirm-request_2
             description: TBD
-            value: *ref_59
+            value: *ref_71
       update:
         examples:
           - summary: update-request_foreclosure
             description: TBD
-            value: *ref_60
+            value: *ref_72
           - summary: update-request-pre-part
             description: TBD
-            value: *ref_61
+            value: *ref_73
           - summary: update-request-missed-emi
             description: TBD
-            value: *ref_62
+            value: *ref_74
       on_update:
         examples:
           - summary: on_update-request
             description: TBD
-            value: *ref_63
+            value: *ref_75
           - summary: on_update-request-prepayment
             description: TBD
-            value: *ref_64
+            value: *ref_76
           - summary: on_update-success-prepayment
             description: TBD
-            value: *ref_65
+            value: *ref_77
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_39
+            value: *ref_51
       on_status:
         examples:
           - summary: on_status-request
@@ -34320,6 +35669,8 @@ x-examples:
                           loan's cancellation.
                       mime_type: application/pdf
                       url: https://lender.com/loan/loan-cancellation/O1.pdf
+                  created_at: '2023-05-25T05:23:03.443Z'
+                  updated_at: '2023-05-25T05:23:03.443Z'
   credit-card:
     summary: credit-card
     description: credit-card
@@ -34328,7 +35679,7 @@ x-examples:
         examples:
           - summary: search-request-1
             description: TBD
-            value: *ref_66
+            value: *ref_78
           - summary: search-request-1
             description: TBD
             value:
@@ -34378,7 +35729,7 @@ x-examples:
         examples:
           - summary: on_search-request-1
             description: TBD
-            value: *ref_67
+            value: *ref_79
           - summary: on_search-request-2
             description: TBD
             value:
@@ -34571,7 +35922,7 @@ x-examples:
         examples:
           - summary: select-request-1
             description: TBD
-            value: *ref_68
+            value: *ref_80
           - summary: select-request-2
             description: TBD
             value:
@@ -34608,7 +35959,7 @@ x-examples:
         examples:
           - summary: on_select-request-1
             description: TBD
-            value: *ref_69
+            value: *ref_81
           - summary: on_select-request-2
             description: TBD
             value:
@@ -34781,38 +36132,38 @@ x-examples:
         examples:
           - summary: init-request-1
             description: TBD
-            value: *ref_70
+            value: *ref_82
       on_init:
         examples:
           - summary: on_init-request-1
             description: TBD
-            value: *ref_71
+            value: *ref_83
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_72
+            value: *ref_84
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_73
+            value: *ref_85
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_46
+            value: *ref_58
       on_status:
         examples:
           - summary: on_status-form-pending
             description: TBD
-            value: *ref_74
+            value: *ref_86
           - summary: on_status-form-completed
             description: TBD
-            value: *ref_75
+            value: *ref_87
           - summary: on_status-request
             description: TBD
-            value: *ref_76
+            value: *ref_88
       form/personal-info:
         examples:
           - summary: personal-info
@@ -48449,4 +49800,4 @@ x-testcasesui:
     - log-verification.md
 x-changeLog:
   filenames:
-    - FIS12_2.0.2_180925.md
+    - FIS12_2.0.3_180925.md
