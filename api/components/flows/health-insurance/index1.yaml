@@ -208,6 +208,9 @@ steps:
       value:
         $ref: "../../examples/health-insurance/on_search/on_search-request_1.yaml"
   
+
+  
+
   - summary: Buyer app selects a health insurance for more details.
     api: select
     details:
@@ -231,6 +234,72 @@ steps:
   - summary: Insurer returns the response to selected health insurance plan
     api: on_select
     details:
+      - description: Insurer responds with detailed information and the Manual review form for the selected health insurance service.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            rect rgb(191, 223, 255)
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/health-insurance/on_select/on_select_request_manual_review.yaml"
+  - summary: Buyer app fetches the Manual Review form
+    api: form
+    details:
+      - description: Buyer app fetches the Manual Review form from the insurer using the link provided in the previous step.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            participant Insurer Form Service
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Form Service: Get Form(Manual Review)
+            Insurer Form Service-->>Buyer Platform (BAP): Form Received
+            Buyer Platform (BAP)->>Insurer Form Service: Form Submission
+            Insurer Form Service-->>Buyer Platform (BAP): Submission ID
+            end
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK   
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/health-insurance/forms/ekyc-type-application.html"
+  
+
+  
+  - summary: Buyer app selects a health insurance for more details.
+    api: select
+    details:
+      - description: Buyer app selects a specific health insurance plan that suits their needs and links the PAN & DOB submission details with it.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Buyer Platform (BAP)
+            participant Insurer Platform (BPP)
+            
+            rect rgb(191, 223, 255)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select
+            Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
+            end
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
+            Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
+    reference: if any
+    example:
+      value: 
+        $ref: "../../examples/health-insurance/select/select_request_mauanl_review_submission.yaml"
+  - summary: Insurer returns the response to selected health insurance plan
+    api: on_select
+    details:
       - description: Insurer responds with detailed information and the EKYC form for the selected health insurance service.
         mermaid: >-
           sequenceDiagram
@@ -247,10 +316,11 @@ steps:
     example:
       value: 
         $ref: "../../examples/health-insurance/on_select/on_select-request-pan-dob-info.yaml"
+
   - summary: Buyer app fetches the EKYC form
     api: form
     details:
-      - description: Buyer app fetches the EKYC details form from the insurer using the link provided in the previous step.
+      - description: Buyer app fetches the EKYC form from the insurer using the link provided in the previous step.
         mermaid: >-
           sequenceDiagram
             title Initializing Order
@@ -263,14 +333,21 @@ steps:
             Buyer Platform (BAP)->>Insurer Form Service: Form Submission
             Insurer Form Service-->>Buyer Platform (BAP): Submission ID
             end
-            Buyer Platform (BAP)->>Insurer Platform (BPP): init(with submissionID)
+            Buyer Platform (BAP)->>Insurer Platform (BPP): select(with submissionID)
             Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
-            Insurer Platform (BPP)->>Buyer Platform (BAP):on_init
+            Insurer Platform (BPP)->>Buyer Platform (BAP):on_select
             Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK   
     reference: if any
     example:
       value: 
-        $ref: "../../examples/health-insurance/forms/ekyc-type-application.html"
+        $ref: "../../examples/health-insurance/forms/ekyc-type-application.html"      
+  
+
+
+
+
+
+
   - summary: The buyer app initiates the health insurace request
     api: init
     details:
