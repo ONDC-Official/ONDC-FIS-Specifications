@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_init
+  action: on_select
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -87,34 +87,32 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_TERM_LOAN_ID_1
-        parent_item_id: TERM_LOAN_ID_1
+        parent_item_id: TERM_LOAN_ID_3
         descriptor:
           code: LOAN
-          name: Term Loan without AA
+          name: Term Loan with GST_ITR
         category_ids:
           - '101117'
-          - '101212'
+          - '101218'
         fulfillment_ids:
-          - F6   
+          - F8
         price:
           currency: INR
-          value: '232800'
+          value: '441800'
         xinput:
           head:
             descriptor:
-              name: emandate
-              code: EMANDATE
+              name: Set Loan Amount
+              code: SET_LOAN_AMOUNT
             headings:
-              - KYC
-              - EMANDATE
-              - LOAN_AGREEMENT
+              - SET_LOAN_AMOUNT
           form:
-            id: F05
-            mime_type: application/html
-            url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F05'
+            id: F02
+            mime_type: text/html
+            url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F02'
             resubmit: false
             multiple_sumbissions: false
-          required: true   
+          required: true  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -205,21 +203,112 @@ message:
                   name: Key Facts Statement Link
                   short_desc: A link provided by the BPP points to a Key Fact Statement (KFS) document related to a loan. When accessed, the document is returned in text/html format, with the loan details organized in a standard HTML table. This format makes it easy for the buyer's app to read and reformat the information as needed. For more details, refer to the \"KFS_LINK format\" document in the \"feature-ui\" section.
                 value: 'https://icicibank.com/loan/kfs-terms'                 
-         
-     
+        
+    tags:
+      - descriptor:
+          code: CONTACT_INFO
+          name: Contact Info
+        list:
+          - descriptor:
+              code: GRO_NAME
+              name: Gro name
+            value: ICICI
+          - descriptor:
+              code: GRO_EMAIL
+              name: Gro email
+            value: lifeline@iciciprulife.com
+          - descriptor:
+              code: GRO_CONTACT_NUMBER
+              name: Gro contact number
+            value: 1860 266 7766
+          - descriptor:
+              code: CUSTOMER_SUPPORT_LINK
+              name: Customer support link
+            value: >-
+              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+          - descriptor:
+              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+              name: Customer support contact number
+            value: 1800 INR 1080
+          - descriptor:
+              code: CUSTOMER_SUPPORT_EMAIL
+              name: Customer support email
+            value: customer.care@icicibank.com
+      - descriptor:
+          code: LSP_INFO
+          name: Lsp Info
+        list:
+          - descriptor:
+              code: LSP_NAME
+              name: Lsp name
+            value: ICICI_LSP
+          - descriptor:
+              code: LSP_EMAIL
+              name: Lsp email
+            value: lsp@iciciprulife.com
+          - descriptor:
+              code: LSP_CONTACT_NUMBER
+              name: Lsp contact number
+            value: 1860 266 7766
+          - descriptor:
+              code: LSP_ADDRESS
+              name: Lsp Address
+            value: >-
+              One Indiabulls centre, Tower 1, 18th Floor Jupiter mill
+              compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai
+              400013
+    
+    fulfillments:
+      - id: F8
+        type: LOAN_JOURNEY
+        tags:
+          - display: false
+            descriptor:
+              name: Checklist
+              code: CHECKLISTS
+            list:
+              - descriptor:
+                  code: PERSONAL_INFORMATION
+                  name: Personal Information
+                value: COMPLETED
+              - descriptor:
+                  code: SET_LOAN_AMOUNT
+                  name: Set Loan Amount
+                value: PENDING
+              - descriptor:
+                  code: KYC
+                  name: Know Your Customer
+                value: PENDING
+              - descriptor:
+                  code: EMANDATE
+                  name: Emandate
+                value: PENDING
+              - descriptor:
+                  code: LOAN_AGREEMENT
+                  name: Loan Agreement
+                value: PENDING   
+      
+    # payments:
+    #   - type: ON_FULFILLMENT
+    #     id: LOAN_DISBURSMENT_ID
+    #     status: NOT-PAID
+    #     collected_by: CONSUMER
+    #     time:
+    #       label: LOAN_DISBURSMENT
+            
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "232800"
+        value: "442300"
       breakup:
         - title: PRINCIPAL_AMOUNT
           price:
-            value: "200000"
+            value: "400000"
             currency: INR
         - title: INTEREST_AMOUNT
           price:
-            value: "30000"
+            value: "40000"
             currency: INR
         - title: PROCESSING_FEE
           price:
@@ -235,105 +324,10 @@ message:
             currency: INR
         - title: NET_DISBURSED_AMOUNT
           price:
-            value: "197700"
+            value: "397700"
             currency: INR
         - title: OTHER_CHARGES
           price:
             value: "0"
             currency: INR
       ttl: P15D
-
-    fulfillments:
-      - customer:
-          person:
-            name: John Doe
-          contact:
-            phone: +91-9999999999
-            email: john.doe@example.com
-        state:
-          descriptor:
-            code: INITIATED
-        type: LOAN_JOURNEY
-        id: F6
-        tags:
-          - display: false
-            descriptor:
-              name: Checklist
-              code: CHECKLISTS
-            list:
-              - descriptor:
-                  code: PERSONAL_INFORMATION
-                  name: Personal Information
-                value: COMPLETED
-              - descriptor:
-                  code: SET_LOAN_AMOUNT
-                  name: Set Loan Amount
-                value: COMPLETED
-              - descriptor:
-                  code: KYC
-                  name: Know Your Customer
-                value: COMPLETED
-              - descriptor:
-                  code: EMANDATE
-                  name: Emandate
-                value: PENDING
-              - descriptor:
-                  code: LOAN_AGREEMENT
-                  name: Loan Agreement
-                value: PENDING
-              - descriptor:
-                  code: ACCOUNT_MONITORING
-                  name: Account Monitoring
-                value: PENDING     
-   
-    payments:
-      - type: ON_FULFILLMENT
-        id: LOAN_DISBURSMENT_ID
-        status: NOT-PAID
-        collected_by: CONSUMER
-        params:
-          bank_account_number: 'XXXXXXXX'
-          bank_code: 'XXXXXXXX'
-        time:
-          label: LOAN_DISBURSMENT
-        tags: 
-          - descriptor:
-              name: Account Details
-              code: ACCOUNT_DETAILS
-            list:
-              - descriptor:
-                  code: ACCOUNT_TYPE
-                  name: Account Type
-                value: SAVINGS
-              - descriptor:
-                  code: ACCOUNT_HOLDER_NAME
-                  name: Account Holder Name
-                value: John Doe  
-    cancellation_terms:
-      - fulfillment_state:
-          descriptor:
-            code: SANCTIONED
-        cancellation_fee:
-          percentage: 3%
-      - external_ref:
-          mimetype: text/html
-          url: https://bpp.credit.becknprotocol.org/tnc.html
-      - fulfillment_state:
-          descriptor:
-            code: DISBURSED
-        cancellation_fee:
-          percentage: 5%
-    
-    tags:
-      - display: false
-        descriptor:
-          name: BPP Terms of Engagement
-          code: BPP_TERMS
-        list:
-          - descriptor:
-              code: STATIC_TERMS
-            value: >-
-              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-          - descriptor:
-              code: OFFLINE_CONTRACT
-            value: 'true'
