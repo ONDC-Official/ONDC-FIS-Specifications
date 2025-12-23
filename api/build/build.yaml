@@ -6331,14 +6331,13 @@ x-flows:
                               code: OFFLINE_CONTRACT
                             value: 'true'
       - summary: >-
-          The lender accepts the Purchase Loan request and displays loan status
-          details and requests for loan dispach account details.
+          The lender will provide the e-mandate form, and the down payment will
+          be collected as part of the same mandate redirection flow.
         api: on_init
         details:
           - description: >-
-              The lender platform accepts the borrower's request terms and and
-              displays loan status details amd may include additional terms if
-              any.
+              The lender will provide the e-mandate form, and the down payment
+              will be collected as part of the same mandate redirection flow.
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
@@ -6773,8 +6772,7 @@ x-flows:
                         status: SUCCESS
                         submission_id: F05_SUBMISSION_ID
                 payments:
-                  - id: PAYMENT_ID_PERSONAL_LOAN
-                    collected_by: BPP
+                  - collected_by: BPP
                     type: ON_ORDER
                     status: NOT-PAID
                     params:
@@ -6809,14 +6807,6 @@ x-flows:
                           - descriptor:
                               code: OFFLINE_CONTRACT
                             value: 'true'
-                  - id: PAYMENT_ID_DOWNPAYMENT
-                    type: PRE_ORDER
-                    status: PAID
-                    collected_by: BPP
-                    params:
-                      amount: '1000'
-                      currency: INR
-                      transaction_id: 3b5a664d-077e-47f0-96d1-06e68d397c78
       - summary: >-
           The lender accepts the Purchase Loan request and displays loan status
           details and requests for loan dispach account details.
@@ -7437,10 +7427,6 @@ x-flows:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
                           - descriptor:
                               code: SETTLEMENT_AMOUNT
                             value: '1159'
@@ -15891,7 +15877,66 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_36
+          value:
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              transaction_id: ef9f7a0a-e0f2-4d96-aa34-6d9e42d1d207
+              message_id: a9b64b7f-93c9-4059-bc89-e7f782dbe68d
+              action: init
+              timestamp: '2024-05-06T04:15:10.443Z'
+              version: 2.2.1
+              bap_uri: https://bap.purchase-finance.becknprotocol.io/
+              bap_id: bap.purchase-finance.becknprotocol.io
+              ttl: PT10M
+              bpp_id: bpp.purchase-finance.becknprotoco.org
+              bpp_uri: https://bpp.purchase-finance.becknprotoco.org
+            message:
+              order:
+                provider:
+                  id: PROVIDER_ID
+                items:
+                  - id: ITEM_ID_ELECTRONICS
+                payments:
+                  - collected_by: BPP
+                    type: ON_ORDER
+                    status: NOT-PAID
+                    params:
+                      bank_code: XXXXXXXX
+                      bank_account_number: xxxxxxxxxxxxxx
+                      virtual_payment_address: 9988199772@okicic
+                    tags:
+                      - descriptor:
+                          code: BAP_TERMS
+                          name: BAP Terms of Engagement
+                        display: false
+                        list:
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_TYPE
+                            value: percent-annualized
+                          - descriptor:
+                              code: BUYER_FINDER_FEES_PERCENTAGE
+                            value: '1'
+                          - descriptor:
+                              code: SETTLEMENT_AMOUNT
+                            value: '1159'
+                          - descriptor:
+                              code: SETTLEMENT_TYPE
+                            value: neft
+                          - descriptor:
+                              code: DELAY_INTEREST
+                            value: '5'
+                          - descriptor:
+                              code: STATIC_TERMS
+                            value: >-
+                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                          - descriptor:
+                              code: OFFLINE_CONTRACT
+                            value: 'true'
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
