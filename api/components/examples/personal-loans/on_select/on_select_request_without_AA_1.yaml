@@ -13,7 +13,7 @@ context:
   bpp_uri: https://bpp.credit.becknprotocol.org
   transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
   message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
-  timestamp: 2023-05-25T05:23:03.443Z
+  timestamp: '2025-05-25T05:23:03.443Z'
   ttl: P30M
 message:
   order:
@@ -87,23 +87,32 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_ITEM_ID_LOAN_1
+        parent_item_id: ITEM_ID_PERSONAL_LOAN_1
         descriptor:
           code: LOAN
-          name: Invoice Based Loan with AA
+          name: Personal Loan without AA
         category_ids:
-          - '101112'
-          - '101212'
+          - '101111'
+          - '101211'
         price:
           currency: INR
-          value: '441800'  
-        matched: true
-        recommended: true
+          value: '441800'
+        fulfillment_ids:
+          - F2  
         xinput:
-          form: 
-            id: F03
-            form_response: 
-              status: SUCCESS
-              submission_id: F03_SUBMISSION_ID
+          head:
+            descriptor:
+              name: Set Loan Amount
+              code: SET_LOAN_AMOUNT
+            headings:
+              - SET_LOAN_AMOUNT
+          form:
+            id: F02
+            mime_type: text/html
+            url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F02'
+            resubmit: false
+            multiple_sumbissions: false
+          required: true  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -118,7 +127,7 @@ message:
                   code: TERM
                   name: Loan Term
                   short_desc: Loans Duration 5 months
-                value: 'P24M'
+                value: 'P5M'
               - descriptor:
                   code: INTEREST_RATE_TYPE
                   name: Interest rate type
@@ -134,6 +143,16 @@ message:
                   name: Foreclosure Penalty
                   short_desc: Loan Foreclosure Penalty
                 value: '0.5 %'
+              - descriptor:
+                  code: FORECLOSURE_FEE
+                  name: Foreclosure Penalty
+                  short_desc: Loan Foreclosure Penalty
+                value: '0.5 %'
+              - descriptor:
+                  code: INTEREST_RATE_CONVERSION_CHARGE
+                  name: interest rate conversion charges
+                  short_desc: Interest rate conversion charges
+                value: '1000 INR'
               - descriptor:
                   code: INTEREST_RATE_CONVERSION_CHARGE
                   name: interest rate conversion charges
@@ -183,64 +202,105 @@ message:
                   code: KFS_LINK
                   name: Key Facts Statement Link
                   short_desc: A link provided by the BPP points to a Key Fact Statement (KFS) document related to a loan. When accessed, the document is returned in text/html format, with the loan details organized in a standard HTML table. This format makes it easy for the buyer's app to read and reformat the information as needed. For more details, refer to the \"KFS_LINK format\" document in the \"feature-ui\" section.
-                value: 'https://icicibank.com/loan/kfs-terms'
-              - descriptor:
-                  code: INVOICE_NUMBER
-                  name: Invoice Number
-                  short_desc: Describes the Invoice Number
-                value: "INV-24-04-009"                   
-          
-          - display: false
-            descriptor:
-              name: Checklist
-              code: CHECKLISTS
-            list:
-              - descriptor:
-                  code: ORGANIZATION_INFORMATION
-                  name: Organization Information
-                value: F01_SUBMISSION_ID
-              - descriptor:
-                  code: CONSENT_APPROVAL
-                  name: Consent Approval
-                value: COMPLETED
-              - descriptor:
-                  code: SET_LOAN_AMOUNT
-                  name: Set Loan Amount
-                value: F02_SUBMISSION_ID
-              - descriptor:
-                  code: INDIVIDUAL_KYC
-                  name: Individual KYC
-                value: F03_SUBMISSION_ID
-              - descriptor:
-                  code: ENTITY_KYC
-                  name: Entity KYC
-                value: PENDING
-              - descriptor:
-                  code: ACCOUNT_INFORMATION
-                  name: Account Information
-                value: PENDING
-              - descriptor:
-                  code: EMANDATE
-                  name: Emandate
-                value: PENDING  
-              - descriptor:
-                  code: LOAN_AGREEMENT
-                  name: Loan Agreement
-                value: PENDING   
+                value: 'https://icicibank.com/loan/kfs-terms'                 
         
+    tags:
+      - descriptor:
+          code: CONTACT_INFO
+          name: Contact Info
+        list:
+          - descriptor:
+              code: GRO_NAME
+              name: Gro name
+            value: ICICI
+          - descriptor:
+              code: GRO_EMAIL
+              name: Gro email
+            value: lifeline@iciciprulife.com
+          - descriptor:
+              code: GRO_CONTACT_NUMBER
+              name: Gro contact number
+            value: 1860 266 7766
+          - descriptor:
+              code: CUSTOMER_SUPPORT_LINK
+              name: Customer support link
+            value: >-
+              https://buy.iciciprulife.com/buy/GrievanceRedStep.htm?execution=e1s1
+          - descriptor:
+              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+              name: Customer support contact number
+            value: 1800 INR 1080
+          - descriptor:
+              code: CUSTOMER_SUPPORT_EMAIL
+              name: Customer support email
+            value: customer.care@icicibank.com
+      - descriptor:
+          code: LSP_INFO
+          name: Lsp Info
+        list:
+          - descriptor:
+              code: LSP_NAME
+              name: Lsp name
+            value: ICICI_LSP
+          - descriptor:
+              code: LSP_EMAIL
+              name: Lsp email
+            value: lsp@iciciprulife.com
+          - descriptor:
+              code: LSP_CONTACT_NUMBER
+              name: Lsp contact number
+            value: 1860 266 7766
+          - descriptor:
+              code: LSP_ADDRESS
+              name: Lsp Address
+            value: >-
+              One Indiabulls centre, Tower 1, 18th Floor Jupiter mill
+              compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai
+              400013
+    fulfillments:
+      - id: F2
+        type: LOAN_JOURNEY
+        tags:
+        - display: false
+          descriptor:
+            name: Checklist
+            code: CHECKLISTS
+          list:
+            - descriptor:
+                code: PERSONAL_INFORMATION
+                name: Personal Information
+              value: COMPLETED
+            - descriptor:
+                code: SET_LOAN_AMOUNT
+                name: Set Loan Amount
+              value: PENDING
+            - descriptor:
+                code: KYC
+                name: Know Your Customer
+              value: PENDING
+            - descriptor:
+                code: EMANDATE
+                name: Emandate
+              value: PENDING
+            - descriptor:
+                code: LOAN_AGREEMENT
+                name: Loan Agreement
+              value: PENDING   
+    
+            
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "232800"
+        value: "442300"
       breakup:
         - title: PRINCIPAL_AMOUNT
           price:
-            value: "200000"
+            value: "400000"
             currency: INR
         - title: INTEREST_AMOUNT
           price:
-            value: "30000"
+            value: "40000"
             currency: INR
         - title: PROCESSING_FEE
           price:
@@ -252,11 +312,11 @@ message:
             currency: INR
         - title: INSURANCE_CHARGES
           price:
-            value: "1000"
+            value: "500"
             currency: INR
         - title: NET_DISBURSED_AMOUNT
           price:
-            value: "197700"
+            value: "397700"
             currency: INR
         - title: OTHER_CHARGES
           price:
