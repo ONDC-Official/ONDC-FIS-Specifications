@@ -157,7 +157,6 @@ function displayAttributeTree(payload) {
 
   const childrenData = formatdataForTree(payload);
   var treeData = { name: "payload", _children: childrenData.children };
-  console.log("treeData", treeData);
 
   // Get JSON data
   // treeJSON = d3.json("flare.json", function (error, treeData) {
