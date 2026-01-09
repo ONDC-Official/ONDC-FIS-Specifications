@@ -241,7 +241,6 @@ function fetchTag() {
 function populateTags(url) {
   // Example usage: fetch YAML data from a URL
   fetchData(url).then(data => {
-    console.log(data)
     initTag(data)
   })
     .catch(error => {

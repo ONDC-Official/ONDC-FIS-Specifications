@@ -16,7 +16,6 @@ function updateSetsAttribute() {
 }
 
 function loadAttributes(data) {
-  console.log("data?", data);
   // To fix: attributes are getting appended to list on branch change.
   var elements = document.getElementsByClassName("test");
   while (elements.length > 0) {
@@ -34,7 +33,6 @@ function loadAttributes(data) {
   const indexKey = Object.keys(attributes);
   addAttributeSets(indexKey[0]);
 
-  console.log("done loading.........");
 
   // const veriosnDropdown = document.getElementById("version-dropdown")
   // const content = document.getElementById("content")
