@@ -4,26 +4,26 @@
 ### Form: Personal Details Form
 
 
-| Form Field        | Form Description Name                                    | Required |
-|------------------|-----------------------------------------------------------|----------|
-| panName          | Name as per PAN                                           | Yes      |
-| personalEmail    | Personal email address                                    | No       |
-| officialEmail    | Official / work email address                             | No       |
-| dob              | Date of birth (DD/MM/YYYY)                                | Yes      |
+| Form Field        | Form Description Name                                    | Required | Regex Validations|
+|------------------|-----------------------------------------------------------|----------|------|
+| panName          | Name as per PAN                                           | Yes      | ^[A-Za-z]+(?:\s[A-Za-z]+)*$
+| personalEmail    | Personal email address                                    | No       | ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+| officialEmail    | Official / work email address                             | No       | ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+| dob              | Date of birth (DD/MM/YYYY)                                | Yes      | ^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{4}$
 | gender           | Gender                                                    | Yes      |
-| pan              | Permanent Account Number (PAN)                            | Yes      |
-| contactNumber    | Mobile number                                             | Yes      |
+| pan              | Permanent Account Number (PAN)                            | Yes      | ^[A-Z]{5}[0-9]{4}[A-Z]$
+| contactNumber    | Mobile number                                             | Yes      | ^(?:\+91|91)?[6-9]\d{9}$
 | employmentType   | Employment type (Salaried / Self Employment)              | Yes      |
-| income           | income                                                    | Yes      |
-| companyName      | Company or employer name                                  | Yes      |
-| udyamNumber      | Udyam registration number                                 | No       |
-| addressL1        | Address line 1                                            | No       |
-| addressL2        | Address line 2                                            | No       |
-| city             | City                                                      | No       |
-| state            | State                                                     | No       |
-| pincode          | Postal / PIN code                                         | No       |
+| income           | income                                                    | Yes      | ^(?!0+(\.0+)?$)\d+(\.\d{1,2})?$
+| companyName      | Company or employer name                                  | Yes      | ^[a-zA-Z]+(?:[ .'-][a-zA-Z]+)*$
+| udyamNumber      | Udyam registration number                                 | No       | ^[a-zA-Z0-9-]+$
+| addressL1        | Address line 1                                            | No       | ^[a-zA-Z0-9\s,.-/]+$
+| addressL2        | Address line 2                                            | No       | ^[a-zA-Z0-9\s,.-/]+$
+| city             | City                                                      | No       | ^[a-zA-Z]+(?:[ .'-][a-zA-Z]+)*$
+| state            | State                                                     | No       | ^[a-zA-Z]+(?:[ .'-][a-zA-Z]+)*$
+| pincode          | Postal / PIN code                                         | No       | ^[1-9][0-9]{5}$
 | bureauConsent    | Bureau Consent                                            | Yes      |
-| aa_id            | Account Aggregator ID                                     | No       |
+| aa_id            | Account Aggregator ID                                     | No       | ^[A-Za-z0-9]+@[A-Za-z0-9]+(?:\.[A-Za-z]{2,})?$
 | endUse           | Purpose / end use of the loan                             | No       |
 
 ---
