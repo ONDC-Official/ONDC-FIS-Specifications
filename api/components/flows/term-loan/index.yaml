@@ -1,4 +1,4 @@
-summary: Personal Loan - Term Loan without Account Aggregator
+summary: Business Loan - Term Loan with Account Aggregator
 details:
   - description: Discovery of Funds
     mermaid: >-
@@ -90,6 +90,53 @@ steps:
     example:
       value:
         $ref: "../../examples/term-loan/search/search_request_1.yaml"
+    
+  - summary: Creates a consent request with selected product
+    api: on_search
+    details:
+      - description: The lender platform generates a consent request for capturing borrower's consent.
+        mermaid: >-
+          sequenceDiagram
+            title  Personal Loan Discovery
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): search
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/term-loan/on_search/on_search_request_with_aa_4.yaml"
+
+  - summary: The borrower shares the submission-id for consent handler
+    api: search
+    details:
+      - description: The borrower shares the submission-id for consent handler. The id can be approval/transaction id of AA or uuid.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            Borrower Platform (BAP)->>Lender Form Service: Get Form
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_search
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/term-loan/search/search_request_with_aa_4.yaml"
+  
+
   - summary: Lender share the offer response with borrower
     api: on_search
     details:
@@ -110,6 +157,7 @@ steps:
     example:
       value:
         $ref: "../../examples/term-loan/on_search/on_search_request_1.yaml"
+
 
   - summary: The borrower chooses the term loan service.
     api: select
