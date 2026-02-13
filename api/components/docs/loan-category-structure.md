@@ -1,4 +1,4 @@
-# 📘 Loan Category Hierarchy – Structure 
+# Loan Category Hierarchy – Structure 
 
 ---
 
