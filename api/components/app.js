@@ -112,6 +112,68 @@ async function validateExamples(exampleSets, schemaMap) {
     }
   }
 }
+function enrichWithEnums(attributes = {}, enums = {}) {
+  function traverse(node, path = []) {
+    if (!node || typeof node !== "object") return;
+
+    for (const key of Object.keys(node)) {
+      if (key === "_description") continue;
+
+      const current = node[key];
+      const newPath = [...path, key];
+
+      // Try to resolve enum at this path
+      const enumMatch = resolveEnumPath(newPath, enums);
+
+      if (Array.isArray(enumMatch)) {
+        if (current?._description) {
+          node[key] = {
+            _description: {
+              ...current._description,
+              required: current._description?.required === "mandatory",
+              type: "enum",
+              enums: enumMatch
+            }
+          };
+        } else {
+          node[key] = {
+            ...current,
+            required: current?.required === "mandatory",
+            type: "enum",
+            enums: enumMatch
+          };
+        }
+        continue;
+      }
+
+      if (current && typeof current === "object") {
+        traverse(current, newPath);
+      }
+    }
+  }
+
+  function resolveEnumPath(path, enumsRoot) {
+    // Find action key inside path (search, select, etc.)
+    const actionKey = path.find(p => enumsRoot[p]);
+
+    if (!actionKey) return null;
+
+    let enumNode = enumsRoot[actionKey];
+
+    const actionIndex = path.indexOf(actionKey);
+
+    // Traverse remaining path from action key
+    for (let i = actionIndex + 1; i < path.length; i++) {
+      enumNode = enumNode?.[path[i]];
+      if (!enumNode) return null;
+    }
+
+    return enumNode;
+  }
+
+  traverse(attributes);
+  return attributes;
+}
 
 async function matchKeyType(
   currentAttrib,
@@ -230,7 +292,7 @@ async function validateTags(tags, schema,isAttribute) {
             if (currentSchema[tagItem]?.type === "object") {
         schemaForTraversal = currentSchema[tagItem]?.properties;
       }//for validating attribute contexts
-      else if(currentSchema[tagItem]?.allOf[0] && isAttribute){
+      else if(currentSchema[tagItem]?.allOf?.[0] && isAttribute){
         schemaForTraversal = currentSchema[tagItem]?.allOf[0]?.properties;
       }
       const logObject = `${isAttribute}/${tag}/${tagItem}/`;
@@ -242,10 +304,11 @@ async function validateTags(tags, schema,isAttribute) {
 
 async function traverseAttributes(currentAttributeValue, schemaForTraversal, logObject) {
   for (const currentAttributeKey of Object.keys(currentAttributeValue)) {
+    if (currentAttributeKey === '_description') continue;
     const currentAttr = currentAttributeValue[currentAttributeKey];
     const schemaType = schemaForTraversal[currentAttributeKey];
         //&& 'type' in currentAttr && 'owner' in currentAttr && 'usage' in currentAttr && 'description' in currentAttr
-    if ('required' in currentAttr ) {
+    if ('required' in currentAttr || ('_description' in currentAttr && 'required' in (currentAttr._description || {}))) {
       continue ;
     }
     if (schemaType) {
@@ -257,9 +320,9 @@ async function traverseAttributes(currentAttributeValue, schemaForTraversal, log
           schemaType.type === "object"
             ? schemaType?.properties
             : schemaType.items?.properties ||
-              schemaType.items?.allOf[0]?.properties ||
-              schemaType.allOf[0]?.properties;
-        await traverseAttributes(currentAttr, schema, logObject);
+              schemaType.items?.allOf?.[0]?.properties ||
+              schemaType.allOf?.[0]?.properties;
+        if (schema) await traverseAttributes(currentAttr, schema, logObject);
       }
     } else {
       throw Error(`[Attribute], Key not found: ${currentAttributeKey} in ${logObject}`);
@@ -276,7 +339,7 @@ async function getSwaggerYaml(example_set, outputPath) {
   try {
     const schema = await baseYMLFile(example_yaml);
     const baseYAML = await baseYMLFile(base_yaml);
-    const { flows, examples: exampleSets, enum: enums, tags,attributes } = schema || [];
+    const { flows, examples: exampleSets, enum: enums, tags,attributes, updatedAttributes} = schema || [];
     const { paths } = baseYAML;
     let hasTrueResult = false; // Flag variable
     let schemaMap = {};
@@ -325,6 +388,8 @@ async function getSwaggerYaml(example_set, outputPath) {
     if (process.argv.includes(BUILD.checkAttributes) && !hasTrueResult) {
         await checkAttributes(exampleSets, attributes)
     }
+
+    const enriched = enrichWithEnums(updatedAttributes, enums);
 
     const missingTags = findMissingTags(tags, exampleSets);
     console.log('Missing Tags:', JSON.stringify(missingTags, null, 2));
@@ -748,6 +813,7 @@ function addEnumTag(base, layer) {
   base["x-testcasesui"] = layer["testcases-ui"]
   base["x-sandboxui"] = layer["sandbox-ui"]
   base["x-changeLog"] = layer["changeLog"]
+  base["x-updatedAttributes"] = layer["updatedAttributes"]
 }
 
 function GenerateYaml(base, layer, output_yaml) {
