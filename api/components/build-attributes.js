@@ -50,6 +50,24 @@ function formObject(attributes, sheetName) {
   return result;
 }
 
+function convertListToArray(listObj) {
+  if (!listObj || typeof listObj !== "object") return listObj;
+  const result = [];
+  for (const listKey of Object.keys(listObj)) {
+    if (listKey === "_description") continue;
+    const listItem = listObj[listKey];
+    const entry = { CODE: listKey };
+    if (listItem._description) {
+      entry._description = listItem._description;
+    }
+    if (listItem.list) {
+      entry.list = convertListToArray(listItem.list);
+    }
+    result.push(entry);
+  }
+  return result;
+}
+
 function restructureTags(obj) {
   if (!obj || typeof obj !== "object") return;
 
@@ -57,20 +75,28 @@ function restructureTags(obj) {
     if (key === "tags" && typeof obj[key] === "object") {
       const tagsNode = obj[key];
       const description = tagsNode._description || {};
-      const tagGroups = {};
+      const tagsArray = [];
 
       for (const childKey of Object.keys(tagsNode)) {
         if (childKey !== "_description") {
-          tagGroups[childKey] = tagsNode[childKey];
+          const tagGroup = tagsNode[childKey];
+          const entry = { CODE: childKey };
+          if (tagGroup._description) {
+            entry._description = tagGroup._description;
+          }
+          if (tagGroup.list) {
+            entry.list = convertListToArray(tagGroup.list);
+          }
+          tagsArray.push(entry);
         }
       }
 
-      // Restructure: move tag groups inside _description.tags
+      // Restructure: move tag groups inside _description.tags as array
       obj[key] = {
         _description: {
           ...description,
           type: "tag",
-          tags: tagGroups,
+          tags: tagsArray,
         },
       };
     } else if (typeof obj[key] === "object") {
