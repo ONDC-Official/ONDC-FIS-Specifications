@@ -112,7 +112,7 @@ async function validateExamples(exampleSets, schemaMap) {
     }
   }
 }
-function enrichWithEnums(attributes = {}, enums = {}) {
+async function enrichWithEnums(attributes = {}, enums = {}) {
   function traverse(node, path = []) {
     if (!node || typeof node !== "object") return;
 
@@ -131,6 +131,7 @@ function enrichWithEnums(attributes = {}, enums = {}) {
             _description: {
               ...current._description,
               required: current._description?.required === "mandatory",
+              required: current._description?.required,
               type: "enum",
               enums: enumMatch
             }
@@ -153,16 +154,16 @@ function enrichWithEnums(attributes = {}, enums = {}) {
   }
 
   function resolveEnumPath(path, enumsRoot) {
-    // Find action key inside path (search, select, etc.)
+    // After $ref resolution, enumsRoot has action keys directly at top level:
+    // { search: {...}, on_search: {...}, select: {...}, on_select: {...}, ... }
+    // Find the action key in the path (e.g. 'search', 'on_search', 'select', ...)
     const actionKey = path.find(p => enumsRoot[p]);
-
     if (!actionKey) return null;
 
     let enumNode = enumsRoot[actionKey];
-
     const actionIndex = path.indexOf(actionKey);
 
-    // Traverse remaining path from action key
+    // Traverse remaining path from the action key onwards
     for (let i = actionIndex + 1; i < path.length; i++) {
       enumNode = enumNode?.[path[i]];
       if (!enumNode) return null;
@@ -389,7 +390,8 @@ async function getSwaggerYaml(example_set, outputPath) {
         await checkAttributes(exampleSets, attributes)
     }
 
-    const enriched = enrichWithEnums(updatedAttributes, enums);
+ 
+    const enriched = await enrichWithEnums(updatedAttributes, enums);
 
     const missingTags = findMissingTags(tags, exampleSets);
     console.log('Missing Tags:', JSON.stringify(missingTags, null, 2));
@@ -813,7 +815,7 @@ function addEnumTag(base, layer) {
   base["x-testcasesui"] = layer["testcases-ui"]
   base["x-sandboxui"] = layer["sandbox-ui"]
   base["x-changeLog"] = layer["changeLog"]
-  base["x-updatedAttributes"] = layer["updatedAttributes"]
+  base["x-updatedAttributes"] =  layer["updatedAttributes"]
 }
 
 function GenerateYaml(base, layer, output_yaml) {
