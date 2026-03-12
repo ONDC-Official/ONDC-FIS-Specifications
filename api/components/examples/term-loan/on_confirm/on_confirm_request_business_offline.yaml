@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_init
+  action: on_confirm
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -17,6 +17,8 @@ context:
   ttl: P30M
 message:
   order:
+    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+    status: ACTIVE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -87,35 +89,19 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_TERM_LOAN_ID_1
-        parent_item_id: TERM_LOAN_ID_3
+        parent_item_id: BUSINESS_TERM_LOAN_ID_2
         descriptor:
           code: LOAN
-          name: Term Loan with GST_ITR
+          name: Term Loan with offline & online journey
         category_ids:
           - '101124'
           - '101117'
-          - '104139'
+          - '101211'
         fulfillment_ids:
-          - F8   
+          - F17  
         price:
           currency: INR
-          value: '232800'
-        xinput:
-          head:
-            descriptor:
-              name: Loan Agreement
-              code: LOAN_AGREEMENT
-            headings:
-              - KYC
-              - EMANDATE
-              - LOAN_AGREEMENT
-          form:
-            id: F06
-            mime_type: application/html
-            url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F06'
-            resubmit: false
-            multiple_sumbissions: false
-          required: true   
+          value: '232800'  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -146,7 +132,7 @@ message:
                   name: Foreclosure Penalty
                   short_desc: Loan Foreclosure Penalty
                 value: '0.5 %'
-              
+             
               - descriptor:
                   code: INTEREST_RATE_CONVERSION_CHARGE
                   name: interest rate conversion charges
@@ -244,9 +230,9 @@ message:
             email: john.doe@example.com
         state:
           descriptor:
-            code: INITIATED
-        type: ONLINE
-        id: F8
+            code: SANCTIONED
+        type: SEMI_ONLINE
+        id: F17
         tags:
           - display: false
             descriptor:
@@ -254,29 +240,22 @@ message:
               code: CHECKLISTS
             list:
               - descriptor:
-                  code: PERSONAL_INFORMATION_BUSINESS_TERM_GST
-                  name: Personal Information
+                  code: PERSONAL_INFORMATION_BUSINESS_TERM
+                  name: TERM Information
                 value: COMPLETED
               - descriptor:
                   code: SET_LOAN_AMOUNT
                   name: Set Loan Amount
                 value: COMPLETED
               - descriptor:
-                  code: KYC
+                  code: KYC_OFFLINE
                   name: Know Your Customer
-                value: COMPLETED
-              - descriptor:
-                  code: EMANDATE
-                  name: Emandate
                 value: COMPLETED
               - descriptor:
                   code: LOAN_AGREEMENT
                   name: Loan Agreement
-                value: PENDING
-              - descriptor:
-                  code: ACCOUNT_MONITORING
-                  name: Account Monitoring
-                value: PENDING     
+                value: COMPLETED
+                
    
     payments:
       - type: ON_FULFILLMENT
@@ -453,8 +432,30 @@ message:
             code: DISBURSED
         cancellation_fee:
           percentage: 5%
-    
+    documents:
+      - descriptor:
+          code: LOAN_AGREEMENT
+          name: Loan Agreement Document
+          short_desc: Download your Loan Agreement document here,
+          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, interest rate, repayment schedule, and collateral, binding a lender and borrower in a formal financial arrangement.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-agreement/O1.pdf   
+    created_at: '2025-11-25T05:23:03.443Z'
+    updated_at: '2025-11-25T05:23:03.443Z'
+
     tags:
+      - display: false
+        descriptor:
+          name: BAP Terms of Engagement
+          code: BAP_TERMS
+        list:
+          - descriptor:
+              code: STATIC_TERMS
+            value: >-
+              https://bap.credit.becknprotocol.io/working-capital/loans/working-capital
+          - descriptor:
+              code: OFFLINE_CONTRACT
+            value: 'true'
       - display: false
         descriptor:
           name: BPP Terms of Engagement
@@ -463,7 +464,7 @@ message:
           - descriptor:
               code: STATIC_TERMS
             value: >-
-              https://bpp.credit.becknprotocol.org/TERM-banking/loans/TERM-loan
+              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
           - descriptor:
               code: OFFLINE_CONTRACT
-            value: 'true'
+            value: 'true'  

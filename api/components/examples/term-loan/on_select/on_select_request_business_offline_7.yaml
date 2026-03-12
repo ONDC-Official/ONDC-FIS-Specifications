@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_init
+  action: on_select
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -87,35 +87,42 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_TERM_LOAN_ID_1
-        parent_item_id: TERM_LOAN_ID_3
+        parent_item_id: BUSINESS_TERM_LOAN_ID_2
         descriptor:
           code: LOAN
-          name: Term Loan with GST_ITR
+          name: Term Loan with offline & online journey
         category_ids:
           - '101124'
           - '101117'
-          - '104139'
+          - '101211'
         fulfillment_ids:
-          - F8   
+          - F17
         price:
           currency: INR
-          value: '232800'
+          value: '441800'
         xinput:
           head:
             descriptor:
-              name: Loan Agreement
-              code: LOAN_AGREEMENT
+              name: Set Loan Amount
+              code: SET_LOAN_AMOUNT
             headings:
-              - KYC
-              - EMANDATE
-              - LOAN_AGREEMENT
+              - SET_LOAN_AMOUNT
           form:
-            id: F06
-            mime_type: application/html
-            url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F06'
+            id: F02
+            mime_type: none
+            # url: 'https://bpp.credit.becknprotocol.org/xinput/formid/F01'
+            data:
+              requestAmount: 
+                type: string 
+                # regex:  ^\d+(\.\d{1,2})?$
+                # required: false
+              requestTerm: 
+                type: string
+                # regex:  ^P\d+[YMD]$
+                # required: false
             resubmit: false
             multiple_sumbissions: false
-          required: true   
+          required: true  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -146,7 +153,7 @@ message:
                   name: Foreclosure Penalty
                   short_desc: Loan Foreclosure Penalty
                 value: '0.5 %'
-              
+             
               - descriptor:
                   code: INTEREST_RATE_CONVERSION_CHARGE
                   name: interest rate conversion charges
@@ -197,21 +204,55 @@ message:
                   name: Key Facts Statement Link
                   short_desc: A link provided by the BPP points to a Key Fact Statement (KFS) document related to a loan. When accessed, the document is returned in text/html format, with the loan details organized in a standard HTML table. This format makes it easy for the buyer's app to read and reformat the information as needed. For more details, refer to the \"KFS_LINK format\" document in the \"feature-ui\" section.
                 value: 'https://icicibank.com/loan/kfs-terms'                 
-         
-     
+        
+    
+    fulfillments:
+      - id: F17
+        type: ONLINE
+        tags:
+          - display: false
+            descriptor:
+              name: Checklist
+              code: CHECKLISTS
+            list:
+              - descriptor:
+                  code: PERSONAL_INFORMATION_BUSINESS_TERM
+                  name: Personal Information
+                value: COMPLETED 
+              - descriptor:
+                  code: SET_LOAN_AMOUNT
+                  name: Set Loan Amount
+                value: PENDING
+              - descriptor:
+                  code: KYC_OFFLINE
+                  name: Know Your Customer
+                value: PENDING
+              - descriptor:
+                  code: LOAN_AGREEMENT
+                  name: Loan Agreement
+                value: PENDING   
+      
+    # payments:
+    #   - type: ON_FULFILLMENT
+    #     id: LOAN_DISBURSMENT_ID
+    #     status: NOT-PAID
+    #     collected_by: CONSUMER
+    #     time:
+    #       label: LOAN_DISBURSMENT
+            
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "232800"
+        value: "442300"
       breakup:
         - title: PRINCIPAL_AMOUNT
           price:
-            value: "200000"
+            value: "400000"
             currency: INR
         - title: INTEREST_AMOUNT
           price:
-            value: "30000"
+            value: "40000"
             currency: INR
         - title: PROCESSING_FEE
           price:
@@ -227,243 +268,10 @@ message:
             currency: INR
         - title: NET_DISBURSED_AMOUNT
           price:
-            value: "197700"
+            value: "397700"
             currency: INR
         - title: OTHER_CHARGES
           price:
             value: "0"
             currency: INR
       ttl: P15D
-
-    fulfillments:
-      - customer:
-          person:
-            name: John Doe
-          contact:
-            phone: +91-9999999999
-            email: john.doe@example.com
-        state:
-          descriptor:
-            code: INITIATED
-        type: ONLINE
-        id: F8
-        tags:
-          - display: false
-            descriptor:
-              name: Checklist
-              code: CHECKLISTS
-            list:
-              - descriptor:
-                  code: PERSONAL_INFORMATION_BUSINESS_TERM_GST
-                  name: Personal Information
-                value: COMPLETED
-              - descriptor:
-                  code: SET_LOAN_AMOUNT
-                  name: Set Loan Amount
-                value: COMPLETED
-              - descriptor:
-                  code: KYC
-                  name: Know Your Customer
-                value: COMPLETED
-              - descriptor:
-                  code: EMANDATE
-                  name: Emandate
-                value: COMPLETED
-              - descriptor:
-                  code: LOAN_AGREEMENT
-                  name: Loan Agreement
-                value: PENDING
-              - descriptor:
-                  code: ACCOUNT_MONITORING
-                  name: Account Monitoring
-                value: PENDING     
-   
-    payments:
-      - type: ON_FULFILLMENT
-        id: LOAN_DISBURSMENT_ID
-        status: NOT-PAID
-        collected_by: CONSUMER
-        params:
-          bank_account_number: 'XXXXXXXX'
-          bank_code: 'XXXXXXXX'
-        time:
-          label: LOAN_DISBURSMENT
-        tags: 
-          - descriptor:
-              name: Account Details
-              code: ACCOUNT_DETAILS
-            list:
-              - descriptor:
-                  code: ACCOUNT_TYPE
-                  name: Account Type
-                value: SAVINGS
-              - descriptor:
-                  code: ACCOUNT_HOLDER_NAME
-                  name: Account Holder Name
-                value: John Doe  
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-06-01T00:00:00.000Z'
-            end: '2025-06-30T23:59:59.999Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"       
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-07-01T00:00:00.000Z'
-            end: '2025-07-31T23:59:59.999Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-08-01T23:59:59.999Z'
-            end: '2025-08-31T23:59:59.999Z'
-
-            
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-09-01T23:59:59.999Z'
-            end: '2025-09-30T00:00:00.000Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-10-01T00:00:00.000Z'
-            end: '2025-10-31T23:59:59.999Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      
-    cancellation_terms:
-      - fulfillment_state:
-          descriptor:
-            code: SANCTIONED
-        cancellation_fee:
-          percentage: 3%
-      - external_ref:
-          mimetype: text/html
-          url: https://bpp.credit.becknprotocol.org/tnc.html
-      - fulfillment_state:
-          descriptor:
-            code: DISBURSED
-        cancellation_fee:
-          percentage: 5%
-    
-    tags:
-      - display: false
-        descriptor:
-          name: BPP Terms of Engagement
-          code: BPP_TERMS
-        list:
-          - descriptor:
-              code: STATIC_TERMS
-            value: >-
-              https://bpp.credit.becknprotocol.org/TERM-banking/loans/TERM-loan
-          - descriptor:
-              code: OFFLINE_CONTRACT
-            value: 'true'
