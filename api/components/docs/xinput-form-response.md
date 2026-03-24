@@ -151,7 +151,7 @@ There are 2 possible ways to get the latest status after submitting a form
 
 - `form_response`: Represents the form info after submitting a form.
 
-  - `status`: Denotes the latest state of the form after submission. Possible values include SUCCESS, PENDING, REJECTED, APPROVED.
+  - `status`: Denotes the latest state of the form after submission. Possible values include SUCCESS, PENDING, REJECTED, APPROVED,COMPLETED, OFFLINE_PENDING.
   - `submission_id`: Contains the unique ID that the buyer receives upon successful form submission.
 
 2. #### Form response for application/html
