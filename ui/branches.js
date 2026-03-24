@@ -21,19 +21,19 @@ const BRANCHES = [
     code: "release-FIS12-2.0.1",
     name: "Personal Loan",
     short_desc: "Credit - Personal Loan use case patch to 2.0.0",
-    status: "DEPRECATED",
+    status: "TO_BE_DEPRECATED",
   },
    {
     code: "release-FIS12-2.0.2",
     name: "Personal Loan | Gold Loan",
     short_desc: "Credit - Personal & Gold Loan use case",
-    status: "TO_BE_DEPRECATED",
+    status: "RELEASED",
   },
    {
-    code: "release-FIS12-2.0.3",
+    code: "draft-FIS12-2.0.3",
     name: "Personal Loan | Gold Loan | Credit Card",
     short_desc: "Credit - Personal, Gold Loan & Credit Card use case",
-    status: "RELEASED",
+    status: "DRAFT",
   },
   {
     code: "release-FIS12-invoice-2.1.0",
