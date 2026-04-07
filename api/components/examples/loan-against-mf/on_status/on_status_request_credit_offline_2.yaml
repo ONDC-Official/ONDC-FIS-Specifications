@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_select
+  action: on_confirm
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -13,10 +13,12 @@ context:
   bpp_uri: https://bpp.credit.becknprotocol.org
   transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
   message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
-  timestamp: '2025-05-25T05:23:03.443Z'
+  timestamp: '2025-11-25T05:23:03.443Z'
   ttl: P30M
 message:
   order:
+    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+    status: ACTIVE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -87,19 +89,19 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_ITEM_ID_LAMF_1
-        parent_item_id: ITEM_ID_LAMF_3
+        parent_item_id: ITEM_ID_LAMF_5
         descriptor:
           code: LOAN
-          name: Loan Against Mutual Funds through MFC
+          name: LAMF - Single Redirection
         category_ids:
-          - '101119'
-          - '101117'
           - '101118'
+          - '104127'
+          - '101119'
         fulfillment_ids:
-          - F15
+          - F18
         price:
           currency: INR
-          value: '232800'
+          value: '2792'
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -135,7 +137,6 @@ message:
                   name: Foreclosure Penalty
                   short_desc: Loan Foreclosure Penalty
                 value: '0.5 %'
-             
               - descriptor:
                   code: INTEREST_RATE_CONVERSION_CHARGE
                   name: interest rate conversion charges
@@ -162,10 +163,14 @@ message:
                   short_desc: Repayment Frequency by borrower
                 value: 'P1M'
               - descriptor:
-                  code: NUMBER_OF_INSTALLMENTS
-                  name: Number of installments of repayment
-                  short_desc: Number of installments borrower has to make to payback the loan
-                value: '5'
+                  code: RATE_ANNUALISED_PENAL_CHARGES
+                  name: Rate Annualised penal charges
+                value: '2 %'  
+              # - descriptor:
+              #     code: NUMBER_OF_INSTALLMENTS
+              #     name: Number of installments of repayment
+              #     short_desc: Number of installments borrower has to make to payback the loan
+              #   value: '5'
               - descriptor:
                   code: TNC_LINK
                   name: Terms & Conditions
@@ -186,7 +191,7 @@ message:
                   name: Key Facts Statement Link
                   short_desc: A link provided by the BPP points to a Key Fact Statement (KFS) document related to a loan. When accessed, the document is returned in text/html format, with the loan details organized in a standard HTML table. This format makes it easy for the buyer's app to read and reformat the information as needed. For more details, refer to the \"KFS_LINK format\" document in the \"feature-ui\" section.
                 value: 'https://icicibank.com/loan/kfs-terms'
-                                 
+                               
           - descriptor:
               code: PLEDGE_REQUIREMENTS
               name: pledge requirements
@@ -214,7 +219,15 @@ message:
               - descriptor:
                   code: LTV_PERCENT
                   name: ltv_percent
-                value: "60 %" 
+                value: "60"
+              - descriptor:
+                  code: TOTAL_VALUATION
+                  name: total_valuation
+                value: "77600"
+              - descriptor:
+                  code: TOTAL_UNITS_PLEDGED
+                  name: total_units_pledged
+                value: "50"
           - descriptor:
               code: PLEDGE_REQUIREMENTS
               name: pledge requirements
@@ -243,6 +256,14 @@ message:
                   code: LTV_PERCENT
                   name: ltv_percent
                 value: "50 %"
+              - descriptor:
+                  code: TOTAL_VALUATION
+                  name: total_valuation
+                value: "77600"
+              - descriptor:
+                  code: TOTAL_UNITS_PLEDGED
+                  name: total_units_pledged
+                value: "250"     
           - descriptor:
               code: PLEDGE_REQUIREMENTS
               name: pledge requirements
@@ -271,11 +292,63 @@ message:
                   code: LTV_PERCENT
                   name: ltv_percent
                 value: "65 %"
+              - descriptor:
+                  code: TOTAL_VALUATION
+                  name: total_valuation
+                value: "77600"
+              - descriptor:
+                  code: TOTAL_UNITS_PLEDGED
+                  name: total_units_pledged
+                value: "100"     
           
-    
+    quote:
+      id: LOAN_LEAD_ID_OR_SIMILAR
+      price:
+        currency: INR
+        value: "2792"
+      breakup:
+        - title: OVERDRAFT_LIMIT
+          price:
+            value: "1100000"
+            currency: INR
+        - title: INTEREST_AMOUNT
+          price:
+            value: "0"
+            currency: INR
+        - title: CURRENT_UTILIZATION
+          price:
+            value: "0"
+            currency: INR    
+        - title: PROCESSING_FEE
+          price:
+            value: "1100"
+            currency: INR
+        - title: OTHER_UPFRONT_CHARGES
+          price:
+            value: "1100"
+            currency: INR
+        - title: INSURANCE_CHARGES
+          price:
+            value: "1100"
+            currency: INR
+        - title: OTHER_CHARGES
+          price:
+            value: "0"
+            currency: INR
+      ttl: P15D
+
     fulfillments:
-      - id: F15
-        type: ONLINE
+      - customer:
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
+        state:
+          descriptor:
+            code: DISBURSED
+        type: SEMI_ONLINE
+        id: F18
         tags:
           - display: false
             descriptor:
@@ -287,54 +360,112 @@ message:
                   name: Personal Information
                 value: COMPLETED
               - descriptor:
+                  code: CONSENT_APPROVAL
+                  name: Consent Approval
+                value: COMPLETED
+              # - descriptor:
+              #     code: SET_LOAN_AMOUNT
+              #     name: Set Loan Amount
+              #   value: COMPLETED
+              - descriptor:
                   code: KYC
                   name: Know Your Customer
-                value: PENDING
+                value: COMPLETED
               - descriptor:
                   code: LIEN_MARKING
                   name: Lien Marking
-                value: PENDING  
+                value: COMPLETED  
               - descriptor:
                   code: EMANDATE
                   name: Emandate
-                value: PENDING
+                value: COMPLETED
               - descriptor:
                   code: LOAN_AGREEMENT
                   name: Loan Agreement
-                value: PENDING    
-               
-    quote:
-      id: LOAN_LEAD_ID_OR_SIMILAR
-      price:
-        currency: INR
-        value: "232800"
-      breakup:
-        - title: PRINCIPAL_AMOUNT
-          price:
-            value: "200000"
-            currency: INR
-        - title: INTEREST_AMOUNT
-          price:
-            value: "30000"
-            currency: INR
-        - title: PROCESSING_FEE
-          price:
-            value: "1800"
-            currency: INR
-        - title: OTHER_UPFRONT_CHARGES
-          price:
-            value: "0"
-            currency: INR
-        - title: INSURANCE_CHARGES
-          price:
-            value: "500"
-            currency: INR
-        - title: NET_DISBURSED_AMOUNT
-          price:
-            value: "197700"
-            currency: INR
-        - title: OTHER_CHARGES
-          price:
-            value: "0"
-            currency: INR
-      ttl: P15D
+                value: COMPLETED
+              - descriptor:
+                  code: ACCOUNT_MONITORING
+                  name: Account Monitoring
+                value: PENDING     
+          
+    payments:
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID
+        status: NOT-PAID
+        collected_by: CONSUMER
+        params:
+          bank_account_number: 'XXXXXXXX'
+          bank_code: 'XXXXXXXX'
+        time:
+          label: LOAN_DISBURSMENT
+        tags: 
+          - descriptor:
+              name: Account Details
+              code: ACCOUNT_DETAILS
+            list:
+              - descriptor:
+                  code: ACCOUNT_TYPE
+                  name: Account Type
+                value: SAVINGS
+              - descriptor:
+                  code: ACCOUNT_HOLDER_NAME
+                  name: Account Holder Name
+                value: John Doe  
+      - id: PAYMENT_ID_PROCESSING_FEES
+        collected_by: BPP
+        params:
+          amount: '2792'
+          currency: INR
+          transaction_id: 7bfaefb9-8e63-42c4-988b-8a096fe6c49a
+        status: PAID
+        type: PRE-ORDER
+    cancellation_terms:
+      - fulfillment_state:
+          descriptor:
+            code: SANCTIONED
+        cancellation_fee:
+          percentage: 3%
+      - external_ref:
+          mimetype: text/html
+          url: https://bpp.credit.becknprotocol.org/tnc.html
+      - fulfillment_state:
+          descriptor:
+            code: DISBURSED
+        cancellation_fee:
+          percentage: 5%
+    tags:
+      - display: false
+        descriptor:
+          name: BAP Terms of Engagement
+          code: BAP_TERMS
+        list:
+          - descriptor:
+              code: STATIC_TERMS
+            value: >-
+              https://bap.credit.becknprotocol.io/working-capital/loans/working-capital
+          - descriptor:
+              code: OFFLINE_CONTRACT
+            value: 'true'
+      - display: false
+        descriptor:
+          name: BPP Terms of Engagement
+          code: BPP_TERMS
+        list:
+          - descriptor:
+              code: STATIC_TERMS
+            value: >-
+              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
+          - descriptor:
+              code: OFFLINE_CONTRACT
+            value: 'true'
+
+    documents:
+      - descriptor:
+          code: LOAN_AGREEMENT
+          name: Loan Agreement Document
+          short_desc: Download your Loan Agreement document here,
+          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, interest rate, repayment schedule, and collateral, binding a lender and borrower in a formal financial arrangement.
+        mime_type: application/pdf
+        url: https://lender.com/loan/loan-agreement/O1.pdf   
+    created_at: '2025-11-25T05:23:03.443Z'
+    updated_at: '2025-11-25T05:23:03.443Z'  
