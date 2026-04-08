@@ -5,7 +5,7 @@ context:
       code: IND
     city:
       code: "*"
-  action: on_update
+  action: on_init
   version: 2.3.0
   bap_id: bap.credit.becknprotocol.io
   bap_uri: https://bap.credit.becknprotocol.io/
@@ -17,8 +17,6 @@ context:
   ttl: P30M
 message:
   order:
-    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
-    status: ACTIVE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -89,19 +87,25 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_ITEM_ID_LAMF_1
-        parent_item_id: ITEM_ID_LAMF_1
+        parent_item_id: ITEM_ID_LAMF_5
         descriptor:
           code: LOAN
-          name: LAMF with Term Loan - AA
+          name: LAMF - Single Redirection
         category_ids:
           - '101118'
-          - '104142'
-          - '101117'
+          - '104127'
+          - '101119'
         fulfillment_ids:
-          - F13
+          - F18
         price:
           currency: INR
-          value: '232800'       
+          value: '2792'
+        xinput:
+          form:
+            id: F04
+          form_response:
+            status: SUCCESS
+            submission_id: F04_SUBMISSION_ID
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -164,10 +168,14 @@ message:
                   short_desc: Repayment Frequency by borrower
                 value: 'P1M'
               - descriptor:
-                  code: NUMBER_OF_INSTALLMENTS
-                  name: Number of installments of repayment
-                  short_desc: Number of installments borrower has to make to payback the loan
-                value: '5'
+                  code: RATE_ANNUALISED_PENAL_CHARGES
+                  name: Rate Annualised penal charges
+                value: '2 %'  
+              # - descriptor:
+              #     code: NUMBER_OF_INSTALLMENTS
+              #     name: Number of installments of repayment
+              #     short_desc: Number of installments borrower has to make to payback the loan
+              #   value: '5'
               - descriptor:
                   code: TNC_LINK
                   name: Terms & Conditions
@@ -188,7 +196,7 @@ message:
                   name: Key Facts Statement Link
                   short_desc: A link provided by the BPP points to a Key Fact Statement (KFS) document related to a loan. When accessed, the document is returned in text/html format, with the loan details organized in a standard HTML table. This format makes it easy for the buyer's app to read and reformat the information as needed. For more details, refer to the \"KFS_LINK format\" document in the \"feature-ui\" section.
                 value: 'https://icicibank.com/loan/kfs-terms'
-                          
+                               
           - descriptor:
               code: PLEDGE_REQUIREMENTS
               name: pledge requirements
@@ -303,31 +311,31 @@ message:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "232800"
+        value: "2792"
       breakup:
-        - title: PRINCIPAL_AMOUNT
+        - title: OVERDRAFT_LIMIT
           price:
-            value: "200000"
+            value: "1100000"
             currency: INR
         - title: INTEREST_AMOUNT
           price:
-            value: "30000"
+            value: "0"
             currency: INR
+        - title: CURRENT_UTILIZATION
+          price:
+            value: "0"
+            currency: INR    
         - title: PROCESSING_FEE
           price:
-            value: "1800"
+            value: "1100"
             currency: INR
         - title: OTHER_UPFRONT_CHARGES
           price:
-            value: "0"
+            value: "1100"
             currency: INR
         - title: INSURANCE_CHARGES
           price:
-            value: "500"
-            currency: INR
-        - title: NET_DISBURSED_AMOUNT
-          price:
-            value: "197700"
+            value: "1100"
             currency: INR
         - title: OTHER_CHARGES
           price:
@@ -344,9 +352,9 @@ message:
             email: john.doe@example.com
         state:
           descriptor:
-            code: DISBURSED
-        type: ONLINE
-        id: F13
+            code: INITIATED
+        type: SEMI_ONLINE
+        id: F18
         tags:
           - display: false
             descriptor:
@@ -358,45 +366,21 @@ message:
                   name: Personal Information
                 value: COMPLETED
               - descriptor:
-                  code: CONSENT_APPROVAL
-                  name: Consent Approval
-                value: COMPLETED
-              # - descriptor:
-              #     code: SET_LOAN_AMOUNT
-              #     name: Set Loan Amount
-              #   value: COMPLETED
-              - descriptor:
-                  code: KYC
-                  name: Know Your Customer
-                value: COMPLETED
-              - descriptor:
-                  code: LIEN_MARKING
-                  name: Lien Marking
+                  code: JOURNEY_OFFLINE
+                  name: Journey Offline
                 value: COMPLETED  
-              - descriptor:
-                  code: EMANDATE
-                  name: Emandate
-                value: COMPLETED
-              - descriptor:
-                  code: LOAN_AGREEMENT
-                  name: Loan Agreement
-                value: COMPLETED
-              - descriptor:
-                  code: ACCOUNT_MONITORING
-                  name: Account Monitoring
-                value: COMPLETED     
+               
           
     payments:
       - type: ON_FULFILLMENT
         id: LOAN_DISBURSMENT_ID
-        status: PAID
+        status: NOT-PAID
         collected_by: CONSUMER
         params:
           bank_account_number: 'XXXXXXXX'
           bank_code: 'XXXXXXXX'
         time:
           label: LOAN_DISBURSMENT
-          timestamp: '2024-10-01T04:00:00.000Z'
         tags: 
           - descriptor:
               name: Account Details
@@ -410,144 +394,14 @@ message:
                   code: ACCOUNT_HOLDER_NAME
                   name: Account Holder Name
                 value: John Doe  
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
+      - id: PAYMENT_ID_PROCESSING_FEES
+        collected_by: BPP
         params:
-          amount: "46360"
+          amount: '2792'
           currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-06-01T00:00:00.000Z'
-            end: '2025-06-30T23:59:59.999Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"       
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-07-01T00:00:00.000Z'
-            end: '2025-07-31T23:59:59.999Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-08-01T23:59:59.999Z'
-            end: '2025-08-31T23:59:59.999Z'
-
-            
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-09-01T23:59:59.999Z'
-            end: '2025-09-30T00:00:00.000Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_TERM_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: '2025-10-01T00:00:00.000Z'
-            end: '2025-10-31T23:59:59.999Z'
-        tags:
-          - display: false
-            descriptor:
-              name: Emi Breakup
-              code: BREAKUP
-            list:
-              - descriptor:
-                  code: PRINCIPAL_AMOUNT
-                  name: Principal
-                  short_desc: Loan Principal
-                value: "46000 INR"
-              - descriptor:
-                  code: INTEREST_AMOUNT
-                  name: Interest
-                  short_desc: Interest Amount
-                value: "360 INR"    
-      
+          transaction_id: 7bfaefb9-8e63-42c4-988b-8a096fe6c49a
+        status: PAID
+        type: PRE-ORDER
     cancellation_terms:
       - fulfillment_state:
           descriptor:
@@ -562,19 +416,8 @@ message:
             code: DISBURSED
         cancellation_fee:
           percentage: 5%
+    
     tags:
-      - display: false
-        descriptor:
-          name: BAP Terms of Engagement
-          code: BAP_TERMS
-        list:
-          - descriptor:
-              code: STATIC_TERMS
-            value: >-
-              https://bap.credit.becknprotocol.io/working-capital/loans/working-capital
-          - descriptor:
-              code: OFFLINE_CONTRACT
-            value: 'true'
       - display: false
         descriptor:
           name: BPP Terms of Engagement
@@ -586,23 +429,4 @@ message:
               https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
           - descriptor:
               code: OFFLINE_CONTRACT
-            value: 'true'  
-      
-    documents:
-      - descriptor:
-          code: LOAN_AGREEMENT
-          name: Loan Agreement Document
-          short_desc: Download your Loan Agreement document here,
-          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, interest rate, repayment schedule, and collateral, binding a lender and borrower in a formal financial arrangement.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-agreement/O1.pdf
-      - descriptor:
-          code: LOAN_CANCELLATION
-          name: Loan Cancellation Document
-          short_desc: Download your Loan Cancellation document here,
-          long_desc: A Loan Cancellation Document is a formal agreement used to terminate an existing loan, releasing the borrower from repayment obligations and confirming the loan's cancellation.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-cancellation/O1.pdf   
-    
-    created_at: '2025-11-25T05:23:03.443Z'
-    updated_at: '2025-11-25T05:23:03.443Z'
+            value: 'true'
