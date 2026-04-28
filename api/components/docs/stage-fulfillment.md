@@ -56,6 +56,25 @@ sequenceDiagram
 
 Confirmed orders can be cancelled if allowed by the provider/bpp
 
+### Skip
+
+A skip request can be used to skip a set of consecutive installments of a recurring order.
+
+- Installments falling within the given range will be generated with a fulfillment state of cancelled. Such installments will be counted against the total number of installments in the recurring order.
+- Both start and end dates are inclusive.
+- The end date must be equal to or later than the start date.
+- The start date must be in the future.
+- Only the date part is considered. To avoid ambiguity, the time part must be `00:00:00.000`.
+- A skip request must be placed before installment generation to take effect. Already-generated installments cannot be skipped.
+- The number of consecutive installments that can be skipped varies by frequency.
+- A skip request will be assigned an `id` once accepted. The same `id` can be used to disable the skip.
+
+The state of a skip request is indicated by the label, with the following values:
+
+- `ENABLED`: The skip request is active; pending installments falling within the range will be skipped.
+- `DISABLED`: The skip request has been disabled.
+- `COMPLETED`: The skip request has completed skipping all eligible installments in the given range.
+
 #### lumpsum
 1. cancellation can happen in fulfillment states = pending (i.e before payment is made)
 2. provider can cancel if the payment is not received within a certain time period and mention the reason as payment not received
