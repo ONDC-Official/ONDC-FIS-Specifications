@@ -5,19 +5,18 @@ context:
       code: IND
     city:
       code: '*'
+  action: on_status
   version: 2.0.3
-  action: on_update
-  bap_uri: https://bap.credit.becknprotocol.io/
   bap_id: bap.credit.becknprotocol.io
+  bap_uri: https://bap.credit.becknprotocol.io/
   bpp_id: bpp.credit.becknprotocol.org
   bpp_uri: https://bpp.credit.becknprotocol.org
-  transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62196
-  message_id: 166a5633-66d2-4ec8-bdcb-65cfeb1e4697
-  ttl: PT10M
+  transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
+  message_id: 40e7ee84-dc66-45a3-8072-8890a6147d67
   timestamp: "2023-05-25T05:23:03.443Z"
+  ttl: P30M
 message:
   order:
-    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -86,18 +85,18 @@ message:
               value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"   
         
     items:
-      - id: ITEM_ID_PERSONAL_LOAN_1
+      - id: ITEM_ID_PERSONAL_LOAN_2
         descriptor:
           code: PERSONAL_LOAN
-          name: Personal Loan without AA - Offline Journey
+          name: Personal Loan without AA - Single Redirection
         category_ids:
           - "101123"
           - "101124"
         fulfillment_ids:
-          - F1
+          - F2
         price:
           currency: INR
-          value: "234500"
+          value: "233900"
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -167,7 +166,7 @@ message:
                   code: COOL_OFF_PERIOD
                   name: cool off period
                   short_desc: Cooling off/look-up period during which borrower shall not be charged any penalty 
-                value: P30D
+                value: P30D  
               - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
@@ -179,56 +178,15 @@ message:
                   short_desc: A link provided by the BPP points to a Key Fact Statement (KFS) document related to a loan. When accessed, the document is returned in text/html format, with the loan details organized in a standard HTML table. This format makes it easy for the buyer's app to read and reformat the information as needed. For more details, refer to the "KFS_LINK format" document in the "feature-ui" section.
                 value: https://icicibank.com/loan/kfs-terms
             display: true
-    quote:
-      id: LOAN_LEAD_ID_OR_SIMILAR
-      price:
-        currency: INR
-        value: "224800"
-      breakup:
-        # - title: Amount Received(Paid Installments)
-        #   price:
-        #     value: "92720"
-        #     currency: INR
-        - title: PRINCIPAL
-          price:
-            value: "80720"
-            currency: INR
-        - title: INSURANCE_CHARGES
-          price:
-            value: "500"
-            currency: INR    
-        - title: INTEREST
-          price:
-            value: "12000"
-            currency: INR
-        - title: PROCESSING_FEE
-          price:
-            value: "1800"
-            currency: INR
-        - title: OTHER_CHARGES
-          price:
-            value: "0"
-            currency: INR
-        - title: NET_DISBURSED_AMOUNT
-          price:
-            value: "197700"
-            currency: INR     
-        - title: OUTSTANDING_PRINCIPAL
-          price:
-            value: "119280"
-            currency: INR    
-        - title: OUTSTANDING_INTEREST
-          price:
-            value: "6000"
-            currency: INR
-        - title: PRE_PAYMENT_CHARGE
-          price:
-            value: "4500"
-            currency: INR 
-                    
-      ttl: PT15D
+        xinput:
+          form:
+            id: FO3
+          form_response:
+            status: OFFLINE_PENDING
+            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+    
     fulfillments:
-      - id: F1
+      - id: F2
         type: LOAN
         customer:
           person:
@@ -236,9 +194,6 @@ message:
           contact:
             phone: +91-9999999999
             email: john.doe@example.com
-        state:
-          descriptor:
-            code: DISBURSED
         tags:
           - descriptor:
               name: Checklist
@@ -248,152 +203,64 @@ message:
               - descriptor: 
                   code: PERSONAL_INFORMATION
                   name: Personal Information
+                  short_desc: Provide your Personal Info to proceed further
                 value: "COMPLETED"
-              - descriptor: 
-                  code: JOURNEY_OFFLINE
-                  name: Journey Offline
-                value: "COMPLETED"
+              - descriptor:
+                  code: SINGLE_REDIRECTION
+                  name: Single Redirection
+                value: "PENDING"
+              - descriptor:
+                  code: KYC
+                  name: kyc
+                  short_desc: Video KYC is pending
+                value: "PENDING"
+              - descriptor:
+                  code: EMANDATE
+                  name: emandate
+                  short_desc: Emandate is pending
+                value: "PENDING"
+              - descriptor:
+                  code: LOAN_AGREEMENT
+                  name: Loan Agreement
+                  short_desc: Loan Agreement is pending
+                value: "PENDING"
       
-    payments:
-      - id: PAYMENT_ID_PERSONAL_LOAN
-        type: POST_FULFILLMENT 
-        params:
-          amount: "92720"
-          currency: INR
-        status: PAID
-        time:
-          label: PRE_PART_PAYMENT
-          # range:
-          #   start: "2023-09-05T00:00:00.000Z"
-          #   end: "2023-09-05T23:59:59.999Z" 
-      - id: PAYMENT_ID_PERSONAL_LOAN
-        type: ON_ORDER
-        status: PAID
-        collected_by: BPP
-        tags:
-          - descriptor:
-              code: BUYER_FINDER_FEES
-            display: false
-            list:
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_TYPE
-                value: "percent-annualized"
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_PERCENTAGE
-                value: "1"
-          - descriptor:
-              code: SETTLEMENT_TERMS
-            display: false
-            list:
-              - descriptor: 
-                  code: SETTLEMENT_WINDOW
-                value: 'PT60M'
-              - descriptor: 
-                  code: SETTLEMENT_BASIS
-                value: 'INVOICE_RECEIPT'
-              - descriptor: 
-                  code: MANDATORY_ARBITRATION
-                value: 'TRUE'
-              - descriptor: 
-                  code: COURT_JURISDICTION
-                value: 'New Delhi'
-              - descriptor: 
-                  code: STATIC_TERMS
-                value: 'https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan'
-              - descriptor: 
-                  code: SETTLEMENT_AMOUNT
-                value: '1159'
-              - descriptor: 
-                  code: OFFLINE_CONTRACT
-                value: 'true'
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_PERSONAL_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-06-01T00:00:00.000Z"
-            end: "2023-06-30T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_PERSONAL_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-07-01T00:00:00.000Z"
-            end: "2023-07-31T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_PERSONAL_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: DEFERRED
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-08-01T00:00:00.000Z"
-            end: "2023-08-31T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_PERSONAL_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: DEFERRED
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-09-01T00:00:00.000Z"
-            end: "2023-09-30T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_PERSONAL_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-08-01T00:00:00.000Z"
-            end: "2023-08-31T23:59:59.999Z"    
-            
-    cancellation_terms:
-      - fulfillment_state:
-          descriptor:
-            code: SANCTIONED
-        cancellation_fee:
-          percentage: 3%
-      - external_ref:
-          mimetype: text/html
-          url: https://icicibank.com/loan/tnc.html
-      - fulfillment_state:
-          descriptor:
-            code: DISBURSED
-        cancellation_fee:
-          percentage: 5%
-    documents:
-      - descriptor:
-          code: LOAN_AGREEMENT
-          name: Loan Agreement Document
-          short_desc: Download your Loan Agreement document here
-          long_desc: A Loan Agreement Document is a legal contract outlining terms such as loan amount, 
-            interest rate, repayment schedule, and collateral,
-            binding a lender and borrower in a formal financial arrangement.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-agreement/O1.pdf
-      - descriptor:
-          code: LOAN_CANCELLATION
-          name: Loan Cancellation Document
-          short_desc: Download your Loan Cancellation document here
-          long_desc: A Loan Cancellation Document is a formal agreement used 
-            to terminate an existing loan, releasing the borrower from repayment 
-            obligations and confirming the loan's cancellation.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-cancellation/O1.pdf 
-    created_at: '2023-05-25T05:23:03.443Z'
-    updated_at: '2023-05-25T05:23:03.443Z'     
+    quote:
+      id: LOAN_LEAD_ID_OR_SIMILAR
+      price:
+        currency: INR
+        value: "232300"
+      breakup:
+        - title: PRINCIPAL
+          price:
+            value: "200000"
+            currency: INR
+        - title: INTEREST
+          price:
+            value: "30000"
+            currency: INR
+        - title: PROCESSING_FEE
+          price:
+            value: "1800"
+            currency: INR
+        - title: OTHER_UPFRONT_CHARGES
+          price:
+            value: "0"
+            currency: INR
+        - title: INSURANCE_CHARGES
+          price:
+            value: "500"
+            currency: INR
+        - title: NET_DISBURSED_AMOUNT
+          price:
+            value: "197700"
+            currency: INR      
+        - title: OTHER_UPFRONT_CHARGES
+          price:
+            value: "0"
+            currency: INR
+        - title: OTHER_CHARGES
+          price:
+            value: "0"
+            currency: INR          
+      ttl: PT15D

@@ -44,19 +44,22 @@ message:
               code: BUREAU_LOAN
               name: Bureau Loan
           - id: "101125"
-            parent_category_id: '101123'
+            parent_category_id: '100001'
             descriptor:
-              code: AA_PERSONAL_LOAN
-              name: Account Aggregator Loan        
+              code: PRE_QUALIFIER
+              name: Pre Qualifier  
+               
               
         items:
           - id: ITEM_ID_PERSONAL_LOAN_1
             descriptor:
               code: PERSONAL_LOAN
-              name: Personal Loan without AA
+              name: Personal Loan without AA - Offline Journey
             category_ids:
               - "101123"
               - "101124"
+            fulfillment_ids:
+              - F1  
             tags:
               - descriptor:
                   code: GENERAL_INFO
@@ -115,10 +118,12 @@ message:
           - id: ITEM_ID_PERSONAL_LOAN_2
             descriptor:
               code: PERSONAL_LOAN
-              name: Personal Loan with AA
+              name: Personal Loan without AA - Single Redirection
             category_ids:
               - "101123"
-              - "101125"
+              - "101124"
+            fulfillment_ids:
+              - F2
             tags:
               - descriptor:
                   code: GENERAL_INFO
@@ -166,7 +171,7 @@ message:
                   cur: 0
                   max: 0
                 headings:
-                  - Personal Information
+                  - PERSONAL_INFORMATION
               form:
                 id: F01
                 mime_type: text/html
@@ -174,7 +179,66 @@ message:
                 resubmit: false
                 multiple_sumbissions: false
               required: true
-        
+          - id: ITEM_ID_PERSONAL_LOAN_3
+            descriptor:
+              code: PRE_QUALIFIER
+              name: Pre Qualifier
+            category_ids:
+              - "101125"
+            fulfillment_ids:
+              - F3  
+            matched: true
+            recommended: true
+
+        fulfillments:
+          - id: F1
+            type: LOAN
+            tags:
+              - descriptor:
+                  name: Checklist
+                  code: CHECKLISTS
+                display: false
+                list:
+                  - descriptor: 
+                      code: PERSONAL_INFORMATION
+                      name: Personal Information
+                    value: "PENDING"
+                  - descriptor: 
+                      code: JOURNEY_OFFLINE
+                      name: Journey Offline
+                    value: "PENDING"
+          - id: F2
+            type: LOAN
+            tags:
+              - descriptor:
+                  name: Checklist
+                  code: CHECKLISTS
+                display: false
+                list:
+                  - descriptor: 
+                      code: PERSONAL_INFORMATION
+                      name: Personal Information
+                      short_desc: Provide your Personal Info to proceed further
+                    value: "PENDING"
+                  - descriptor:
+                      code: SINGLE_REDIRECTION
+                      name: Single Redirection
+                    value: "PENDING"
+                  - descriptor:
+                      code: KYC
+                      name: kyc
+                    value: "PENDING"
+                  - descriptor:
+                      code: EMANDATE
+                      name: emandate
+                    value: "PENDING"
+                  - descriptor:
+                      code: LOAN_AGREEMENT
+                      name: Loan Agreement
+                    value: "PENDING"                  
+          - id: F3
+            type: DEDUPE
+
         payments:
           - collected_by: BPP
             tags:
