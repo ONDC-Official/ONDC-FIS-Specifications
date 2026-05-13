@@ -1,19 +1,19 @@
-search:
-  message:
-    intent:
-      payment:
-        $ref: "./tag-group.yaml#/payment"
-      tags: &bapTerms
-        $ref: "./tag-group.yaml#/bapTerms"
+# search:
+#   message:
+#     intent:
+#       payment:
+#         $ref: "./tag-group.yaml#/payment"
+#       tags: &bapTerms
+#         $ref: "./tag-group.yaml#/bapTerms"
 
 on_search:
   message:
     catalog:
       $ref: "./tag-group.yaml#/catalog"
-      payments:
-        $ref: "./tag-group.yaml#/payment"
-      tags: &bppTerms
-        $ref: "./tag-group.yaml#/bppTerms"  
+      # payments:
+      #   $ref: "./tag-group.yaml#/payment"
+      # tags: &bppTerms
+      #   $ref: "./tag-group.yaml#/bppTerms"  
 on_select:
   message:
     order:
@@ -22,33 +22,38 @@ on_select:
           $ref: "./tag-group.yaml#/catalog/providers/tags"
       items: &items
         $ref: "./tag-group.yaml#/order/items"
-init:
-  message:
-    order:
-      payments: &payments
-        $ref: "./tag-group.yaml#/payment"
-      tags: *bapTerms  
-on_init:
-  message:
-    order:
-      provider: *providerTags
-      items: *items
-      payments: *payments
-      tags: *bppTerms
-confirm:
-  message:
-    order:
-      payments: &payments
-        $ref: "./tag-group.yaml#/payment"
-      tags: &bapbppTerms
-        - $ref: "./tag-group.yaml#/bapTerms/0"
-        - $ref: "./tag-group.yaml#/bppTerms/0"      
+      fulfillments: &fulfillments
+        $ref: "./tag-group.yaml#/order/fulfillments"
+
+# init:
+#   message:
+#     order:
+#       # payments: &payments
+#       #   $ref: "./tag-group.yaml#/payment"
+#       tags: *bapTerms  
+# on_init:
+#   message:
+#     order:
+#       provider: *providerTags
+#       items: *items
+#       payments: *payments
+#       tags: *bppTerms
+# confirm:
+#   message:
+#     order:
+#       payments: &payments
+#         $ref: "./tag-group.yaml#/payment"
+#       tags: &bapbppTerms
+#         - $ref: "./tag-group.yaml#/bapTerms/0"
+#         - $ref: "./tag-group.yaml#/bppTerms/0"      
 on_confirm:
   message:
     order: &order
       $ref: "./tag-group.yaml#/order"
-      payments: *payments
-      tags: *bapbppTerms
+      # payments: &payments
+      #   $ref: "./tag-group.yaml#/payment"
+      fulfillments: *fulfillments  
+      # tags: *bapbppTerms
 on_status:
   message:
     order: *order
