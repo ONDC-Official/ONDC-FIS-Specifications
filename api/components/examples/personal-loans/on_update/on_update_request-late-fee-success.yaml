@@ -86,10 +86,15 @@ message:
               value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"   
         
     items:
-      - id: ITEM_ID_PERSONAL_LOAN_2
+      - id: ITEM_ID_PERSONAL_LOAN_1
         descriptor:
           code: PERSONAL_LOAN
-          name: Personal Loan
+          name: Personal Loan without AA - Offline Journey
+        category_ids:
+          - "101123"
+          - "101124"
+        fulfillment_ids:
+          - F1
         price:
           currency: INR
           value: "234500"
@@ -219,7 +224,9 @@ message:
             currency: INR               
       ttl: PT15D
     fulfillments:
-      - customer:
+      - id: F1
+        type: LOAN
+        customer:
           person:
             name: John Doe
           contact:
@@ -228,8 +235,43 @@ message:
         state:
           descriptor:
             code: DISBURSED
+        tags:
+          - descriptor:
+              name: Checklist
+              code: CHECKLISTS
+            display: false
+            list:
+              - descriptor: 
+                  code: PERSONAL_INFORMATION
+                  name: Personal Information
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: LOAN_OFFER   
+                  name: Loan Offer
+                value: "SELECTED"  
+              - descriptor: 
+                  code: JOURNEY_OFFLINE
+                  name: Journey Offline
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: KYC
+                  name: OFFLINE
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: REPAYMENT
+                  name: E-MANDATE
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: BANK_ACCOUNT_VERIFICATION
+                  name: PENNY DROP
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: LOAN_AGREEMENT
+                  name: CLICKWRAP
+                value: "SUCCESSFUL"
+
     payments:
-      - id: PAYMENT_ID_PERSONAL_LOAN
+      - id: LOAN_DISBURSMENT_ID
         type: POST_FULFILLMENT
         params:
           amount: "47360"
@@ -240,46 +282,19 @@ message:
           range:
             start: "2023-08-01T00:00:00.000Z"
             end: "2023-08-31T23:59:59.999Z"
-      - id: PAYMENT_ID_PERSONAL_LOAN
-        type: ON_ORDER
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID
         status: PAID
-        collected_by: BPP
-        tags:
-          - descriptor:
-              code: BUYER_FINDER_FEES
-            display: false
-            list:
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_TYPE
-                value: "percent-annualized"
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_PERCENTAGE
-                value: "1"
-          - descriptor:
-              code: SETTLEMENT_TERMS
-            display: false
-            list:
-              - descriptor: 
-                  code: SETTLEMENT_WINDOW
-                value: 'PT60M'
-              - descriptor: 
-                  code: SETTLEMENT_BASIS
-                value: 'INVOICE_RECEIPT'
-              - descriptor: 
-                  code: MANDATORY_ARBITRATION
-                value: 'TRUE'
-              - descriptor: 
-                  code: COURT_JURISDICTION
-                value: 'New Delhi'
-              - descriptor: 
-                  code: STATIC_TERMS
-                value: 'https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan'
-              - descriptor: 
-                  code: SETTLEMENT_AMOUNT
-                value: '1159'
-              - descriptor: 
-                  code: OFFLINE_CONTRACT
-                value: 'true' 
+        collected_by: CONSUMER
+        time:
+          label: LOAN_DISBURSMENT
+          timestamp: '2023-05-25T05:23:03.443Z'
+        params: 
+          bank_code: XXXXXXXX
+          bank_account_number: xxxxxxxxxxxxxx
+          transaction_id: 4429e52c-5d41-4e24-ac2e-42eb2fa8f72b
+          amount: '197700'
+          currency: INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PERSONAL_LOAN
         params:

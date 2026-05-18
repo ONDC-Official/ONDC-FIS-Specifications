@@ -12,7 +12,7 @@ context:
   bpp_id: bpp.credit.becknprotocol.org
   bpp_uri: https://bpp.credit.becknprotocol.org
   transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
-  message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+  message_id: f9cb9107-9cb6-4b4f-a1b5-46b961deb47b
   timestamp: "2023-05-25T05:23:03.443Z"
   ttl: P30M
 message:
@@ -85,10 +85,15 @@ message:
               value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"   
         
     items:
-      - id: ITEM_ID_PERSONAL_LOAN_2
+      - id: ITEM_ID_PERSONAL_LOAN_1
         descriptor:
           code: PERSONAL_LOAN
-          name: Personal Loan
+          name: Personal Loan without AA - Offline Journey
+        category_ids:
+          - "101123"
+          - "101124"
+        fulfillment_ids:
+          - F1 
         price:
           currency: INR
           value: "233900"
@@ -158,6 +163,11 @@ message:
                   short_desc: Terms and Conditions
                 value: https://icicibank.com/loan/tnc.html
               - descriptor:
+                  code: COOL_OFF_PERIOD
+                  name: cool off period
+                  short_desc: Cooling off/look-up period during which borrower shall not be charged any penalty 
+                value: P30D  
+              - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
                   short_desc: Each installment amount of repayment
@@ -173,13 +183,60 @@ message:
             id: FO3
           form_response:
             status: COMPLETED
-            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226  
-        
+            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+    
+    fulfillments:
+      - id: F1
+        type: LOAN
+        state:
+          descriptor:
+            code: DISBURSED
+        customer:
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com    
+        tags:
+          - descriptor:
+              name: Checklist
+              code: CHECKLISTS
+            display: false
+            list:
+              - descriptor: 
+                  code: PERSONAL_INFORMATION
+                  name: Personal Information
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: LOAN_OFFER   
+                  name: Loan Offer
+                value: "SELECTED"  
+              - descriptor: 
+                  code: JOURNEY_OFFLINE
+                  name: Journey Offline
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: KYC
+                  name: OFFLINE
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: REPAYMENT
+                  name: E-MANDATE
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: BANK_ACCOUNT_VERIFICATION
+                  name: PENNY DROP
+                value: "SUCCESSFUL"
+              - descriptor: 
+                  code: LOAN_AGREEMENT
+                  name: CLICKWRAP
+                value: "SUCCESSFUL"
+               
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "233900"
+        value: "232300"
       breakup:
         - title: PRINCIPAL
           price:
@@ -212,6 +269,76 @@ message:
         - title: OTHER_CHARGES
           price:
             value: "0"
-            currency: INR
-              
+            currency: INR          
       ttl: PT15D
+
+    payments:
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID
+        status: PAID
+        collected_by: CONSUMER
+        time:
+          label: LOAN_DISBURSMENT
+          timestamp: '2023-05-25T05:23:03.443Z'
+        params: 
+          bank_code: XXXXXXXX
+          bank_account_number: xxxxxxxxxxxxxx
+          transaction_id: 4429e52c-5d41-4e24-ac2e-42eb2fa8f72b
+          amount: '197700'
+          currency: INR 
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-06-01T00:00:00.000Z"
+            end: "2023-06-30T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-07-01T00:00:00.000Z"
+            end: "2023-07-31T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-08-01T00:00:00.000Z"
+            end: "2023-08-31T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-09-01T00:00:00.000Z"
+            end: "2023-09-30T23:59:59.999Z"
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PERSONAL_LOAN
+        params:
+          amount: "46360"
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: "2023-10-01T00:00:00.000Z"
+            end: "2023-10-31T23:59:59.999Z"    
+    
