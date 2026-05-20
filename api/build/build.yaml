@@ -971,6 +971,8 @@ components:
           $ref: '#/components/schemas/XInput'
         external_ref:
           $ref: '#/components/schemas/MediaFile'
+        cancel_eligible:
+          type: boolean
     Catalog:
       description: >-
         Describes the products or services offered by a BPP. This is typically
@@ -1253,6 +1255,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
+        symbol:
+          description: URL to the image. This can be a data url or an remote url
+          type: string
+          format: uri
     Domain:
       description: >-
         Described the industry sector or sub-sector. The network policy should
@@ -1903,6 +1909,8 @@ components:
             - CREATED
             - COMPLETED
             - SOFT_CANCEL
+            - ON_HOLD
+            - IN_PROGRESS
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -3168,131 +3176,11 @@ x-enum:
     message:
       order: *ref_7
 x-tags:
-  search:
-    message:
-      intent:
-        payment:
-          tags: &ref_10
-            - code: BAP_TERMS
-              description: Describes the finder fees of the loan for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type.
-                  reference: <PR/Issue/Discussion Links md format text>
-                  list:
-                    - code: amount
-                      description: Describes, the Buyer App’s fee is a flat amount in INR.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent- annualized
-                      description: >-
-                        Describes, the Buyer App’s fee is set as a percentage of
-                        the Total Loan Disbursed for a 12-month tenure loan.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent
-                      description: >-
-                        Describes, the Buyer App’s fee is an absolute
-                        percentage.
-                      reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Describes the delay interest
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: MANDATORY_ARBITRATION
-                  description: >-
-                    Flag to denote if dispute can be resolved through
-                    arbitration
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: COURT_JURISDICTION
-                  description: Denotes court that will have jurisdiction for the case
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Denotes interest to be paid as a delay charge
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_AMOUNT
-                  description: Denotes settlement amount
-                  reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
         payments:
-          tags: &ref_11
-            - code: BPP_TERMS
-              description: Describes the finder fees of the loan for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type.
-                  reference: <PR/Issue/Discussion Links md format text>
-                  list:
-                    - code: amount
-                      description: Describes, the Buyer App’s fee is a flat amount in INR.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent- annualized
-                      description: >-
-                        Describes, the Buyer App’s fee is set as a percentage of
-                        the Total Loan Disbursed for a 12-month tenure loan.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent
-                      description: >-
-                        Describes, the Buyer App’s fee is an absolute
-                        percentage.
-                      reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Describes the delay interest
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_WINDOW
-                  description: Time window to complete settlement for the loan
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_BASIS
-                  description: Basis required to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: MANDATORY_ARBITRATION
-                  description: >-
-                    Flag to denote if dispute can be resolved through
-                    arbitration
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: COURT_JURISDICTION
-                  description: Denotes court that will have jurisdiction for the case
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Denotes interest to be paid as a delay charge
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_AMOUNT
-                  description: Denotes settlement amount
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
+          tags: &ref_10
             - code: BREAKUP
               description: Describes the breakup of EMIS
               reference: <PR/Issue/Discussion Links md format text>
@@ -3478,7 +3366,7 @@ x-tags:
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_13
+              list: &ref_12
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3510,7 +3398,7 @@ x-tags:
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_14
+              list: &ref_13
                 - code: LSP_NAME
                   description: >-
                     Name of lsp acting as recovery agent, authorised to approach
@@ -3536,7 +3424,7 @@ x-tags:
       order:
         provider:
           tags: *ref_8
-        items: &ref_12
+        items: &ref_11
           tags:
             - code: INFO
               description: >-
@@ -3572,151 +3460,31 @@ x-tags:
                 - code: KYC
                   description: Describes the list of form submission
                   reference: <PR/Issue/Discussion Links md format text>
-  init:
-    message:
-      order:
-        payments:
-          tags: *ref_10
   on_init:
     message:
       order:
         payments:
-          tags: *ref_11
-        items: *ref_12
-        provider: &ref_16
+          tags: *ref_10
+        items: *ref_11
+        provider: &ref_15
           tags:
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_13
+              list: *ref_12
             - code: LSP_INFO
               description: >-
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_14
+              list: *ref_13
   confirm:
     message:
       order:
-        payments: &ref_15
+        payments: &ref_14
           tags:
-            - code: BAP_TERMS
-              description: Describes the finder fees of the loan for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type.
-                  reference: <PR/Issue/Discussion Links md format text>
-                  list:
-                    - code: amount
-                      description: Describes, the Buyer App’s fee is a flat amount in INR.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent- annualized
-                      description: >-
-                        Describes, the Buyer App’s fee is set as a percentage of
-                        the Total Loan Disbursed for a 12-month tenure loan.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent
-                      description: >-
-                        Describes, the Buyer App’s fee is an absolute
-                        percentage.
-                      reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Describes the delay interest
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: MANDATORY_ARBITRATION
-                  description: >-
-                    Flag to denote if dispute can be resolved through
-                    arbitration
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: COURT_JURISDICTION
-                  description: Denotes court that will have jurisdiction for the case
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Denotes interest to be paid as a delay charge
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_AMOUNT
-                  description: Denotes settlement amount
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: BPP_TERMS
-              description: Describes the finder fees of the loan for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type.
-                  reference: <PR/Issue/Discussion Links md format text>
-                  list:
-                    - code: amount
-                      description: Describes, the Buyer App’s fee is a flat amount in INR.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent- annualized
-                      description: >-
-                        Describes, the Buyer App’s fee is set as a percentage of
-                        the Total Loan Disbursed for a 12-month tenure loan.
-                      reference: <PR/Issue/Discussion Links md format text>
-                    - code: percent
-                      description: >-
-                        Describes, the Buyer App’s fee is an absolute
-                        percentage.
-                      reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Describes the delay interest
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_WINDOW
-                  description: Time window to complete settlement for the loan
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_BASIS
-                  description: Basis required to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: MANDATORY_ARBITRATION
-                  description: >-
-                    Flag to denote if dispute can be resolved through
-                    arbitration
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: COURT_JURISDICTION
-                  description: Denotes court that will have jurisdiction for the case
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Denotes interest to be paid as a delay charge
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_AMOUNT
-                  description: Denotes settlement amount
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
             - code: BREAKUP
               description: Describes the breakup of EMIS
               reference: <PR/Issue/Discussion Links md format text>
@@ -3749,14 +3517,13 @@ x-tags:
   on_confirm:
     message:
       order:
-        payments: *ref_15
-        items: *ref_12
-        provider: *ref_16
+        payments: *ref_14
+        items: *ref_11
+        provider: *ref_15
   on_status:
     message:
       order:
-        payments: *ref_10
-        fulfillments: &ref_17
+        fulfillments: &ref_16
           tags:
             - code: INFO
               description: >-
@@ -3787,15 +3554,15 @@ x-tags:
                 - code: INVOICE_PHOTO
                   description: Describes the invoice photo
                   reference: <PR/Issue/Discussion Links md format text>
-        items: *ref_12
-        provider: *ref_16
+        items: *ref_11
+        provider: *ref_15
   on_update:
     message:
       order:
-        payments: *ref_15
-        fulfillments: *ref_17
-        items: *ref_12
-        provider: *ref_16
+        payments: *ref_14
+        fulfillments: *ref_16
+        items: *ref_11
+        provider: *ref_15
 x-flows:
   - summary: Purchase Finance
     details:
@@ -3889,7 +3656,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_17
             context:
               domain: ONDC:FIS12
               location:
@@ -3912,28 +3679,6 @@ x-flows:
                     code: PURCHASE_FINANCE
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BAP_TERMS
-                        name: BAP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -3957,7 +3702,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_18
             context:
               domain: ONDC:FIS12
               location:
@@ -4059,37 +3804,6 @@ x-flows:
                           required: true
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
                     tags:
                       - descriptor:
                           code: CONTACT_INFO
@@ -4253,7 +3967,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_19
             context:
               domain: ONDC:FIS12
               location:
@@ -4288,28 +4002,6 @@ x-flows:
                           submission_id: F01_SUBMISSION_ID
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BAP_TERMS
-                        name: BAP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -4336,7 +4028,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_20
             context:
               domain: ONDC:FIS12
               location:
@@ -4407,37 +4099,6 @@ x-flows:
                           required: true
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
                     tags:
                       - descriptor:
                           code: CONTACT_INFO
@@ -4619,7 +4280,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_21
             context:
               domain: ONDC:FIS12
               location:
@@ -4654,28 +4315,6 @@ x-flows:
                           submission_id: F02_SUBMISSION_ID
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BAP_TERMS
-                        name: BAP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: >-
           Provides a catalog of different loan products offered by a single
           lender for Purchase Loans along with consent handler.
@@ -4702,7 +4341,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_22
             context:
               domain: ONDC:FIS12
               location:
@@ -4764,37 +4403,6 @@ x-flows:
                             display: false
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
                     tags:
                       - descriptor:
                           code: CONTACT_INFO
@@ -4867,7 +4475,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -4902,28 +4510,6 @@ x-flows:
                           submission_id: F02_SUBMISSION_ID
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BAP_TERMS
-                        name: BAP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: Provides a catalog of different loan offers.
         api: on_search
         details:
@@ -5146,37 +4732,6 @@ x-flows:
                             display: true
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
                     tags:
                       - descriptor:
                           code: CONTACT_INFO
@@ -5249,7 +4804,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -5295,7 +4850,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -5621,7 +5176,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -5673,7 +5228,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -5978,7 +5533,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -6030,7 +5585,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -6302,7 +5857,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -6335,34 +5890,6 @@ x-flows:
                       bank_code: XXXXXXXX
                       bank_account_number: xxxxxxxxxxxxxx
                       virtual_payment_address: 9988199772@okicic
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: >-
           The lender will provide the e-mandate form, and the down payment will
           be collected as part of the same mandate redirection flow.
@@ -6389,7 +5916,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -6636,40 +6163,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: NOT-PAID
@@ -6775,7 +6268,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -6814,34 +6307,6 @@ x-flows:
                       bank_code: XXXXXXXX
                       bank_account_number: xxxxxxxxxxxxxx
                       virtual_payment_address: 9988199772@okicic
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: >-
           The lender accepts the Purchase Loan request and displays loan status
           details and requests for loan dispach account details.
@@ -6869,7 +6334,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -7116,40 +6581,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -7412,7 +6843,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -7452,34 +6883,6 @@ x-flows:
                       bank_code: XXXXXXXX
                       bank_account_number: xxxxxxxxxxxxxx
                       virtual_payment_address: 9988199772@okicic
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -7512,7 +6915,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -7746,40 +7149,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -8018,7 +7387,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -8052,67 +7421,6 @@ x-flows:
                       bank_code: XXXXXXXX
                       bank_account_number: xxxxxxxxxxxxxx
                       virtual_payment_address: 9988199772@okicic
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -8145,7 +7453,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -8436,67 +7744,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -8697,7 +7944,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -8778,7 +8025,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -9098,67 +8345,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -9367,7 +8553,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -9697,67 +8883,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -10065,7 +9190,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_17
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -10089,7 +9214,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_18
       - summary: The borrower receives the Merchant & product details form
         api: form
         details:
@@ -10200,7 +9325,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_19
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -10227,7 +9352,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_20
       - summary: The borrower receives the Personal Info details form
         api: form
         details:
@@ -10356,7 +9481,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_21
       - summary: >-
           Provides a catalog of different loan products offered by a single
           lender for Purchase Loans along with consent handler.
@@ -10383,7 +9508,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_22
       - summary: >-
           The borrower submit the form with the submission-id & provides
           consent.
@@ -10403,7 +9528,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_23
       - summary: The lender platform provides multiple offers to the borrower
         api: on_search
         details:
@@ -10769,37 +9894,6 @@ x-flows:
                             display: true
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
                     tags:
                       - descriptor:
                           code: CONTACT_INFO
@@ -10933,7 +10027,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_24
       - summary: Buyer app requests for cancellation with soft_cancel status
         api: cancel
         details:
@@ -11348,67 +10442,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -12038,67 +11071,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -12687,67 +11659,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -13055,7 +11966,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_17
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -13079,7 +11990,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_18
       - summary: The borrower receives the Merchant & product details form
         api: form
         details:
@@ -13190,7 +12101,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_19
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -13217,7 +12128,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_20
       - summary: The borrower receives the Personal Info details form
         api: form
         details:
@@ -13341,7 +12252,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_21
       - summary: Provides a catalog of different loan offers.
         api: on_search
         details:
@@ -13361,7 +12272,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -13564,37 +12475,6 @@ x-flows:
                             display: true
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BPP_TERMS
-                              name: BPP Terms of Engagement
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: PERCENT_ANNUALIZED
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: P30D
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: INVOICE_RECEIPT
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
                     tags:
                       - descriptor:
                           code: CONTACT_INFO
@@ -13667,7 +12547,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_25
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -13689,7 +12569,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_26
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -13753,7 +12633,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -13775,7 +12655,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_28
       - summary: The lender sends the relevant link for KYC.
         api: form
         details:
@@ -13820,7 +12700,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_29
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -13842,7 +12722,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_30
       - summary: The borrower initiates the Purchase Loan request by filling the form.
         api: init
         details:
@@ -13867,7 +12747,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_31
       - summary: >-
           The lender accepts the Purchase Loan request and displays loan status
           details and requests for loan dispach account details.
@@ -13895,7 +12775,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_32
       - summary: The borrower receives the bank account e-mandate form details form.
         api: form
         details:
@@ -13945,7 +12825,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_34
+          value: *ref_33
       - summary: >-
           The lender accepts the Purchase Loan request and displays loan status
           details and requests for loan dispach account details.
@@ -13973,7 +12853,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_35
+          value: *ref_34
       - summary: The borrower receives the e-sign form.
         api: form
         details:
@@ -14023,7 +12903,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_35
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -14048,7 +12928,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_36
       - summary: The borrower confirms the Purchase Loan request.
         api: confirm
         details:
@@ -14074,7 +12954,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_38
+          value: *ref_37
       - summary: The lender confirms the Purchase Loan order.
         api: on_confirm
         details:
@@ -14099,7 +12979,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_39
+          value: *ref_38
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -14122,7 +13002,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_39
       - summary: >-
           The provider platform updates the order with updated fulfillment
           state.
@@ -14146,7 +13026,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_41
+          value: *ref_40
       - summary: The provider platform provides the unsolicited on_update call
         api: on_update
         details:
@@ -14166,7 +13046,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_24
   - summary: Purchase Finance - Single Redirection
     details:
       - description: Discovery of Funds
@@ -14259,7 +13139,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_17
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -14283,7 +13163,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_18
       - summary: The borrower receives the Merchant & product details form
         api: form
         details:
@@ -14394,7 +13274,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_19
       - summary: >-
           The lender offers a static catalog details of loan types like Purchase
           Loans.
@@ -14421,7 +13301,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_20
       - summary: The borrower receives the Personal Info details form
         api: form
         details:
@@ -14545,7 +13425,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_21
       - summary: Provides a catalog of different loan offers.
         api: on_search
         details:
@@ -14565,7 +13445,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_42
+          value: *ref_41
       - summary: The borrower chooses the Purchase Loan service.
         api: select
         details:
@@ -14585,7 +13465,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_25
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -14925,7 +13805,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -15505,7 +14385,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -15803,7 +14683,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_29
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -16124,34 +15004,6 @@ x-flows:
                       bank_code: XXXXXXXX
                       bank_account_number: xxxxxxxxxxxxxx
                       virtual_payment_address: 9988199772@okicic
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: The lender accepts and adds terms to the request.
         api: on_init
         details:
@@ -16396,40 +15248,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -16668,7 +15486,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_38
+          value: *ref_37
       - summary: The lender confirms the Purchase Loan order.
         api: on_confirm
         details:
@@ -16976,67 +15794,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -17237,7 +15994,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_39
       - summary: >-
           The provider platform updates the order with updated fulfillment
           state.
@@ -17573,67 +16330,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -18164,67 +16860,6 @@ x-flows:
                     type: ON_ORDER
                     status: NOT-PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - id: PAYMENT_ID_DOWNPAYMENT
                     type: PRE_ORDER
                     status: PAID
@@ -18475,7 +17110,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_24
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -18919,67 +17554,6 @@ x-flows:
                     type: ON_ORDER
                     status: PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_PURCHASE_FINANCE
                     params:
@@ -19595,67 +18169,6 @@ x-flows:
                     type: ON_ORDER
                     status: PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_PURCHASE_FINANCE
                     params:
@@ -19906,7 +18419,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_24
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -20353,67 +18866,6 @@ x-flows:
                     type: ON_ORDER
                     status: PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_PURCHASE_FINANCE
                     params:
@@ -21032,67 +19484,6 @@ x-flows:
                     type: ON_ORDER
                     status: PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_PURCHASE_FINANCE
                     params:
@@ -21341,7 +19732,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_24
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -21788,67 +20179,6 @@ x-flows:
                     type: ON_ORDER
                     status: PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_PURCHASE_FINANCE
                     params:
@@ -22461,67 +20791,6 @@ x-flows:
                     type: ON_ORDER
                     status: PAID
                     collected_by: BPP
-                    tags:
-                      - descriptor:
-                          code: BAP_TERMS
-                          name: BAP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: neft
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
-                          code: BPP_TERMS
-                          name: BPP Terms of Engagement
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: INVOICE_RECEIPT
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'TRUE'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1159'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - type: POST_FULFILLMENT
                     id: INSTALLMENT_ID_PURCHASE_FINANCE
                     params:
@@ -22787,7 +21056,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform(BPP): ACK   
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_28
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -22834,7 +21103,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -23099,7 +21368,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_29
   - summary: Form Status for text/html
     details:
       - description: >-
@@ -23150,7 +21419,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_26
       - summary: The borrower adjusts the loan amount in the form by the lender.
         api: form
         details:
@@ -23219,7 +21488,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_27
       - summary: >-
           The lender offers the required form for the chosen Purchase Loan
           service.
@@ -23247,7 +21516,7 @@ x-flows:
                 Lender Form Service-->>Borrower Platform (BAP): Submission ID
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_28
       - summary: The lender sends the relevant link for KYC.
         api: form
         details:
@@ -23296,7 +21565,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: *ref_43
+          value: *ref_42
       - summary: The lender shares the latest order status with the borrower.
         api: on_status
         details:
@@ -23318,7 +21587,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_43
 x-examples:
   purchase-finance:
     summary: purchase-finance
@@ -23328,82 +21597,82 @@ x-examples:
         examples:
           - summary: search-request_pf_1.yaml
             description: TBD
-            value: *ref_18
+            value: *ref_17
           - summary: search-request_pf_2.yaml
             description: TBD
-            value: *ref_20
+            value: *ref_19
           - summary: search-request_pf_3.yaml
             description: TBD
-            value: *ref_22
+            value: *ref_21
           - summary: search-request_pf_4.yaml
             description: TBD
-            value: *ref_24
+            value: *ref_23
       on_search:
         examples:
           - summary: on_search-request-pf_1.yaml
             description: TBD
-            value: *ref_19
+            value: *ref_18
           - summary: on_search-request-pf_2.yaml
             description: TBD
-            value: *ref_21
+            value: *ref_20
           - summary: on_search-request-pf_3.yaml
             description: TBD
-            value: *ref_23
+            value: *ref_22
           - summary: on_search-request-pf_4.yaml
             description: TBD
-            value: *ref_42
+            value: *ref_41
       select:
         examples:
           - summary: select-request_pf_1.yaml
             description: TBD
-            value: *ref_26
+            value: *ref_25
           - summary: select-request_pf_2.yaml
             description: TBD
-            value: *ref_28
+            value: *ref_27
       on_select:
         examples:
           - summary: on_select-request-loan-amount_pf.yaml
             description: TBD
-            value: *ref_27
+            value: *ref_26
           - summary: on_select-request-kyc_pf.yaml
             description: TBD
-            value: *ref_29
+            value: *ref_28
       init:
         examples:
           - summary: init-request-emandate-pf.yaml
             description: TBD
-            value: *ref_32
+            value: *ref_31
           - summary: init-request-esign-pf.yaml
             description: TBD
-            value: *ref_34
+            value: *ref_33
       on_init:
         examples:
           - summary: on_init-request-emandate_pf.yaml
             description: TBD
-            value: *ref_33
+            value: *ref_32
           - summary: on_init_request-esign_pf.yaml
             description: TBD
-            value: *ref_35
+            value: *ref_34
       confirm:
         examples:
           - summary: confirm-request-pf.yaml
             description: TBD
-            value: *ref_38
+            value: *ref_37
       on_confirm:
         examples:
           - summary: on_confirm-request-pf.yaml
             description: TBD
-            value: *ref_39
+            value: *ref_38
       update:
         examples:
           - summary: update-request-pf.yaml
             description: TBD
-            value: *ref_40
+            value: *ref_39
       on_update:
         examples:
           - summary: on_update_request-disbursed-pf.yaml
             description: TBD
-            value: *ref_41
+            value: *ref_40
 x-attributes:
   purchase-finance:
     attribute_set:
@@ -23618,51 +21887,6 @@ x-attributes:
                   the customer wants to pay for the order.
                 owner: BAP
                 type: object
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes delay interest
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
             provider:
               id:
                 required: optional
@@ -24485,69 +22709,6 @@ x-attributes:
                     how the customer wants to pay for the order.
                   owner: BAP/BPP
                   type: object
-                tags:
-                  BUYER_FINDER_FEES:
-                    required: Mandatory
-                    usage: '--'
-                    description: Describes Buyer finder fee
-                    owner: BAP
-                    type: string
-                    list:
-                      BUYER_FINDER_FEES_TYPE:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes Buyer finder fee type
-                        owner: BAP
-                        type: string
-                      BUYER_FINDER_FEES_PERCENTAGE:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes Buyer finder fee percentage
-                        owner: BAP
-                        type: string
-                  SETTLEMENT_TERMS:
-                    required: Mandatory
-                    usage: '--'
-                    description: Describes settlement terms
-                    owner: BAP
-                    type: string
-                    list:
-                      SETTLEMENT_WINDOW:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes settlement window
-                        owner: BAP
-                        type: string
-                      SETTLEMENT_BASIS:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes settlement basis
-                        owner: BAP
-                        type: string
-                      STATIC_TERMS:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes static terms
-                        owner: BAP
-                        type: string
-                      OFFLINE_CONTRACT:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes offline contract
-                        owner: BAP
-                        type: string
-                      MANDATORY_ARBITRATION:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes mandatory arbitration
-                        owner: BPP
-                        type: string
-                      COURT_JURISDICTION:
-                        required: Mandatory
-                        usage: '--'
-                        description: Describes court jurisdiction
-                        owner: BPP
-                        type: string
               tags:
                 CONTACT_INFO:
                   required: Mandatory
@@ -25953,63 +24114,6 @@ x-attributes:
                   description: This attribute defines the payment params for this order.
                   owner: BAP/BPP
                   type: object
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes delay interest
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes settlement type
-                      owner: BPP
-                      type: string
       on_init:
         context:
           location:
@@ -26979,75 +25083,6 @@ x-attributes:
                   gathering payments.
                 owner: BAP
                 type: string
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Optional
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Optional
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement window
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_BASIS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement basis
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_AMOUNT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                      owner: BAP
-                      type: string
-                    MANDATORY_ARBITRATION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                      owner: BPP
-                      type: string
-                    COURT_JURISDICTION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes court jurisdiction
-                      owner: BPP
-                      type: string
                 BREAKUP:
                   required: Optional
                   usage: '--'
@@ -27466,63 +25501,6 @@ x-attributes:
                   the customer wants to pay for the order.
                 owner: BAP/BPP
                 type: object
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes delay interest
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes settlement type
-                      owner: BPP
-                      type: string
       on_confirm:
         context:
           location:
@@ -28331,86 +26309,6 @@ x-attributes:
                 owner: BAP
                 type: string
               tags:
-                BUYER_FINDER_FEES:
-                  required: Optional
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Optional
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement window
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_BASIS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement basis
-                      owner: BAP
-                      type: string
-                    DELAY_INTEREST:
-                      required: Optional
-                      usage: '--'
-                      description: Describes delay interest
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_AMOUNT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement type
-                      owner: BPP
-                      type: string
-                    MANDATORY_ARBITRATION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                      owner: BPP
-                      type: string
-                    COURT_JURISDICTION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes court jurisdiction
-                      owner: BPP
-                      type: string
                 BREAKUP:
                   required: Optional
                   usage: '--'
@@ -29618,86 +27516,6 @@ x-attributes:
                 owner: BAP
                 type: string
               tags:
-                BUYER_FINDER_FEES:
-                  required: Optional
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Optional
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement window
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_BASIS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement basis
-                      owner: BAP
-                      type: string
-                    DELAY_INTEREST:
-                      required: Optional
-                      usage: '--'
-                      description: Describes delay interest
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_AMOUNT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement type
-                      owner: BPP
-                      type: string
-                    MANDATORY_ARBITRATION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                      owner: BPP
-                      type: string
-                    COURT_JURISDICTION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes court jurisdiction
-                      owner: BPP
-                      type: string
                 BREAKUP:
                   required: Optional
                   usage: '--'
@@ -30948,86 +28766,6 @@ x-attributes:
                 owner: BAP
                 type: string
               tags:
-                BUYER_FINDER_FEES:
-                  required: Optional
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
-                SETTLEMENT_TERMS:
-                  required: Optional
-                  usage: '--'
-                  description: Describes settlement terms
-                  owner: BAP
-                  type: string
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement window
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_BASIS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement basis
-                      owner: BAP
-                      type: string
-                    DELAY_INTEREST:
-                      required: Optional
-                      usage: '--'
-                      description: Describes delay interest
-                      owner: BAP
-                      type: string
-                    STATIC_TERMS:
-                      required: Optional
-                      usage: '--'
-                      description: Describes static terms
-                      owner: BAP
-                      type: string
-                    OFFLINE_CONTRACT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes offline contract
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_AMOUNT:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                      owner: BAP
-                      type: string
-                    SETTLEMENT_TYPE:
-                      required: Optional
-                      usage: '--'
-                      description: Describes settlement type
-                      owner: BPP
-                      type: string
-                    MANDATORY_ARBITRATION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                      owner: BPP
-                      type: string
-                    COURT_JURISDICTION:
-                      required: Optional
-                      usage: '--'
-                      description: Describes court jurisdiction
-                      owner: BPP
-                      type: string
                 BREAKUP:
                   required: Optional
                   usage: '--'
