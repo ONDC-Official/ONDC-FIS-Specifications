@@ -898,6 +898,8 @@ components:
           $ref: '#/components/schemas/XInput'
         external_ref:
           $ref: '#/components/schemas/MediaFile'
+        cancel_eligible:
+          type: boolean
     Catalog:
       description: >-
         Describes the products or services offered by a BPP. This is typically
@@ -1180,6 +1182,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
+        symbol:
+          description: URL to the image. This can be a data url or an remote url
+          type: string
+          format: uri
     Domain:
       description: >-
         Described the industry sector or sub-sector. The network policy should
@@ -1830,6 +1836,8 @@ components:
             - CREATED
             - COMPLETED
             - SOFT_CANCEL
+            - ON_HOLD
+            - IN_PROGRESS
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2161,6 +2169,7 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -3109,69 +3118,11 @@ x-enum:
         quote: *ref_3
         status: *ref_8
 x-tags:
-  search:
-    message:
-      intent:
-        payment: &ref_9
-          tags:
-            - code: BUYER_FINDER_FEES
-              description: Describes the finder fees for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_AMOUNT
-                  description: Buyer finder fee in amount
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: SETTLEMENT_TERMS
-              description: Describes the settlement terms
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: SETTLEMENT_WINDOW
-                  description: Time window to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_BASIS
-                  description: Basis required to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to complete settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: MANDATORY_ARBITRATION
-                  description: >-
-                    Flag to denote if dispute can be resolved through
-                    arbitration
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: COURT_JURISDICTION
-                  description: Denotes court that will have jurisdiction for the case
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: DELAY_INTEREST
-                  description: Denotes interest to be paid as a delay charge
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_AMOUNT
-                  description: Denotes settlement amount
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: ERROR_INFORMATION
-              description: Describes the error information
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: REASON_MESSAGE
-                  description: Describes the message for payment failure
-                  reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
         providers:
-          items: &ref_10
+          items: &ref_9
             tags:
               - code: GENERAL_INFO
                 description: Describes the general info of the insurance
@@ -3268,32 +3219,25 @@ x-tags:
                         represents a full name structure, where the values are
                         separated by a pipe (|) symbol
                       reference: <PR/Issue/Discussion Links md format text>
-          payments: *ref_9
   select:
     message:
       order:
-        items: *ref_10
+        items: *ref_9
   on_select:
     message:
       order:
-        items: *ref_10
-  init:
+        items: *ref_9
+  on_init: &ref_10
     message:
       order:
-        payments: *ref_9
-  on_init: &ref_11
+        items: *ref_9
+  confirm: *ref_10
+  on_confirm: *ref_10
+  on_cancel: *ref_10
+  on_update: &ref_11
     message:
       order:
-        items: *ref_10
-        payments: *ref_9
-  confirm: *ref_11
-  on_confirm: *ref_11
-  on_cancel: *ref_11
-  on_update: &ref_12
-    message:
-      order:
-        items: *ref_10
-        payments: *ref_9
+        items: *ref_9
         fulfillments:
           - tags:
               - code: INFO
@@ -3309,7 +3253,7 @@ x-tags:
                   - code: REF_ID
                     description: Describes the reference id.
                     reference: <PR/Issue/Discussion Links md format text>
-  on_status: *ref_12
+  on_status: *ref_11
 x-flows:
   - summary: Health Insurance Application
     details:
@@ -3403,7 +3347,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_12
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3430,37 +3374,6 @@ x-flows:
                       id: 0120TRVK
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BUYER_FINDER_FEES
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                    - descriptor:
-                        code: SETTLEMENT_TERMS
-                      display: false
-                      list:
-                        - descriptor:
-                            code: SETTLEMENT_WINDOW
-                          value: PT60M
-                        - descriptor:
-                            code: SETTLEMENT_BASIS
-                          value: Delivery
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: Insurer provides a catalog of different insurance products
         api: on_search
         details:
@@ -3483,7 +3396,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_13
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -3738,43 +3651,6 @@ x-flows:
                           required: true
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: percent-annualized
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TERMS
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: PT60M
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: Delivery
-                              - descriptor:
-                                  code: DELAY_INTEREST
-                                value: '2.5'
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://www.icicibank.com/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
       - summary: Buyer app fetches the personal/individual information form
         api: form
         details:
@@ -3977,7 +3853,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_14
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -4012,37 +3888,6 @@ x-flows:
                           submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BUYER_FINDER_FEES
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                    - descriptor:
-                        code: SETTLEMENT_TERMS
-                      display: false
-                      list:
-                        - descriptor:
-                            code: SETTLEMENT_WINDOW
-                          value: PT60M
-                        - descriptor:
-                            code: SETTLEMENT_BASIS
-                          value: Delivery
-                        - descriptor:
-                            code: DELAY_INTEREST
-                          value: '2.5'
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: Insurer provides a catalog of different insurance products
         api: on_search
         details:
@@ -4068,7 +3913,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_15
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -4507,43 +4352,6 @@ x-flows:
                               currency: INR
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: percent-annualized
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TERMS
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: SETTLEMENT_WINDOW
-                                value: PT60M
-                              - descriptor:
-                                  code: SETTLEMENT_BASIS
-                                value: Delivery
-                              - descriptor:
-                                  code: DELAY_INTEREST
-                                value: '2.5'
-                              - descriptor:
-                                  code: MANDATORY_ARBITRATION
-                                value: 'TRUE'
-                              - descriptor:
-                                  code: COURT_JURISDICTION
-                                value: New Delhi
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://www.icicibank.com/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
       - summary: Buyer app selects a health insurance for more details.
         api: select
         details:
@@ -4564,7 +4372,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_16
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -4926,7 +4734,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_21
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5151,7 +4959,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_17
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -5203,43 +5011,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized health insurance plan
         api: on_init
         details:
@@ -5264,7 +5035,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_18
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -5413,49 +5184,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -5950,7 +5678,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_19
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6005,43 +5733,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized health insurance plan
         api: on_init
         details:
@@ -6066,7 +5757,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_20
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6215,49 +5906,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6457,43 +6105,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response with CIS form link
         api: on_init
         details:
@@ -6516,7 +6127,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_25
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6665,49 +6276,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -6806,7 +6374,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_26
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -6859,43 +6427,6 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   id: P1
                 quote:
@@ -6955,7 +6486,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_23
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -7087,49 +6618,6 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -7208,7 +6696,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_22
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -7343,49 +6831,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -7563,7 +7008,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_12
       - summary: Insurer provides a catalog of different insurance products
         api: on_search
         details:
@@ -7586,7 +7031,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_13
       - summary: Buyer app fetches the personal/individual information form
         api: form
         details:
@@ -7789,7 +7234,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_14
       - summary: Insurer provides a catalog of different insurance products
         api: on_search
         details:
@@ -7815,7 +7260,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_15
       - summary: Buyer app selects a health insurance for more details.
         api: select
         details:
@@ -7836,7 +7281,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_16
       - summary: Insurer returns the response to selected health insurance plan
         api: on_select
         details:
@@ -8132,43 +7577,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized health insurance plan
         api: on_init
         details:
@@ -8342,49 +7750,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8934,43 +8299,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized health insurance plan
         api: on_init
         details:
@@ -9144,49 +8472,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -9386,43 +8671,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: >-
           The insurer returns a response containing the CIS form with an
           embedded payment link within the form.
@@ -9449,7 +8697,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_24
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -9598,49 +8846,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -9882,49 +9087,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-ORDER
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -10053,43 +9215,6 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   id: P1
                 quote:
@@ -10286,49 +9411,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-ORDER
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -10465,7 +9547,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_17
       - summary: Insurer returns the response to initailized health insurance plan
         api: on_init
         details:
@@ -10490,7 +9572,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_18
       - summary: Buyer app fetches the Proposer Details form
         api: form
         details:
@@ -10938,7 +10020,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_19
       - summary: Insurer returns the response to initailized health insurance plan
         api: on_init
         details:
@@ -10963,7 +10045,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_20
       - summary: Buyer app fetches the nominee details form
         api: form
         details:
@@ -11057,7 +10139,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK       
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_29
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -11096,7 +10178,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_32
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -11232,49 +10314,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -11369,7 +10408,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_21
       - summary: Buyer app fetches the EKYC form
         api: form
         details:
@@ -11417,7 +10456,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_31
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -11601,7 +10640,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_17
   - summary: Claim Health Insurance
     details:
       - description: Detailed process of claiming a Health Insurance
@@ -11641,7 +10680,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_22
       - summary: Buyer app redirected to claim url page
         api: redirect
         details:
@@ -11670,7 +10709,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_27
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -11825,49 +10864,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -12131,49 +11127,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -12281,7 +11234,7 @@ x-flows:
                 
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_30
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -12483,49 +11436,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 status: ACTIVE
                 documents:
                   - descriptor:
@@ -12750,49 +11660,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -12914,7 +11781,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_22
       - summary: Buyer app redirected to claim url page
         api: redirect
         details:
@@ -12943,7 +11810,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_28
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -13090,49 +11957,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - collected_by: BPP
                     params:
                       amount: '1100'
@@ -13391,49 +12215,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - collected_by: BPP
                     params:
                       amount: '1100'
@@ -13691,49 +12472,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                   - collected_by: BPP
                     params:
                       amount: '1100'
@@ -13861,7 +12599,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_22
       - summary: Buyer app cancels the order
         api: cancel
         details:
@@ -13881,7 +12619,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_33
             context:
               action: cancel
               bap_id: fis.test.bap.io
@@ -13925,7 +12663,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_34
             context:
               action: on_cancel
               bap_id: fis.test.bap.io
@@ -14060,49 +12798,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -14344,49 +13039,6 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -14459,7 +13111,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_23
       - summary: Payment link shared with the buyer app.
         api: form
         details:
@@ -14629,48 +13281,6 @@ x-flows:
                     status: FAILED
                     type: PRE-FULFILLMENT
                     tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                       - descriptor:
                           code: ERROR_INFORMATION
                         display: false
@@ -14935,48 +13545,6 @@ x-flows:
                     type: PRE-FULFILLMENT
                     tags:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '400'
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
                           code: ERROR_INFORMATION
                         display: false
                         list:
@@ -15062,7 +13630,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_24
       - summary: >-
           Buyer app fetches the CIS details form with an embedded payment link
           within the form
@@ -15251,48 +13819,6 @@ x-flows:
                       bank_code: SBIN0001234
                       currency: INR
                     tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
                       - descriptor:
                           code: ERROR_INFORMATION
                         display: false
@@ -15580,48 +14106,6 @@ x-flows:
                       currency: INR
                     tags:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_WINDOW
-                            value: PT60M
-                          - descriptor:
-                              code: SETTLEMENT_BASIS
-                            value: Delivery
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: upi
-                          - descriptor:
-                              code: MANDATORY_ARBITRATION
-                            value: 'true'
-                          - descriptor:
-                              code: COURT_JURISDICTION
-                            value: New Delhi
-                          - descriptor:
-                              code: DELAY_INTEREST
-                            value: '2.5'
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: SETTLEMENT_AMOUNT
-                            value: '1000'
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
                           code: ERROR_INFORMATION
                         display: false
                         list:
@@ -15684,33 +14168,33 @@ x-examples:
         examples:
           - summary: search 0
             description: TBD
-            value: *ref_13
+            value: *ref_12
           - summary: search 1
             description: TBD
-            value: *ref_15
+            value: *ref_14
       on_search:
         examples:
           - summary: on_search 0
             description: TBD
-            value: *ref_14
+            value: *ref_13
           - summary: on_search 1
             description: TBD
-            value: *ref_16
+            value: *ref_15
       select:
         examples:
           - summary: select-request-pan-dob-info
             description: TBD
-            value: *ref_17
+            value: *ref_16
       on_select:
         examples:
           - summary: on_select-request-pan-dob-info-details-form
             description: TBD
-            value: *ref_22
+            value: *ref_21
       init:
         examples:
           - summary: init-request-ekyc-info
             description: TBD
-            value: *ref_18
+            value: *ref_17
           - summary: init-request-review-info
             description: TBD
             value:
@@ -15765,67 +14249,30 @@ x-examples:
                         bank_account_number: '1800002341'
                         bank_code: SBIN0001234
                         currency: INR
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          display: false
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_TYPE
-                              value: percent-annualized
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '1'
-                        - descriptor:
-                            code: SETTLEMENT_TERMS
-                          display: false
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_WINDOW
-                              value: PT60M
-                            - descriptor:
-                                code: SETTLEMENT_BASIS
-                              value: Delivery
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: upi
-                            - descriptor:
-                                code: DELAY_INTEREST
-                              value: '2.5'
-                            - descriptor:
-                                code: STATIC_TERMS
-                              value: >-
-                                https://www.icicibank.com/personal-banking/loans/personal-loan
-                            - descriptor:
-                                code: SETTLEMENT_AMOUNT
-                              value: '400'
-                            - descriptor:
-                                code: OFFLINE_CONTRACT
-                              value: 'true'
           - summary: init-request-medical-info
             description: TBD
-            value: *ref_20
+            value: *ref_19
       on_init:
         examples:
           - summary: on_init_request_cis_form
             description: TBD
-            value: *ref_26
+            value: *ref_25
           - summary: on_init-request-medical-info-form
             description: TBD
-            value: *ref_21
+            value: *ref_20
           - summary: on_init_mutliple-offer_1
             description: TBD
-            value: *ref_19
+            value: *ref_18
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_27
+            value: *ref_26
       on_confirm:
         examples:
           - summary: on_confirm_1
             description: TBD
-            value: *ref_24
+            value: *ref_23
       update:
         examples:
           - summary: update
@@ -15860,10 +14307,10 @@ x-examples:
         examples:
           - summary: on_update_claim
             description: TBD
-            value: *ref_28
+            value: *ref_27
           - summary: on_update_renew
             description: TBD
-            value: *ref_29
+            value: *ref_28
       status:
         examples:
           - summary: status
@@ -15934,7 +14381,7 @@ x-examples:
                 ref_id: c04a04ee-d892-400f-bbe6-479a43b4448a
           - summary: status-request-form-ped
             description: TBD
-            value: *ref_30
+            value: *ref_29
           - summary: status-request-renewal
             description: TBD
             value:
@@ -16099,49 +14546,6 @@ x-examples:
                     id: P1
                   payments:
                     - collected_by: BPP
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          display: false
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_TYPE
-                              value: percent-annualized
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '1'
-                        - descriptor:
-                            code: SETTLEMENT_TERMS
-                          display: false
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_WINDOW
-                              value: PT60M
-                            - descriptor:
-                                code: SETTLEMENT_BASIS
-                              value: Delivery
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: upi
-                            - descriptor:
-                                code: MANDATORY_ARBITRATION
-                              value: 'true'
-                            - descriptor:
-                                code: COURT_JURISDICTION
-                              value: New Delhi
-                            - descriptor:
-                                code: DELAY_INTEREST
-                              value: '2.5'
-                            - descriptor:
-                                code: STATIC_TERMS
-                              value: >-
-                                https://www.icicibank.com/personal-banking/loans/personal-loan
-                            - descriptor:
-                                code: SETTLEMENT_AMOUNT
-                              value: '1000'
-                            - descriptor:
-                                code: OFFLINE_CONTRACT
-                              value: 'true'
                   quote:
                     id: OFFER_ID/PROPOSAL_ID
                     breakup:
@@ -16364,43 +14768,6 @@ x-examples:
                         range:
                           start: '2023-06-01T00:00:00.000Z'
                           end: '2024-06-01T00:00:00.000Z'
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          display: false
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_TYPE
-                              value: percent-annualized
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '1'
-                        - descriptor:
-                            code: SETTLEMENT_TERMS
-                          display: false
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_WINDOW
-                              value: PT60M
-                            - descriptor:
-                                code: SETTLEMENT_BASIS
-                              value: Delivery
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: upi
-                            - descriptor:
-                                code: DELAY_INTEREST
-                              value: '2.5'
-                            - descriptor:
-                                code: STATIC_TERMS
-                              value: >-
-                                https://www.icicibank.com/personal-banking/loans/personal-loan
-                            - descriptor:
-                                code: SETTLEMENT_AMOUNT
-                              value: '400'
-                            - descriptor:
-                                code: OFFLINE_CONTRACT
-                              value: 'true'
                   cancellation_terms:
                     - external_ref:
                         mimetype: text/html,
@@ -16597,43 +14964,6 @@ x-examples:
                         transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                       status: PAID
                       type: PRE-FULFILLMENT
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          display: false
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_TYPE
-                              value: percent-annualized
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '1'
-                        - descriptor:
-                            code: SETTLEMENT_TERMS
-                          display: false
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_WINDOW
-                              value: PT60M
-                            - descriptor:
-                                code: SETTLEMENT_BASIS
-                              value: Delivery
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: upi
-                            - descriptor:
-                                code: DELAY_INTEREST
-                              value: '2.5'
-                            - descriptor:
-                                code: STATIC_TERMS
-                              value: >-
-                                https://www.icicibank.com/personal-banking/loans/personal-loan
-                            - descriptor:
-                                code: SETTLEMENT_AMOUNT
-                              value: '400'
-                            - descriptor:
-                                code: OFFLINE_CONTRACT
-                              value: 'true'
                   status: ACTIVE
                   documents:
                     - descriptor:
@@ -16677,7 +15007,7 @@ x-examples:
                         url: https://fis.test.bpp.io/cancellation-terms
           - summary: on_status-claim
             description: TBD
-            value: *ref_31
+            value: *ref_30
           - summary: on_status-form-completed
             description: TBD
             value:
@@ -17010,20 +15340,20 @@ x-examples:
                     ttl: P15D
           - summary: on_status-form-submitted
             description: TBD
-            value: *ref_32
+            value: *ref_31
           - summary: on_status-ped-form-processing
             description: TBD
-            value: *ref_33
+            value: *ref_32
       cancel:
         examples:
           - summary: cancel
             description: TBD
-            value: *ref_34
+            value: *ref_33
       on_cancel:
         examples:
           - summary: on_cancel
             description: TBD
-            value: *ref_35
+            value: *ref_34
 x-attributes:
   health-insurance:
     attribute_set:
@@ -17186,63 +15516,6 @@ x-attributes:
                 description: >-
                   The terms of settlement for this order. It describes that how
                   the customer wants to pay for the order.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP
-                      usage: '--'
-                      description: Describes offline contract
             provider:
               id:
                 required: optional
@@ -17960,75 +16233,6 @@ x-attributes:
                   description: >-
                     The terms of settlement for this order. It describes that
                     how the customer wants to pay for the order.
-                tags:
-                  BUYER_FINDER_FEES:
-                    required: Mandatory
-                    type: string
-                    owner: BAP/BPP
-                    usage: '--'
-                    description: Describes Buyer finder fee
-                    list:
-                      BUYER_FINDER_FEES_TYPE:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes Buyer finder fee type
-                      BUYER_FINDER_FEES_PERCENTAGE:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes Buyer finder fee percentage
-                  SETTLEMENT_TERMS:
-                    required: Mandatory
-                    type: string
-                    owner: BAP/BPP
-                    usage: '--'
-                    description: Describes settlement terms
-                    list:
-                      SETTLEMENT_WINDOW:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes settlement window
-                      SETTLEMENT_BASIS:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes settlement basis
-                      DELAY_INTEREST:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes delay interest
-                      STATIC_TERMS:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes static terms
-                      OFFLINE_CONTRACT:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes offline contract
-                      MANDATORY_ARBITRATION:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes mandatory arbitration
-                      COURT_JURISDICTION:
-                        required: Mandatory
-                        type: string
-                        owner: BAP/BPP
-                        usage: '--'
-                        description: Describes court jurisdiction
               _description:
                 required: Mandatory
                 type: object
@@ -19372,75 +17576,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
             _description:
               required: Mandatory
               type: object
@@ -20041,87 +18176,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
-                    MANDATORY_ARBITRATION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                    COURT_JURISDICTION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes court jurisdiction
             provider:
               descriptor:
                 long_desc:
@@ -20703,75 +18757,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
             quote:
               id:
                 required: optional
@@ -21439,87 +19424,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
-                    MANDATORY_ARBITRATION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                    COURT_JURISDICTION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes court jurisdiction
             quote:
               id:
                 required: mandatory
@@ -22424,87 +20328,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
-                    MANDATORY_ARBITRATION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                    COURT_JURISDICTION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes court jurisdiction
             quote:
               id:
                 required: mandatory
@@ -23559,87 +21382,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: optional
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: optional
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
-                    MANDATORY_ARBITRATION:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                    COURT_JURISDICTION:
-                      required: optional
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes court jurisdiction
             status:
               required: optional
               type: string
@@ -24640,87 +22382,6 @@ x-attributes:
                   insinuates to the BPP for a single transaction. These terms
                   includes the amount, payment destination, time of settlement
                   and a transaction reference ID.
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  list:
-                    BUYER_FINDER_FEES_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee type
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                SETTLEMENT_TERMS:
-                  required: Mandatory
-                  type: string
-                  owner: BAP/BPP
-                  usage: '--'
-                  description: Describes settlement terms
-                  list:
-                    SETTLEMENT_WINDOW:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement window
-                    SETTLEMENT_BASIS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement basis
-                    DELAY_INTEREST:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes delay interest
-                    STATIC_TERMS:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes static terms
-                    OFFLINE_CONTRACT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes offline contract
-                    SETTLEMENT_AMOUNT:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement amount to counter-party
-                    SETTLEMENT_TYPE:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes settlement type
-                    MANDATORY_ARBITRATION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes mandatory arbitration
-                    COURT_JURISDICTION:
-                      required: Mandatory
-                      type: string
-                      owner: BAP/BPP
-                      usage: '--'
-                      description: Describes court jurisdiction
             status:
               required: mandatory
               type: string
