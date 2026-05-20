@@ -743,6 +743,10 @@ components:
           $ref: '#/components/schemas/Price'
         quantity:
           $ref: '#/components/schemas/ItemQuantity'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Address:
       description: Describes a postal address.
       type: string
@@ -895,8 +899,6 @@ components:
         external_ref:
           $ref: '#/components/schemas/MediaFile'
         cancel_eligible:
-          type: boolean
-        return_terms:
           type: boolean
     Catalog:
       description: >-
@@ -1278,8 +1280,7 @@ components:
         data:
           description: The form submission data
           type: object
-          additionalProperties:
-            type: string
+          additionalProperties: true
         mime_type:
           description: >-
             This field indicates the nature and format of the form received by
@@ -1291,6 +1292,7 @@ components:
             - application/html
             - application/xml
             - text/html-multi
+            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -1833,6 +1835,7 @@ components:
             - REJECTED
             - CREATED
             - COMPLETED
+            - SOFT_CANCEL
             - ON_HOLD
             - IN_PROGRESS
         type:
@@ -2026,6 +2029,7 @@ components:
           format: uri
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2046,6 +2050,10 @@ components:
               type: string
             source_virtual_payment_address:
               type: string
+            source_bank_account_name:
+              type: string
+            bank_account_name:
+              type: string
         type:
           type: string
           enum:
@@ -2059,6 +2067,7 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
+            - REFUND
         status:
           type: string
           enum:
@@ -2160,6 +2169,7 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -2982,54 +2992,11 @@ x-enum:
             reference: <PR/Issue/Discussion Links md format text
         offers: *ref_3
 x-tags:
-  search:
-    message:
-      intent:
-        payment: &ref_7
-          tags:
-            - code: BUYER_FINDER_FEES
-              description: Describes the finder fees for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_VALUE
-                  description: Buyer finder fee in value
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: SETTLEMENT_DETAILS
-              description: Describes the settlement details
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: SETTLEMENT_COUNTERPARTY
-                  description: Time window to settlement counterparty
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: SETTLEMENT_TYPE
-                  description: Payment method to settlement type
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: VIRTUAL_ADDRESS
-                  description: Payment method to virtual address
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: ACCOUNT_NO
-                  description: Describes the account no
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BENEFICIARY_NAME
-                  description: Describes the beneficiary name
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BANK_NAME
-                  description: Describes the bank name
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BRANCH_CODE
-                  description: Describes the branch code
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BRANCH_NAME
-                  description: Describes the branch name
-                  reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
         providers:
-          items: &ref_8
+          items: &ref_7
             tags:
               - code: BRAND_DETAILS
                 description: Describes the brand details
@@ -3125,36 +3092,31 @@ x-tags:
                   - code: PREVIEW_IMAGE
                     description: Describes the preview image
                     reference: <PR/Issue/Discussion Links md format text>
-          payments: *ref_7
   on_select:
     message:
       order:
-        items: *ref_8
+        items: *ref_7
   init:
     message:
       order:
-        items: *ref_8
+        items: *ref_7
   on_init:
     message:
       order:
-        items: *ref_8
-        payments: *ref_7
-  confirm: &ref_9
+        items: *ref_7
+  confirm: &ref_8
     message:
       order:
-        items: *ref_8
-        payments: *ref_7
-  on_confirm: *ref_9
+        items: *ref_7
+  on_confirm: *ref_8
   on_status:
     message:
       order:
-        items: *ref_8
-        payments: *ref_7
-  on_update: &ref_10
+        items: *ref_7
+  on_update: &ref_9
     message:
       order:
-        items: *ref_8
-        payments: *ref_7
+        items: *ref_7
         fulfillments:
           tags:
             - code: CANCELLATION
@@ -3172,7 +3134,7 @@ x-tags:
                 - code: TIMESTAMP
                   description: Describes the timestamp
                   reference: <PR/Issue/Discussion Links md format text>
-  on_cancel: *ref_10
+  on_cancel: *ref_9
 x-flows:
   - summary: Seller App fulfilling
     details:
@@ -3207,7 +3169,7 @@ x-flows:
                 Buyer Platform (BAP)->>Provider Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_11
+          value: &ref_10
             context:
               domain: ONDC:FIS10
               location:
@@ -3228,17 +3190,6 @@ x-flows:
                 category:
                   descriptor:
                     code: search from categories defined
-                payment:
-                  tags:
-                    - descriptor:
-                        code: BUYER_FINDER_FEES
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '3'
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_VALUE
-                          value: '100'
       - summary: >-
           Provider app provides a catalog of different gift card products
           offered by a single provider
@@ -3262,7 +3213,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_12
+          value: &ref_11
             context:
               domain: ONDC:FIS10
               location:
@@ -3569,7 +3520,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_14
             context:
               domain: ONDC:FIS10
               location:
@@ -3632,7 +3583,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_15
             context:
               domain: ONDC:FIS10
               location:
@@ -4000,7 +3951,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_16
             context:
               domain: ONDC:FIS10
               location:
@@ -4094,7 +4045,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_17
             context:
               domain: ONDC:FIS10
               location:
@@ -4239,13 +4190,6 @@ x-flows:
                     collected_by: BPP
                     url: https://sellerpaymentgateway.com/123456
                     status: NOT-PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
       - summary: Buyer app confirms the request
         api: confirm
         details:
@@ -4263,7 +4207,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_18
             context:
               domain: ONDC:FIS10
               location:
@@ -4411,40 +4355,6 @@ x-flows:
                     collected_by: BPP
                     url: https://sellerpaymentgateway.com/123456
                     status: NOT-PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Provider confirms the order
@@ -4464,7 +4374,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_13
             context:
               domain: ONDC:FIS10
               location:
@@ -4625,40 +4535,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Buyer app seeks the most recent status update
@@ -4678,7 +4554,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_12
             context:
               domain: ONDC:FIS10
               location:
@@ -4715,7 +4591,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_19
             context:
               domain: ONDC:FIS10
               location:
@@ -4876,40 +4752,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
   - summary: Buyer app fulfilling with code in on_confirm
@@ -4952,7 +4794,7 @@ x-flows:
                 Buyer Platform (BAP)->>Provider Platform (BPP): ACK    
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_10
       - summary: >-
           Provider app provides a catalog of different gift card products
           offered by a single provider
@@ -4976,7 +4818,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_12
+          value: *ref_11
       - summary: Buyer app selects an item
         api: select
         details:
@@ -5664,13 +5506,6 @@ x-flows:
                     collected_by: BPP
                     url: https://sellerpaymentgateway.com/123456
                     status: NOT-PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
       - summary: Buyer app confirms the request
         api: confirm
         details:
@@ -5836,40 +5671,6 @@ x-flows:
                     collected_by: BPP
                     url: https://sellerpaymentgateway.com/123456
                     status: NOT-PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Provider confirms the order
@@ -6056,40 +5857,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Buyer app seeks the most recent status update
@@ -6109,7 +5876,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_12
       - summary: Provider shares the latest order status
         api: on_status
         details:
@@ -6297,40 +6064,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
   - summary: Buyer app fulfilling with code in on_update
@@ -6530,40 +6263,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Provider confirms the order
@@ -6753,40 +6452,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
   - summary: Physical store based gift cards
@@ -6825,7 +6490,7 @@ x-flows:
                 Buyer Platform (BAP)->>Provider Platform (BPP): ACK    
         reference: if any
         example:
-          value: *ref_11
+          value: *ref_10
       - summary: >-
           Provider app provides a catalog of different gift card products
           offered by a single provider
@@ -7933,13 +7598,6 @@ x-flows:
                     collected_by: BPP
                     url: https://sellerpaymentgateway.com/123456
                     status: NOT-PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
       - summary: Buyer app confirms the request
         api: confirm
         details:
@@ -8113,40 +7771,6 @@ x-flows:
                     collected_by: BPP
                     url: https://sellerpaymentgateway.com/123456
                     status: NOT-PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Provider confirms the order
@@ -8353,40 +7977,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Buyer app seeks the most recent status update
@@ -8406,7 +7996,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_12
       - summary: Provider shares the latest order status
         api: on_status
         details:
@@ -8614,40 +8204,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
   - summary: Seller Cancellation
@@ -8677,7 +8233,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_13
       - summary: Seller app not able to deliver the gift card
         api: on_cancel
         details:
@@ -8699,7 +8255,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_20
             context:
               domain: ONDC:FIS10
               location:
@@ -8869,40 +8425,6 @@ x-flows:
                     url: https://sellerpaymentgateway.com/123456
                     id: PMTTXN1
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
   - summary: Update Receiver Info
@@ -8935,7 +8457,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_13
       - summary: Request for correct receiver information
         api: on_status
         details:
@@ -9133,40 +8655,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Buyer app provides the details for update
@@ -9429,40 +8917,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
       - summary: Buyer app seeks the most recent status update
@@ -9482,7 +8936,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Provider Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_12
       - summary: Provider shares the latest order status
         api: on_status
         details:
@@ -9677,40 +9131,6 @@ x-flows:
                       transaction_id: '1234567'
                       amount: '4200'
                     status: PAID
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                      - descriptor:
-                          code: SETTLEMENT_DETAILS
-                        list:
-                          - descriptor:
-                              code: SETTLEMENT_COUNTERPARTY
-                            value: BAP
-                          - descriptor:
-                              code: SETTLEMENT_TYPE
-                            value: UPI
-                          - descriptor:
-                              code: VIRTUAL_ADDRESS
-                            value: test@oksbi
-                          - descriptor:
-                              code: ACCOUNT_NO
-                            value: xxxxxxxxx
-                          - descriptor:
-                              code: BENEFICIARY_NAME
-                            value: Buyer’s Name
-                          - descriptor:
-                              code: BANK_NAME
-                            value: ICICI Bank
-                          - descriptor:
-                              code: BRANCH_CODE
-                            value: ICIC0001234
-                          - descriptor:
-                              code: BRANCH_NAME
-                            value: ICICI Indiranagar
                 created_at: '2023-01-15T10:00:00.469Z'
                 updated_at: '2023-01-15T10:00:00.469Z'
 x-examples:
@@ -9726,7 +9146,7 @@ x-examples:
         examples:
           - summary: search_request_by_category
             description: search_request_by_category
-            value: *ref_11
+            value: *ref_10
           - summary: search_request_by_item
             description: search_request_by_item
             value:
@@ -9750,37 +9170,26 @@ x-examples:
                   item:
                     descriptor:
                       name: free text to search item
-                  payment:
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '3'
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_VALUE
-                            value: '100'
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_12
+            value: *ref_11
       select:
         examples:
           - summary: select-request
             description: select-request
-            value: *ref_15
+            value: *ref_14
       on_select:
         examples:
           - summary: on_select_request
             description: on_select_request
-            value: *ref_16
+            value: *ref_15
       init:
         examples:
           - summary: init_request
             description: TBD
-            value: *ref_17
+            value: *ref_16
       on_init:
         examples:
           - summary: on_init_request_buyer_collecting
@@ -9929,43 +9338,9 @@ x-examples:
                     - type: ON-ORDER
                       collected_by: BAP
                       status: NOT-PAID
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '3'
-                        - descriptor:
-                            code: SETTLEMENT_DETAILS
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_COUNTERPARTY
-                              value: BPP
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: UPI
-                            - descriptor:
-                                code: VIRTUAL_ADDRESS
-                              value: test@oksbi
-                            - descriptor:
-                                code: ACCOUNT_NO
-                              value: xxxxxxxxx
-                            - descriptor:
-                                code: BENEFICIARY_NAME
-                              value: Buyer’s Name
-                            - descriptor:
-                                code: BANK_NAME
-                              value: ICICI Bank
-                            - descriptor:
-                                code: BRANCH_CODE
-                              value: ICIC0001234
-                            - descriptor:
-                                code: BRANCH_NAME
-                              value: ICICI Indiranagar
           - summary: on_init_request_seller_collecting
             description: TBD
-            value: *ref_18
+            value: *ref_17
       confirm:
         examples:
           - summary: confirm
@@ -10123,50 +9498,16 @@ x-examples:
                         amount: '4200'
                       id: PMTTXN1
                       status: PAID
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '3'
-                        - descriptor:
-                            code: SETTLEMENT_DETAILS
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_COUNTERPARTY
-                              value: BPP
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: UPI
-                            - descriptor:
-                                code: VIRTUAL_ADDRESS
-                              value: test@oksbi
-                            - descriptor:
-                                code: ACCOUNT_NO
-                              value: xxxxxxxxx
-                            - descriptor:
-                                code: BENEFICIARY_NAME
-                              value: Buyer’s Name
-                            - descriptor:
-                                code: BANK_NAME
-                              value: ICICI Bank
-                            - descriptor:
-                                code: BRANCH_CODE
-                              value: ICIC0001234
-                            - descriptor:
-                                code: BRANCH_NAME
-                              value: ICICI Indiranagar
                   created_at: '2023-01-15T10:00:00.469Z'
                   updated_at: '2023-01-15T10:00:00.469Z'
           - summary: confirm_request_seller_collecting
             description: TBD
-            value: *ref_19
+            value: *ref_18
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_14
+            value: *ref_13
       on_update:
         examples:
           - summary: on_update_request_cancellation_fulfillment
@@ -10357,40 +9698,6 @@ x-examples:
                         transaction_id: '1234567'
                         amount: '4200'
                       status: PAID
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '3'
-                        - descriptor:
-                            code: SETTLEMENT_DETAILS
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_COUNTERPARTY
-                              value: BAP
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: UPI
-                            - descriptor:
-                                code: VIRTUAL_ADDRESS
-                              value: test@oksbi
-                            - descriptor:
-                                code: ACCOUNT_NO
-                              value: xxxxxxxxx
-                            - descriptor:
-                                code: BENEFICIARY_NAME
-                              value: Buyer’s Name
-                            - descriptor:
-                                code: BANK_NAME
-                              value: ICICI Bank
-                            - descriptor:
-                                code: BRANCH_CODE
-                              value: ICIC0001234
-                            - descriptor:
-                                code: BRANCH_NAME
-                              value: ICICI Indiranagar
                   created_at: '2023-01-15T10:00:00.469Z'
                   updated_at: '2023-01-15T10:00:00.469Z'
           - summary: on_update_resultant_through_igm
@@ -10587,57 +9894,23 @@ x-examples:
                         transaction_id: '1234567'
                         amount: '4200'
                       status: PAID
-                      tags:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES
-                          list:
-                            - descriptor:
-                                code: BUYER_FINDER_FEES_PERCENTAGE
-                              value: '3'
-                        - descriptor:
-                            code: SETTLEMENT_DETAILS
-                          list:
-                            - descriptor:
-                                code: SETTLEMENT_COUNTERPARTY
-                              value: BAP
-                            - descriptor:
-                                code: SETTLEMENT_TYPE
-                              value: UPI
-                            - descriptor:
-                                code: VIRTUAL_ADDRESS
-                              value: test@oksbi
-                            - descriptor:
-                                code: ACCOUNT_NO
-                              value: xxxxxxxxx
-                            - descriptor:
-                                code: BENEFICIARY_NAME
-                              value: Buyer’s Name
-                            - descriptor:
-                                code: BANK_NAME
-                              value: ICICI Bank
-                            - descriptor:
-                                code: BRANCH_CODE
-                              value: ICIC0001234
-                            - descriptor:
-                                code: BRANCH_NAME
-                              value: ICICI Indiranagar
                   created_at: '2023-01-15T10:00:00.469Z'
                   updated_at: '2023-01-15T10:00:00.469Z'
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_13
+            value: *ref_12
       on_status:
         examples:
           - summary: on_status_request
             description: TBD
-            value: *ref_20
+            value: *ref_19
       on_cancel:
         examples:
           - summary: on_cancel_request
             description: TBD
-            value: *ref_21
+            value: *ref_20
 x-attributes:
   gift-card:
     attribute_set:
@@ -10763,27 +10036,6 @@ x-attributes:
                     invoices.
                   owner: BAP
                   type: string
-            payment:
-              tags:
-                BUYER_FINDER_FEES:
-                  required: Mandatory
-                  usage: '--'
-                  description: Describes Buyer finder fee
-                  owner: BAP
-                  type: string
-                  list:
-                    BUYER_FINDER_FEES_VALUE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee value
-                      owner: BAP
-                      type: string
-                    BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
-                      usage: '--'
-                      description: Describes Buyer finder fee percentage
-                      owner: BAP
-                      type: string
       on_search:
         context:
           timestamp:
