@@ -971,6 +971,8 @@ components:
           $ref: '#/components/schemas/XInput'
         external_ref:
           $ref: '#/components/schemas/MediaFile'
+        cancel_eligible:
+          type: boolean
     Catalog:
       description: >-
         Describes the products or services offered by a BPP. This is typically
@@ -1253,6 +1255,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
+        symbol:
+          description: URL to the image. This can be a data url or an remote url
+          type: string
+          format: uri
     Domain:
       description: >-
         Described the industry sector or sub-sector. The network policy should
@@ -1347,8 +1353,7 @@ components:
         data:
           description: The form submission data
           type: object
-          additionalProperties:
-            type: string
+          additionalProperties: true
         mime_type:
           description: >-
             This field indicates the nature and format of the form received by
@@ -1903,6 +1908,9 @@ components:
             - REJECTED
             - CREATED
             - COMPLETED
+            - SOFT_CANCEL
+            - ON_HOLD
+            - IN_PROGRESS
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2234,6 +2242,7 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -3341,25 +3350,6 @@ x-tags:
                     description: De-register for unsolicited calls of incremental pull
               - code: CHANGES_FROM
                 description: Pull schemes which are updated from the given date
-          - code: BAP_TERMS
-            description: >-
-              Describes the terms of engagement between the buyer app and seller
-              app, as set by buyer app
-            reference: <PR/Issue/Discussion Links md format text>
-            list:
-              - code: STATIC_TERMS
-                description: Static terms url for the engagement
-                reference: <PR/Issue/Discussion Links md format text>
-              - code: OFFLINE_CONTRACT
-                description: >-
-                  Whether an additional offline contract exists for the
-                  engagement between buyer app and seller app
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: true
-                    description: Offline contract exists
-                  - code: false
-                    description: Offline contract does not exist
   on_search:
     message:
       catalog:
@@ -3579,58 +3569,13 @@ x-tags:
                   - code: ADDITIONAL_AMOUNT_MAX
                     description: Describes the additional amount max value
                     reference: <PR/Issue/Discussion Links md format text>
-        tags: &ref_9
-          - &ref_15
-            code: BPP_TERMS
-            description: >-
-              Describes the terms of engagement between the buyer app and seller
-              app, as set by seller app
-            reference: <PR/Issue/Discussion Links md format text>
-            list:
-              - code: STATIC_TERMS
-                description: Static terms url for the engagement
-                reference: <PR/Issue/Discussion Links md format text>
-              - code: OFFLINE_CONTRACT
-                description: >-
-                  Whether an additional offline contract exists for the
-                  engagement between buyer app and seller app
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: true
-                    description: Offline contract exists
-                  - code: false
-                    description: Offline contract does not exist
-  select:
-    message:
-      order:
-        tags: &ref_10
-          - &ref_14
-            code: BAP_TERMS
-            description: >-
-              Describes the terms of engagement between the buyer app and seller
-              app, as set by buyer app
-            reference: <PR/Issue/Discussion Links md format text>
-            list:
-              - code: STATIC_TERMS
-                description: Static terms url for the engagement
-                reference: <PR/Issue/Discussion Links md format text>
-              - code: OFFLINE_CONTRACT
-                description: >-
-                  Whether an additional offline contract exists for the
-                  engagement between buyer app and seller app
-                reference: <PR/Issue/Discussion Links md format text>
-                list:
-                  - code: true
-                    description: Offline contract exists
-                  - code: false
-                    description: Offline contract does not exist
   on_select:
     message:
       order:
         items: *ref_7
         fulfillments:
           tags:
-            - &ref_13
+            - &ref_11
               code: FOLIO_INFORMATION
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
@@ -3653,7 +3598,7 @@ x-tags:
                 - code: 2FA_MOBILE_NUMBER_MASKED
                   description: Mobile number to be used for doing 2fa
                   reference: <PR/Issue/Discussion Links md format text>
-            - &ref_11
+            - &ref_9
               code: PAYOUT_BANK_ACCOUNT
               description: Details of the payout bank account
               reference: <PR/Issue/Discussion Links md format text>
@@ -3682,7 +3627,7 @@ x-tags:
             - *ref_8
         payments:
           tags:
-            - &ref_12
+            - &ref_10
               code: PAYMENT_METHOD
               description: Payment method details
               reference: <PR/Issue/Discussion Links md format text>
@@ -3734,63 +3679,56 @@ x-tags:
                 - code: MANDATE_IDENTIFIER
                   description: Describes the mandate Identifier
                   reference: <PR/Issue/Discussion Links md format text>
-        tags: *ref_9
   init:
     message:
       order:
-        tags: *ref_10
         fulfillments:
           tags:
-            - *ref_11
+            - *ref_9
             - *ref_8
         payments:
           tags:
-            - *ref_12
+            - *ref_10
   on_init:
     message:
       order:
         items: *ref_7
         fulfillments:
           tags:
-            - *ref_13
             - *ref_11
+            - *ref_9
             - *ref_8
         payments:
           tags:
-            - *ref_12
-        tags: *ref_9
+            - *ref_10
   confirm:
     message:
       order:
-        tags: &ref_16
-          - *ref_14
-          - *ref_15
         payments:
           tags:
-            - *ref_12
+            - *ref_10
         fulfillments:
           tags:
-            - *ref_11
+            - *ref_9
   on_confirm:
     message:
       order:
         items: *ref_7
         fulfillments:
           tags:
-            - *ref_13
             - *ref_11
+            - *ref_9
             - *ref_8
         payments:
           tags:
-            - *ref_12
-        tags: *ref_16
+            - *ref_10
   on_status:
     message:
       order:
         items: *ref_7
         payments:
           tags:
-            - &ref_17
+            - &ref_12
               code: ERROR_INFORMATION
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
@@ -3804,11 +3742,11 @@ x-tags:
                 - code: MODE
                   description: Describes the mode
                   reference: <PR/Issue/Discussion Links md format text>
-            - *ref_12
+            - *ref_10
         fulfillments:
           tags:
-            - *ref_13
-            - &ref_18
+            - *ref_11
+            - &ref_13
               code: INFORMATION
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
@@ -3834,7 +3772,7 @@ x-tags:
                 - code: NEXT_INSTALMENT_DATE
                   description: Describes the finder fees for buyer
                   reference: <PR/Issue/Discussion Links md format text>
-            - &ref_19
+            - &ref_14
               code: ERROR_INFORMATION
               description: Describes the finder fees for buyer
               reference: <PR/Issue/Discussion Links md format text>
@@ -3846,11 +3784,10 @@ x-tags:
                   description: Describes the finder fees for buyer
                   reference: <PR/Issue/Discussion Links md format text>
             - *ref_8
-        tags: *ref_16
   cancel:
     message:
       tags:
-        - &ref_20
+        - &ref_15
           code: CONSUMER_INFO
           description: Describes the customer info tag group.
           reference: <PR/Issue/Discussion Links md format text>
@@ -3864,39 +3801,36 @@ x-tags:
         items: *ref_7
         payments:
           tags:
-            - *ref_17
             - *ref_12
+            - *ref_10
         fulfillments:
           tags:
-            - *ref_18
-            - *ref_19
+            - *ref_13
+            - *ref_14
             - *ref_8
         tags:
-          - *ref_14
           - *ref_15
-          - *ref_20
   update:
     message:
       order:
         payments:
           tags:
-            - *ref_12
+            - *ref_10
   on_update:
     message:
       order:
         items: *ref_7
         payments:
           tags:
+            - *ref_10
             - *ref_12
-            - *ref_17
         fulfillments:
           tags:
-            - *ref_13
-            - *ref_18
-            - *ref_19
             - *ref_11
+            - *ref_13
+            - *ref_14
+            - *ref_9
             - *ref_8
-        tags: *ref_16
 x-flows:
   - summary: Search (Full Pull)
     reference: >-
@@ -3908,7 +3842,7 @@ x-flows:
           - description: Search for all mutual fund schemes
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_48
             context:
               location:
                 country:
@@ -3935,28 +3869,13 @@ x-flows:
                       creds:
                         - id: ARN-125784
                           type: ARN
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Respond with the catalog
         api: on_search
         details:
           - description: Returns the schemes on offer
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_16
             context:
               location:
                 country:
@@ -4240,21 +4159,6 @@ x-flows:
                                   name: Units Multiples
                                   code: UNITS_MULTIPLES
                                 value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
   - summary: Search and register for incremental pull
     steps:
       - summary: Search for schemes
@@ -4265,7 +4169,7 @@ x-flows:
               incremental updates
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_49
             context:
               location:
                 country:
@@ -4296,20 +4200,6 @@ x-flows:
                           name: Register
                           code: REGISTER
                         value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 fulfillment:
                   agent:
                     organization:
@@ -4322,7 +4212,7 @@ x-flows:
           - description: Returns the schemes on offer
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_16
   - summary: SIP Creation (New Folio)
     reference: >-
       https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
@@ -4333,7 +4223,7 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_17
             context:
               location:
                 country:
@@ -4381,28 +4271,13 @@ x-flows:
                       - time:
                           schedule:
                             frequency: R6/2024-05-15/P1M
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
           - description: Send back new account input required
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_20
             context:
               location:
                 country:
@@ -4564,21 +4439,6 @@ x-flows:
                     id: form_1
                     url: https://forms.sellerapp.com/account-opening?k=234sadf234
                     mime_type: text/html
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -7923,7 +7783,7 @@ x-flows:
           - description: Send folio information as form submission
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_21
             context:
               location:
                 country:
@@ -7978,28 +7838,13 @@ x-flows:
                     id: form_1
                   form_response:
                     submission_id: 6547-7456-7235-4386
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
           - description: Send success status
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_22
             context:
               location:
                 country:
@@ -8190,21 +8035,6 @@ x-flows:
                           - descriptor:
                               code: BANK_NAME
                             value: ICICI Bank
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -8225,7 +8055,7 @@ x-flows:
           - description: Send order details and payment selection
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_18
             context:
               location:
                 country:
@@ -8297,28 +8127,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_23
             context:
               location:
                 country:
@@ -8496,21 +8311,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -8533,7 +8333,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_19
             context:
               location:
                 country:
@@ -8611,42 +8411,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_24
             context:
               location:
                 country:
@@ -8828,35 +8599,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -8894,7 +8636,7 @@ x-flows:
           - description: Send payment success
         reference: if any
         example:
-          value: &ref_63
+          value: &ref_58
             context:
               location:
                 country:
@@ -9090,35 +8832,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -9354,35 +9067,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -9401,7 +9085,7 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_17
       - summary: On Select
         api: on_select
         details:
@@ -9581,21 +9265,6 @@ x-flows:
                     url: >-
                       https://forms.sellerapp.com/account-opening-kyc/data?k=234sadf234
                     mime_type: text/html
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -13480,7 +13149,7 @@ x-flows:
           - description: Send folio information as form submission
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_50
             context:
               location:
                 country:
@@ -13535,21 +13204,6 @@ x-flows:
                     id: form_1
                   form_response:
                     submission_id: 6547-7456-7235-4386
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -13729,21 +13383,6 @@ x-flows:
                     url: >-
                       https://forms.sellerapp.com/account-opening-kyc/digilocker?k=234sadf234
                     mime_type: application/html
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -13922,28 +13561,13 @@ x-flows:
                   form_response:
                     status: SUBMITTED
                     submission_id: 1978-5697-3478-6547
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Submit Form
         api: select
         details:
           - description: Send digilocker fetch as form submission
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_51
             context:
               location:
                 country:
@@ -13998,28 +13622,13 @@ x-flows:
                     id: form_2
                   form_response:
                     submission_id: 1978-5697-3478-6547
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
           - description: Ask for esign
         reference: if any
         example:
-          value: &ref_59
+          value: &ref_54
             context:
               location:
                 country:
@@ -14192,21 +13801,6 @@ x-flows:
                     url: >-
                       https://forms.sellerapp.com/account-opening-kyc/esign?k=234sadf234
                     mime_type: application/html
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -14385,28 +13979,13 @@ x-flows:
                   form_response:
                     status: SUBMITTED
                     submission_id: 8745-1247-6587-8647
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Submit Form
         api: select
         details:
           - description: Send esign fetch as form submission
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_52
             context:
               location:
                 country:
@@ -14461,21 +14040,6 @@ x-flows:
                     id: form_3
                   form_response:
                     submission_id: 8745-1247-6587-8647
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -14656,21 +14220,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -14691,7 +14240,7 @@ x-flows:
           - description: Send order details and payment selection
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_18
       - summary: On Init
         api: on_init
         details:
@@ -14884,21 +14433,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -14921,7 +14455,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_19
       - summary: On Confirm
         api: on_confirm
         details:
@@ -15118,35 +14652,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -15388,35 +14893,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -15660,35 +15136,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -15707,14 +15154,14 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_17
       - summary: On Select
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
         reference: if any
         example:
-          value: &ref_58
+          value: &ref_53
             context:
               location:
                 country:
@@ -15962,21 +15409,6 @@ x-flows:
                           - descriptor:
                               code: BANK_NAME
                             value: ICICI Bank
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -15997,7 +15429,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_60
+          value: &ref_55
             context:
               location:
                 country:
@@ -16071,28 +15503,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: &ref_61
+          value: &ref_56
             context:
               location:
                 country:
@@ -16292,21 +15709,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -16409,35 +15811,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Confirm
         api: on_confirm
         details:
@@ -16648,35 +16021,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_REGISTRATION
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -16932,35 +16276,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -16979,14 +16294,14 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_17
       - summary: On Select
         api: on_select
         details:
           - description: Send back new folio input required
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_20
       - summary: Get Form
         api: form
         details:
@@ -20331,42 +19646,42 @@ x-flows:
           - description: Send folio information as form submission
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_21
       - summary: On Select
         api: on_select
         details:
           - description: Send success status
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_22
       - summary: Initialize the SIP order
         api: init
         details:
           - description: Send order details and payment selection
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_18
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with TnC and payment url
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_23
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_19
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_24
       - summary: Payment
         api: form
         details:
@@ -20383,7 +19698,7 @@ x-flows:
           - description: Send payment failure
         reference: if any
         example:
-          value: &ref_69
+          value: &ref_64
             context:
               location:
                 country:
@@ -20584,35 +19899,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -20629,7 +19915,7 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_25
             context:
               location:
                 country:
@@ -20867,35 +20153,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -20909,7 +20166,7 @@ x-flows:
           - description: Send instalment order generation notification
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_26
             context:
               location:
                 country:
@@ -21040,35 +20297,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: MANDATE_DEBIT
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     cancel_by:
@@ -21098,7 +20326,7 @@ x-flows:
           - description: Successful sip instalment payment notification
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_27
             context:
               location:
                 country:
@@ -21257,7 +20485,7 @@ x-flows:
           - description: Successful sip instalment notification
         reference: if any
         example:
-          value: &ref_73
+          value: &ref_68
             context:
               location:
                 country:
@@ -21444,35 +20672,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -21489,21 +20688,21 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_25
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send instalment order generation notification
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_26
       - summary: On Update (failed instalment payment)
         api: on_update
         details:
           - description: Failed sip instalment payment notification
         reference: if any
         example:
-          value: &ref_72
+          value: &ref_67
             context:
               location:
                 country:
@@ -21667,35 +20866,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -21714,28 +20884,28 @@ x-flows:
           - description: Send parent order fulfillment ongoing status
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_25
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send instalment order acceptance notification
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_26
       - summary: On Status (successful instalment payment)
         api: on_status
         details:
           - description: Successful sip instalment payment notification
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_27
       - summary: On Update (failed instalment)
         api: on_update
         details:
           - description: Failed sip instalment notification
         reference: if any
         example:
-          value: &ref_74
+          value: &ref_69
             context:
               location:
                 country:
@@ -21904,35 +21074,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -21951,7 +21092,7 @@ x-flows:
           - description: Send parent order fulfillment cancellation status
         reference: if any
         example:
-          value: &ref_76
+          value: &ref_71
             context:
               location:
                 country:
@@ -22159,35 +21300,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: SIP cancellation by the investor
@@ -22199,7 +21311,7 @@ x-flows:
           - description: Send cancel request along with cancellation reason
         reference: if any
         example:
-          value: &ref_64
+          value: &ref_59
             context:
               location:
                 country:
@@ -22236,7 +21348,7 @@ x-flows:
           - description: Send parent order fulfillment cancellation status
         reference: if any
         example:
-          value: &ref_65
+          value: &ref_60
             context:
               location:
                 country:
@@ -22445,34 +21557,6 @@ x-flows:
                         currency: INR
                         value: '0'
                 tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                   - display: true
                     descriptor:
                       name: Consumer Info
@@ -22495,7 +21579,7 @@ x-flows:
           - description: Send parent order fulfillment completion status
         reference: if any
         example:
-          value: &ref_75
+          value: &ref_70
             context:
               location:
                 country:
@@ -22700,35 +21784,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '0'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -22747,7 +21802,7 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_28
             context:
               location:
                 country:
@@ -22793,28 +21848,13 @@ x-flows:
                             type: ARN
                           - id: ARN-123456
                             type: SUB_BROKER_ARN
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_29
             context:
               location:
                 country:
@@ -23042,21 +22082,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: UPI_PG
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -23077,7 +22102,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_30
             context:
               location:
                 country:
@@ -23147,28 +22172,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: NETBANKING
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_31
             context:
               location:
                 country:
@@ -23343,21 +22353,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: NETBANKING
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -23380,7 +22375,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_32
             context:
               location:
                 country:
@@ -23455,42 +22450,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: NETBANKING
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_33
             context:
               location:
                 country:
@@ -23669,35 +22635,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: NETBANKING
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -23735,7 +22672,7 @@ x-flows:
           - description: Send payment success notification
         reference: if any
         example:
-          value: &ref_62
+          value: &ref_57
             context:
               location:
                 country:
@@ -23928,35 +22865,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -24174,35 +23082,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -24219,42 +23098,42 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_28
       - summary: On Select
         api: on_select
         details:
           - description: Send back the list of existing folios and payment options
         reference: if any
         example:
-          value: *ref_34
+          value: *ref_29
       - summary: Initialize the Lumpsum order
         api: init
         details:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_35
+          value: *ref_30
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: *ref_36
+          value: *ref_31
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_37
+          value: *ref_32
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_38
+          value: *ref_33
       - summary: Payment
         api: form
         details:
@@ -24271,7 +23150,7 @@ x-flows:
           - description: Send payment failure notification
         reference: if any
         example:
-          value: &ref_68
+          value: &ref_63
             context:
               location:
                 country:
@@ -24477,35 +23356,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -24519,7 +23369,7 @@ x-flows:
           - description: Ask for new payment
         reference: if any
         example:
-          value: &ref_66
+          value: &ref_61
             context:
               location:
                 country:
@@ -24564,7 +23414,7 @@ x-flows:
           - description: Receive new payment
         reference: if any
         example:
-          value: &ref_67
+          value: &ref_62
             context:
               location:
                 country:
@@ -24777,35 +23627,6 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: UPI_URI
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -24882,21 +23703,6 @@ x-flows:
                             type: ARN
                           - id: ARN-123456
                             type: SUB_BROKER_ARN
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -25041,21 +23847,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -28400,7 +27191,7 @@ x-flows:
           - description: Scheme selection
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_34
             context:
               location:
                 country:
@@ -28451,28 +27242,13 @@ x-flows:
                     id: form_3
                   form_response:
                     submission_id: 2650edf9-e69c-45c5-b129-89838f0b716e
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
           - description: Send back new account input required
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_35
             context:
               location:
                 country:
@@ -28610,21 +27386,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 payments:
                   - collected_by: BPP
                     type: PRE_FULFILLMENT
@@ -28668,7 +27429,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_36
             context:
               location:
                 country:
@@ -28736,28 +27497,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: NETBANKING
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_37
             context:
               location:
                 country:
@@ -28890,21 +27636,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 payments:
                   - id: pmt_123
                     collected_by: BPP
@@ -28947,7 +27678,7 @@ x-flows:
           - description: Send order confirmation
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_38
             context:
               location:
                 country:
@@ -29020,42 +27751,13 @@ x-flows:
                           - descriptor:
                               code: MODE
                             value: NETBANKING
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_39
             context:
               location:
                 country:
@@ -29192,35 +27894,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 payments:
                   - id: pmt_123
                     collected_by: BPP
@@ -29268,7 +27941,7 @@ x-flows:
           - description: Send order acceptance
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_40
             context:
               location:
                 country:
@@ -29405,35 +28078,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 payments:
                   - id: pmt_123
                     collected_by: BPP
@@ -29481,7 +28125,7 @@ x-flows:
           - description: Send payment failure notification
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_41
             context:
               location:
                 country:
@@ -29661,35 +28305,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 payments:
                   - id: pmt_123
                     collected_by: BPP
@@ -29786,21 +28401,6 @@ x-flows:
                             type: ARN
                           - id: ARN-123456
                             type: SUB_BROKER_ARN
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -29955,21 +28555,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -33905,21 +32490,6 @@ x-flows:
                     id: form_1
                   form_response:
                     submission_id: 4e6d19d3-f8b5-43d5-9d89-ab5b95af3d92
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -34074,21 +32644,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -34242,21 +32797,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Submit Form
         api: select
         details:
@@ -34314,21 +32854,6 @@ x-flows:
                     id: form_2
                   form_response:
                     submission_id: 20d1fd2a-827d-460e-bd72-b21064d23002
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Select
         api: on_select
         details:
@@ -34483,21 +33008,6 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get Form
         api: form
         details:
@@ -34651,77 +33161,62 @@ x-flows:
                               name: Amount Multiples
                               code: AMOUNT_MULTIPLES
                             value: '1'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Select
         api: select
         details:
           - description: Scheme selection
         reference: if any
         example:
-          value: *ref_39
+          value: *ref_34
       - summary: On Select
         api: on_select
         details:
           - description: Send back new account input required
         reference: if any
         example:
-          value: *ref_40
+          value: *ref_35
       - summary: Initialize the Lumpsum order
         api: init
         details:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_41
+          value: *ref_36
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with payment url
         reference: if any
         example:
-          value: *ref_42
+          value: *ref_37
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation
         reference: if any
         example:
-          value: *ref_43
+          value: *ref_38
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_44
+          value: *ref_39
       - summary: On Status
         api: on_status
         details:
           - description: Send order acceptance
         reference: if any
         example:
-          value: *ref_45
+          value: *ref_40
       - summary: On Update
         api: on_update
         details:
           - description: Send payment failure notification
         reference: if any
         example:
-          value: *ref_46
+          value: *ref_41
   - summary: Redemption
     reference: >-
       https://github.com/ONDC-Official/ONDC-FIS-Specifications/blob/draft-FIS14-enhancements/api/components/docs/README.md#protocol-details
@@ -34733,7 +33228,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_42
             context:
               location:
                 country:
@@ -34782,28 +33277,13 @@ x-flows:
                             type: ARN
                           - id: ARN-123456
                             type: SUB_BROKER_ARN
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: Get the redemption payout a/c details
         api: on_select
         details:
           - description: List of payout bank a/cs is sent
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_43
             context:
               location:
                 country:
@@ -34991,21 +33471,6 @@ x-flows:
                               name: Bank Code
                               code: BANK_CODE
                             value: HDFC0000091
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -35026,7 +33491,7 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_44
             context:
               location:
                 country:
@@ -35088,28 +33553,13 @@ x-flows:
                               name: Identifier
                               code: IDENTIFIER
                             value: ba_369823523564
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with tnc
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_45
             context:
               location:
                 country:
@@ -35254,21 +33704,6 @@ x-flows:
                               name: Identifier
                               code: IDENTIFIER
                             value: ba_369823523564
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -35291,7 +33726,7 @@ x-flows:
           - description: Send order confirmation w/ 2fa details
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_46
             context:
               location:
                 country:
@@ -35354,42 +33789,13 @@ x-flows:
                               name: Identifier
                               code: IDENTIFIER
                             value: ba_369823523564
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send accepted order
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_47
             context:
               location:
                 country:
@@ -35533,35 +33939,6 @@ x-flows:
                               name: Identifier
                               code: IDENTIFIER
                             value: ba_369823523564
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 quote:
                   id: q1
                   price:
@@ -35584,7 +33961,7 @@ x-flows:
           - description: Send redemption successful
         reference: if any
         example:
-          value: &ref_70
+          value: &ref_65
             context:
               location:
                 country:
@@ -35758,35 +34135,6 @@ x-flows:
                       price:
                         currency: INR
                         value: '3000'
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 cancellation_terms:
                   - reason_required: true
                     external_ref:
@@ -35805,49 +34153,49 @@ x-flows:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_47
+          value: *ref_42
       - summary: Get the redemption payout a/c details
         api: on_select
         details:
           - description: List of payout bank a/cs is sent
         reference: if any
         example:
-          value: *ref_48
+          value: *ref_43
       - summary: Initialize the redemption order
         api: init
         details:
           - description: Send order details and folio details
         reference: if any
         example:
-          value: *ref_49
+          value: *ref_44
       - summary: On Init
         api: on_init
         details:
           - description: Draft order is sent back with tnc
         reference: if any
         example:
-          value: *ref_50
+          value: *ref_45
       - summary: Confirm
         api: confirm
         details:
           - description: Send order confirmation w/ 2fa details
         reference: if any
         example:
-          value: *ref_51
+          value: *ref_46
       - summary: On Confirm
         api: on_confirm
         details:
           - description: Send accepted order
         reference: if any
         example:
-          value: *ref_52
+          value: *ref_47
       - summary: On Update
         api: on_update
         details:
           - description: Send redemption failed
         reference: if any
         example:
-          value: &ref_71
+          value: &ref_66
             context:
               location:
                 country:
@@ -36028,35 +34376,6 @@ x-flows:
                     external_ref:
                       url: https://api.sellerapp.com/cterms?id=214werw3w4
                       mimetype: text/html
-                tags:
-                  - display: false
-                    descriptor:
-                      name: BAP Terms of Engagement
-                      code: BAP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
-                  - display: false
-                    descriptor:
-                      name: BPP Terms of Engagement
-                      code: BPP_TERMS
-                    list:
-                      - descriptor:
-                          name: Static Terms (Transaction Level)
-                          code: STATIC_TERMS
-                        value: >-
-                          https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                      - descriptor:
-                          name: Offline Contract
-                          code: OFFLINE_CONTRACT
-                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
 x-examples:
@@ -36068,7 +34387,7 @@ x-examples:
         examples:
           - summary: search for mutual funds Full Pull
             description: TBD
-            value: *ref_53
+            value: *ref_48
           - summary: search for mutual funds incremental from given time
             description: TBD
             value:
@@ -36108,73 +34427,59 @@ x-examples:
                             name: Changes from
                             code: CHANGES_FROM
                           value: '2024-05-23T05:23:03.443Z'
-                    - display: false
-                      descriptor:
-                        name: BAP Terms of Engagement
-                        code: BAP_TERMS
-                      list:
-                        - descriptor:
-                            name: Static Terms (Transaction Level)
-                            code: STATIC_TERMS
-                          value: >-
-                            https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                        - descriptor:
-                            name: Offline Contract
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
           - summary: search for mutual funds register for incremental pull
             description: TBD
-            value: *ref_54
+            value: *ref_49
       on_search:
         examples:
           - summary: mutual funds catalog
             description: TBD
-            value: *ref_21
+            value: *ref_16
       select:
         examples:
           - summary: select lumpsum order
             description: lumpsum order
-            value: *ref_33
+            value: *ref_28
           - summary: select sip order
             description: sip order
-            value: *ref_22
+            value: *ref_17
           - summary: select redemption order
             description: redemption order
-            value: *ref_47
+            value: *ref_42
           - summary: submit new folio form
             description: submit new folio form
-            value: *ref_26
+            value: *ref_21
           - summary: submit kyc form (step 1)
             description: submit kyc form
-            value: *ref_55
+            value: *ref_50
           - summary: submit kyc form (step 2)
             description: submit kyc form
-            value: *ref_56
+            value: *ref_51
           - summary: submit kyc form (step 3)
             description: submit kyc form
-            value: *ref_57
+            value: *ref_52
       on_select:
         examples:
           - summary: send existing folios
             description: send existing folios
-            value: *ref_58
+            value: *ref_53
           - summary: send new folio xinput form
             description: send new folio xinput form
-            value: *ref_25
+            value: *ref_20
           - summary: send payment options
             description: send payment options
-            value: *ref_27
+            value: *ref_22
           - summary: send new kyc xinput form (redirection step)
             description: send new kyc xinput form (redirection step)
-            value: *ref_59
+            value: *ref_54
           - summary: send payout bank details for redemption
             description: send payout bank details for redemption
-            value: *ref_48
+            value: *ref_43
       init:
         examples:
           - summary: init lumpsum order (netbanking payment)
             description: init lumpsum order (netbanking payment)
-            value: *ref_35
+            value: *ref_30
           - summary: init lumpsum order (upi collect payment)
             description: init lumpsum order (upi collect payment)
             value:
@@ -36248,35 +34553,20 @@ x-examples:
                             - descriptor:
                                 code: MODE
                               value: UPI_COLLECT
-                  tags:
-                    - display: false
-                      descriptor:
-                        name: BAP Terms of Engagement
-                        code: BAP_TERMS
-                      list:
-                        - descriptor:
-                            name: Static Terms (Transaction Level)
-                            code: STATIC_TERMS
-                          value: >-
-                            https://buyerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                        - descriptor:
-                            name: Offline Contract
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
           - summary: init sip existing folio
             description: init sip existing folio
-            value: *ref_60
+            value: *ref_55
           - summary: init sip new folio
             description: init sip new folio
-            value: *ref_23
+            value: *ref_18
           - summary: init redemption order
             description: init redemption order
-            value: *ref_49
+            value: *ref_44
       on_init:
         examples:
           - summary: send netbanking url & tnc for lumpsum purchase
             description: send netbanking url & tnc
-            value: *ref_36
+            value: *ref_31
           - summary: send upi uri & tnc for lumpsum purchase
             description: send upi uri & tnc
             value:
@@ -36455,21 +34745,6 @@ x-examples:
                             - descriptor:
                                 code: MODE
                               value: UPI_URI
-                  tags:
-                    - display: false
-                      descriptor:
-                        name: BPP Terms of Engagement
-                        code: BPP_TERMS
-                      list:
-                        - descriptor:
-                            name: Static Terms (Transaction Level)
-                            code: STATIC_TERMS
-                          value: >-
-                            https://sellerapp.com/legal/ondc:fis14/static_terms?v=0.1
-                        - descriptor:
-                            name: Offline Contract
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
                   quote:
                     id: q1
                     price:
@@ -36488,26 +34763,26 @@ x-examples:
                   updated_at: '2023-05-25T05:23:03.443Z'
           - summary: send payment url & tnc
             description: send payment url & tnc
-            value: *ref_61
+            value: *ref_56
           - summary: send order in created state
             description: send order in created state
-            value: *ref_50
+            value: *ref_45
       confirm:
         examples:
           - summary: confirm sip
             description: confirm sip
-            value: *ref_24
+            value: *ref_19
           - summary: confirm redemption
             description: confirm redemption
-            value: *ref_51
+            value: *ref_46
       on_confirm:
         examples:
           - summary: confirm order w/ accepted state
             description: confirm order w/ accepted state
-            value: *ref_29
+            value: *ref_24
           - summary: sip instalment created
             description: sip instalment created
-            value: *ref_31
+            value: *ref_26
       status:
         examples:
           - summary: status of an order
@@ -36536,17 +34811,17 @@ x-examples:
         examples:
           - summary: lumpsum payment success
             description: lumpsum payment success
-            value: *ref_62
+            value: *ref_57
           - summary: sip payment success
             description: sip payment success
-            value: *ref_63
+            value: *ref_58
       cancel:
         examples:
           - summary: cancel an sip ordes
             description: >-
               bap can cancel an ongoing sip order by giving a cancellation
               reason
-            value: *ref_64
+            value: *ref_59
           - summary: cancel an sip order w/ custom reason
             description: >-
               bap can cancel an ongoing sip order by giving a custom
@@ -36578,44 +34853,44 @@ x-examples:
         examples:
           - summary: cancelled sip order
             description: cancelled sip order
-            value: *ref_65
+            value: *ref_60
       update:
         examples:
           - summary: update an order with a new payment
             description: bap asks for a new payment link in case of payment failure
-            value: *ref_66
+            value: *ref_61
       on_update:
         examples:
           - summary: send a new payment link
             description: bpp sends a new payment link
-            value: *ref_67
+            value: *ref_62
           - summary: lumpsum payment failure
             description: lumpsum payment failure
-            value: *ref_68
+            value: *ref_63
           - summary: sip payment failure
             description: sip payment failure
-            value: *ref_69
+            value: *ref_64
           - summary: redemption fulfillment success
             description: redemption fulfillment success
-            value: *ref_70
+            value: *ref_65
           - summary: redemption fulfillment failure
             description: redemption fulfillment failure
-            value: *ref_71
+            value: *ref_66
           - summary: sip instalment payment failed
             description: sip instalment payment failed
-            value: *ref_72
+            value: *ref_67
           - summary: sip instalment fulfillment success
             description: sip instalment fulfillment success
-            value: *ref_73
+            value: *ref_68
           - summary: sip instalment fulfillment failure
             description: sip instalment fulfillment failure
-            value: *ref_74
+            value: *ref_69
           - summary: sip order completed
             description: sip order completed
-            value: *ref_75
+            value: *ref_70
           - summary: sip order cancelled
             description: sip order cancelled
-            value: *ref_76
+            value: *ref_71
 x-attributes:
   mutual-funds:
     attribute_set:
@@ -36752,26 +35027,6 @@ x-attributes:
               owner: BAP
               usage: '--'
               description: Describe the intent to buy or avail a product or a service.
-            tags:
-              BAP_TERMS: &ref_77
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: '--'
-                description: Describes the BAP Terms.
-                list:
-                  STATIC_TERMS:
-                    required: Mandatory
-                    type: object
-                    owner: BAP
-                    usage: '--'
-                    description: Describes the static terms
-                  OFFLINE_CONTRACT:
-                    required: Mandatory
-                    type: object
-                    owner: BAP
-                    usage: '--'
-                    description: Describes the offline contract
       on_search:
         context:
           location:
@@ -37028,7 +35283,7 @@ x-attributes:
                   usage: 234dsfs
                   description: ID of the scheme that this plan belongs to
                 tags:
-                  PLAN_INFORMATION: &ref_83
+                  PLAN_INFORMATION: &ref_77
                     required: Mandatory
                     type: object
                     owner: BPP
@@ -37041,7 +35296,7 @@ x-attributes:
                         owner: BPP
                         usage: '--'
                         description: Describes the consumer tnc
-                  PLAN_IDENTIFIERS: &ref_84
+                  PLAN_IDENTIFIERS: &ref_78
                     required: Mandatory
                     type: object
                     owner: BPP
@@ -37066,7 +35321,7 @@ x-attributes:
                         owner: BPP
                         usage: '--'
                         description: Describes the RTA Identifier
-                  PLAN_OPTIONS: &ref_85
+                  PLAN_OPTIONS: &ref_79
                     required: Mandatory
                     type: object
                     owner: BPP
@@ -37174,7 +35429,7 @@ x-attributes:
                   usage: SIP
                   description: Type of the fulfillment
                 tags:
-                  THRESHOLDS: &ref_92
+                  THRESHOLDS: &ref_86
                     required: Mandatory
                     type: object
                     owner: BPP
@@ -37273,26 +35528,6 @@ x-attributes:
                   description: >-
                     This refers to the decription as to how that order will
                     rendered/fulfilled to the end-customers.
-            tags:
-              BPP_TERMS: &ref_93
-                required: Mandatory
-                type: string
-                owner: BPP
-                usage: '--'
-                description: Describes the BAP Terms.
-                list:
-                  STATIC_TERMS:
-                    required: Mandatory
-                    type: object
-                    owner: BPP
-                    usage: '--'
-                    description: Describes the static terms
-                  OFFLINE_CONTRACT:
-                    required: Mandatory
-                    type: object
-                    owner: BPP
-                    usage: '--'
-                    description: Describes the offline contract
       select:
         context:
           location:
@@ -37418,7 +35653,7 @@ x-attributes:
               description: >-
                 This refers to the complete description of the legal contract
                 created between the buyer and the seller.
-            provider: &ref_78
+            provider: &ref_72
               id:
                 required: mandatory
                 type: string
@@ -37433,26 +35668,26 @@ x-attributes:
                 owner: BPP
                 usage: '--'
                 description: MF provider details
-            items: &ref_94
-              _description: &ref_79
+            items: &ref_87
+              _description: &ref_73
                 required: mandatory
                 type: object
                 owner: BAP/BPP
                 usage: '--'
                 description: List of mf schemes in an order
-              id: &ref_80
+              id: &ref_74
                 required: mandatory
                 type: string
                 owner: BPP
                 usage: 98dgwr41
                 description: ID of the item that is chosen, as received in the catalog
-              fulfillment_ids: &ref_81
+              fulfillment_ids: &ref_75
                 required: optional
                 type: string
                 owner: BPP
                 usage: 3bd4ea25
                 description: Unique reference ID to the fulfillment of an order
-              quantity: &ref_82
+              quantity: &ref_76
                 _description:
                   required: mandatory
                   type: object
@@ -37486,26 +35721,26 @@ x-attributes:
                       usage: amount
                       description: Type of the value of order
             fulfillments:
-              _description: &ref_86
+              _description: &ref_80
                 required: mandatory
                 type: object
                 owner: BAP
                 usage: '--'
                 description: Fulfillment details
-              type: &ref_87
+              type: &ref_81
                 required: mandatory
                 type: string
                 owner: BPP
                 usage: SIP
                 description: Type of the fulfillment chosen
-              id: &ref_88
+              id: &ref_82
                 required: mandatory
                 type: string
                 owner: BPP
                 usage: 45af324fs
                 description: ID of the fulfillment chosen
-              customer: &ref_89
-                _description: &ref_95
+              customer: &ref_83
+                _description: &ref_88
                   required: mandatory
                   type: object
                   owner: BAP
@@ -37513,7 +35748,7 @@ x-attributes:
                   description: >-
                     This refers to the description of the person that will
                     ulitmately receive the order.
-                person: &ref_96
+                person: &ref_89
                   id:
                     required: mandatory
                     type: string
@@ -37528,7 +35763,7 @@ x-attributes:
                     description: >-
                       This refers to the description of the associated person as
                       an individual entity.
-              agent: &ref_90
+              agent: &ref_84
                 _description:
                   required: mandatory
                   type: object
@@ -37576,7 +35811,7 @@ x-attributes:
                       owner: BAP
                       usage: ARN
                       description: Distributor license type
-              stops: &ref_91
+              stops: &ref_85
                 _description:
                   required: optional
                   type: array
@@ -37603,7 +35838,7 @@ x-attributes:
                       owner: BAP
                       usage: '--'
                       description: Frequency of the recurring orders in ISO8601 format
-            xinput: &ref_97
+            xinput: &ref_90
               _description:
                 required: optional
                 type: object
@@ -37640,8 +35875,6 @@ x-attributes:
                   owner: BPP
                   usage: d097c2f5
                   description: Submission id of the form submission
-            tags:
-              BAP_TERMS: *ref_77
       on_select:
         context:
           location:
@@ -37767,25 +36000,25 @@ x-attributes:
               description: >-
                 This refers to the complete description of the legal contract
                 created between the buyer and the seller.
-            provider: *ref_78
-            items: &ref_103
-              _description: *ref_79
-              id: *ref_80
-              fulfillment_ids: *ref_81
-              quantity: *ref_82
+            provider: *ref_72
+            items: &ref_96
+              _description: *ref_73
+              id: *ref_74
+              fulfillment_ids: *ref_75
+              quantity: *ref_76
               tags:
-                PLAN_INFORMATION: *ref_83
-                PLAN_IDENTIFIERS: *ref_84
-                PLAN_OPTIONS: *ref_85
+                PLAN_INFORMATION: *ref_77
+                PLAN_IDENTIFIERS: *ref_78
+                PLAN_OPTIONS: *ref_79
             fulfillments:
-              _description: *ref_86
-              type: *ref_87
-              id: *ref_88
-              customer: *ref_89
-              agent: *ref_90
-              stops: *ref_91
+              _description: *ref_80
+              type: *ref_81
+              id: *ref_82
+              customer: *ref_83
+              agent: *ref_84
+              stops: *ref_85
               tags:
-                THRESHOLDS: *ref_92
+                THRESHOLDS: *ref_86
             xinput:
               _description:
                 required: optional
@@ -37894,31 +36127,31 @@ x-attributes:
                   Indicates whether the form data is mandatorily required by the
                   BPP to confirm the order.
             payments:
-              _description: &ref_98
+              _description: &ref_91
                 required: optional
                 type: list
                 owner: BPP
                 usage: '--'
                 description: List of payment options for this order
-              id: &ref_99
+              id: &ref_92
                 required: optional
                 type: string
                 owner: BPP
                 usage: pmt_1
                 description: Conditionally mandatory and optional
-              collected_by: &ref_100
+              collected_by: &ref_93
                 required: optional
                 type: string
                 owner: BPP
                 usage: BPP
                 description: Who is collecting the payment
-              type: &ref_101
+              type: &ref_94
                 required: optional
                 type: string
                 owner: BPP
                 usage: PRE_FULFILLMENT
                 description: When is the payment to be collected
-              tags: &ref_102
+              tags: &ref_95
                 _description:
                   required: optional
                   type: array
@@ -37982,8 +36215,6 @@ x-attributes:
                     owner: BPP
                     usage: MANDATE_REGISTRATION
                     description: Value of the tag
-            tags:
-              BPP_TERMS: *ref_93
       init:
         context:
           location:
@@ -38109,15 +36340,15 @@ x-attributes:
               description: >-
                 This refers to the complete description of the legal contract
                 created between the buyer and the seller.
-            provider: *ref_78
-            items: *ref_94
-            fulfillments: &ref_106
-              _description: *ref_86
-              type: *ref_87
-              id: *ref_88
-              customer: &ref_104
-                _description: *ref_95
-                person: *ref_96
+            provider: *ref_72
+            items: *ref_87
+            fulfillments: &ref_99
+              _description: *ref_80
+              type: *ref_81
+              id: *ref_82
+              customer: &ref_97
+                _description: *ref_88
+                person: *ref_89
                 contact:
                   _description:
                     required: mandatory
@@ -38131,16 +36362,16 @@ x-attributes:
                     owner: BAP
                     usage: '9916587487'
                     description: Phone number of the customer on which 2fa is done
-              agent: *ref_90
-              stops: *ref_91
-            xinput: *ref_97
+              agent: *ref_84
+              stops: *ref_85
+            xinput: *ref_90
             payments:
-              _description: *ref_98
-              id: *ref_99
-              collected_by: *ref_100
-              type: *ref_101
-              tags: *ref_102
-              params: &ref_105
+              _description: *ref_91
+              id: *ref_92
+              collected_by: *ref_93
+              type: *ref_94
+              tags: *ref_95
+              params: &ref_98
                 _description:
                   required: optional
                   type: object
@@ -38183,8 +36414,6 @@ x-attributes:
                   description: >-
                     Name on the bank a/c of the investor from which he wants to
                     make the payment
-            tags:
-              BAP_TERMS: *ref_77
       on_init:
         context:
           location:
@@ -38322,25 +36551,25 @@ x-attributes:
               owner: BAP
               usage: CREATED
               description: Status of the order at seller app end
-            provider: *ref_78
-            items: *ref_103
-            fulfillments: &ref_108
-              _description: *ref_86
-              type: *ref_87
-              id: *ref_88
-              customer: *ref_104
-              agent: *ref_90
-              stops: *ref_91
+            provider: *ref_72
+            items: *ref_96
+            fulfillments: &ref_101
+              _description: *ref_80
+              type: *ref_81
+              id: *ref_82
+              customer: *ref_97
+              agent: *ref_84
+              stops: *ref_85
               tags:
-                THRESHOLDS: *ref_92
-            xinput: *ref_97
-            payments: &ref_107
-              _description: *ref_98
-              id: *ref_99
-              collected_by: *ref_100
-              type: *ref_101
-              tags: *ref_102
-              params: *ref_105
+                THRESHOLDS: *ref_86
+            xinput: *ref_90
+            payments: &ref_100
+              _description: *ref_91
+              id: *ref_92
+              collected_by: *ref_93
+              type: *ref_94
+              tags: *ref_95
+              params: *ref_98
               url:
                 required: optional
                 type: string
@@ -38353,8 +36582,6 @@ x-attributes:
                 owner: BPP
                 usage: NOT-PAID
                 description: status of the payment
-            tags:
-              BPP_TERMS: *ref_93
       confirm:
         context:
           location:
@@ -38486,14 +36713,11 @@ x-attributes:
               owner: BPP
               usage: 54adfadsf6144
               description: ID of the order at the seller app end
-            provider: *ref_78
-            items: *ref_94
-            fulfillments: *ref_106
-            xinput: *ref_97
-            payments: *ref_107
-            tags:
-              BAP_TERMS: *ref_77
-              BPP_TERMS: *ref_93
+            provider: *ref_72
+            items: *ref_87
+            fulfillments: *ref_99
+            xinput: *ref_90
+            payments: *ref_100
       on_confirm:
         context:
           location:
@@ -38631,14 +36855,11 @@ x-attributes:
               owner: BAP
               usage: ACCEPTED
               description: Status of the order at seller app end
-            provider: *ref_78
-            items: *ref_103
-            fulfillments: *ref_108
-            xinput: *ref_97
-            payments: *ref_107
-            tags:
-              BAP_TERMS: *ref_77
-              BPP_TERMS: *ref_93
+            provider: *ref_72
+            items: *ref_96
+            fulfillments: *ref_101
+            xinput: *ref_90
+            payments: *ref_100
       status:
         context:
           location:
@@ -38898,14 +37119,11 @@ x-attributes:
               owner: BAP
               usage: ACCEPTED
               description: Status of the order at seller app end
-            provider: *ref_78
-            items: *ref_103
-            fulfillments: *ref_108
-            xinput: *ref_97
-            payments: *ref_107
-            tags:
-              BAP_TERMS: *ref_77
-              BPP_TERMS: *ref_93
+            provider: *ref_72
+            items: *ref_96
+            fulfillments: *ref_101
+            xinput: *ref_90
+            payments: *ref_100
       cancel:
         context:
           location:
@@ -39171,14 +37389,11 @@ x-attributes:
               owner: BAP
               usage: ACCEPTED
               description: Status of the order at seller app end
-            provider: *ref_78
-            items: *ref_103
-            fulfillments: *ref_108
-            xinput: *ref_97
-            payments: *ref_107
-            tags:
-              BAP_TERMS: *ref_77
-              BPP_TERMS: *ref_93
+            provider: *ref_72
+            items: *ref_96
+            fulfillments: *ref_101
+            xinput: *ref_90
+            payments: *ref_100
       update:
         context:
           location:
@@ -39253,11 +37468,11 @@ x-attributes:
               usage: 54adfadsf6144
               description: ID of the order at the seller app end
             payments:
-              _description: *ref_98
-              id: *ref_99
-              collected_by: *ref_100
-              type: *ref_101
-              tags: *ref_102
+              _description: *ref_91
+              id: *ref_92
+              collected_by: *ref_93
+              type: *ref_94
+              tags: *ref_95
               params:
                 _description:
                   required: optional
@@ -39438,14 +37653,11 @@ x-attributes:
               owner: BAP
               usage: ACCEPTED
               description: Status of the order at seller app end
-            provider: *ref_78
-            items: *ref_103
-            fulfillments: *ref_108
-            xinput: *ref_97
-            payments: *ref_107
-            tags:
-              BAP_TERMS: *ref_77
-              BPP_TERMS: *ref_93
+            provider: *ref_72
+            items: *ref_96
+            fulfillments: *ref_101
+            xinput: *ref_90
+            payments: *ref_100
 x-errorcodes:
   code:
     - Event: Distributor not empanelled
@@ -39557,68 +37769,6 @@ x-errorcodes:
         with what was sent in select call
       From: BPP
       code: 822019
-x-tlc:
-  code:
-    - Term: Static Terms (Buyer App)
-      Api: search on_search init on_init confirm on_confirm
-      Attribute: BAP_TERMS.STATIC_TERMS
-      Owner: Buyer App
-      Value: URL
-      Description: >-
-        This will be the URL of a web-page where the standard Terms and
-        Conditions of the Network Participant - which are not covered in the API
-        Specification (e.g. indemnity) - will be hosted. These terms will apply
-        to the transaction, in addition to the terms decided through the ONDC
-        Protocol. If there is a conflict between the terms decided through the
-        Protocol, and the Static Terms, the terms decided through the ONDC
-        Protocol will prevail. Also, if there is a conflict between the Static
-        Terms and the ONDC Network Policy or the Static Terms and the Network
-        Participant Agreement, the terms of the ONDC Network Policy or the
-        Network Participant Agreement (as the case may be) will prevail.
-    - Term: Offline Contract (Buyer App)
-      Api: search on_search init on_init confirm on_confirm
-      Attribute: BAP_TERMS.OFFLINE_CONTRACT
-      Owner: Buyer App
-      Value: true/ false
-      Description: >-
-        OFFLINE_CONTRACT is a boolean field denoting the presence or absence of
-        an offline contract between Network Participants (NPs). When set to
-        true, it indicates the existence of a formalized contract outside of
-        transaction-level agreements. This offline contract holds precedence
-        over transaction-level contracts, governing the relationship between the
-        involved NPs. Conversely, when set to false, it suggests that
-        contractual arrangements are solely based on transaction-level
-        contracts, without overarching offline agreements.
-    - Term: Static Terms (Seller App)
-      Api: on_search init on_init confirm on_confirm
-      Attribute: BPP_TERMS.STATIC_TERMS
-      Owner: Seller App
-      Value: URL
-      Description: >-
-        This will be the URL of a web-page where the standard Terms and
-        Conditions of the Network Participant - which are not covered in the API
-        Specification (e.g. indemnity) - will be hosted. These terms will apply
-        to the transaction, in addition to the terms decided through the ONDC
-        Protocol. If there is a conflict between the terms decided through the
-        Protocol, and the Static Terms, the terms decided through the ONDC
-        Protocol will prevail. Also, if there is a conflict between the Static
-        Terms and the ONDC Network Policy or the Static Terms and the Network
-        Participant Agreement, the terms of the ONDC Network Policy or the
-        Network Participant Agreement (as the case may be) will prevail.
-    - Term: Offline Contract (Seller App)
-      Api: on_search init on_init confirm on_confirm
-      Attribute: BPP_TERMS.OFFLINE_CONTRACT
-      Owner: Seller App
-      Value: true/ false
-      Description: >-
-        OFFLINE_CONTRACT is a boolean field denoting the presence or absence of
-        an offline contract between Network Participants (NPs). When set to
-        true, it indicates the existence of a formalized contract outside of
-        transaction-level agreements. This offline contract holds precedence
-        over transaction-level contracts, governing the relationship between the
-        involved NPs. Conversely, when set to false, it suggests that
-        contractual arrangements are solely based on transaction-level
-        contracts, without overarching offline agreements.
 x-featureui:
   filenames:
     - README.md
