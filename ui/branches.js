@@ -59,12 +59,12 @@ const BRANCHES = [
     short_desc: "Credit - Working Capital Line use case",
     status: "RELEASED",
   },
-  // {
-  //   code: "draft-FIS12-2.3.0",
-  //   name: "Credit Line",
-  //   short_desc: "Credit - Unified Protocol use case",
-  //   status: "DRAFT",
-  // },
+  {
+    code: "draft-FIS12-2.3.0",
+    name: "Credit Line",
+    short_desc: "Credit - Unified Protocol use case",
+    status: "DRAFT",
+  },
   {
     code: "release-FIS13-2.0.0-sachet",
     name: "Sachet Insurance",
