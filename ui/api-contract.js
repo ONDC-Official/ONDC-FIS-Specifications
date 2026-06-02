@@ -141,7 +141,9 @@ async function loadContracts() {
 
 function upadteContract() {
   const selectedOption = document.getElementById("contract-dropdown")?.value;
-
+  if(/workbench/i.test(selectedOption)){
+    window.open(WB_UNIFIED_LINK, "_blank", "noopener,noreferrer");
+  }
   const urlWithoutQuery = window.location.origin + window.location.pathname;
   window.history.replaceState(null, '', urlWithoutQuery);
 
@@ -175,6 +177,11 @@ function toggleHomePage() {
 
 function resolveHomePage(branch, tab) {
   const url = new URL(window.location);
+  if(/^https?:\/\/\S+$/i.test(branch)){
+      window.open(branch, "_blank", "noopener,noreferrer");
+      return
+  }
+
   url.searchParams.set('branch', branch);
   
   if(tab) {
@@ -209,7 +216,7 @@ function populateVersionDropdown(branches) {
 
   branches.forEach((flow) => {
     var option = document.createElement("option");
-    option.text = flow.code;
+    option.text = flow.link? flow.linkName : flow.code;
     selectedOption.add(option);
   });
 
@@ -232,7 +239,8 @@ async function renderBranchesTable() {
     RELEASED: "#28a745",
     DRAFT: "#ffc107",
     DEPRECATED: "#dc3545",
-    TO_BE_DEPRECATED: "#ff851b"
+    TO_BE_DEPRECATED: "#ff851b",
+    MOVED: "#dc3545",
   };
 
   let tableBody = ''
@@ -245,7 +253,7 @@ async function renderBranchesTable() {
     <td>
       <span class="badge" style="background-color: ${statusColors[branch.status]};"> ${branch.status}</span>
     </td>
-    <td class="branchLink" onClick="resolveHomePage('${branch.code}')">${branch.code}</td>
+    <td class="branchLink" onClick="resolveHomePage('${branch.link || branch.code}')">${branch.link ? 'WorkBench' : branch.code }</td>
     </tr>
     `
   })

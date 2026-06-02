@@ -1,3 +1,4 @@
+const WB_UNIFIED_LINK = "https://dev-workbench.ondc.tech/developer-guide/ONDC%3AFIS12/2.3.0/UNIFIED%20CREDIT"
 const BRANCHES = [
   {
     code: "release-FIS10-2.1.0",
@@ -61,9 +62,11 @@ const BRANCHES = [
   },
   {
     code: "draft-FIS12-2.3.0",
+    link: WB_UNIFIED_LINK,
+    linkName: 'WorkBench - draft-FIS12-2.3.0',
     name: "Credit Line",
     short_desc: "Credit - Unified Protocol use case",
-    status: "DRAFT",
+    status: "MOVED",
   },
   {
     code: "release-FIS13-2.0.0-sachet",
