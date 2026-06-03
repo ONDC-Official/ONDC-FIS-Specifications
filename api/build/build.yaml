@@ -3030,9 +3030,36 @@ x-enum:
     message:
       order: *ref_4
 x-tags:
+  search:
+    message:
+      intent:
+        tags: &ref_10
+          - &ref_14
+            code: BAP_TERMS
+            description: Describes the BAP_TERMS
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
+        tags: &ref_13
+          - &ref_15
+            code: BPP_TERMS
+            description: Describes the BAP_TERMS
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
         providers:
           items:
             tags:
@@ -3107,7 +3134,7 @@ x-tags:
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_13
+              list: &ref_18
                 - code: GRO_NAME
                   description: Denotes name of the grievance redressal officer(GRO)
                   reference: <PR/Issue/Discussion Links md format text>
@@ -3139,7 +3166,7 @@ x-tags:
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: &ref_14
+              list: &ref_19
                 - code: LSP_NAME
                   description: >-
                     Name of lsp acting as recovery agent, authorised to approach
@@ -3243,9 +3270,9 @@ x-tags:
   on_select:
     message:
       order:
-        provider: &ref_10
+        provider: &ref_11
           tags: *ref_7
-        items: &ref_11
+        items: &ref_12
           tags:
             - code: GENERAL_INFO
               description: >-
@@ -3319,44 +3346,58 @@ x-tags:
                 - code: LTV_RATIO
                   description: Describes details about LTV ratio
                   reference: <PR/Issue/Discussion Links md format text>
-        fulfillments: &ref_12
+        fulfillments: &ref_16
           tags: *ref_9
+  init:
+    message:
+      order:
+        tags: *ref_10
   on_init:
     message:
       order:
-        provider: *ref_10
-        items: *ref_11
+        provider: *ref_11
+        items: *ref_12
+        tags: *ref_13
+  confirm:
+    message:
+      order:
+        tags: &ref_17
+          - *ref_14
+          - *ref_15
   on_confirm:
     message:
       order:
-        fulfillments: *ref_12
-        items: *ref_11
-        provider: &ref_15
+        fulfillments: *ref_16
+        tags: *ref_17
+        items: *ref_12
+        provider: &ref_20
           tags:
             - code: CONTACT_INFO
               description: >-
                 Describes the contact info of grievance redressal officer(GRO) &
                 customer support details
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_13
+              list: *ref_18
             - code: LSP_INFO
               description: >-
                 Describes lsp details acting as recovert agent authorised to
                 approach borrower
               reference: <PR/Issue/Discussion Links md format text>
-              list: *ref_14
+              list: *ref_19
   on_status:
     message:
       order:
-        fulfillments: *ref_12
-        items: *ref_11
-        provider: *ref_15
+        fulfillments: *ref_16
+        tags: *ref_17
+        items: *ref_12
+        provider: *ref_20
   on_update:
     message:
       order:
-        fulfillments: *ref_12
-        items: *ref_11
-        provider: *ref_15
+        fulfillments: *ref_16
+        tags: *ref_17
+        items: *ref_12
+        provider: *ref_20
 x-flows:
   - summary: Personal Loan - Offline
     details:
@@ -3450,7 +3491,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_21
             context:
               domain: ONDC:FIS12
               location:
@@ -3473,6 +3514,19 @@ x-flows:
                     code: PERSONAL_LOAN
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans.
@@ -3496,7 +3550,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_22
             context:
               domain: ONDC:FIS12
               location:
@@ -3821,6 +3875,19 @@ x-flows:
                               One Indiabulls centre, Tower 1, 18th Floor Jupiter
                               mill compound 841, Senapati Bapat Marg,
                               Elphinstone Road, Mumbai 400013
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -3873,7 +3940,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -3929,7 +3996,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -4276,7 +4343,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -4588,7 +4655,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -4625,7 +4692,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -4940,7 +5007,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -5257,7 +5324,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -5287,6 +5354,31 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
@@ -5309,7 +5401,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_24
             context:
               domain: ONDC:FIS12
               location:
@@ -5702,6 +5794,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -6124,6 +6241,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -6547,6 +6689,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -6971,6 +7138,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -7395,6 +7587,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -7819,6 +8036,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Single Redirection
@@ -7913,7 +8155,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_21
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans.
@@ -7937,7 +8179,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: >-
           The borrower receives the personal loan application form from lender
           after providing all details like PAN, mobile number, name, address,
@@ -7990,7 +8232,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -8046,7 +8288,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -8707,7 +8949,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_23
       - summary: The lender sends the latest order status of the form(Optional)
         api: on_status
         details:
@@ -8725,7 +8967,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -9997,7 +10239,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -10027,6 +10269,31 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: The lender confirms the personal loan order.
         api: on_confirm
         details:
@@ -10049,7 +10316,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -10443,6 +10710,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -10866,6 +11158,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -11290,6 +11607,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -11715,6 +12057,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -12140,6 +12507,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -12565,6 +12957,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Dedupe Check
@@ -12619,7 +13036,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_21
       - summary: >-
           The lender offers a static catalog details of loan types like personal
           loans.
@@ -12643,7 +13060,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: The borrower chooses the dedupe item
         api: select
         details:
@@ -12663,7 +13080,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -12718,7 +13135,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -12808,7 +13225,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -12871,7 +13288,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -13282,6 +13699,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -13304,7 +13746,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -13712,6 +14154,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Pre-Part Payment
@@ -13749,7 +14216,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -13815,7 +14282,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -14226,6 +14693,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: The provider platform updates the consumer with pre-part success.
@@ -14246,7 +14738,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -14655,6 +15147,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Personal Loan - Missed-EMI Payment
@@ -14693,7 +15210,7 @@ x-flows:
                 Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: The borrower (BAP) sends the update request by sending the order ID.
         api: update
         details:
@@ -15170,6 +15687,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -15604,6 +16146,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
   - summary: Gold Loan - Offline Journey
@@ -15698,7 +16265,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -15721,6 +16288,19 @@ x-flows:
                     code: GOLD_LOAN
                 payment:
                   collected_by: BPP
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The lender offers a static catalog details of loan types like Gold
           Loans etc.
@@ -15744,7 +16324,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -15954,6 +16534,19 @@ x-flows:
                               One Indiabulls centre, Tower 1, 18th Floor Jupiter
                               mill compound 841, Senapati Bapat Marg,
                               Elphinstone Road, Mumbai 400013
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: >-
           The borrower receives the Gold Loan application form from lender after
           providing all details like PAN, mobile number, name, address, date of
@@ -16104,7 +16697,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -16151,7 +16744,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_45
             context:
               domain: ONDC:FIS12
               location:
@@ -16514,7 +17107,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_46
             context:
               domain: ONDC:FIS12
               location:
@@ -17185,7 +17778,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_49
             context:
               domain: ONDC:FIS12
               location:
@@ -17860,7 +18453,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_47
             context:
               domain: ONDC:FIS12
               location:
@@ -17890,6 +18483,31 @@ x-flows:
                       form_response:
                         status: SUCCESS
                         submission_id: F03_SUBMISSION_ID
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
       - summary: The lender confirms the Gold Loan order.
         api: on_confirm
         details:
@@ -17910,7 +18528,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_48
             context:
               domain: ONDC:FIS12
               location:
@@ -18312,6 +18930,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -18743,6 +19386,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -19175,6 +19843,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -19608,6 +20301,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -20041,6 +20759,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
       - summary: >-
@@ -20474,6 +21217,31 @@ x-flows:
                         cancellation.
                     mime_type: application/pdf
                     url: https://lender.com/loan/loan-cancellation/O1.pdf
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: >-
+                          https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 created_at: '2023-05-25T05:23:03.443Z'
                 updated_at: '2023-05-25T05:23:03.443Z'
 x-examples:
@@ -20485,50 +21253,50 @@ x-examples:
         examples:
           - summary: search for personal loan
             description: TBD
-            value: *ref_16
+            value: *ref_21
       on_search:
         examples:
           - summary: personal loan catalog
             description: TBD
-            value: *ref_17
+            value: *ref_22
       select:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_20
+            value: *ref_25
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_21
+            value: *ref_26
           - summary: select-request-set-consent-approved
             description: TBD
-            value: *ref_22
+            value: *ref_27
       on_select:
         examples:
           - summary: on_select-request-with-kyc-form_offline
             description: TBD
-            value: *ref_23
+            value: *ref_28
           - summary: on_select-request-with-kyc-form_single_redirection
             description: TBD
-            value: *ref_24
+            value: *ref_29
           - summary: on_select_request_dedupe
             description: TBD
-            value: *ref_25
+            value: *ref_30
       confirm:
         examples:
           - summary: confirm_request_offline
             description: TBD
-            value: *ref_26
+            value: *ref_31
           - summary: confirm_request_single_redirection
             description: TBD
-            value: *ref_27
+            value: *ref_32
       on_confirm:
         examples:
           - summary: on_confirm_request_offline_online
             description: TBD
-            value: *ref_19
+            value: *ref_24
           - summary: on_confirm_request_single_redireciton
             description: TBD
-            value: *ref_28
+            value: *ref_33
       update:
         examples:
           - summary: update-request
@@ -20600,32 +21368,32 @@ x-examples:
         examples:
           - summary: on_update-request-pre-part
             description: TBD
-            value: *ref_29
+            value: *ref_34
           - summary: on_update-request-prepayment
             description: TBD
-            value: *ref_30
+            value: *ref_35
           - summary: on_update-request-forclosuer
             description: TBD
-            value: *ref_31
+            value: *ref_36
           - summary: on_update-request-forclosuer-success
             description: TBD
-            value: *ref_32
+            value: *ref_37
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_18
+            value: *ref_23
       on_status:
         examples:
           - summary: on_status-form-offline-kyc_pending
             description: TBD
-            value: *ref_33
+            value: *ref_38
           - summary: on_status-form-offline-kyc_completed
             description: TBD
-            value: *ref_34
+            value: *ref_39
           - summary: on_status-form-offline-kyc_pending_2
             description: TBD
-            value: *ref_35
+            value: *ref_40
           - summary: on_status-form-completed
             description: TBD
             value:
@@ -20867,7 +21635,7 @@ x-examples:
                           currency: INR
           - summary: on_status-form-offline-kyc_pending_single_redirection_1
             description: TBD
-            value: *ref_36
+            value: *ref_41
       support:
         examples:
           - summary: support-request
@@ -20942,17 +21710,17 @@ x-examples:
         examples:
           - summary: search for gold loan
             description: TBD
-            value: *ref_37
+            value: *ref_42
       on_search:
         examples:
           - summary: gold loan catalog
             description: TBD
-            value: *ref_38
+            value: *ref_43
       select:
         examples:
           - summary: select-request-gold-info
             description: TBD
-            value: *ref_39
+            value: *ref_44
           - summary: select-request-set-loan-amount
             description: TBD
             value:
@@ -21574,20 +22342,20 @@ x-examples:
                           phone: +91-99xx99xx99xx
           - summary: on_select-request-set-loan-amount_2
             description: TBD
-            value: *ref_40
+            value: *ref_45
           - summary: on_select-request-JOURNEY_OFFLINE_2
             description: TBD
-            value: *ref_41
+            value: *ref_46
       confirm:
         examples:
           - summary: confirm-request_2
             description: TBD
-            value: *ref_42
+            value: *ref_47
       on_confirm:
         examples:
           - summary: on_confirm-request_2
             description: TBD
-            value: *ref_43
+            value: *ref_48
       update:
         examples:
           - summary: update-request_foreclosure
@@ -22898,7 +23666,7 @@ x-examples:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_44
+            value: *ref_49
       on_status:
         examples:
           - summary: on_status-request
