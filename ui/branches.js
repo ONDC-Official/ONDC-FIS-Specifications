@@ -1,4 +1,4 @@
-const WB_UNIFIED_LINK = "https://dev-workbench.ondc.tech/developer-guide/ONDC%3AFIS12/2.3.0/UNIFIED%20CREDIT"
+const WB_UNIFIED_LINK = "https://preprod-workbench.ondc.tech/developer-guide/domains"
 const BRANCHES = [
   {
     code: "release-FIS10-2.1.0",
