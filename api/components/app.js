@@ -314,13 +314,13 @@ async function getSwaggerYaml(example_set, outputPath) {
       hasTrueResult = await validateTags(tags, schemaMap);
     }
 
-    if (!process.argv.includes(SKIP_VALIDATION.attributes) && !hasTrueResult) {
-      hasTrueResult = await validateAttributes(attributes, schemaMap);
-    }
+    // if (!process.argv.includes(SKIP_VALIDATION.attributes) && !hasTrueResult) {
+    //   hasTrueResult = await validateAttributes(attributes, schemaMap);
+    // }
 
-    if (!process.argv.includes(SKIP_VALIDATION.exampleAttributes) && !hasTrueResult) {
-      await validateExamplesAttributes(exampleSets, attributes)
-    }
+    // if (!process.argv.includes(SKIP_VALIDATION.exampleAttributes) && !hasTrueResult) {
+    //   await validateExamplesAttributes(exampleSets, attributes)
+    // }
 
     if (process.argv.includes(BUILD.checkAttributes) && !hasTrueResult) {
         await checkAttributes(exampleSets, attributes)

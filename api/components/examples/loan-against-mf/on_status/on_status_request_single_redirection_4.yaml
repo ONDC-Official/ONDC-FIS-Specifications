@@ -1,9 +1,9 @@
 context:
   domain: ONDC:FIS12
-  action: on_confirm
-  timestamp: '2026-06-05T09:41:48.162Z'
+  action: on_status
+  timestamp: '2026-06-05T10:24:46.069Z'
   transaction_id: c751921f-ca28-4de5-b4e9-192cf3a38e43
-  message_id: b1a2b487-2a8d-4c97-b4a9-7515d1f9cad5
+  message_id: 8916e3fe-054b-47c4-b8eb-2d5db1ab3775
   bap_id: bap.example.com
   bap_uri: https://bap.example.com
   ttl: PT30S
@@ -78,16 +78,16 @@ message:
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
     items:
       - id: CHILD_ITEM_ID_LAMF_1
-        parent_item_id: ITEM_ID_LAMF_4
+        parent_item_id: ITEM_ID_LAMF_5
         descriptor:
           code: LOAN
-          name: LAMF - Journey Offline
+          name: LAMF - Single Redirection
         category_ids:
           - "101118"
           - "104127"
           - "101119"
         fulfillment_ids:
-          - F19
+          - F18
         price:
           currency: INR
           value: "2792"
@@ -251,16 +251,15 @@ message:
                   code: UNITS_REQUIRED
                   name: units_required
                 value: "30"
-        
+        xinput:
+          form:
+            id: single_redirection
+          form_response:
+            status: COMPLETED
+            submission_id: 83b75099-4f11-43a7-98ca-f231dce52148
     fulfillments:
-      - type: SEMI_ONLINE
-        customer:
-          person:
-            name: John Doe
-          contact:
-            phone: +91-9999999999
-            email: john.doe@example.com
-        id: F19
+      - id: F18
+        type: ONLINE
         stops:
           - id: "1"
             type: PERSONAL_INFORMATION_LAMF
@@ -270,14 +269,42 @@ message:
               short_desc: Short desc about personal info checklist
           - id: "2"
             parent_stop_id: "1"
-            type: JOURNEY_OFFLINE
+            type: SINGLE_REDIRECTION
             instructions:
-              name: Journey Offline
+              name: Single Redirection
               code: COMPLETED
-              short_desc: Short desc about Journey Offline checklist
+              short_desc: Short desc about Single Redirection checklist
+          - id: "3"
+            parent_stop_id: "2"
+            type: KYC
+            instructions:
+              name: kyc
+              code: COMPLETED
+              short_desc: Short desc about kyc checklist
+          - id: "4"
+            parent_stop_id: "3"
+            type: EMANDATE
+            instructions:
+              name: Emandate
+              code: COMPLETED
+              short_desc: Short desc about Emandate checklist
+          - id: "5"
+            parent_stop_id: "4"
+            type: LIEN_MARKING
+            instructions:
+              name: Lien Marking
+              code: COMPLETED
+              short_desc: Short desc about Lien Marking checklist
+          - id: "6"
+            parent_stop_id: "5"
+            type: ESIGN
+            instructions:
+              name: esign
+              code: COMPLETED
+              short_desc: Short desc about Esign checklist
         state:
           descriptor:
-            code: SANCTIONED
+            code: INITIATED
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
@@ -309,79 +336,3 @@ message:
             value: "0"
             currency: INR
       ttl: P15D
-    payments:
-      - type: ON_FULFILLMENT
-        id: LOAN_DISBURSMENT_ID
-        status: NOT-PAID
-        collected_by: CONSUMER
-        time:
-          label: LOAN_DISBURSMENT
-        params:
-          bank_account_number: "39713144375"
-          bank_code: SBI00012
-        tags:
-          - descriptor:
-              name: Account Details
-              code: ACCOUNT_DETAILS
-            list:
-              - descriptor:
-                  code: ACCOUNT_TYPE
-                  name: Account Type
-                value: Savings
-              - descriptor:
-                  code: ACCOUNT_HOLDER_NAME
-                  name: Account Holder Name
-                value: John Doe
-    cancellation_terms:
-      - fulfillment_state:
-          descriptor:
-            code: SANCTIONED
-        cancellation_fee:
-          percentage: 3%
-      - external_ref:
-          mimetype: text/html
-          url: https://bpp.credit.becknprotocol.org/tnc.html
-      - fulfillment_state:
-          descriptor:
-            code: DISBURSED
-        cancellation_fee:
-          percentage: 5%
-    documents:
-      - descriptor:
-          code: LOAN_AGREEMENT
-          name: Loan Agreement Document
-          short_desc: Download your Loan Agreement document here,
-          long_desc: A Loan Agreement Document is a legal contract outlining terms such as
-            loan amount, interest rate, repayment schedule, and
-            collateral, binding a lender and borrower in a formal
-            financial arrangement.
-        mime_type: application/pdf
-        url: https://lender.com/loan/loan-agreement/O1.pdf
-    tags:
-      - display: false
-        descriptor:
-          name: BAP Terms of Engagement
-          code: BAP_TERMS
-        list:
-          - descriptor:
-              code: STATIC_TERMS
-            value: >-
-              https://bap.credit.becknprotocol.io/working-capital/loans/working-capital
-          - descriptor:
-              code: OFFLINE_CONTRACT
-            value: 'true'
-      - display: false
-        descriptor:
-          name: BPP Terms of Engagement
-          code: BPP_TERMS
-        list:
-          - descriptor:
-              code: STATIC_TERMS
-            value: https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-          - descriptor:
-              code: OFFLINE_CONTRACT
-            value: "true"
-    status: ACTIVE
-    id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
-    created_at: '2026-06-05T09:41:48.163Z'
-    updated_at: '2026-06-05T09:41:48.163Z'
