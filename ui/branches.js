@@ -53,16 +53,16 @@ const BRANCHES = [
     short_desc: "Credit - Purchase Finance use case",
     status: "RELEASED",
   },
-  {
-    code: "release-FIS12-2.3.0",
-    name: "Credit Line",
-    short_desc: "Credit - Working Capital Line use case",
-    status: "RELEASED",
-  },
+  // {
+  //   code: "release-FIS12-2.3.0",
+  //   name: "Credit Line",
+  //   short_desc: "Credit - Working Capital Line use case",
+  //   status: "RELEASED",
+  // },
   {
     code: "draft-FIS12-2.3.0",
-    name: "Credit Line",
-    short_desc: "Credit - Unified Protocol use case",
+    name: "LAMF",
+    short_desc: "LAMF - Loan Against Mutual Funds use case",
     status: "DRAFT",
   },
   {
