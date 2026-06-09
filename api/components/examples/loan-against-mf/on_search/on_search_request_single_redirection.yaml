@@ -1,9 +1,9 @@
 context:
   domain: ONDC:FIS12
   action: on_search
-  timestamp: '2026-06-05T09:41:44.690Z'
+  timestamp: '2026-06-05T10:24:43.462Z'
   transaction_id: c751921f-ca28-4de5-b4e9-192cf3a38e43
-  message_id: 51a041d5-5075-493a-9861-00f5dc3b38d6
+  message_id: 6bd024c6-4130-42bf-bb92-5470698b1fa4
   bap_id: bap.example.com
   bap_uri: https://bap.example.com
   ttl: PT30S
@@ -29,29 +29,29 @@ message:
           short_desc: ICICI Bank Ltd
           long_desc: ICICI Bank Ltd, India.
         items:
-          - id: ITEM_ID_LAMF_4
+          - id: ITEM_ID_LAMF_5
             descriptor:
               code: LOAN
-              name: LAMF - Journey Offline
+              name: LAMF - Single Redirection
             category_ids:
               - "101118"
               - "104127"
               - "101119"
             matched: true
             fulfillment_ids:
-              - F19
+              - F18
             recommended: true
           - id: CHILD_ITEM_ID_LAMF_1
-            parent_item_id: ITEM_ID_LAMF_4
+            parent_item_id: ITEM_ID_LAMF_5
             descriptor:
               code: LOAN
-              name: LAMF - Journey Offline
+              name: LAMF - Single Redirection
             category_ids:
               - "101118"
               - "104127"
               - "101119"
             fulfillment_ids:
-              - F19
+              - F18
             price:
               currency: INR
               value: "2792"
@@ -256,8 +256,8 @@ message:
                       name: units_required
                     value: "150"
         fulfillments:
-          - id: F19
-            type: SEMI_ONLINE
+          - id: F18
+            type: ONLINE
             stops:
               - id: "1"
                 type: PERSONAL_INFORMATION_LAMF
@@ -267,24 +267,39 @@ message:
                   short_desc: Short desc about personal info checklist
               - id: "2"
                 parent_stop_id: "1"
-                type: JOURNEY_OFFLINE
+                type: SINGLE_REDIRECTION
                 instructions:
-                  name: Journey Offline
+                  name: Single Redirection
                   code: PENDING
-                  short_desc: Short desc about Journey Offline checklist
-        payments:
-          - type: POST_FULFILLMENT
-            id: INSTALLMENT_ID_LOAN
-            status: NOT-PAID
-            collected_by: BPP
-            time:
-              label: INSTALLMENT
-          - type: ON_FULFILLMENT
-            id: LOAN_DISBURSMENT_ID
-            status: NOT-PAID
-            collected_by: CONSUMER
-            time:
-              label: LOAN_DISBURSMENT
+                  short_desc: Short desc about Single Redirection checklist
+              - id: "3"
+                parent_stop_id: "2"
+                type: KYC
+                instructions:
+                  name: kyc
+                  code: PENDING
+                  short_desc: Short desc about kyc checklist
+              - id: "4"
+                parent_stop_id: "3"
+                type: EMANDATE
+                instructions:
+                  name: Emandate
+                  code: PENDING
+                  short_desc: Short desc about Emandate checklist
+              - id: "5"
+                parent_stop_id: "4"
+                type: LIEN_MARKING
+                instructions:
+                  name: Lien Marking
+                  code: PENDING
+                  short_desc: Short desc about Lien Marking checklist
+              - id: "6"
+                parent_stop_id: "5"
+                type: ESIGN
+                instructions:
+                  name: esign
+                  code: PENDING
+                  short_desc: Short desc about Esign checklist
         tags:
           - descriptor:
               code: CONTACT_INFO
@@ -335,15 +350,3 @@ message:
                   name: Lsp Address
                 value: One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841,
                   Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
-    tags:
-      - display: false
-        descriptor:
-          name: BPP Terms of Engagement
-          code: BPP_TERMS
-        list:
-          - descriptor:
-              code: STATIC_TERMS
-            value: https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-          - descriptor:
-              code: OFFLINE_CONTRACT
-            value: "true"

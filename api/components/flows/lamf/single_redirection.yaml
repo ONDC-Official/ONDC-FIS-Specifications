@@ -1,0 +1,376 @@
+summary: LAMF - Credit Line with MFC (Single Redirection)
+details:
+  - description: Discovery of Funds
+    mermaid: >-
+      sequenceDiagram
+        title Personal Loan Discovery
+        Borrower Platform (BAP)->>Gateway (BG): search
+        Gateway (BG) ->> Borrower Platform (BAP): ACK
+        Gateway (BG)->>Registry: Lookup Lender Platforms (lookup)
+        Registry->>Gateway (BG): List of Lender Platforms (200 OK)
+        Gateway (BG)->>Lender Platform(BPP): search
+        Lender Platform(BPP)->>Gateway (BG) : ACK
+        Lender Platform(BPP)->>Borrower Platform (BAP): Publish Catalog of Lender 1 (on_search)
+        Borrower Platform (BAP)->>Lender Platform(BPP): ACK
+  - description: Ordering
+    mermaid: >-
+      sequenceDiagram
+        title  Selection
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        participant Lender Form Service
+        Borrower Platform (BAP)->>Lender Form Service: Get Form(Org Form)
+        Lender Form Service-->>Borrower Platform (BAP): Form Received
+        Borrower Platform (BAP)->>Lender Form Service: Form Submission
+        Lender Form Service-->>Borrower Platform (BAP): Submission ID
+        Borrower Platform (BAP)->>Lender Platform (BPP): select(with submissionID)
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - description: Initializing the order
+    mermaid: >-
+      sequenceDiagram
+        title Initializing Order
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        participant Lender Form Service
+        Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+        Lender Form Service-->>Borrower Platform (BAP): Form Received
+        Borrower Platform (BAP)->>Lender Form Service: Form Submission
+        Lender Form Service-->>Borrower Platform (BAP): Submission ID
+        Borrower Platform (BAP)->>Lender Platform (BPP): init(with submissionID)
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_init
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - description: Order Confirmation
+    mermaid: >-
+      sequenceDiagram
+        title Order Confirmation
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        participant Lender Form Service
+        Borrower Platform (BAP)->>Lender Form Service: Get Form(Loan agreement)
+        Lender Form Service-->>Borrower Platform (BAP): Form Received
+        Borrower Platform (BAP)->>Lender Form Service: Form Submission
+        Lender Form Service-->>Borrower Platform (BAP): Submission ID
+        Borrower Platform (BAP)->>Lender Platform (BPP): confirm(with submissionID)
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+  - description: Fulfillment
+    mermaid: >-
+      sequenceDiagram
+        title MF Ordering - Order Fulfillment
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): status-Request loan application status
+        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_status - Provide loan application status
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+references: if any
+steps:
+  
+  - summary: The borrower shares the applicant details for the term loan form.
+    api: search
+    details:
+      - description: The BAP initiates a search for LAMF credit line offerings within a
+          specified geographic location and financial services domain, establishing
+          the transaction identity and routing parameters for the credit discovery
+          process.
+        mermaid: >-
+          sequenceDiagram
+            title  Personal Loan Discovery
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): search
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_on_search
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/search/search-request-single-redirection.yaml"
+  - summary: The BPP responds to the BAP's search inquiry with a catalog of
+      available credit product offerings matched to the specified location and
+      domain context.
+    api: on_search
+    details:
+      - description: The BPP responds to the BAP's search inquiry with a catalog of
+          available credit product offerings matched to the specified location and
+          domain context.
+        mermaid: >-
+          sequenceDiagram
+            title  Personal Loan Discovery
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            
+            Borrower Platform (BAP)->>Lender Platform (BPP): search(with submissionID)
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_on_search
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_search/on_search_request_single_redirection.yaml"
+
+
+  - summary:  BAP selects a credit product from the BPP's catalog, confirming the
+      customer's chosen offering and establishing the transaction parameters
+      including location context for the credit line origination journey.
+    api: select
+    details:
+      - description:  BAP selects a credit product from the BPP's catalog, confirming the
+          customer's chosen offering and establishing the transaction parameters
+          including location context for the credit line origination journey.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+           
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/select/select_request_single_redirection_1.yaml"
+  - summary: BPP confirms the customer's selected credit product and furnishes
+      the order containing offer terms and application parameters for the
+      customer to review and confirm.
+    api: on_select
+    details:
+      - description: BPP confirms the customer's selected credit product and furnishes
+          the order containing offer terms and application parameters for the
+          customer to review and confirm.
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+           
+            
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_select/on_select_request_single_redirection_1.yaml"    
+  
+
+  - summary: The borrower receives form for single redirection journey
+    api: form
+    details:
+      - description: The borrower receives form for  KYC, Lien Marking,Emandate etc.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+           
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/loan-against-mf/forms/loan-against-mf-kyc.html                        
+  
+  - summary: The BPP proactively notifies the BAP with unsolicited status
+      updates on the credit application's progress during the single redirection
+      journey
+    api: on_status
+    details:
+      - description: The BPP proactively notifies the BAP with unsolicited status
+            updates on the credit application's progress during the single redirection journey
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_status/on_status_request_single_redirection_1.yaml"
+  - summary: The BPP proactively notifies the BAP with unsolicited status
+      updates on the credit application's progress during the single redirection
+      journey
+    api: on_status
+    details:
+      - description: The BPP proactively notifies the BAP with unsolicited status
+            updates on the credit application's progress during the single redirection journey
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+           
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_status/on_status_request_single_redirection_2.yaml"
+  - summary: The BPP proactively notifies the BAP with unsolicited status
+      updates on the credit application's progress during the single redirection
+      journey
+    api: on_status
+    details:
+      - description: The BPP proactively notifies the BAP with unsolicited status
+            updates on the credit application's progress during the single redirection journey
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_status/on_status_request_single_redirection_3.yaml"
+  - summary: The BPP proactively notifies the BAP with unsolicited status
+      updates on the credit application's progress during the single redirection
+      journey
+    api: on_status
+    details:
+      - description: The BPP proactively notifies the BAP with unsolicited status
+            updates on the credit application's progress during the single redirection journey
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+           
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_status/on_status_request_single_redirection_4.yaml"
+       
+  - summary:  BAP shares the submission id of the single redirection form (Optional)
+    api: select
+    details:
+      - description: BAP shares the submission id of the single redirection form (Optional).
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+           
+            rect rgb(191, 223, 255) 
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/select/select_request_single_redirection_2.yaml"
+  - summary: BPP confirms the customer's selected credit product and furnishes
+      the order containing offer terms and application parameters for the
+      customer to review and confirm (Optional).
+    api: on_select
+    details:
+      - description: BPP confirms the customer's selected credit product and furnishes
+          the order containing offer terms and application parameters for the
+          customer to review and confirm (Optional).
+        mermaid: >-
+          sequenceDiagram
+            title  Selection
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+           
+            
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            rect rgb(191, 223, 255) 
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_select/on_select_request_single_redirection_2.yaml"    
+  
+
+
+
+  
+  - summary: The lender confirms the term loan order.
+    api: on_confirm
+    details:
+      - description: >-
+          The BPP confirms the customer's credit line application and returns
+          the finalized transaction details and confirmation status to the BAP.
+        mermaid: >-
+          sequenceDiagram
+            title Order Confirmation
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_confirm/on_confirm_request_single_redirection.yaml" 
+  
+ 
