@@ -1,5 +1,5 @@
 context:
-  action: on_select
+  action: on_init
   bap_id: fis.test.bap.io
   bap_uri: https://fis.test.bap.io/
   bpp_id: fis.test.bpp.io
@@ -10,22 +10,29 @@ context:
       code: IND
     city:
       code: '*'
-  message_id: 519da438-68dc-4f2c-bd10-79c0f88c3924
-  timestamp: "2023-07-24T05:40:26.618Z"
+  message_id: 0a73dfe8-84c7-4f01-99ea-5137f3a7ea3d
+  timestamp: "2023-07-24T05:41:01.775Z"
   transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
   ttl: PT24H
   version: 2.0.1
 message:
   order:
+    fulfillments:
+      - customer:
+          contact:
+            email: joe.adam@abc.org
+            phone: +91-9999999999
+        id: F1
+        type: POLICY
     items:
       - category_ids:
           - C1
           - C3
         descriptor:
-          name: Health Gain Plus Individual
-          short_desc: ABC Individaul Health Insurance Class A with custom addon
-        id: CHILD_ITEM_ID_I1 
-        parent_item_id: I1
+          name: Health Gain Plus Family
+          short_desc: short description of the Family Insurance Type 1
+        id: CHILD_ITEM_ID_I1
+        parent_item_id: I2
         price: 
           currency: INR
           value: '900'
@@ -63,7 +70,7 @@ message:
                 value: "No"
               - descriptor:
                   code: CASHLESS_HOSPITALS
-                value: "50" 
+                value: "50"
               - descriptor:
                   code: ROOM_CATEGORY
                 value: "Deluxe"
@@ -76,18 +83,20 @@ message:
         xinput:
           head:
             descriptor:
-              name: MANUAL REVIEW 
+              name: Proposer details
             index:
               min: 0
               cur: 0
-              max: 1
-            headings: 
+              max: 3
+            headings:
+              - PROPOSER_DETAILS
+              - NOMINEE_DETAILS
               - MANUAL_REVIEW
-              - EKYC
+              - CIS
           form:
-            id: FO4
-            mime_type: application/html
-            url: https://fis.test.bpp.io/form/ekyc_dtls?formid=FO4
+            id: FO6
+            mime_type: text/html
+            url: https://fis.test.bpp.io/form/medical_dtls?formid=FO6
             resubmit: true
             multiple_sumbissions: false
           required: true
@@ -119,7 +128,60 @@ message:
                   - descriptor:
                       code: NOMINEE_DETAILS
                       short_desc: Describes the format as 'Salutation | First Name | Middle Name | Last Name | Relationship | Contact Number' represents a full name structure, where the values are separated by a pipe (|) symbol
-                    value: "Mr. | Joe | Wick | Adams | Son | +91-9988776655"     
+                    value: "Mr. | Joe | Wick | Adams | Son | +91-9988776655"    
+    payments:
+      - id: payment_1
+        collected_by: BPP
+        # url: https://www.abcinsurance.com/pg-gateway/payment?amount=1100&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
+        status: NOT-PAID
+        type: PRE-FULFILLMENT
+        params:
+          # amount: "1100"
+          bank_account_number: "1800002341"
+          bank_code: SBIN0001234
+          currency: INR 
+        tags:
+          - descriptor:
+              code: BUYER_FINDER_FEES
+            display: false
+            list:
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_TYPE
+                value: "percent-annualized"
+              - descriptor: 
+                  code: BUYER_FINDER_FEES_PERCENTAGE
+                value: "1"
+          - descriptor:
+              code: SETTLEMENT_TERMS
+            display: false
+            list:
+              - descriptor: 
+                  code: SETTLEMENT_WINDOW
+                value: 'PT60M'
+              - descriptor: 
+                  code: SETTLEMENT_BASIS
+                value: 'Delivery'
+              - descriptor: 
+                  code: SETTLEMENT_TYPE
+                value: 'upi'
+              - descriptor: 
+                  code: MANDATORY_ARBITRATION
+                value: 'true'
+              - descriptor: 
+                  code: COURT_JURISDICTION
+                value: 'New Delhi'
+              - descriptor: 
+                  code: DELAY_INTEREST
+                value: '2.5'
+              - descriptor: 
+                  code: STATIC_TERMS
+                value: 'https://www.icicibank.com/personal-banking/loans/personal-loan'
+              - descriptor: 
+                  code: SETTLEMENT_AMOUNT
+                value: '1000'
+              - descriptor: 
+                  code: OFFLINE_CONTRACT
+                value: 'true' 
     provider:
       descriptor:
         long_desc: ABC Insurance Ltd. Deals in multiple Insurance Services like Health,
@@ -140,7 +202,7 @@ message:
         - price:
             value: "50"
             currency: INR
-          title: CONVIENCE_FEE   
+          title: CONVIENCE_FEE  
         - price:
             value: "40"
             currency: INR
@@ -161,3 +223,7 @@ message:
         currency: INR
         value: "1100"
       ttl: P15D  
+    cancellation_terms:
+      - external_ref: 
+          mimetype: text/html,
+          url: "https://fis.test.bpp.io/cancellation-terms"
