@@ -61,8 +61,8 @@ const BRANCHES = [
   // },
   {
     code: "draft-FIS12-2.3.0",
-    name: "LAMF",
-    short_desc: "LAMF - Loan Against Mutual Funds use case",
+    name: "LAMF | BL",
+    short_desc: "Baseline for LAMF & BL",
     status: "DRAFT",
   },
   {
@@ -75,39 +75,39 @@ const BRANCHES = [
     code: "release-FIS13-health",
     name: "Health Insurance",
     short_desc: "Insurance - Health Insurance",
-    status: "TO_BE_DEPRECATED",
+    status: "RELEASED",
   },
   {
     code: "release-FIS13-marine",
     name: "Marine Insurance",
     short_desc: "Insurance - Marine Insurance",
-    status: "TO_BE_DEPRECATED",
+    status: "RELEASED",
   },
   
   {
     code: "release-FIS13-motor",
     name: "Motor Insurance",
     short_desc: "Insurance - Motor Insurance",
-    status: "TO_BE_DEPRECATED",
-  },
-  {
-    code: "release-FIS13-2.0.1-health",
-    name: "Health Insurance",
-    short_desc: "Insurance - Health Insurance",
     status: "RELEASED",
   },
+  // {
+  //   code: "release-FIS13-2.0.1-health",
+  //   name: "Health Insurance",
+  //   short_desc: "Insurance - Health Insurance",
+  //   status: "RELEASED",
+  // },
   // {
   //   code: "release-FIS13-2.0.1-marine",
   //   name: "Marine Insurance",
   //   short_desc: "Insurance - Marine Insurance",
   //   status: "RELEASED",
   // },
-  {
-    code: "release-FIS13-2.0.1-motor",
-    name: "Motor Insurance",
-    short_desc: "Insurance - Motor Insurance",
-    status: "RELEASED",
-  },
+  // {
+  //   code: "release-FIS13-2.0.1-motor",
+  //   name: "Motor Insurance",
+  //   short_desc: "Insurance - Motor Insurance",
+  //   status: "RELEASED",
+  // },
   // {
   //   code: "draft-FIS13-life",
   //   name: "Life Insurance",
