@@ -31,8 +31,8 @@ const BRANCHES = [
   },
    {
     code: "draft-FIS12-2.0.3",
-    name: "Personal Loan | Gold Loan",
-    short_desc: "Baseline for PL and GL",
+    name: "Personal Loan | Gold Loan | Credit Card",
+    short_desc: "Baseline for PL, GL & CC",
     status: "DRAFT",
   },
   // {
