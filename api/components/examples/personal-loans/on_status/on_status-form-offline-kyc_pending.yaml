@@ -85,10 +85,15 @@ message:
               value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"   
         
     items:
-      - id: ITEM_ID_PERSONAL_LOAN_2
+      - id: ITEM_ID_PERSONAL_LOAN_1
         descriptor:
           code: PERSONAL_LOAN
-          name: Personal Loan
+          name: Personal Loan without AA - Offline Journey
+        category_ids:
+          - "101123"
+          - "101124"
+        fulfillment_ids:
+          - F1 
         price:
           currency: INR
           value: "233900"
@@ -158,6 +163,11 @@ message:
                   short_desc: Terms and Conditions
                 value: https://icicibank.com/loan/tnc.html
               - descriptor:
+                  code: COOL_OFF_PERIOD
+                  name: cool off period
+                  short_desc: Cooling off/look-up period during which borrower shall not be charged any penalty 
+                value: P30D  
+              - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
                   short_desc: Each installment amount of repayment
@@ -173,13 +183,78 @@ message:
             id: FO3
           form_response:
             status: OFFLINE_PENDING
-            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226  
-        
+            submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+    
+    fulfillments:
+      - id: F1
+        type: SEMI_ONLINE
+        customer:
+          person:
+            name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
+        state:
+          descriptor:
+            code: INITIATED
+        stops:
+          - id: "1"
+            type: PERSONAL_INFORMATION
+            instructions:
+              name: Personal Information
+              code: SUCCESSFUL
+              short_desc: Short desc about personal info checklist
+          - id: "2"
+            parent_stop_id: "1"
+            type: LOAN_OFFER
+            instructions:
+              name: Loan Offer
+              code: FINALIZED
+              short_desc: Short desc about loan offer checklist
+          - id: "3"
+            parent_stop_id: "2"
+            type: JOURNEY_OFFLINE
+            instructions:
+              name: Journey Offline
+              code: IN_PROGRESS
+              short_desc: Short desc about Journey Offline checklist
+          - id: "4"
+            parent_stop_id: "3"
+            type: KYC
+            instructions:
+              name: OFFLINE
+              code: INITIATED
+              short_desc: Short desc about KYC checklist
+          - id: "5"
+            parent_stop_id: "4"
+            type: BANK_ACCOUNT_VERIFICATION
+            instructions:
+              name: PENNY DROP
+              code: PENDING
+              short_desc: Short desc about Bank Account Verification checklist
+            
+          - id: "6"
+            parent_stop_id: "5"
+            type: REPAYMENT
+            instructions:
+              name: E-MANDATE
+              code: PENDING
+              short_desc: Short desc about repayment checklist
+            
+          - id: "7"
+            parent_stop_id: "6"
+            type: LOAN_AGREEMENT
+            instructions:
+              name: CLICKWRAP
+              code: PENDING
+              short_desc: Short desc about loan agreement checklist
+                        
+          
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "233900"
+        value: "232300"
       breakup:
         - title: PRINCIPAL
           price:
@@ -212,17 +287,5 @@ message:
         - title: OTHER_CHARGES
           price:
             value: "0"
-            currency: INR
-        - title: INSURANCE_PRODUCT_FEE
-          price:
-            value: "1000"
-            currency: INR
-        - title: TAX
-          price:
-            value: "100"
-            currency: INR
-        - title: INSURANCE_TOTAL_FEE
-          price:
-            value: "1100"
-            currency: INR            
+            currency: INR          
       ttl: PT15D

@@ -18,6 +18,7 @@ context:
 message:
   order:
     id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+    status: ACTIVE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -86,14 +87,25 @@ message:
                 name: Lsp Address
               value: One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841,
                 Senapati Bapat Marg, Elphinstone Road, Mumbai 400013
+      locations:
+        - id: L2
+          gps: 28.584909, 77.134029
+          descriptor:
+            name: Mumbai East
+          address: 162 Dadar, Mumbai, Maharashtra
+          area_code: "400001"          
     items:
       - id: ITEM_ID_GOLD_LOAN_1
         descriptor:
           code: LOAN
           name: Gold Loan
+        fulfillment_ids:
+          - F1  
         price:
           currency: INR
-          value: "232800"
+          value: "441800"
+        location_ids:
+          - L2  
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -171,7 +183,7 @@ message:
                   name: cool off period
                   short_desc: Cooling off/look-up period during which borrower shall not be	TAGS m
                     jayega charged any penalty
-                value: PT30D
+                value: P30D
               - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
@@ -193,15 +205,15 @@ message:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: "232800"
+        value: "442300"
       breakup:
         - title: PRINCIPAL
           price:
-            value: "200000"
+            value: "400000"
             currency: INR
         - title: INTEREST
           price:
-            value: "30000"
+            value: "40000"
             currency: INR
         - title: PROCESSING_FEE
           price:
@@ -217,15 +229,17 @@ message:
             currency: INR
         - title: NET_DISBURSED_AMOUNT
           price:
-            value: "197700"
+            value: "397700"
             currency: INR
         - title: OTHER_CHARGES
           price:
             value: "0"
             currency: INR
       ttl: PT15D
+    
     fulfillments:
-      - type: LOAN
+      - id: F1
+        type: SEMI_ONLINE
         customer:
           person:
             name: John Doe
@@ -235,102 +249,135 @@ message:
         state:
           descriptor:
             code: DISBURSED
+        stops:
+          - id: "1"
+            type: PERSONAL_INFORMATION
+            instructions:
+              name: Personal Information
+              code: SUCCESSFUL
+              short_desc: Short desc about personal info checklist
+          - id: "2"
+            parent_stop_id: "1"
+            type: LOAN_OFFER
+            instructions:
+              name: Loan Offer
+              code: SELECTED
+              short_desc: Short desc about loan offer checklist
+          - id: "3"
+            parent_stop_id: "2"
+            type: JOURNEY_OFFLINE
+            instructions:
+              name: Journey Offline
+              code: SUCCESSFUL
+              short_desc: Short desc about Journey Offline checklist
+          - id: "4"
+            parent_stop_id: "3"
+            type: KYC
+            instructions:
+              name: OFFLINE
+              code: SUCCESSFUL
+              short_desc: Short desc about KYC checklist
+          - id: "5"
+            parent_stop_id: "4"
+            type: BANK_ACCOUNT_VERIFICATION
+            instructions:
+              name: PENNY DROP
+              code: SUCCESSFUL
+              short_desc: Short desc about Bank Account Verification checklist
+          - id: "6"
+            parent_stop_id: "5"
+            type: REPAYMENT
+            instructions:
+              name: E-MANDATE
+              code: SUCCESSFUL
+              short_desc: Short desc about repayment checklist
+          - id: "7"
+            parent_stop_id: "6"
+            type: LOAN_AGREEMENT
+            instructions:
+              name: CLICKWRAP
+              code: SUCCESSFUL
+              short_desc: Short desc about LOAN_AGREEMENT checklist                 
+        
     payments:
-      - id: PAYMENT_ID_GOLD_LOAN
-        type: ON_ORDER
-        status: NOT-PAID
-        collected_by: BPP
-        tags:
-          - descriptor:
-              code: BUYER_FINDER_FEES
-            display: false
-            list:
-              - descriptor:
-                  code: BUYER_FINDER_FEES_TYPE
-                value: percent-annualized
-              - descriptor:
-                  code: BUYER_FINDER_FEES_PERCENTAGE
-                value: "1"
-          - descriptor:
-              code: SETTLEMENT_TERMS
-            display: false
-            list:
-              - descriptor:
-                  code: SETTLEMENT_WINDOW
-                value: PT60M
-              - descriptor:
-                  code: SETTLEMENT_BASIS
-                value: INVOICE_RECEIPT
-              - descriptor:
-                  code: MANDATORY_ARBITRATION
-                value: "TRUE"
-              - descriptor:
-                  code: COURT_JURISDICTION
-                value: New Delhi
-              - descriptor:
-                  code: STATIC_TERMS
-                value: https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-              - descriptor:
-                  code: SETTLEMENT_AMOUNT
-                value: "1159"
-              - descriptor:
-                  code: OFFLINE_CONTRACT
-                value: "true"
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID
+        status: PAID
+        collected_by: CONSUMER
+        time:
+          label: LOAN_DISBURSMENT
+          timestamp: '2023-05-25T05:23:03.443Z'
+        params: 
+          bank_code: XXXXXXXX
+          bank_account_number: xxxxxxxxxxxxxx
+          transaction_id: 4429e52c-5d41-4e24-ac2e-42eb2fa8f72b
+          amount: '397700'
+          currency: INR 
       - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_GOLD_LOAN
+        id: REPAYMENT_ID_GOLD_LOAN
         params:
-          amount: "46360"
+          amount: "442300"
           currency: INR
         status: NOT-PAID
         time:
-          label: INSTALLMENT
-          range:
-            start: "2023-06-01T00:00:00.000Z"
-            end: "2023-06-30T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_GOLD_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-07-01T00:00:00.000Z"
-            end: "2023-07-31T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_GOLD_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-08-01T00:00:00.000Z"
-            end: "2023-08-31T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_GOLD_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-09-30T23:59:59.999Z"
-            end: "2023-09-30T23:59:59.999Z"
-      - type: POST_FULFILLMENT
-        id: INSTALLMENT_ID_GOLD_LOAN
-        params:
-          amount: "46360"
-          currency: INR
-        status: NOT-PAID
-        time:
-          label: INSTALLMENT
-          range:
-            start: "2023-10-01T00:00:00.000Z"
-            end: "2023-10-31T23:59:59.999Z"
+          label: REPAYMENT
+          
+      # - type: POST_FULFILLMENT
+      #   id: INSTALLMENT_ID_GOLD_LOAN
+      #   params:
+      #     amount: "46360"
+      #     currency: INR
+      #   status: NOT-PAID
+      #   time:
+      #     label: INSTALLMENT
+      #     range:
+      #       start: "2023-06-01T00:00:00.000Z"
+      #       end: "2023-06-30T23:59:59.999Z"
+      # - type: POST_FULFILLMENT
+      #   id: INSTALLMENT_ID_GOLD_LOAN
+      #   params:
+      #     amount: "46360"
+      #     currency: INR
+      #   status: NOT-PAID
+      #   time:
+      #     label: INSTALLMENT
+      #     range:
+      #       start: "2023-07-01T00:00:00.000Z"
+      #       end: "2023-07-31T23:59:59.999Z"
+      # - type: POST_FULFILLMENT
+      #   id: INSTALLMENT_ID_GOLD_LOAN
+      #   params:
+      #     amount: "46360"
+      #     currency: INR
+      #   status: NOT-PAID
+      #   time:
+      #     label: INSTALLMENT
+      #     range:
+      #       start: "2023-08-01T00:00:00.000Z"
+      #       end: "2023-08-31T23:59:59.999Z"
+      # - type: POST_FULFILLMENT
+      #   id: INSTALLMENT_ID_GOLD_LOAN
+      #   params:
+      #     amount: "46360"
+      #     currency: INR
+      #   status: NOT-PAID
+      #   time:
+      #     label: INSTALLMENT
+      #     range:
+      #       start: "2023-09-30T23:59:59.999Z"
+      #       end: "2023-09-30T23:59:59.999Z"
+      # - type: POST_FULFILLMENT
+      #   id: INSTALLMENT_ID_GOLD_LOAN
+      #   params:
+      #     amount: "46360"
+      #     currency: INR
+      #   status: NOT-PAID
+      #   time:
+      #     label: INSTALLMENT
+      #     range:
+      #       start: "2023-10-01T00:00:00.000Z"
+      #       end: "2023-10-31T23:59:59.999Z"
+    
     cancellation_terms:
       - fulfillment_state:
           descriptor:
@@ -364,5 +411,29 @@ message:
             and confirming the loan's cancellation.
         mime_type: application/pdf
         url: https://lender.com/loan/loan-cancellation/O1.pdf  
+    tags:
+      - descriptor:
+          code: BAP_TERMS
+          name: BAP Terms of Engagement
+        display: false
+        list:
+          - descriptor: 
+              code: STATIC_TERMS
+            value: 'https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan'
+          - descriptor: 
+              code: OFFLINE_CONTRACT
+            value: 'true'
+      - descriptor:
+          code: BPP_TERMS
+          name: BPP Terms of Engagement
+        display: false
+        list:
+          - descriptor: 
+              code: STATIC_TERMS
+            value: 'https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan'
+          - descriptor: 
+              code: OFFLINE_CONTRACT
+            value: 'true' 
+        
     created_at: '2023-05-25T05:23:03.443Z'
     updated_at: '2023-05-25T05:23:03.443Z'

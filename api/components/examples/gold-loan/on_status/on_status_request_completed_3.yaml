@@ -12,7 +12,7 @@ context:
   bpp_id: bpp.credit.becknprotocol.org
   bpp_uri: https://bpp.credit.becknprotocol.org
   transaction_id: a9aaecca-10b7-4d19-b640-b047a7c62195
-  message_id: c8e3968c-cd78-4e46-aa34-0d541e46bd73
+  message_id: e11a831e-c1a0-4c3e-9120-4c3a59b6e876
   timestamp: "2023-05-25T05:23:03.443Z"
   ttl: P30M
 message:
@@ -97,6 +97,8 @@ message:
         descriptor:
           code: LOAN
           name: Gold Loan
+        fulfillment_ids:
+          - F1   
         price:
           currency: INR
           value: "441800"
@@ -179,7 +181,7 @@ message:
                   name: cool off period
                   short_desc: Cooling off/look-up period during which borrower shall not be	TAGS m
                     jayega charged any penalty
-                value: PT30D
+                value: P30D
               - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
@@ -238,10 +240,65 @@ message:
             currency: INR
       ttl: PT15D
     fulfillments:
-      - type: LOAN
-        # type: LOAN
+      - id: F1
+        type: SEMI_ONLINE
         agent:
           person:
             name: Rajesh Sharma
           contact:
             phone: +91-99xx99xx99xx
+        state:
+          descriptor:
+            code: DISBURSED
+        stops:
+          - id: "1"
+            type: PERSONAL_INFORMATION
+            instructions:
+              name: Personal Information
+              code: SUCCESSFUL
+              short_desc: Short desc about personal info checklist
+          - id: "2"
+            parent_stop_id: "1"
+            type: LOAN_OFFER
+            instructions:
+              name: Loan Offer
+              code: SELECTED
+              short_desc: Short desc about loan offer checklist
+          - id: "3"
+            parent_stop_id: "2"
+            type: JOURNEY_OFFLINE
+            instructions:
+              name: Journey Offline
+              code: SUCCESSFUL
+              short_desc: Short desc about Journey Offline checklist
+          - id: "4"
+            parent_stop_id: "3"
+            type: KYC
+            instructions:
+              name: OFFLINE
+              code: SUCCESSFUL
+              short_desc: Short desc about KYC checklist
+          - id: "5"
+            parent_stop_id: "4"
+            type: BANK_ACCOUNT_VERIFICATION
+            instructions:
+              name: PENNY DROP
+              code: SUCCESSFUL
+              short_desc: Short desc about Bank Account Verification checklist
+            
+          - id: "6"
+            parent_stop_id: "5"
+            type: REPAYMENT
+            instructions:
+              name: E-MANDATE
+              code: SUCCESSFUL
+              short_desc: Short desc about repayment checklist
+            
+          - id: "7"
+            parent_stop_id: "6"
+            type: LOAN_AGREEMENT
+            instructions:
+              name: CLICKWRAP
+              code: SUCCESSFUL
+              short_desc: Short desc about LOAN_AGREEMENT checklist                 
+            

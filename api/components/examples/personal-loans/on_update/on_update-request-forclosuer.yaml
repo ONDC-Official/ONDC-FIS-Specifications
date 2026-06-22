@@ -18,6 +18,7 @@ context:
 message:
   order:
     id: LOAN_LEAD_ID_OR_SIMILAR_ORDER_ID
+    status: ACTIVE
     provider:
       id: PROVIDER_ID
       descriptor:
@@ -86,10 +87,15 @@ message:
               value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"   
         
     items:
-      - id: ITEM_ID_PERSONAL_LOAN_2
+      - id: ITEM_ID_PERSONAL_LOAN_1
         descriptor:
           code: PERSONAL_LOAN
-          name: Personal Loan
+          name: Personal Loan without AA - Offline Journey
+        category_ids:
+          - "101123"
+          - "101124"
+        fulfillment_ids:
+          - F1
         price:
           currency: INR
           value: "233900"
@@ -161,8 +167,8 @@ message:
               - descriptor:
                   code: COOL_OFF_PERIOD
                   name: cool off period
-                  short_desc: Cooling off/look-up period during which borrower shall not be	TAGS m jayega charged any penalty 
-                value: PT30D
+                  short_desc: Cooling off/look-up period during which borrower shall not be charged any penalty 
+                value: P30D
               - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
@@ -220,21 +226,12 @@ message:
           price:
             value: "0"
             currency: INR 
-        - title: INSURANCE_PRODUCT_FEE
-          price:
-            value: "1000"
-            currency: INR
-        - title: TAX
-          price:
-            value: "100"
-            currency: INR
-        - title: INSURANCE_TOTAL_FEE
-          price:
-            value: "1100"
-            currency: INR                    
+                          
       ttl: PT15D
     fulfillments:
-      - customer:
+      - id: F1
+        type: SEMI_ONLINE
+        customer:
           person:
             name: John Doe
           contact:
@@ -243,8 +240,59 @@ message:
         state:
           descriptor:
             code: DISBURSED
+        stops:
+          - id: "1"
+            type: PERSONAL_INFORMATION
+            instructions:
+              name: Personal Information
+              code: SUCCESSFUL
+              short_desc: Short desc about personal info checklist
+          - id: "2"
+            parent_stop_id: "1"
+            type: LOAN_OFFER
+            instructions:
+              name: Loan Offer
+              code: SELECTED
+              short_desc: Short desc about loan offer checklist
+          - id: "3"
+            parent_stop_id: "2"
+            type: JOURNEY_OFFLINE
+            instructions:
+              name: Journey Offline
+              code: SUCCESSFUL
+              short_desc: Short desc about Journey Offline checklist
+          - id: "4"
+            parent_stop_id: "3"
+            type: KYC
+            instructions:
+              name: OFFLINE
+              code: SUCCESSFUL
+              short_desc: Short desc about KYC checklist
+          - id: "5"
+            parent_stop_id: "4"
+            type: BANK_ACCOUNT_VERIFICATION
+            instructions:
+              name: PENNY DROP
+              code: SUCCESSFUL
+              short_desc: Short desc about Bank Account Verification checklist
+            
+          - id: "6"
+            parent_stop_id: "5"
+            type: REPAYMENT
+            instructions:
+              name: E-MANDATE
+              code: SUCCESSFUL
+              short_desc: Short desc about repayment checklist
+          - id: "7"
+            parent_stop_id: "6"
+            type: LOAN_AGREEMENT
+            instructions:
+              name: CLICKWRAP
+              code: SUCCESSFUL
+              short_desc: Short desc about loan agreement checklist
+        
     payments:
-      - id: PAYMENT_ID_PERSONAL_LOAN
+      - id: LOAN_DISBURSMENT_ID
         url: https://pg.icici.com/?amount=148616&ref_id=b5487595-42c3-4e20-bd43-ae21400f60f0
         params:
           amount: "148616"
@@ -256,46 +304,19 @@ message:
           #   start: "2023-09-05T00:00:00.000Z"
           #   end: "2023-09-05T23:59:59.999Z"
         type: POST_FULFILLMENT  
-      - id: PAYMENT_ID_PERSONAL_LOAN
-        type: ON_ORDER
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID
         status: PAID
-        collected_by: BPP
-        tags:
-          - descriptor:
-              code: BUYER_FINDER_FEES
-            display: false
-            list:
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_TYPE
-                value: "percent-annualized"
-              - descriptor: 
-                  code: BUYER_FINDER_FEES_PERCENTAGE
-                value: "1"
-          - descriptor:
-              code: SETTLEMENT_TERMS
-            display: false
-            list:
-              - descriptor: 
-                  code: SETTLEMENT_WINDOW
-                value: 'PT60M'
-              - descriptor: 
-                  code: SETTLEMENT_BASIS
-                value: 'INVOICE_RECEIPT'
-              - descriptor: 
-                  code: MANDATORY_ARBITRATION
-                value: 'TRUE'
-              - descriptor: 
-                  code: COURT_JURISDICTION
-                value: 'New Delhi'
-              - descriptor: 
-                  code: STATIC_TERMS
-                value: 'https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan'
-              - descriptor: 
-                  code: SETTLEMENT_AMOUNT
-                value: '1159'
-              - descriptor: 
-                  code: OFFLINE_CONTRACT
-                value: 'true'
+        collected_by: CONSUMER
+        time:
+          label: LOAN_DISBURSMENT
+          timestamp: '2023-05-25T05:23:03.443Z'
+        params: 
+          bank_code: XXXXXXXX
+          bank_account_number: xxxxxxxxxxxxxx
+          transaction_id: 4429e52c-5d41-4e24-ac2e-42eb2fa8f72b
+          amount: '197700'
+          currency: INR
       - type: POST_FULFILLMENT
         id: INSTALLMENT_ID_PERSONAL_LOAN
         params:
@@ -385,5 +406,29 @@ message:
             obligations and confirming the loan's cancellation.
         mime_type: application/pdf
         url: https://lender.com/loan/loan-cancellation/O1.pdf 
+    tags:
+      - descriptor:
+          code: BAP_TERMS
+          name: BAP Terms of Engagement
+        display: false
+        list:
+          - descriptor: 
+              code: STATIC_TERMS
+            value: 'https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan'
+          - descriptor: 
+              code: OFFLINE_CONTRACT
+            value: 'true'
+      - descriptor:
+          code: BPP_TERMS
+          name: BPP Terms of Engagement
+        display: false
+        list:
+          - descriptor: 
+              code: STATIC_TERMS
+            value: 'https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan'
+          - descriptor: 
+              code: OFFLINE_CONTRACT
+            value: 'true' 
+        
     created_at: '2023-05-25T05:23:03.443Z'
     updated_at: '2023-05-25T05:23:03.443Z'     

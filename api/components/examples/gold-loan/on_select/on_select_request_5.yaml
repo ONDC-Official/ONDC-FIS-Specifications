@@ -109,6 +109,8 @@ message:
         descriptor:
           code: LOAN
           name: Gold Loan
+        fulfillment_ids:
+          - F1  
         price:
           currency: INR
           value: "441800"
@@ -193,7 +195,7 @@ message:
                   name: cool off period
                   short_desc: Cooling off/look-up period during which borrower shall not be	TAGS m
                     jayega charged any penalty
-                value: PT30D
+                value: P30D
               - descriptor:
                   code: INSTALLMENT_AMOUNT
                   name: Installment amount
@@ -210,24 +212,79 @@ message:
                     information as needed. For more details, refer to the
                     "KFS_LINK format" document in the "feature-ui" section.
                 value: https://icicibank.com/loan/kfs-terms
-        xinput:
-          head:
-            descriptor:
-              name: Set Loan Amount
-            index:
-              min: 0
-              cur: 0
-              max: 1
-            headings:
-              - SET_LOAN_AMOUNT
-              - JOURNEY_OFFLINE
-          form:
-            id: FO2
-            mime_type: text/html
-            url: https://https://bpp.credit.becknprotocol.org/loans-details/xinput?formid=FO2
-            resubmit: false
-            multiple_sumbissions: false
-          required: true
+        # xinput:
+        #   head:
+        #     descriptor:
+        #       name: Set Loan Amount
+        #     index:
+        #       min: 0
+        #       cur: 0
+        #       max: 1
+        #     headings:
+        #       - SET_LOAN_AMOUNT
+        #       - JOURNEY_OFFLINE
+        #   form:
+        #     id: FO2
+        #     mime_type: text/html
+        #     url: https://https://bpp.credit.becknprotocol.org/loans-details/xinput?formid=FO2
+        #     resubmit: false
+        #     multiple_sumbissions: false
+        #   required: true
+    fulfillments:
+      - id: F1
+        type: SEMI_ONLINE
+        stops:
+          - id: "1"
+            type: PERSONAL_INFORMATION
+            instructions:
+              name: Personal Information
+              code: SUCCESSFUL
+              short_desc: Short desc about personal info checklist
+          - id: "2"
+            parent_stop_id: "1"
+            type: LOAN_OFFER
+            instructions:
+              name: Loan Offer
+              code: FINALIZED
+              short_desc: Short desc about loan offer checklist
+          - id: "3"
+            parent_stop_id: "2"
+            type: JOURNEY_OFFLINE
+            instructions:
+              name: Journey Offline
+              code: PENDING
+              short_desc: Short desc about Journey Offline checklist
+          - id: "4"
+            parent_stop_id: "3"
+            type: KYC
+            instructions:
+              name: OFFLINE
+              code: PENDING
+              short_desc: Short desc about KYC checklist
+          - id: "5"
+            parent_stop_id: "4"
+            type: BANK_ACCOUNT_VERIFICATION
+            instructions:
+              name: PENNY DROP
+              code: PENDING
+              short_desc: Short desc about Bank Account Verification checklist
+            
+          - id: "6"
+            parent_stop_id: "5"
+            type: REPAYMENT
+            instructions:
+              name: E-MANDATE
+              code: PENDING
+              short_desc: Short desc about repayment checklist
+            
+          - id: "7"
+            parent_stop_id: "6"
+            type: LOAN_AGREEMENT
+            instructions:
+              name: CLICKWRAP
+              code: PENDING
+              short_desc: Short desc about LOAN_AGREEMENT checklist                 
+    
     quote:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:

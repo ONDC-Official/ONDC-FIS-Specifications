@@ -44,19 +44,22 @@ message:
               code: BUREAU_LOAN
               name: Bureau Loan
           - id: "101125"
-            parent_category_id: '101123'
+            parent_category_id: '100001'
             descriptor:
-              code: AA_PERSONAL_LOAN
-              name: Account Aggregator Loan        
+              code: PRE_QUALIFIER
+              name: Pre Qualifier  
+               
               
         items:
           - id: ITEM_ID_PERSONAL_LOAN_1
             descriptor:
               code: PERSONAL_LOAN
-              name: Personal Loan without AA
+              name: Personal Loan without AA - Offline Journey
             category_ids:
               - "101123"
               - "101124"
+            fulfillment_ids:
+              - F1  
             tags:
               - descriptor:
                   code: GENERAL_INFO
@@ -93,8 +96,6 @@ message:
                       short_desc: Loan Amount upto form 50,00,000
                     value: "5000000"
                 display: true
-            matched: true
-            recommended: true
             xinput:
               head:
                 descriptor:
@@ -115,10 +116,12 @@ message:
           - id: ITEM_ID_PERSONAL_LOAN_2
             descriptor:
               code: PERSONAL_LOAN
-              name: Personal Loan with AA
+              name: Personal Loan without AA - Single Redirection
             category_ids:
               - "101123"
-              - "101125"
+              - "101124"
+            fulfillment_ids:
+              - F2
             tags:
               - descriptor:
                   code: GENERAL_INFO
@@ -155,8 +158,6 @@ message:
                       short_desc: Loan Amount upto form 50,00,000
                     value: "5000000"
                 display: true
-            matched: true
-            recommended: true
             xinput:
               head:
                 descriptor:
@@ -166,7 +167,7 @@ message:
                   cur: 0
                   max: 0
                 headings:
-                  - Personal Information
+                  - PERSONAL_INFORMATION
               form:
                 id: F01
                 mime_type: text/html
@@ -174,42 +175,145 @@ message:
                 resubmit: false
                 multiple_sumbissions: false
               required: true
-        
+          - id: ITEM_ID_PERSONAL_LOAN_3
+            descriptor:
+              code: PRE_QUALIFIER
+              name: Pre Qualifier
+            category_ids:
+              - "101125"
+            fulfillment_ids:
+              - F3  
+
+        fulfillments:
+          - id: F1
+            type: SEMI_ONLINE
+            stops:
+              - id: "1"
+                type: PERSONAL_INFORMATION
+                instructions:
+                  name: Personal Information
+                  code: PENDING
+                  short_desc: Short desc about personal info checklist
+
+              - id: "2"
+                parent_stop_id: "1"
+                type: LOAN_OFFER
+                instructions:
+                  name: Loan Offer
+                  code: PENDING
+                  short_desc: Short desc about loan offer checklist
+
+              - id: "3"
+                parent_stop_id: "2"
+                type: JOURNEY_OFFLINE
+                instructions:
+                  name: Journey Offline
+                  code: PENDING
+                  short_desc: Short desc about Journey Offline checklist
+
+              - id: "4"
+                parent_stop_id: "3"
+                type: KYC
+                instructions:
+                  name: OFFLINE
+                  code: PENDING
+                  short_desc: Short desc about KYC checklist
+
+              - id: "5"
+                parent_stop_id: "4"
+                type: BANK_ACCOUNT_VERIFICATION
+                instructions:
+                  name: PENNY DROP
+                  code: PENDING
+                  short_desc: Short desc about Bank Account Verification checklist
+
+              - id: "6"
+                parent_stop_id: "5"
+                type: REPAYMENT
+                instructions:
+                  name: E-MANDATE
+                  code: PENDING
+                  short_desc: Short desc about repayment checklist
+                
+
+              - id: "7"
+                parent_stop_id: "6"
+                type: LOAN_AGREEMENT
+                instructions:
+                  name: CLICKWRAP
+                  code: PENDING
+                  short_desc: Short desc about LOAN_AGREEMENT checklist                
+
+          - id: F2
+            type: ONLINE
+            stops:
+              - id: "1"
+                type: PERSONAL_INFORMATION
+                instructions:
+                  name: Personal Information
+                  code: PENDING
+                  short_desc: Short desc about personal info checklist
+
+              - id: "2"
+                parent_stop_id: "1"
+                type: LOAN_OFFER
+                instructions:
+                  name: Loan Offer
+                  code: PENDING
+                  short_desc: Short desc about loan offer checklist
+
+              - id: "3"
+                parent_stop_id: "2"
+                type: SINGLE_REDIRECTION
+                instructions:
+                  name: Single Redirection
+                  code: PENDING
+                  short_desc: Short desc about Single Redirection checklist
+
+              - id: "4"
+                parent_stop_id: "3"
+                type: KYC
+                instructions:
+                  name: VKYC
+                  code: PENDING
+                  short_desc: Short desc about KYC checklist
+
+              - id: "5"
+                parent_stop_id: "4"
+                type: BANK_ACCOUNT_VERIFICATION
+                instructions:
+                  name: PENNY DROP
+                  code: PENDING
+                  short_desc: Short desc about Bank Account Verification checklist
+                
+
+              - id: "6"
+                parent_stop_id: "5"
+                type: REPAYMENT
+                instructions:
+                  name: E-MANDATE
+                  code: PENDING
+                  short_desc: Short desc about repayment checklist
+
+              - id: "7"
+                parent_stop_id: "6"
+                type: LOAN_AGREEMENT
+                instructions:
+                  name: CLICKWRAP
+                  code: PENDING
+                  short_desc: Short desc about LOAN_AGREEMENT checklist                      
+          
+          - id: F3
+            type: DEDUPE
+
         payments:
-          - collected_by: BPP
-            tags:
-              - descriptor:
-                  code: BUYER_FINDER_FEES
-                display: false
-                list:
-                  - descriptor: 
-                      code: BUYER_FINDER_FEES_TYPE
-                    value: "PERCENT_ANNUALIZED"
-                  - descriptor: 
-                      code: BUYER_FINDER_FEES_PERCENTAGE
-                    value: "1"
-              - descriptor:
-                  code: SETTLEMENT_TERMS
-                display: false
-                list:
-                  - descriptor: 
-                      code: SETTLEMENT_WINDOW
-                    value: 'PT30D'
-                  - descriptor: 
-                      code: SETTLEMENT_BASIS
-                    value: 'INVOICE_RECEIPT'
-                  - descriptor: 
-                      code: MANDATORY_ARBITRATION
-                    value: 'TRUE'
-                  - descriptor: 
-                      code: COURT_JURISDICTION
-                    value: 'New Delhi'
-                  - descriptor: 
-                      code: STATIC_TERMS
-                    value: 'https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan'
-                  - descriptor: 
-                      code: OFFLINE_CONTRACT
-                    value: 'true' 
+          - type: ON_FULFILLMENT
+            id: LOAN_DISBURSMENT_ID
+            status: NOT-PAID
+            collected_by: CONSUMER
+            time:
+              label: LOAN_DISBURSMENT
+            
         tags:
           - descriptor:
               code: CONTACT_INFO
@@ -259,4 +363,16 @@ message:
                   code: LSP_ADDRESS
                   name: Lsp Address
                 value: "One Indiabulls centre, Tower 1, 18th Floor Jupiter mill compound 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013"   
-        
+    tags:
+      - descriptor:
+          code: BPP_TERMS
+          name: BPP Terms of Engagement
+        display: false
+        list:
+          - descriptor: 
+              code: STATIC_TERMS
+            value: 'https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan'
+          - descriptor: 
+              code: OFFLINE_CONTRACT
+            value: 'true'
+    
