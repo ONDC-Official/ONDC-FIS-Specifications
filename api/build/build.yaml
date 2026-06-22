@@ -971,8 +971,6 @@ components:
           $ref: '#/components/schemas/XInput'
         external_ref:
           $ref: '#/components/schemas/MediaFile'
-        cancel_eligible:
-          type: boolean
     Catalog:
       description: >-
         Describes the products or services offered by a BPP. This is typically
@@ -1255,10 +1253,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
-        symbol:
-          description: URL to the image. This can be a data url or an remote url
-          type: string
-          format: uri
     Domain:
       description: >-
         Described the industry sector or sub-sector. The network policy should
@@ -1353,7 +1347,8 @@ components:
         data:
           description: The form submission data
           type: object
-          additionalProperties: true
+          additionalProperties:
+            type: string
         mime_type:
           description: >-
             This field indicates the nature and format of the form received by
@@ -1365,7 +1360,6 @@ components:
             - application/html
             - application/xml
             - text/html-multi
-            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -1908,9 +1902,6 @@ components:
             - REJECTED
             - CREATED
             - COMPLETED
-            - SOFT_CANCEL
-            - ON_HOLD
-            - IN_PROGRESS
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2140,7 +2131,6 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
-            - REFUND
         status:
           type: string
           enum:
@@ -2242,7 +2232,6 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -2931,6 +2920,12 @@ x-enum:
                     reference: <PR/Issue/Discussion Links md format text
                   - code: COMPLETED
                     description: When the overall process for loan gets over
+                    reference: <PR/Issue/Discussion Links md format text
+                  - code: DISPATCHED
+                    description: Credit card dispatched by the issuer.
+                    reference: <PR/Issue/Discussion Links md format text
+                  - code: APPROVED
+                    description: When a credit card application is initiated by the issuer.
                     reference: <PR/Issue/Discussion Links md format text
                   - code: ACCEPTED
                     description: Describes the state when as Accepted
@@ -20366,7 +20361,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: |-
+          value: |
             <!DOCTYPE html>
             <html lang="en">
 
@@ -20883,6 +20878,24 @@ x-flows:
                               name: Terms & Conditions
                               short_desc: Terms and Conditions
                             value: https://icicibank.com/loan/tnc.html
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                              short_desc: Mode of KYC
+                            value: OFFLINE
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Applicant Checklists
+                        list:
+                          - descriptor:
+                              code: IPA
+                              name: In-Principle Approval
+                            value: PENDING
+                          - descriptor:
+                              code: KYC
+                              name: 'KYC '
+                            value: PENDING
                         display: true
                     xinput:
                       form:
@@ -21094,6 +21107,24 @@ x-flows:
                               name: Everyday Benefits
                               short_desc: 1% fuel surcharge waiver on transactions
                             value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                              short_desc: Mode of KYC
+                            value: OFFLINE
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Applicant Checklists
+                        list:
+                          - descriptor:
+                              code: IPA
+                              name: In-Principle Approval
+                            value: COMPLETED
+                          - descriptor:
+                              code: KYC
+                              name: 'KYC '
+                            value: COMPLETED
                         display: true
                     xinput:
                       form:
@@ -21345,6 +21376,24 @@ x-flows:
                               name: Everyday Benefits
                               short_desc: 1% fuel surcharge waiver on transactions
                             value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                              short_desc: Mode of KYC
+                            value: OFFLINE
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Applicant Checklists
+                        list:
+                          - descriptor:
+                              code: IPA
+                              name: In-Principle Approval
+                            value: COMPLETED
+                          - descriptor:
+                              code: KYC
+                              name: 'KYC '
+                            value: COMPLETED
                         display: true
                 fulfillments:
                   - id: F1
@@ -21619,6 +21668,24 @@ x-flows:
                               name: Everyday Benefits
                               short_desc: 1% fuel surcharge waiver on transactions
                             value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                              short_desc: Mode of KYC
+                            value: OFFLINE
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Applicant Checklists
+                        list:
+                          - descriptor:
+                              code: IPA
+                              name: In-Principle Approval
+                            value: COMPLETED
+                          - descriptor:
+                              code: KYC
+                              name: 'KYC '
+                            value: COMPLETED
                         display: true
                 fulfillments:
                   - id: F1
@@ -21867,6 +21934,24 @@ x-flows:
                               name: Everyday Benefits
                               short_desc: 1% fuel surcharge waiver on transactions
                             value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: KYC_MODE
+                              name: KYC Mode
+                              short_desc: Mode of KYC
+                            value: OFFLINE
+                        display: true
+                      - descriptor:
+                          code: CHECKLISTS
+                          name: Applicant Checklists
+                        list:
+                          - descriptor:
+                              code: IPA
+                              name: In-Principle Approval
+                            value: COMPLETED
+                          - descriptor:
+                              code: KYC
+                              name: 'KYC '
+                            value: COMPLETED
                         display: true
                 fulfillments:
                   - id: F1
@@ -23537,7 +23622,7 @@ x-examples:
         examples:
           - summary: personal-info
             description: TBD
-            value: |-
+            value: |
               <!DOCTYPE html>
               <html lang="en">
 
