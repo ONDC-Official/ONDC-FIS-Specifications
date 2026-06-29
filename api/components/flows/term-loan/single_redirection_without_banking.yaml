@@ -154,6 +154,31 @@ steps:
     example:
       value:
         $ref: "../../examples/term-loan/on_select/on_select_bureau_single_redirection_1.yaml"    
+  - summary: The borrower receives form for single redirection journey
+    api: form
+    details:
+      - description: The borrower receives form for  KYC,Emandate etc.
+        mermaid: >-
+          sequenceDiagram
+            title Initializing Order
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+            Lender Form Service-->>Borrower Platform (BAP): Form Received
+            Borrower Platform (BAP)->>Lender Form Service: Form Submission
+            Lender Form Service-->>Borrower Platform (BAP): Submission ID
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+           
+    reference: if any
+    example:
+      value: 
+        $ref: ../../examples/loan-against-mf/forms/loan-against-mf-kyc.html                        
   
   - summary: The lender sends an unsolicited on_status call with the latest checklist status(KYC).
     api: on_status
