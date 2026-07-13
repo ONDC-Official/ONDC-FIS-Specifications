@@ -13,7 +13,7 @@ context:
   message_id: a214954f-fa49-4e10-baf4-c51b3dd22fd7
   timestamp: "2023-07-24T05:41:01.775Z"
   transaction_id: c04a04ee-d892-400f-bbe6-479a43b4448a
-  ttl: P24H
+  ttl: PT24H
   version: 2.0.0
 message:
   order:
@@ -83,14 +83,16 @@ message:
         xinput:
           head:
             descriptor:
-              name: Customer Information
+              name: CIS
             index:
               min: 0
               cur: 1
-              max: 1
+              max: 3
             headings:
-              - Proposer Details
-              - Nominee Details
+              - PROPOSER_DETAILS
+              - NOMINEE_DETAILS
+              - MANUAL_REVIEW
+              - CIS
           form:
             id: FO7
             mime_type: text/html
@@ -108,12 +110,31 @@ message:
               code: NO_CLAIM_BONUS
             price: 
               value: "100"
-              currency: "INR"  
+              currency: "INR" 
+            tags:
+              - descriptor:
+                  name: Info
+                  code: INFO
+                list:
+                  - descriptor:
+                      code: REQUIRED
+                    value: "TRUE"
+                  - descriptor:
+                      code: CUSTOMER_SELECTION
+                    value: "YES" 
+                  - descriptor:
+                      code: SUM_INSURED
+                    value: "50000"
+                  - descriptor:
+                      code: NOMINEE_DETAILS
+                      short_desc: Describes the format as 'Salutation | First Name | Middle Name | Last Name | Relationship | Contact Number' represents a full name structure, where the values are separated by a pipe (|) symbol
+                    value: "Mr. | Joe | Wick | Adams | Son | +91-9988776655"   
     payments:
-      - collected_by: BPP
-        url: https://www.abcinsurance.com/pg-gateway/payment?amount=1100&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
+      - id: payment_1
+        collected_by: BPP
+        # url: https://www.abcinsurance.com/pg-gateway/payment?amount=1100&txn_id=c04a04ee-d892-400f-bbe6-479a43b4448a
         status: NOT-PAID
-        type: PRE-ORDER
+        type: PRE-FULFILLMENT
         params:
           # amount: "1100"
           bank_account_number: "1800002341"
@@ -135,29 +156,8 @@ message:
             display: false
             list:
               - descriptor: 
-                  code: SETTLEMENT_WINDOW
-                value: 'PT60M'
-              - descriptor: 
-                  code: SETTLEMENT_BASIS
-                value: 'Delivery'
-              - descriptor: 
-                  code: SETTLEMENT_TYPE
-                value: 'upi'
-              - descriptor: 
-                  code: MANDATORY_ARBITRATION
-                value: 'true'
-              - descriptor: 
-                  code: COURT_JURISDICTION
-                value: 'New Delhi'
-              - descriptor: 
-                  code: DELAY_INTEREST
-                value: '2.5'
-              - descriptor: 
                   code: STATIC_TERMS
                 value: 'https://www.icicibank.com/personal-banking/loans/personal-loan'
-              - descriptor: 
-                  code: SETTLEMENT_AMOUNT
-                value: '1000'
               - descriptor: 
                   code: OFFLINE_CONTRACT
                 value: 'true'
