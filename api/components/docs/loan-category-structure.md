@@ -25,7 +25,8 @@ Loan
 │   │   ├── Personal Financing
 │   │   └── Consumer Invoice Financing
 │   │       ├── Agri Purchase Finance
-│   │       └── Electronics Purchase Finance
+│   │       ├── Electronics Purchase Finance
+│   │       └── Solar Purchase Finance
 │   │
 │   ├── Secured Personal
 │   │   ├── Gold Loan
@@ -134,6 +135,7 @@ Further divided into:
 
 - Agri Purchase Finance
 - Electronics Purchase Finance
+- Solar Purchase Finance
 
 ---
 

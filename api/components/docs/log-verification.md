@@ -83,7 +83,7 @@ The payload structure for validation is as follows:
 
 ```json
 {
-  "domain": "ONDC:FIS12",
+  "domain": "ONDC:FIS12:PF",
   "version": "2.0.0",
   "flow": "WORKING_CAPITAL_LOAN",
   "payload": {
