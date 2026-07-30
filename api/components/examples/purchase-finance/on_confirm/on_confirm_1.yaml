@@ -84,7 +84,6 @@ message:
         name: Solar Purchase Finance
       category_ids:
       - '101215'
-      - '101117'
       - '101211'
       fulfillment_ids:
       - F1
@@ -106,7 +105,7 @@ message:
             code: TERM
             name: Loan Term
             short_desc: Loans Duration in months
-          value: 6M
+          value: P6M
         - descriptor:
             code: INTEREST_RATE_TYPE
             name: Interest rate type
@@ -190,7 +189,7 @@ message:
           email: john.doe@example.com
       state:
         descriptor:
-          code: SANCTIONED
+          code: PARTIALLY_DISBURSED
       type: ONLINE
       id: F1
       stops:
@@ -289,196 +288,218 @@ message:
           currency: INR
       ttl: P15D
     payments:
-    - type: ON_FULFILLMENT
-      id: LOAN_DISBURSMENT_ID
-      status: NOT-PAID
-      collected_by: BAP
-      params:
-        amount: '180000'
-        currency: INR
-      time:
-        label: LOAN_DISBURSMENT
-        # timestamp: '2026-07-27T11:07:07.169Z'
-      # tags:
-      # - descriptor:
-      #     name: Account Details
-      #     code: ACCOUNT_DETAILS
-      #   list:
-      #   - descriptor:
-      #       code: ACCOUNT_TYPE
-      #       name: Account Type
-      #     value: SAVINGS
-      #   - descriptor:
-      #       code: ACCOUNT_HOLDER_NAME
-      #       name: Account Holder Name
-      #     value: John Doe
-    
-    - id: PAYMENT_ID_DOWNPAYMENT
-      type: PRE_ORDER
-      status: PAID
-      collected_by: BPP
-      params:
-        amount: '50000'
-        currency: INR
-        transaction_id: 3b5a664d-077e-47f0-96d1-06e68d397c78
-      time:
-        label: DOWNPAYMENT  
-    - type: POST_FULFILLMENT
-      id: INSTALLMENT_ID_PURCHASE_FINANCE
-      params:
-        amount: '22431'
-        currency: INR
-      status: NOT-PAID
-      time:
-        label: INSTALLMENT
-        range:
-          start: '2026-06-30T22:30:00.000Z'
-          end: '2026-07-31T18:29:59.999Z'
-      tags:
-      - descriptor:
-          code: BREAKUP
-          name: Emi Breakup
-        list:
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID
+        status: PARTIALLY-PAID
+        collected_by: BAP
+        params:
+          amount: '180000'
+          currency: INR
+        time:
+          label: LOAN_DISBURSEMENT
+        tags:
+          - descriptor:
+              code: BREAKUP
+              name: Breakup
+            list:
+            - descriptor:
+                code: PAYOUT
+                name: First Payout
+                short_desc: First payout will happen on order confirmation
+              value: 90000 INR
+            - descriptor:
+                code: PAYOUT
+                name: Second Payout
+                short_desc: Second payout will happen on intallation completion
+              value: 90000 INR   
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID_1
+        status: PAID
+        collected_by: BAP
+        params:
+          amount: '90000'
+          currency: INR
+          transaction_id: 9d54bbb3-a85f-4a9c-9794-c356e7b968b0
+        time:
+          label: LOAN_DISBURSEMENT
+          timestamp: '2026-07-27T11:07:07.165Z'
+      - type: ON_FULFILLMENT
+        id: LOAN_DISBURSMENT_ID_2
+        status: NOT-PAID
+        collected_by: BAP
+        params:
+          amount: '90000'
+          currency: INR
+        time:
+          label: LOAN_DISBURSEMENT
+      - id: PAYMENT_ID_DOWNPAYMENT
+        type: PRE_ORDER
+        status: PAID
+        collected_by: BPP
+        params:
+          amount: '50000'
+          currency: INR
+          transaction_id: 3b5a664d-077e-47f0-96d1-06e68d397c78
+        time:
+          label: DOWNPAYMENT 
+          timestamp: '2026-07-27T10:07:07.165Z' 
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PURCHASE_FINANCE
+        params:
+          amount: '22431'
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: '2026-06-30T22:30:00.000Z'
+            end: '2026-07-31T18:29:59.999Z'
+        tags:
+          - descriptor:
+              code: BREAKUP
+              name: Emi Breakup
+            list:
+            - descriptor:
+                code: PRINCIPAL_AMOUNT
+                name: Principal
+                short_desc: Loan Principal
+              value: 21131 INR
+            - descriptor:
+                code: INTEREST_AMOUNT
+                name: Interest
+                short_desc: Loan Interest
+              value: 1300 INR
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PURCHASE_FINANCE
+        params:
+          amount: '22431'
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: '2026-07-31T22:30:00.000Z'
+            end: '2026-08-31T18:29:59.999Z'
+        tags:
         - descriptor:
-            code: PRINCIPAL_AMOUNT
-            name: Principal
-            short_desc: Loan Principal
-          value: 21131 INR
+            code: BREAKUP
+            name: Emi Breakup
+          list:
+          - descriptor:
+              code: PRINCIPAL_AMOUNT
+              name: Principal
+              short_desc: Loan Principal
+            value: 21342 INR
+          - descriptor:
+              code: INTEREST_AMOUNT
+              name: Interest
+              short_desc: Loan Interest
+            value: 1089 INR
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PURCHASE_FINANCE
+        params:
+          amount: '22431'
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: '2026-08-31T22:30:00.000Z'
+            end: '2026-09-30T18:29:59.999Z'
+        tags:
         - descriptor:
-            code: INTEREST_AMOUNT
-            name: Interest
-            short_desc: Loan Interest
-          value: 1300 INR
-    - type: POST_FULFILLMENT
-      id: INSTALLMENT_ID_PURCHASE_FINANCE
-      params:
-        amount: '22431'
-        currency: INR
-      status: NOT-PAID
-      time:
-        label: INSTALLMENT
-        range:
-          start: '2026-07-31T22:30:00.000Z'
-          end: '2026-08-31T18:29:59.999Z'
-      tags:
-      - descriptor:
-          code: BREAKUP
-          name: Emi Breakup
-        list:
+            code: BREAKUP
+            name: Emi Breakup
+          list:
+          - descriptor:
+              code: PRINCIPAL_AMOUNT
+              name: Principal
+              short_desc: Loan Principal
+            value: 21556 INR
+          - descriptor:
+              code: INTEREST_AMOUNT
+              name: Interest
+              short_desc: Loan Interest
+            value: 875 INR
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PURCHASE_FINANCE
+        params:
+          amount: '22431'
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: '2026-09-30T22:30:00.000Z'
+            end: '2026-10-31T18:29:59.999Z'
+        tags:
         - descriptor:
-            code: PRINCIPAL_AMOUNT
-            name: Principal
-            short_desc: Loan Principal
-          value: 21342 INR
+            code: BREAKUP
+            name: Emi Breakup
+          list:
+          - descriptor:
+              code: PRINCIPAL_AMOUNT
+              name: Principal
+              short_desc: Loan Principal
+            value: 21771 INR
+          - descriptor:
+              code: INTEREST_AMOUNT
+              name: Interest
+              short_desc: Loan Interest
+            value: 660 INR
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PURCHASE_FINANCE
+        params:
+          amount: '22431'
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: '2026-10-31T22:30:00.000Z'
+            end: '2026-11-30T18:29:59.999Z'
+        tags:
         - descriptor:
-            code: INTEREST_AMOUNT
-            name: Interest
-            short_desc: Loan Interest
-          value: 1089 INR
-    - type: POST_FULFILLMENT
-      id: INSTALLMENT_ID_PURCHASE_FINANCE
-      params:
-        amount: '22431'
-        currency: INR
-      status: NOT-PAID
-      time:
-        label: INSTALLMENT
-        range:
-          start: '2026-08-31T22:30:00.000Z'
-          end: '2026-09-30T18:29:59.999Z'
-      tags:
-      - descriptor:
-          code: BREAKUP
-          name: Emi Breakup
-        list:
+            code: BREAKUP
+            name: Emi Breakup
+          list:
+          - descriptor:
+              code: PRINCIPAL_AMOUNT
+              name: Principal
+              short_desc: Loan Principal
+            value: 21989 INR
+          - descriptor:
+              code: INTEREST_AMOUNT
+              name: Interest
+              short_desc: Loan Interest
+            value: 442 INR
+      - type: POST_FULFILLMENT
+        id: INSTALLMENT_ID_PURCHASE_FINANCE
+        params:
+          amount: '22431'
+          currency: INR
+        status: NOT-PAID
+        time:
+          label: INSTALLMENT
+          range:
+            start: '2026-11-30T22:30:00.000Z'
+            end: '2026-12-31T18:29:59.999Z'
+        tags:
         - descriptor:
-            code: PRINCIPAL_AMOUNT
-            name: Principal
-            short_desc: Loan Principal
-          value: 21556 INR
-        - descriptor:
-            code: INTEREST_AMOUNT
-            name: Interest
-            short_desc: Loan Interest
-          value: 875 INR
-    - type: POST_FULFILLMENT
-      id: INSTALLMENT_ID_PURCHASE_FINANCE
-      params:
-        amount: '22431'
-        currency: INR
-      status: NOT-PAID
-      time:
-        label: INSTALLMENT
-        range:
-          start: '2026-09-30T22:30:00.000Z'
-          end: '2026-10-31T18:29:59.999Z'
-      tags:
-      - descriptor:
-          code: BREAKUP
-          name: Emi Breakup
-        list:
-        - descriptor:
-            code: PRINCIPAL_AMOUNT
-            name: Principal
-            short_desc: Loan Principal
-          value: 21771 INR
-        - descriptor:
-            code: INTEREST_AMOUNT
-            name: Interest
-            short_desc: Loan Interest
-          value: 660 INR
-    - type: POST_FULFILLMENT
-      id: INSTALLMENT_ID_PURCHASE_FINANCE
-      params:
-        amount: '22431'
-        currency: INR
-      status: NOT-PAID
-      time:
-        label: INSTALLMENT
-        range:
-          start: '2026-10-31T22:30:00.000Z'
-          end: '2026-11-30T18:29:59.999Z'
-      tags:
-      - descriptor:
-          code: BREAKUP
-          name: Emi Breakup
-        list:
-        - descriptor:
-            code: PRINCIPAL_AMOUNT
-            name: Principal
-            short_desc: Loan Principal
-          value: 21989 INR
-        - descriptor:
-            code: INTEREST_AMOUNT
-            name: Interest
-            short_desc: Loan Interest
-          value: 442 INR
-    - type: POST_FULFILLMENT
-      id: INSTALLMENT_ID_PURCHASE_FINANCE
-      params:
-        amount: '22431'
-        currency: INR
-      status: NOT-PAID
-      time:
-        label: INSTALLMENT
-        range:
-          start: '2026-11-30T22:30:00.000Z'
-          end: '2026-12-31T18:29:59.999Z'
-      tags:
-      - descriptor:
-          code: BREAKUP
-          name: Emi Breakup
-        list:
-        - descriptor:
-            code: PRINCIPAL_AMOUNT
-            name: Principal
-            short_desc: Loan Principal
-          value: 22209 INR
-        - descriptor:
-            code: INTEREST_AMOUNT
-            name: Interest
-            short_desc: Loan Interest
-          value: 222 INR
+            code: BREAKUP
+            name: Emi Breakup
+          list:
+          - descriptor:
+              code: PRINCIPAL_AMOUNT
+              name: Principal
+              short_desc: Loan Principal
+            value: 22209 INR
+          - descriptor:
+              code: INTEREST_AMOUNT
+              name: Interest
+              short_desc: Loan Interest
+            value: 222 INR
+      
     tags:
     - display: false
       descriptor:
@@ -512,15 +533,15 @@ message:
           a lender and borrower in a formal financial arrangement.
       mime_type: application/pdf
       url: https://lender.com/loan/loan-agreement/O1.pdf
-    - descriptor:
-        code: LOAN_CANCELLATION
-        name: Loan Cancellation Document
-        short_desc: Download your Loan Cancellation document here,
-        long_desc: A Loan Cancellation Document is a formal agreement used to terminate
-          an existing loan, releasing the borrower from repayment obligations and
-          confirming the loan's cancellation.
-      mime_type: application/pdf
-      url: https://lender.com/loan/loan-cancellation/O1.pdf
+    # - descriptor:
+    #     code: LOAN_CANCELLATION
+    #     name: Loan Cancellation Document
+    #     short_desc: Download your Loan Cancellation document here,
+    #     long_desc: A Loan Cancellation Document is a formal agreement used to terminate
+    #       an existing loan, releasing the borrower from repayment obligations and
+    #       confirming the loan's cancellation.
+    #   mime_type: application/pdf
+    #   url: https://lender.com/loan/loan-cancellation/O1.pdf
     status: ACTIVE
     id: SOLAR_LOAN_ID
     created_at: '2026-07-27T11:07:07.169Z'
