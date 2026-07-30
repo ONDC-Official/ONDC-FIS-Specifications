@@ -66,6 +66,12 @@ const BRANCHES = [
     status: "DRAFT",
   },
   {
+    code: "draft-FIS12-2.3.0-PF",
+    name: "Purchase Finance",
+    short_desc: "Baseline for Solar PF",
+    status: "DRAFT",
+  },
+  {
     code: "release-FIS13-2.0.0-sachet",
     name: "Sachet Insurance",
     short_desc: "Insurance Sachet",
