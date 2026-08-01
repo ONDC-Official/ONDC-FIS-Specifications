@@ -1,9 +1,28 @@
+const REPO = "ONDC-Official/ONDC-FIS-Specifications";
+
 function getStringAfterEquals(inputString) {
   const index = inputString.indexOf("=");
   if (index !== -1) {
     return inputString.slice(index + 1).trim();
   } else {
     return "";
+  }
+}
+
+// Read the use-case status (info.status) straight from a branch's built spec.
+// Only the head of build.yaml (before `paths:`) is parsed, which holds the info block.
+async function fetchBranchStatus(branchCode) {
+  try {
+    const url = `https://raw.githubusercontent.com/${REPO}/${branchCode}/api/build/build.yaml`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const text = await res.text();
+    const head = text.split(/\npaths:/)[0];
+    const spec = jsyaml.load(head);
+    return spec?.info?.status || null;
+  } catch (error) {
+    console.log("Error fetching status for", branchCode, error?.message || error);
+    return null;
   }
 }
 
@@ -235,15 +254,22 @@ async function renderBranchesTable() {
     TO_BE_DEPRECATED: "#ff851b"
   };
 
+  // Prefer the status declared in each branch's build.yaml (info.status);
+  // fall back to the hardcoded value only for branches that haven't added it yet.
+  const statuses = await Promise.all(
+    filteredBranches.map((branch) => fetchBranchStatus(branch.code))
+  );
+
   let tableBody = ''
 
-  filteredBranches.forEach(branch => {
+  filteredBranches.forEach((branch, i) => {
+    const status = statuses[i] || branch.status
     tableBody += `
     <tr>
     <td>${branch.name}</td>
     <td>${branch.short_desc}</td>
     <td>
-      <span class="badge" style="background-color: ${statusColors[branch.status]};"> ${branch.status}</span>
+      <span class="badge" style="background-color: ${statusColors[status]};"> ${status}</span>
     </td>
     <td class="branchLink" onClick="resolveHomePage('${branch.code}')">${branch.code}</td>
     </tr>
