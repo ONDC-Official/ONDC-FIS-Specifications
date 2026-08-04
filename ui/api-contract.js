@@ -19,7 +19,7 @@ async function fetchBranchStatus(branchCode) {
     const text = await res.text();
     const head = text.split(/\npaths:/)[0];
     const spec = jsyaml.load(head);
-    return spec?.info?.status || null;
+    return spec?.info?.branch_status || null;
   } catch (error) {
     console.log("Error fetching status for", branchCode, error?.message || error);
     return null;
