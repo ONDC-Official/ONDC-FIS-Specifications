@@ -1,15 +1,16 @@
 search:
   message:
     intent:
-      payment: &payment
-        $ref: "./tag-group.yaml#/payment"
+      tags: &bapTerms
+        $ref: "./tag-group.yaml#/bapTerms" 
 on_search:
   message:
     catalog:
       providers:
         items: &items
           $ref: "./tag-group.yaml#/items"
-        payments: *payment
+      tags: &bppTerms
+        $ref: "./tag-group.yaml#/bppTerms" 
 select:
   message:
     order:
@@ -21,23 +22,31 @@ on_select:
 init: 
   message:
     order:
-      payments: *payment
-on_init: &ref0
+      tags: *bapTerms
+on_init: 
   message:
     order:
       items: &items
         $ref: "./tag-group.yaml#/items"
-      payments: *payment
-confirm: *ref0
+      tags: *bppTerms  
+confirm: &ref0
+  message:
+    order:
+      items: *items
+      tags: 
+        - $ref: "./tag-group.yaml#/bapTerms/0" 
+        - $ref: "./tag-group.yaml#/bppTerms/0" 
 on_confirm: *ref0
 
 on_cancel: *ref0
 on_update: &ref1
   message:
     order:
-      items: &items
-        $ref: "./tag-group.yaml#/items"
-      payments: *payment
+      items: *items
+      # payments: *payment
       fulfillments:
           - $ref: "./tag-group.yaml#/fulfillments"
+      tags: 
+        - $ref: "./tag-group.yaml#/bapTerms/0" 
+        - $ref: "./tag-group.yaml#/bppTerms/0"     
 on_status: *ref1      
