@@ -3201,38 +3201,18 @@ x-tags:
   search:
     message:
       intent:
-        payment: &ref_9
-          tags:
-            - code: BUYER_FINDER_FEES
-              description: Describes the finder fees for buyer
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: BUYER_FINDER_FEES_TYPE
-                  description: Buyer finder fee type
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_PERCENTAGE
-                  description: Buyer finder fee in percentage
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: BUYER_FINDER_FEES_AMOUNT
-                  description: Buyer finder fee in amount
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: SETTLEMENT_TERMS
-              description: Describes the settlement terms
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: STATIC_TERMS
-                  description: Terms for settlement
-                  reference: <PR/Issue/Discussion Links md format text>
-                - code: OFFLINE_CONTRACT
-                  description: Denotes offline contract
-                  reference: <PR/Issue/Discussion Links md format text>
-            - code: ERROR_INFORMATION
-              description: Describes the error information
-              reference: <PR/Issue/Discussion Links md format text>
-              list:
-                - code: REASON_MESSAGE
-                  description: Describes the message for payment failure
-                  reference: <PR/Issue/Discussion Links md format text>
+        tags: &ref_11
+          - &ref_13
+            code: BAP_TERMS
+            description: Describes the BAP Terms
+            reference: <PR/Issue/Discussion Links md format text>
+            list: &ref_9
+              - code: STATIC_TERMS
+                description: Terms for settlement
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OFFLINE_CONTRACT
+                description: Denotes offline contract
+                reference: <PR/Issue/Discussion Links md format text>
   on_search:
     message:
       catalog:
@@ -3501,7 +3481,12 @@ x-tags:
                         represents a full name structure, where the values are
                         separated by a pipe (|) symbol
                       reference: <PR/Issue/Discussion Links md format text>
-          payments: *ref_9
+        tags: &ref_12
+          - &ref_14
+            code: BPP_TERMS
+            description: Describes the BPP Terms
+            reference: <PR/Issue/Discussion Links md format text>
+            list: *ref_9
   select:
     message:
       order:
@@ -3513,23 +3498,34 @@ x-tags:
   init:
     message:
       order:
-        payments: *ref_9
+        tags: *ref_11
   on_init:
     message:
       order:
         items: *ref_10
-        payments: *ref_9
-  confirm: &ref_11
+        payments: &ref_16
+          tags:
+            - code: ERROR_INFORMATION
+              description: Describes the error information
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: REASON_MESSAGE
+                  description: Describes the message for payment failure
+                  reference: <PR/Issue/Discussion Links md format text>
+        tags: *ref_12
+  confirm: &ref_15
     message:
       order:
         items: *ref_10
-        payments: *ref_9
-  on_confirm: *ref_11
-  on_status: &ref_12
+        tags:
+          - *ref_13
+          - *ref_14
+  on_confirm: *ref_15
+  on_status: &ref_17
     message:
       order:
         items: *ref_10
-        payments: *ref_9
+        payments: *ref_16
         fulfillments:
           tags:
             - code: INFO
@@ -3545,8 +3541,11 @@ x-tags:
                 - code: REF_ID
                   description: Describes the reference id.
                   reference: <PR/Issue/Discussion Links md format text>
-  on_cancel: *ref_12
-  on_update: *ref_12
+        tags:
+          - *ref_13
+          - *ref_14
+  on_cancel: *ref_17
+  on_update: *ref_17
 x-flows:
   - summary: Motor Insurance Application
     details:
@@ -3640,7 +3639,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: &ref_13
+          value: &ref_18
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -3661,34 +3660,24 @@ x-flows:
                 category:
                   descriptor:
                     code: MOTOR_INSURANCE
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 fulfillment:
                   agent:
                     person:
                       id: 0120TRVK
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BUYER_FINDER_FEES
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                    - descriptor:
-                        code: SETTLEMENT_TERMS
-                      display: false
-                      list:
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: >-
           Insurer provides a catalog of different insurance products offered by
           a single lender
@@ -3713,7 +3702,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_14
+          value: &ref_19
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -3733,6 +3722,18 @@ x-flows:
               version: 2.0.0
             message:
               catalog:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 descriptor:
                   name: ABC Insurance Ltd
                 providers:
@@ -4027,28 +4028,6 @@ x-flows:
                               code: DAILY_ALLOWANCE
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: percent-annualized
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TERMS
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://www.icicibank.com/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
       - summary: Buyer app fetches the vehicle details form
         api: form
         details:
@@ -4209,7 +4188,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_15
+          value: &ref_20
             context:
               action: search
               bap_id: fis.test.bap.io
@@ -4242,30 +4221,20 @@ x-flows:
                         form_response:
                           status: SUCCESS
                           submission_id: e9a3b4a5-10f8-42c7-b888-dbf0e2edd684
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 payment:
                   collected_by: BPP
-                  tags:
-                    - descriptor:
-                        code: BUYER_FINDER_FEES
-                      display: false
-                      list:
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_TYPE
-                          value: percent-annualized
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_PERCENTAGE
-                          value: '1'
-                    - descriptor:
-                        code: SETTLEMENT_TERMS
-                      display: false
-                      list:
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
       - summary: Insurer provides a catalog of different insurance offers
         api: on_search
         details:
@@ -4293,7 +4262,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_16
+          value: &ref_21
             context:
               action: on_search
               bap_id: fis.test.bap.io
@@ -4313,6 +4282,18 @@ x-flows:
               version: 2.0.0
             message:
               catalog:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 descriptor:
                   name: ABC Insurance Ltd
                 providers:
@@ -4813,28 +4794,6 @@ x-flows:
                               code: DAILY_ALLOWANCE
                     payments:
                       - collected_by: BPP
-                        tags:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_TYPE
-                                value: percent-annualized
-                              - descriptor:
-                                  code: BUYER_FINDER_FEES_PERCENTAGE
-                                value: '1'
-                          - descriptor:
-                              code: SETTLEMENT_TERMS
-                            display: false
-                            list:
-                              - descriptor:
-                                  code: STATIC_TERMS
-                                value: >-
-                                  https://www.icicibank.com/personal-banking/loans/personal-loan
-                              - descriptor:
-                                  code: OFFLINE_CONTRACT
-                                value: 'true'
       - summary: Buyer app selects a vehicle insurance for more details
         api: select
         details:
@@ -4854,7 +4813,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_17
+          value: &ref_22
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -4929,7 +4888,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: &ref_18
+          value: &ref_23
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5232,7 +5191,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_19
+          value: &ref_24
             context:
               action: status
               bap_id: fis.test.bap.io
@@ -5275,7 +5234,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_20
+          value: &ref_25
             context:
               action: on_status
               bap_id: fis.test.bap.io
@@ -5533,7 +5492,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_21
+          value: &ref_26
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5587,7 +5546,7 @@ x-flows:
                  end
         reference: if any
         example:
-          value: &ref_22
+          value: &ref_27
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -5914,7 +5873,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_28
             context:
               action: select
               bap_id: fis.test.bap.io
@@ -5976,7 +5935,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_29
             context:
               action: on_select
               bap_id: fis.test.bap.io
@@ -6281,7 +6240,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_36
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6308,6 +6267,18 @@ x-flows:
                         phone: +91-9999999999
                       person:
                         name: Joe Adam
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 items:
@@ -6333,28 +6304,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized motor insurance plan.
         api: on_init
         details:
@@ -6379,7 +6328,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_33
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -6620,28 +6569,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -6800,7 +6739,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_34
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -6828,6 +6767,18 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 items:
@@ -6854,28 +6805,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized motor insurance plan
         api: on_init
         details:
@@ -6900,7 +6829,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_35
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -7141,28 +7070,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -7365,6 +7284,18 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 items:
@@ -7391,28 +7322,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the CIS form link
         api: on_init
         details:
@@ -7676,28 +7585,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -7791,7 +7690,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_40
             context:
               action: confirm
               bap_id: fis.test.bap.io
@@ -7811,6 +7710,29 @@ x-flows:
               version: 2.0.0
             message:
               order:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 fulfillments:
@@ -7848,28 +7770,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer confirms the motor insurance order
         api: on_confirm
         details:
@@ -7897,7 +7797,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_38
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -8121,28 +8021,29 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8215,7 +8116,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_37
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -8437,28 +8338,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8546,7 +8448,7 @@ x-flows:
                  Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_41
             context:
               action: update
               bap_id: fis.test.bap.io
@@ -8589,7 +8491,7 @@ x-flows:
                  end
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_42
             context:
               action: on_update
               bap_id: fis.test.bap.io
@@ -8811,28 +8713,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -8993,7 +8896,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_18
       - summary: >-
           Insurer provides a catalog of different insurance products offered by
           a single lender
@@ -9018,7 +8921,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_19
       - summary: Buyer app fetches the vehicle details form
         api: form
         details:
@@ -9179,7 +9082,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_20
       - summary: Insurer provides a catalog of different insurance offers
         api: on_search
         details:
@@ -9207,7 +9110,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_21
       - summary: Buyer app selects a vehicle insurance for more details
         api: select
         details:
@@ -9227,7 +9130,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: Insurer returns the response to selected motor insurance plan
         api: on_select
         details:
@@ -9246,7 +9149,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_23
       - summary: Buyer app fetches the manual review form
         api: form
         details:
@@ -9295,7 +9198,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: Insurer shares the latest manual review application status
         api: on_status
         details:
@@ -9319,7 +9222,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_25
       - summary: Buyer app selects a vehicle insurance for more details
         api: select
         details:
@@ -9338,7 +9241,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_26
       - summary: Insurer returns the response to selected motor insurance plan
         api: on_select
         details:
@@ -9357,7 +9260,7 @@ x-flows:
                  end
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_27
       - summary: Buyer app fetches the PAN and DOB details form
         api: form
         details:
@@ -9430,7 +9333,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_28
       - summary: Insurer returns the response to selected motor insurance plan
         api: on_select
         details:
@@ -9457,7 +9360,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_29
       - summary: Buyer app fetches the adhar KYC details form
         api: form
         details:
@@ -9508,7 +9411,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_30
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -9535,6 +9438,18 @@ x-flows:
                         phone: +91-9999999999
                       person:
                         name: Joe Adam
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 items:
@@ -9560,28 +9475,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized motor insurance plan.
         api: on_init
         details:
@@ -9847,28 +9740,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -10027,7 +9910,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_31
             context:
               action: init
               bap_id: fis.test.bap.io
@@ -10055,6 +9938,18 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 items:
@@ -10081,28 +9976,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer returns the response to initailized motor insurance plan
         api: on_init
         details:
@@ -10368,28 +10241,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -10592,6 +10455,18 @@ x-flows:
                       person:
                         name: Joe Adam
                     id: F1
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 items:
@@ -10618,28 +10493,6 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: SBIN0001234
                       currency: INR
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: >-
           The insurer returns a response containing the CIS form with an
           embedded payment link within the form.
@@ -10666,7 +10519,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_39
             context:
               action: on_init
               bap_id: fis.test.bap.io
@@ -10907,28 +10760,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -11253,28 +11096,18 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -11362,6 +11195,29 @@ x-flows:
               version: 2.0.0
             message:
               order:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 fulfillments:
@@ -11400,28 +11256,6 @@ x-flows:
                       bank_code: SBIN0001234
                       currency: INR
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer confirms the motor insurance order
         api: on_confirm
         details:
@@ -11448,7 +11282,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_32
             context:
               action: on_confirm
               bap_id: fis.test.bap.io
@@ -11670,28 +11504,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -11852,7 +11687,7 @@ x-flows:
                 Buyer Platform (BAP)->>Insurer Platform (BPP): ACK    
         reference: if any
         example:
-          value: *ref_13
+          value: *ref_18
       - summary: >-
           Insurer provides a catalog of different insurance products offered by
           a single lender
@@ -11877,7 +11712,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_14
+          value: *ref_19
       - summary: Buyer app fetches the vehicle details form
         api: form
         details:
@@ -12038,7 +11873,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_15
+          value: *ref_20
       - summary: Insurer provides a catalog of different insurance offers
         api: on_search
         details:
@@ -12066,7 +11901,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_16
+          value: *ref_21
       - summary: Buyer app selects a vehicle insurance for more details
         api: select
         details:
@@ -12086,7 +11921,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_17
+          value: *ref_22
       - summary: Insurer returns the response to selected motor insurance plan
         api: on_select
         details:
@@ -12105,7 +11940,7 @@ x-flows:
                 end 
         reference: if any
         example:
-          value: *ref_18
+          value: *ref_23
       - summary: Buyer app fetches the manual review form
         api: form
         details:
@@ -12154,7 +11989,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: Insurer shares the latest manual review application status
         api: on_status
         details:
@@ -12178,7 +12013,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_20
+          value: *ref_25
       - summary: Buyer app selects a vehicle insurance for more details
         api: select
         details:
@@ -12197,7 +12032,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_21
+          value: *ref_26
       - summary: Insurer returns the response to selected motor insurance plan
         api: on_select
         details:
@@ -12216,7 +12051,7 @@ x-flows:
                  end
         reference: if any
         example:
-          value: *ref_22
+          value: *ref_27
       - summary: Buyer app fetches the PAN and DOB details form
         api: form
         details:
@@ -12289,7 +12124,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_28
       - summary: Insurer returns the response to selected motor insurance plan
         api: on_select
         details:
@@ -12316,7 +12151,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_29
       - summary: Buyer app fetches the adhar KYC details form
         api: form
         details:
@@ -12367,7 +12202,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK 
         reference: if any
         example:
-          value: *ref_25
+          value: *ref_30
       - summary: Insurer returns the response to initailized motor insurance plan.
         api: on_init
         details:
@@ -12632,28 +12467,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -12812,7 +12637,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_26
+          value: *ref_31
       - summary: Insurer returns the response to initailized motor insurance plan
         api: on_init
         details:
@@ -13079,28 +12904,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -13503,28 +13318,18 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-ORDER
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -13612,6 +13417,29 @@ x-flows:
               version: 2.0.0
             message:
               order:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                 fulfillments:
@@ -13650,28 +13478,6 @@ x-flows:
                       bank_code: SBIN0001234
                       currency: INR
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
-                    tags:
-                      - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
       - summary: Insurer confirms the motor insurance order
         api: on_confirm
         details:
@@ -13698,7 +13504,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_27
+          value: *ref_32
   - summary: Form Status for text/html
     details:
       - description: >-
@@ -13745,7 +13551,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_33
       - summary: Buyer app fetches the vehicle information form
         api: form
         details:
@@ -13864,7 +13670,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_29
+          value: *ref_34
       - summary: Insurer returns the response to initailized motor insurance plan
         api: on_init
         details:
@@ -13889,7 +13695,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_30
+          value: *ref_35
       - summary: Buyer app fetches the insured personal details form
         api: form
         details:
@@ -14022,7 +13828,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: Insurer shares the latest form status
         api: on_status
         details:
@@ -14276,28 +14082,18 @@ x-flows:
                       currency: INR
                     status: NOT-PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -14384,7 +14180,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_24
+          value: *ref_29
       - summary: Buyer app fetches the EKYC form
         api: form
         details:
@@ -14691,7 +14487,7 @@ x-flows:
                 Insurer Platform (BPP)-->>Buyer Platform (BAP):ACK
         reference: if any
         example:
-          value: *ref_19
+          value: *ref_24
       - summary: >-
           Insurer provides the buyer with latest update of form status (Form
           Processing)
@@ -14979,7 +14775,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_31
+          value: *ref_36
   - summary: Claim Motor Insurance
     details:
       - description: Detailed process of claiming a Motor Insurance
@@ -15019,7 +14815,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_37
       - summary: Buyer app redirected to claim url page
         api: redirect
         details:
@@ -15289,28 +15085,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -15640,28 +15437,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -15992,28 +15790,18 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -16346,28 +16134,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -16471,7 +16260,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_32
+          value: *ref_37
       - summary: Buyer app cancels the order
         api: cancel
         details:
@@ -16754,6 +16543,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -17062,28 +16874,29 @@ x-flows:
                       transaction_id: 85742a36-6636-4dcf-ae56-c47d3387d1d0
                     status: PAID
                     type: PRE-FULFILLMENT
-                    tags:
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
                       - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -17150,7 +16963,7 @@ x-flows:
                 Buyer Platform (BAP)-->>Insurer Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_33
+          value: *ref_38
       - summary: Payment link shared with the buyer app.
         api: form
         details:
@@ -17413,33 +17226,35 @@ x-flows:
                     type: PRE-FULFILLMENT
                     tags:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
                           code: ERROR_INFORMATION
                         display: false
                         list:
                           - descriptor:
                               code: REASON_MESSAGE
                             value: The bank account has insufficient balance.
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -17785,33 +17600,35 @@ x-flows:
                     type: PRE-FULFILLMENT
                     tags:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
                           code: ERROR_INFORMATION
                         display: false
                         list:
                           - descriptor:
                               code: REASON_MESSAGE
                             value: The bank account has insufficient balance.
+                tags:
+                  - descriptor:
+                      code: BAP_TERMS
+                      name: BAP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   descriptor:
                     long_desc: >-
@@ -17885,7 +17702,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_34
+          value: *ref_39
       - summary: >-
           Buyer app fetches the CIS details form with an embedded payment link
           within the form
@@ -18163,33 +17980,24 @@ x-flows:
                     type: PRE-ORDER
                     tags:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
                           code: ERROR_INFORMATION
                         display: false
                         list:
                           - descriptor:
                               code: REASON_MESSAGE
                             value: The bank account has insufficient balance.
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -18555,33 +18363,24 @@ x-flows:
                     type: PRE-ORDER
                     tags:
                       - descriptor:
-                          code: BUYER_FINDER_FEES
-                        display: false
-                        list:
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_TYPE
-                            value: percent-annualized
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_PERCENTAGE
-                            value: '1'
-                      - descriptor:
-                          code: SETTLEMENT_TERMS
-                        display: false
-                        list:
-                          - descriptor:
-                              code: STATIC_TERMS
-                            value: >-
-                              https://www.icicibank.com/personal-banking/loans/personal-loan
-                          - descriptor:
-                              code: OFFLINE_CONTRACT
-                            value: 'true'
-                      - descriptor:
                           code: ERROR_INFORMATION
                         display: false
                         list:
                           - descriptor:
                               code: REASON_MESSAGE
                             value: The bank account has insufficient balance.
+                tags:
+                  - descriptor:
+                      code: BPP_TERMS
+                      name: BPP Terms of Engagement
+                    display: false
+                    list:
+                      - descriptor:
+                          code: STATIC_TERMS
+                        value: https://fis.test.bpp/terms
+                      - descriptor:
+                          code: OFFLINE_CONTRACT
+                        value: 'true'
                 provider:
                   id: P1
                   descriptor:
@@ -18631,83 +18430,83 @@ x-examples:
         examples:
           - summary: search
             description: TBD
-            value: *ref_13
+            value: *ref_18
           - summary: search-request-multi-offer
             description: TBD
-            value: *ref_15
+            value: *ref_20
       on_search:
         examples:
           - summary: on_search
             description: TBD
-            value: *ref_14
+            value: *ref_19
           - summary: on_search-request-multi-offer
             description: TBD
-            value: *ref_16
+            value: *ref_21
       select:
         examples:
           - summary: select-request-vehicle-info
             description: TBD
-            value: *ref_17
+            value: *ref_22
           - summary: select-request-pan-info
             description: TBD
-            value: *ref_23
+            value: *ref_28
       on_select:
         examples:
           - summary: on_select-request-pan
             description: TBD
-            value: *ref_22
+            value: *ref_27
           - summary: on_select-request-personal-info
             description: TBD
-            value: *ref_24
+            value: *ref_29
           - summary: on_select-request-manual-review
             description: TBD
-            value: *ref_18
+            value: *ref_23
       init:
         examples:
           - summary: init-request-personal
             description: TBD
-            value: *ref_29
+            value: *ref_34
           - summary: init-request-vehicle-nominee
             description: TBD
-            value: *ref_31
+            value: *ref_36
       on_init:
         examples:
           - summary: on_init-request-personal-info
             description: TBD
-            value: *ref_30
+            value: *ref_35
           - summary: on_init-request-vehicle-info
             description: TBD
-            value: *ref_28
+            value: *ref_33
       confirm:
         examples:
           - summary: confirm
             description: TBD
-            value: *ref_35
+            value: *ref_40
       on_confirm:
         examples:
           - summary: on_confirm
             description: TBD
-            value: *ref_33
+            value: *ref_38
       update:
         examples:
           - summary: update
             description: TBD
-            value: *ref_36
+            value: *ref_41
       on_update:
         examples:
           - summary: on_update_fulfilment
             description: TBD
-            value: *ref_37
+            value: *ref_42
       status:
         examples:
           - summary: status
             description: TBD
-            value: *ref_19
+            value: *ref_24
       on_status:
         examples:
           - summary: on_status
             description: TBD
-            value: *ref_20
+            value: *ref_25
 x-attributes:
   motor-insurance:
     attribute_set:
