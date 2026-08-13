@@ -743,6 +743,10 @@ components:
           $ref: '#/components/schemas/Price'
         quantity:
           $ref: '#/components/schemas/ItemQuantity'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Address:
       description: Describes a postal address.
       type: string
@@ -895,8 +899,6 @@ components:
         external_ref:
           $ref: '#/components/schemas/MediaFile'
         cancel_eligible:
-          type: boolean
-        return_terms:
           type: boolean
     Catalog:
       description: >-
@@ -1278,8 +1280,7 @@ components:
         data:
           description: The form submission data
           type: object
-          additionalProperties:
-            type: string
+          additionalProperties: true
         mime_type:
           description: >-
             This field indicates the nature and format of the form received by
@@ -1291,6 +1292,7 @@ components:
             - application/html
             - application/xml
             - text/html-multi
+            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -1833,6 +1835,7 @@ components:
             - REJECTED
             - CREATED
             - COMPLETED
+            - SOFT_CANCEL
             - ON_HOLD
             - IN_PROGRESS
         type:
@@ -2026,6 +2029,7 @@ components:
           format: uri
         params:
           type: object
+          additionalProperties: false
           properties:
             transaction_id:
               type: string
@@ -2046,6 +2050,10 @@ components:
               type: string
             source_virtual_payment_address:
               type: string
+            source_bank_account_name:
+              type: string
+            bank_account_name:
+              type: string
         type:
           type: string
           enum:
@@ -2059,6 +2067,7 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
+            - REFUND
         status:
           type: string
           enum:
@@ -2160,6 +2169,7 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -3236,9 +3246,6 @@ x-flows:
                         - descriptor:
                             code: BUYER_FINDER_FEES_PERCENTAGE
                           value: '3'
-                        - descriptor:
-                            code: BUYER_FINDER_FEES_VALUE
-                          value: '100'
       - summary: >-
           Provider app provides a catalog of different gift card products
           offered by a single provider
@@ -3396,6 +3403,11 @@ x-flows:
                           currency: INR
                           value: '1500'
                           offered_value: '2000'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 6
                       - id: GC2
                         parent_item_id: Detail2
                         descriptor:
@@ -3404,6 +3416,11 @@ x-flows:
                           currency: INR
                           value: '2000'
                           offered_value: '2000'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 5
                       - id: GC3
                         parent_item_id: Detail1
                         descriptor:
@@ -3412,6 +3429,11 @@ x-flows:
                           currency: INR
                           value: '2000'
                           offered_value: '2000'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 4
                       - id: GC4
                         parent_item_id: Detail2
                         descriptor:
@@ -3420,6 +3442,11 @@ x-flows:
                           currency: INR
                           value: '1500'
                           offered_value: '1500'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 3
                       - id: GC5
                         descriptor:
                           name: Birthday Gift Card
@@ -3433,6 +3460,11 @@ x-flows:
                           currency: INR
                           minimum_value: '1000'
                           maximum_value: '10000'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 3
                         tags:
                           - descriptor:
                               code: BRAND_DETAILS
@@ -3461,6 +3493,11 @@ x-flows:
                           currency: INR
                           value: '100'
                           offered_value: '100'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 3
                         tags:
                           - descriptor:
                               code: BRAND_DETAILS
@@ -7013,6 +7050,11 @@ x-flows:
                         parent_item_id: Detail1
                         descriptor:
                           code: ITEM
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 6
                         price:
                           currency: INR
                           value: '1500'
@@ -7029,6 +7071,11 @@ x-flows:
                           offered_value: '2000'
                         location_ids:
                           - L2
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 5
                       - id: GC3
                         parent_item_id: Detail1
                         descriptor:
@@ -7037,6 +7084,11 @@ x-flows:
                           currency: INR
                           value: '2000'
                           offered_value: '2000'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 4
                       - id: GC4
                         parent_item_id: Detail2
                         descriptor:
@@ -7045,6 +7097,11 @@ x-flows:
                           currency: INR
                           value: '1500'
                           offered_value: '1500'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 3
                       - id: GC5
                         descriptor:
                           name: Birthday Gift Card
@@ -7058,6 +7115,11 @@ x-flows:
                           currency: INR
                           minimum_value: '1000'
                           maximum_value: '10000'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 3
                         tags:
                           - descriptor:
                               code: BRAND_DETAILS
@@ -7086,6 +7148,11 @@ x-flows:
                           currency: INR
                           value: '100'
                           offered_value: '100'
+                        quantity:
+                          minimum:
+                            count: 1
+                          maximum:
+                            count: 3
                         tags:
                           - descriptor:
                               code: BRAND_DETAILS
@@ -9758,9 +9825,6 @@ x-examples:
                           - descriptor:
                               code: BUYER_FINDER_FEES_PERCENTAGE
                             value: '3'
-                          - descriptor:
-                              code: BUYER_FINDER_FEES_VALUE
-                            value: '100'
       on_search:
         examples:
           - summary: on_search
@@ -10773,15 +10837,21 @@ x-attributes:
                   type: string
                   list:
                     BUYER_FINDER_FEES_VALUE:
-                      required: Mandatory
+                      required: Optional
                       usage: '--'
-                      description: Describes Buyer finder fee value
+                      description: >-
+                        Describes Buyer finder fee value, Either
+                        BUYER_FINDER_FEES_PERCENTAGE or BUYER_FINDER_FEES_VALUE
+                        is mandatory.
                       owner: BAP
                       type: string
                     BUYER_FINDER_FEES_PERCENTAGE:
-                      required: Mandatory
+                      required: Optional
                       usage: '--'
-                      description: Describes Buyer finder fee percentage
+                      description: >-
+                        Describes Buyer finder fee percentage, Either
+                        BUYER_FINDER_FEES_PERCENTAGE or BUYER_FINDER_FEES_VALUE
+                        is mandatory.
                       owner: BAP
                       type: string
       on_search:
