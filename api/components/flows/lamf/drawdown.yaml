@@ -1,33 +1,107 @@
 summary: LAMF - Drawdown
 details:
 - description: Detailed process for drawing down from an active LAMF credit line.
-  mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN)\n  Lender Platform (BPP)-->>Borrower Platform (BAP): ACK\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Drawdown completed or rejected\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK"
+  mermaid: >-
+    sequenceDiagram
+      participant Borrower Platform (BAP)
+      participant Lender Platform (BPP)
+      Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN on Base Order)
+      Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+      alt Drawdown approved
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown completed
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after drawdown success
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      else Drawdown rejected
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown rejected
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+      end
 references: if any
 steps:
-- summary: The borrower requests a drawdown from the active LAMF credit line.
+- summary: The borrower requests a drawdown on the base LAMF order.
   api: update
+  stepName: Base Order
   details:
-  - description: The borrower sends an update request with the requested drawdown amount.
-    mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  rect rgb(191, 223, 255)\n  Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN)\n  Lender Platform (BPP)-->>Borrower Platform (BAP): ACK\n  end"
+  - description: The borrower sends an update request on the base order with the requested drawdown amount, which creates a child drawdown order.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        rect rgb(191, 223, 255)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN on Base Order)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        end
+        alt Drawdown approved
+          Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown completed
+          Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+          Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after drawdown success
+          Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        else Drawdown rejected
+          Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown rejected
+          Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        end
   reference: if any
   example:
     value:
       $ref: ../../examples/loan-against-mf/update/update_request_lamf_drawdown.yaml
-- summary: The lender confirms drawdown completion.
+- summary: The lender confirms the child drawdown order was completed.
   api: on_update
+  stepName: Child Order
   details:
-  - description: The lender confirms the amount approved and credited to the registered account.
-    mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  rect rgb(191, 223, 255)\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Drawdown completed\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  end"
+  - description: The lender confirms on the child drawdown order that the approved amount has been disbursed.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN on Base Order)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        rect rgb(191, 223, 255)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown completed
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        end
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after drawdown success
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
   reference: if any
   example:
     value:
       $ref: ../../examples/loan-against-mf/on_update/on_update_lamf_drawdown_success.yaml
-- summary: The lender rejects the drawdown request.
+- summary: The lender rejects the child drawdown order.
   api: on_update
+  stepName: Child Order
   details:
-  - description: The lender rejects the drawdown request using the requested payment object with rejection details in tags.
-    mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  rect rgb(191, 223, 255)\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Drawdown rejected\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  end"
+  - description: The lender rejects the child drawdown order using the requested payment object with rejection details in tags.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN on Base Order)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        rect rgb(191, 223, 255)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown rejected
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        end
   reference: if any
   example:
     value:
       $ref: ../../examples/loan-against-mf/on_update/on_update_lamf_drawdown_rejected.yaml
+- summary: The lender updates the base order after a successful drawdown.
+  api: on_update
+  stepName: Base Order
+  details:
+  - description: The lender sends an unsolicited base-order on_update after the child drawdown order completes successfully.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (DRAW_DOWN on Base Order)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order drawdown completed
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        rect rgb(191, 223, 255)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after drawdown success
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        end
+  reference: if any
+  example:
+    value:
+      $ref: ../../examples/loan-against-mf/on_update/on_update_lamf_drawdown_base_order.yaml

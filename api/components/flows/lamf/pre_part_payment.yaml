@@ -5,59 +5,105 @@ details:
       sequenceDiagram
         participant Borrower Platform (BAP)
         participant Lender Platform (BPP)
-        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT on Child Order)
         Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Pre-part quote
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part quote
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Payment success
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part success
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after pre-part payment
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
 references: if any
 steps:
-  - summary: The borrower requests a pre-part payment.
+  - summary: The borrower requests a pre-part payment on the drawdown child order.
     api: update
+    stepName: Child Order
     details:
-      - description: The borrower sends an update request against payments with PRE_PART_PAYMENT as the payment label.
+      - description: The borrower sends an update request against the drawdown child order with PRE_PART_PAYMENT as the payment label.
         mermaid: >-
           sequenceDiagram
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT on Child Order)
             Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
             end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after pre-part payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
         $ref: "../../examples/loan-against-mf/update/update_request_lamf_pre_part.yaml"
-  - summary: The lender returns the pre-part payment quote.
+  - summary: The lender returns the pre-part payment quote on the child order.
     api: on_update
+    stepName: Child Order
     details:
-      - description: The lender shares the pre-part amount, charges, and outstanding utilization after payment.
+      - description: The lender shares the pre-part amount, charges, and outstanding utilization after payment on the child order.
         mermaid: >-
           sequenceDiagram
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Pre-part quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part quote
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after pre-part payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
         $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_pre_part_quote.yaml"
-  - summary: The lender confirms pre-part payment success.
+  - summary: The lender confirms pre-part payment success on the child order.
     api: on_update
+    stepName: Child Order
     details:
-      - description: The lender confirms that the pre-part payment was received and posts the updated account summary.
+      - description: The lender confirms on the child order that the pre-part payment was received and posts the updated account summary.
         mermaid: >-
           sequenceDiagram
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Payment success
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after pre-part payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_pre_part_success.yaml"
+  - summary: The lender updates the base order after a successful pre-part payment.
+    api: on_update
+    stepName: Base Order
+    details:
+      - description: The lender sends an unsolicited base-order on_update after the child pre-part payment succeeds.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (PRE_PART_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order pre-part success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after pre-part payment
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
     reference: if any
     example:
       value:
-        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_pre_part_success.yaml"
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_pre_part_base_order.yaml"
