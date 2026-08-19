@@ -12,8 +12,8 @@ context:
   bpp_id: bpp.credit.becknprotocol.org
   bpp_uri: https://bpp.credit.becknprotocol.org
   transaction_id: c751921f-ca28-4de5-b4e9-192cf3a38e43
-  message_id: MSG-LAMF-MISSED-INTEREST-SUCCESS-001
-  timestamp: '2026-06-28T10:27:00.000Z'
+  message_id: MSG-LAMF-DRAW-DOWN-INITIATED-001
+  timestamp: '2026-06-28T10:10:07.000Z'
   ttl: PT30M
 message:
   order:
@@ -34,20 +34,24 @@ message:
       id: LOAN_LEAD_ID_OR_SIMILAR
       price:
         currency: INR
-        value: '5250'
+        value: '25000'
       breakup:
-        - title: INTEREST
+        - title: AMOUNT_REQUESTED
           price:
             currency: INR
-            value: '5000'
-        - title: PENAL_CHARGES
+            value: '25000'
+        - title: AMOUNT_APPROVED
           price:
             currency: INR
-            value: '250'
-        - title: OTHER_CHARGES
+            value: '25000'
+        - title: DRAWDOWN_CHARGES
           price:
             currency: INR
             value: '0'
+        - title: AMOUNT_TO_BE_CREDITED
+          price:
+            currency: INR
+            value: '25000'
       ttl: PT30M
     items:
       - id: ITEM_ID_LAMF_DRAWDOWN_001
@@ -61,9 +65,10 @@ message:
           - '101119'
         fulfillment_ids:
           - DRAW_DOWN_001
+          - DRAW_DOWN_CONSENT_001
         price:
           currency: INR
-          value: '275000'
+          value: '25000'
         tags:
           - descriptor:
               code: LOAN_INFO
@@ -74,9 +79,9 @@ message:
                   name: Interest Rate
                 value: 12 %
               - descriptor:
-                  code: CURRENT_UTILIZATION
-                  name: Current Utilization
-                value: 275000 INR
+                  code: REPAYMENT_FREQUENCY
+                  name: Repayment Frequency
+                value: P1M
               - descriptor:
                   code: LTV_PERCENT
                   name: LTV Percent
@@ -90,72 +95,73 @@ message:
                   code: DRAW_DOWN_APPROVAL
                   name: Drawdown Approval
                 value: COMPLETED
+              - descriptor:
+                  code: BORROWER_CONSENT
+                  name: Borrower Consent
+                value: COMPLETED
             display: true
     payments:
       - id: DRAW_DOWN_PAYMENT_001
         type: ON_FULFILLMENT
-        status: PAID
+        status: NOT-PAID
         collected_by: BPP
         time:
           label: DRAW_DOWN
-          timestamp: '2026-06-28T10:10:10.000Z'
         params:
           amount: '25000'
           currency: INR
-          transaction_id: LENDER_UTR_001
-      - id: MISSED_INTEREST_PAYMENT_001
-        type: POST_FULFILLMENT
-        status: PAID
-        collected_by: BPP
-        time:
-          label: MISSED_INTEREST_PAYMENT
-          timestamp: '2026-06-28T10:18:00.000Z'
-          range:
-            start: '2026-06-01T00:00:00.000Z'
-            end: '2026-06-30T23:59:59.999Z'
-        params:
-          amount: '5250'
-          currency: INR
-          transaction_id: LENDER_COLLECTION_001
+          bank_account_number: '1800002341'
+          bank_code: HDFC0001234
         tags:
           - descriptor:
-              code: BREAKUP
-              name: Payment Breakup
+              code: DRAW_DOWN
+              name: Drawdown
             list:
               - descriptor:
-                  code: INTEREST
-                  name: Interest
-                value: 5000 INR
+                  code: AMOUNT_REQUESTED
+                  name: Amount Requested
+                value: '25000'
               - descriptor:
-                  code: PENAL_CHARGES
-                  name: Penal Charges
-                value: 250 INR
+                  code: AMOUNT_APPROVED
+                  name: Amount Approved
+                value: '25000'
               - descriptor:
-                  code: OTHER_CHARGES
-                  name: Other Charges
-                value: 0 INR
-          - descriptor:
-              code: OVERDUE_INFO
-              name: Overdue Info
-            list:
-              - descriptor:
-                  code: ORIGINAL_DUE_DATE
-                  name: Original Due Date
-                value: '2026-06-05'
-              - descriptor:
-                  code: OVERDUE_DAYS
-                  name: Overdue Days
-                value: '23'
-              - descriptor:
-                  code: OVERDUE_AMOUNT
-                  name: Overdue Amount
-                value: '0'
+                  code: STATUS
+                  name: Status
+                value: DISBURSEMENT_INITIATED
     fulfillments:
       - id: DRAW_DOWN_001
         type: ONLINE
         customer:
           person:
             name: John Doe
+          contact:
+            phone: +91-9999999999
+            email: john.doe@example.com
+        state:
+          descriptor:
+            code: DISBURSEMENT_INITIATED
+        tags:
+          - descriptor:
+              code: DRAW_DOWN
+              name: Drawdown
+            list:
+              - descriptor:
+                  code: AMOUNT_REQUESTED
+                  name: Amount Requested
+                value: '25000'
+              - descriptor:
+                  code: AMOUNT_APPROVED
+                  name: Amount Approved
+                value: '25000'
+      - id: DRAW_DOWN_CONSENT_001
+        type: ONLINE
+        customer:
+          person:
+            name: John Doe
+            creds:
+              - type: OTP
+                id: '12345'
           contact:
             phone: +91-9999999999
             email: john.doe@example.com
@@ -172,21 +178,12 @@ message:
             value: '1100000'
           - descriptor:
               code: UTILISED_AMOUNT
-            value: '275000'
+            value: '250000'
           - descriptor:
               code: AVAILABLE_LIMIT
-            value: '825000'
-          - descriptor:
-              code: OVERDUE_AMOUNT
-            value: '0'
+            value: '850000'
           - descriptor:
               code: SHORTFALL_AMOUNT
-            value: '0'
-          - descriptor:
-              code: ORIGINAL_DUE_DATE
-            value: '2026-06-05'
-          - descriptor:
-              code: OVERDUE_DAYS
             value: '0'
           - descriptor:
               code: LTV_PERCENT
@@ -204,4 +201,4 @@ message:
               code: OFFLINE_CONTRACT
             value: 'true'
     created_at: '2026-06-28T10:10:00.000Z'
-    updated_at: '2026-06-28T10:27:00.000Z'
+    updated_at: '2026-06-28T10:10:07.000Z'
