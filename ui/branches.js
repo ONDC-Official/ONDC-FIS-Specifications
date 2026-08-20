@@ -61,14 +61,26 @@ const BRANCHES = [
   // },
   {
     code: "draft-FIS12-2.3.0",
-    name: "LAMF | BL",
-    short_desc: "Baseline for LAMF & BL",
+    name: "Unified Credit",
+    short_desc: "Baseline for Master Search",
+    status: "DRAFT",
+  },
+  {
+    code: "draft-FIS12-2.3.0-BL",
+    name: "Business Loans",
+    short_desc: "Baseline for BL",
     status: "DRAFT",
   },
   {
     code: "draft-FIS12-2.3.0-PF",
     name: "Purchase Finance",
     short_desc: "Baseline for Solar PF",
+    status: "DRAFT",
+  },
+  {
+    code: "draft-FIS12-2.3.0-SL",
+    name: "Secured Loans",
+    short_desc: "Baseline for LAMF",
     status: "DRAFT",
   },
   {
