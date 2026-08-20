@@ -1,0 +1,167 @@
+{
+  "title": "ONDC FIS FD — issue Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "issue",
+  "direction": "BAP → BPP",
+  "purpose": "Grievance Management (IGM) — routed to issuer and tracked until resolution per BRD",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "issue"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "ttl": {
+      "required": "optional",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "PT30S"
+    }
+  },
+  "message": {
+    "issue": {
+      "ref_id": {
+        "required": "mandatory",
+        "type": "string",
+        "owner": "BAP",
+        "beckn_path": "message.issue.ref_id",
+        "error_codes": [
+          823015
+        ]
+      },
+      "category": {
+        "required": "mandatory",
+        "type": "string",
+        "owner": "BAP",
+        "usage": "PAYMENT",
+        "description": "Grievance category e.g. PAYMENT, KYC, BOOKING, WITHDRAWAL, DOCUMENT",
+        "beckn_path": "message.issue.category"
+      },
+      "description": {
+        "required": "mandatory",
+        "type": "string",
+        "owner": "BAP",
+        "beckn_path": "message.issue.description"
+      },
+      "complainant": {
+        "contact": {
+          "phone": {
+            "required": "mandatory",
+            "type": "string",
+            "owner": "BAP",
+            "usage": "9876543210",
+            "beckn_path": "message.issue.complainant.contact.phone"
+          }
+        }
+      },
+      "tags": {
+        "IGM": {
+          "list": {
+            "IGM_COMPLIANT": {
+              "required": "mandatory",
+              "type": "boolean",
+              "owner": "BAP",
+              "usage": "true"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/issue/issue-payment-grievance.json",
+  "validation_rules": [
+    {
+      "id": "fd_reference_valid",
+      "description": "fd_reference_number must exist and belong to the investor for status, cancel, support.",
+      "owner": "BPP",
+      "error_codes": [
+        823015
+      ]
+    },
+    {
+      "id": "igm_grievance",
+      "description": "All grievances via issue/on_issue tracked through ONDC IGM until resolution.",
+      "owner": "BAP|BPP",
+      "error_codes": []
+    }
+  ],
+  "error_codes": [
+    823015
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

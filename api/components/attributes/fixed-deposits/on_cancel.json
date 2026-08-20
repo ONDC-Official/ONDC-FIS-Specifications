@@ -1,0 +1,164 @@
+{
+  "title": "ONDC FIS FD — on_cancel Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "on_cancel",
+  "direction": "BPP → BAP",
+  "purpose": "Premature or partial withdrawal response",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "on_cancel"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    }
+  },
+  "message": {
+    "order": {
+      "fulfillment": {
+        "tags": {
+          "WITHDRAWAL": {
+            "list": {
+              "CLOSURE_DATE": {
+                "required": "mandatory",
+                "type": "string",
+                "owner": "BPP",
+                "usage": "--",
+                "description": "Actual closure / payout date",
+                "format": "DD-MM-YYYY",
+                "beckn_path": "message.order.fulfillment.tags[CLOSURE_DATE]",
+                "tag_code": "CLOSURE_DATE",
+                "error_codes": [
+                  823022
+                ]
+              },
+              "PENALTY_APPLIED": {
+                "required": "mandatory",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "description": "Penalty deducted in ₹",
+                "beckn_path": "message.order.fulfillment.tags[PENALTY_APPLIED]",
+                "tag_code": "PENALTY_APPLIED"
+              },
+              "FINAL_INTEREST_PAID": {
+                "required": "mandatory",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "beckn_path": "message.order.fulfillment.tags[FINAL_INTEREST_PAID]",
+                "tag_code": "FINAL_INTEREST_PAID"
+              },
+              "TDS_DEDUCTED": {
+                "required": "mandatory",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "beckn_path": "message.order.fulfillment.tags[TDS_DEDUCTED]",
+                "tag_code": "TDS_DEDUCTED"
+              },
+              "NET_AMOUNT_CREDITED": {
+                "required": "mandatory",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "description": "Net credited to investor's bank account",
+                "beckn_path": "message.order.fulfillment.tags[NET_AMOUNT_CREDITED]",
+                "tag_code": "NET_AMOUNT_CREDITED"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/on_cancel/on_cancel-withdrawal.json",
+  "validation_rules": [
+    {
+      "id": "date_format",
+      "description": "DD-MM-YYYY for business dates unless ISO timestamp in Beckn time fields.",
+      "owner": "BAP|BPP",
+      "error_codes": [
+        823022
+      ]
+    }
+  ],
+  "error_codes": [
+    823022
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

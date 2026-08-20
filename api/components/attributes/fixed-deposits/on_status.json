@@ -1,0 +1,232 @@
+{
+  "title": "ONDC FIS FD — on_status Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "on_status",
+  "direction": "BPP → BAP",
+  "purpose": "FD status response",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "on_status"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    }
+  },
+  "message": {
+    "order": {
+      "fulfillment": {
+        "state": {
+          "descriptor": {
+            "code": {
+              "required": "mandatory",
+              "type": "enum",
+              "owner": "BPP",
+              "usage": "ACTIVE",
+              "enum": [
+                "ETB_CHECK_PENDING",
+                "ETB_CONFIRMED",
+                "NTB_CONFIRMED",
+                "KYC_PENDING",
+                "VKYC_PENDING",
+                "VKYC_COMPLETED",
+                "VKYC_FAILED",
+                "PAYMENT_PENDING",
+                "BOOKED",
+                "ACTIVE",
+                "MATURED",
+                "CANCELLED",
+                "KYC_FAILED",
+                "PAYMENT_FAILED",
+                "REFUNDED"
+              ],
+              "beckn_path": "message.order.fulfillment.state.descriptor.code"
+            }
+          }
+        },
+        "tags": {
+          "FD_STATUS": {
+            "list": {
+              "ACCRUED_INTEREST": {
+                "required": "optional",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "description": "Interest accrued to date. Available once ACTIVE.",
+                "beckn_path": "message.order.fulfillment.tags[ACCRUED_INTEREST]",
+                "tag_code": "ACCRUED_INTEREST"
+              },
+              "VKYC_STATUS": {
+                "required": "optional",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "PENDING",
+                "enum": [
+                  "PENDING",
+                  "COMPLETED",
+                  "FAILED",
+                  "NOT_REQUIRED"
+                ],
+                "beckn_path": "message.order.fulfillment.tags[VKYC_STATUS]",
+                "tag_code": "VKYC_STATUS",
+                "error_codes": [
+                  823010
+                ]
+              },
+              "VKYC_SLA_DEADLINE": {
+                "required": "optional",
+                "type": "string",
+                "owner": "BPP",
+                "usage": "--",
+                "description": "Deadline for post-payment VKYC completion",
+                "beckn_path": "message.order.fulfillment.tags[VKYC_SLA_DEADLINE]",
+                "tag_code": "VKYC_SLA_DEADLINE",
+                "error_codes": [
+                  823010
+                ]
+              },
+              "REFUND_STATUS": {
+                "required": "optional",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "NOT_APPLICABLE",
+                "description": "If VKYC SLA breached after payment, refund to source account",
+                "enum": [
+                  "NOT_APPLICABLE",
+                  "INITIATED",
+                  "COMPLETED"
+                ],
+                "beckn_path": "message.order.fulfillment.tags[REFUND_STATUS]",
+                "tag_code": "REFUND_STATUS",
+                "error_codes": [
+                  823010
+                ]
+              },
+              "PRINCIPAL": {
+                "required": "optional",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "description": "Portfolio view — active FD principal",
+                "beckn_path": "message.order.fulfillment.tags[PRINCIPAL]",
+                "tag_code": "PRINCIPAL"
+              },
+              "MATURITY_DATE": {
+                "required": "optional",
+                "type": "string",
+                "owner": "BPP",
+                "usage": "--",
+                "description": "Portfolio view",
+                "format": "DD-MM-YYYY",
+                "beckn_path": "message.order.fulfillment.tags[MATURITY_DATE]",
+                "tag_code": "MATURITY_DATE",
+                "error_codes": [
+                  823018,
+                  823022
+                ]
+              },
+              "PAYOUT_HISTORY": {
+                "required": "optional",
+                "type": "string",
+                "owner": "BPP",
+                "usage": "--",
+                "description": "Portfolio view — interest payout history",
+                "beckn_path": "message.order.fulfillment.tags[PAYOUT_HISTORY]",
+                "tag_code": "PAYOUT_HISTORY"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/on_status/on_status-active.json",
+  "validation_rules": [
+    {
+      "id": "vkyc_sla_refund",
+      "description": "If vkyc_sequence is AFTER_PAYMENT and VKYC not completed within vkyc_sla_hours, refund to source account.",
+      "owner": "BPP",
+      "error_codes": [
+        823010
+      ]
+    }
+  ],
+  "error_codes": [
+    823010
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

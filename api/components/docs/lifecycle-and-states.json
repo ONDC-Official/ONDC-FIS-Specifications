@@ -1,0 +1,169 @@
+{
+  "title": "ONDC FIS FD — Lifecycle and States",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "supported_status": [
+    "SEARCHED",
+    "SELECTED",
+    "INITIATED",
+    "ETB_CHECK_PENDING",
+    "ETB_CONFIRMED",
+    "NTB_CONFIRMED",
+    "KYC_PENDING",
+    "KYC_COMPLETED",
+    "VKYC_PENDING",
+    "VKYC_COMPLETED",
+    "VKYC_FAILED",
+    "PAYMENT_PENDING",
+    "PAYMENT_SUCCESS",
+    "PAYMENT_FAILED",
+    "BOOKING_PENDING",
+    "BOOKED",
+    "ACTIVE",
+    "MATURED",
+    "CANCELLED",
+    "KYC_FAILED",
+    "REFUNDED"
+  ],
+  "status_transitions": {
+    "INITIATED": [
+      "ETB_CHECK_PENDING"
+    ],
+    "ETB_CHECK_PENDING": [
+      "ETB_CONFIRMED",
+      "NTB_CONFIRMED"
+    ],
+    "ETB_CONFIRMED": [
+      "PAYMENT_PENDING"
+    ],
+    "NTB_CONFIRMED": [
+      "KYC_PENDING"
+    ],
+    "KYC_PENDING": [
+      "KYC_COMPLETED",
+      "KYC_FAILED"
+    ],
+    "KYC_COMPLETED": [
+      "VKYC_PENDING",
+      "PAYMENT_PENDING"
+    ],
+    "PAYMENT_PENDING": [
+      "PAYMENT_SUCCESS",
+      "PAYMENT_FAILED"
+    ],
+    "PAYMENT_SUCCESS": [
+      "VKYC_PENDING",
+      "BOOKING_PENDING"
+    ],
+    "VKYC_PENDING": [
+      "VKYC_COMPLETED",
+      "VKYC_FAILED"
+    ],
+    "VKYC_COMPLETED": [
+      "BOOKING_PENDING"
+    ],
+    "VKYC_FAILED": [
+      "REFUNDED"
+    ],
+    "BOOKING_PENDING": [
+      "BOOKED"
+    ],
+    "BOOKED": [
+      "ACTIVE"
+    ],
+    "ACTIVE": [
+      "MATURED"
+    ],
+    "KYC_FAILED": [
+      "CANCELLED"
+    ],
+    "PAYMENT_FAILED": [
+      "CANCELLED"
+    ]
+  },
+  "booking_journey": {
+    "ntb": {
+      "description": "New to Bank — full KYC on issuer interface",
+      "trigger": "on_init returns customer_type=NTB",
+      "steps": [
+        "search",
+        "on_search",
+        "select",
+        "on_select",
+        "init",
+        "on_init",
+        "kyc_on_issuer_ui",
+        "confirm",
+        "on_confirm"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/new-booking-ntb.json"
+    },
+    "etb": {
+      "description": "Existing to Bank — issuer recognises investor via PAN lookup",
+      "trigger": "on_init returns customer_type=ETB and status=ETB_CONFIRMED",
+      "skip": [
+        "kyc_on_issuer_ui"
+      ],
+      "steps": [
+        "search",
+        "on_search",
+        "select",
+        "on_select",
+        "init",
+        "on_init",
+        "confirm",
+        "on_confirm"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/new-booking-etb.json"
+    }
+  },
+  "post_booking_journeys": {
+    "status_query": {
+      "steps": [
+        "status",
+        "on_status"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/status-query.json"
+    },
+    "premature_or_partial_withdrawal": {
+      "steps": [
+        "cancel",
+        "on_cancel"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/premature-withdrawal.json"
+    },
+    "document_and_servicing": {
+      "steps": [
+        "support",
+        "on_support"
+      ],
+      "service_types": [
+        "INTEREST_CERTIFICATE",
+        "FORM_121",
+        "NOMINEE_UPDATE",
+        "MATURITY_INSTRUCTION_UPDATE",
+        "PORTFOLIO_VIEW",
+        "CLOSURE_CONFIRMATION"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/post-booking-servicing.json"
+    },
+    "vkyc_post_payment": {
+      "description": "Poll status when vkyc_sequence is AFTER_PAYMENT; refund on SLA breach",
+      "steps": [
+        "status",
+        "on_status"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/vkyc-post-payment.json"
+    },
+    "igm_grievance": {
+      "steps": [
+        "issue",
+        "on_issue"
+      ],
+      "flow_ref": "api/components/flows/fixed-deposits/igm-grievance.json"
+    }
+  },
+  "enum_ref": "api/components/enums/fixed-deposits.json",
+  "migration_phase": 7,
+  "flows_ref": "api/components/flows/index.json"
+}

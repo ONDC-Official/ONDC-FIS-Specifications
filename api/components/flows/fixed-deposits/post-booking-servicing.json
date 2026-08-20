@@ -1,0 +1,110 @@
+{
+  "id": "post-booking-servicing",
+  "slug": "post-booking-servicing",
+  "summary": "Post-Booking Servicing",
+  "description": "Documents, nominee update, maturity instruction update, portfolio view, closure confirmation via support/on_support.",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "category": "post_booking",
+  "migration_phase": 5,
+  "migration_status": "complete",
+  "brd_refs": [
+    "interest_certificate",
+    "form_121_not_15g_15h",
+    "nominee_update_post_booking",
+    "maturity_instruction_update",
+    "portfolio_status",
+    "closure_confirmation_funds_credit"
+  ],
+  "gap_analysis": [
+    4
+  ],
+  "prerequisites": [
+    "Valid fd_reference_number"
+  ],
+  "outcome": "Document URL or service confirmation per SERVICE_TYPE",
+  "lifecycle_ref": "api/components/docs/lifecycle-and-states.json#post_booking_journeys.document_and_servicing",
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "service_types": [
+    "INTEREST_CERTIFICATE",
+    "FORM_121",
+    "NOMINEE_UPDATE",
+    "MATURITY_INSTRUCTION_UPDATE",
+    "PORTFOLIO_VIEW",
+    "CLOSURE_CONFIRMATION"
+  ],
+  "variants": [
+    {
+      "service_type": "INTEREST_CERTIFICATE",
+      "support_example": "support/support-interest-certificate.json",
+      "on_support_example": "on_support/on_support-interest-certificate.json"
+    },
+    {
+      "service_type": "FORM_121",
+      "support_example": "support/support-form-121.json",
+      "note": "financial_year mandatory. Form 121 replaces 15G/15H from FY 2026-27.",
+      "error_codes": [
+        823012
+      ]
+    },
+    {
+      "service_type": "NOMINEE_UPDATE",
+      "support_example": "support/support-nominee-update.json",
+      "error_codes": [
+        823021
+      ]
+    },
+    {
+      "service_type": "PORTFOLIO_VIEW",
+      "on_support_example": "on_support/on_support-portfolio-view.json"
+    }
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "summary": "Service request",
+      "api": "support",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "SERVICE_TYPE identifies the requested service."
+        },
+        {
+          "description": "Conditional fields per service type (financial_year for FORM_121, nominee for NOMINEE_UPDATE)."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/support.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/support/support-interest-certificate.json"
+      },
+      "error_codes": [
+        823012,
+        823015,
+        823020,
+        823021,
+        823022,
+        823025
+      ]
+    },
+    {
+      "step": 2,
+      "summary": "Service response",
+      "api": "on_support",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Returns SERVICE_STATUS, DOCUMENT_URL for certificates, or portfolio/closure fields."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_support.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_support/on_support-interest-certificate.json"
+      },
+      "error_codes": [
+        823020
+      ]
+    }
+  ]
+}

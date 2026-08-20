@@ -1,0 +1,164 @@
+{
+  "title": "ONDC FIS FD — search Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "search",
+  "direction": "BAP → BPP (via Gateway broadcast)",
+  "purpose": "Discovery trigger. Bank name and interest rate are NOT search filters — they are BAP-side display filters applied after on_search returns all offers.",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "search"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for this request/response"
+    },
+    "ttl": {
+      "required": "optional",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "PT30S"
+    }
+  },
+  "message": {
+    "intent": {
+      "category": {
+        "descriptor": {
+          "code": {
+            "required": "mandatory",
+            "type": "string",
+            "owner": "BAP",
+            "usage": "FIXED_DEPOSIT",
+            "description": "Product category for fixed deposits"
+          }
+        }
+      },
+      "item": {
+        "tags": {
+          "SEARCH_PREFERENCES": {
+            "required": "optional",
+            "type": "object",
+            "owner": "BAP",
+            "description": "Optional discovery filters. Bank name and rate sorting are BAP-side only.",
+            "list": {
+              "TENURE_PREFERENCE": {
+                "required": "optional",
+                "type": "enum",
+                "owner": "BAP",
+                "usage": "ANY",
+                "description": "Investor may filter by tenure bucket. e.g. Any / Below 2Y / 2Y–3Y / Above 3Y",
+                "enum": [
+                  "ANY",
+                  "BELOW_2Y",
+                  "2Y_TO_3Y",
+                  "ABOVE_3Y"
+                ],
+                "tag_code": "TENURE_PREFERENCE"
+              },
+              "SENIOR_CITIZEN": {
+                "required": "optional",
+                "type": "boolean",
+                "owner": "BAP",
+                "usage": "true",
+                "description": "True if investor wants to view senior citizen rates",
+                "tag_code": "SENIOR_CITIZEN"
+              },
+              "INTEREST": {
+                "required": "optional",
+                "type": "number",
+                "owner": "BAP",
+                "usage": "7.25",
+                "description": "Preferred minimum interest rate % p.a.",
+                "tag_code": "INTEREST"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/search/search-fd-discovery.json",
+  "validation_rules": [
+    {
+      "id": "search_filters",
+      "description": "Only tenure_preference, senior_citizen, and interest are valid network search tags.",
+      "owner": "BAP|Gateway",
+      "error_codes": [
+        823002
+      ]
+    },
+    {
+      "id": "bap_display_filters",
+      "description": "Bank name and interest rate sorting are BAP-side display filters applied after on_search.",
+      "owner": "BAP",
+      "error_codes": []
+    }
+  ],
+  "error_codes": [
+    823002
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

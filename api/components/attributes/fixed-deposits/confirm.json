@@ -1,0 +1,213 @@
+{
+  "title": "ONDC FIS FD — confirm Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "confirm",
+  "direction": "BAP → BPP",
+  "purpose": "Payment — funds flow directly from investor to issuer. BAP does not hold funds. Payment mode is selected here.",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "confirm"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "ttl": {
+      "required": "optional",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "PT30S"
+    }
+  },
+  "message": {
+    "order": {
+      "id": {
+        "required": "mandatory",
+        "type": "string",
+        "owner": "BAP"
+      },
+      "payments": {
+        "status": {
+          "required": "mandatory",
+          "type": "enum",
+          "owner": "BAP",
+          "usage": "SUCCESS",
+          "enum": [
+            "SUCCESS",
+            "PENDING",
+            "FAILED"
+          ],
+          "beckn_path": "message.order.payments[].status",
+          "error_codes": [
+            823007
+          ]
+        },
+        "params": {
+          "amount": {
+            "required": "mandatory",
+            "type": "number",
+            "owner": "BAP",
+            "usage": "100000",
+            "description": "Must match deposit amount from select",
+            "beckn_path": "message.order.payments[].params.amount",
+            "error_codes": [
+              823004,
+              823013
+            ]
+          },
+          "transaction_id": {
+            "required": "mandatory",
+            "type": "string",
+            "owner": "BAP",
+            "description": "Unique payment transaction reference from payment gateway",
+            "beckn_path": "message.order.payments[].params.transaction_id",
+            "error_codes": [
+              823009
+            ]
+          }
+        },
+        "tags": {
+          "PAYMENT": {
+            "list": {
+              "PAYMENT_MODE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BAP",
+                "usage": "UPI",
+                "enum": [
+                  "UPI",
+                  "IMPS",
+                  "NET_BANKING"
+                ],
+                "beckn_path": "message.order.payments[].tags[PAYMENT_MODE]",
+                "tag_code": "PAYMENT_MODE",
+                "error_codes": [
+                  823009,
+                  823024
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/confirm/confirm-fd-upi.json",
+  "validation_rules": [
+    {
+      "id": "confirm_amount",
+      "description": "confirm amount must match deposit_amount from select.",
+      "owner": "BPP",
+      "error_codes": [
+        823004
+      ]
+    },
+    {
+      "id": "confirm_payment_mode",
+      "description": "Payment mode is selected at confirm, not earlier in the journey.",
+      "owner": "BAP",
+      "error_codes": [
+        823024
+      ]
+    },
+    {
+      "id": "data_mismatch",
+      "description": "Data in current call must match earlier calls in the same transaction_id.",
+      "owner": "BPP",
+      "error_codes": [
+        823017
+      ]
+    },
+    {
+      "id": "payment_failed",
+      "description": "Payment to issuer designated account failed or was reversed.",
+      "owner": "BPP",
+      "error_codes": [
+        823009
+      ]
+    }
+  ],
+  "error_codes": [
+    823004,
+    823007,
+    823008,
+    823009,
+    823017,
+    823024
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

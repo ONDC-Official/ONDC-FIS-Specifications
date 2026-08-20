@@ -1,0 +1,218 @@
+{
+  "id": "new-booking-etb",
+  "slug": "new-booking-etb",
+  "summary": "New FD Booking — Existing to Bank (ETB)",
+  "description": "Abbreviated booking when issuer recognises investor via PAN lookup. KYC skipped — proceeds to payment.",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "category": "booking",
+  "migration_phase": 5,
+  "migration_status": "complete",
+  "brd_refs": [
+    "etb_repeat_investment",
+    "direct_payment_to_issuer",
+    "fd_receipt_on_confirmation"
+  ],
+  "gap_analysis": [
+    1
+  ],
+  "trigger": "on_init returns customer_type=ETB and status=ETB_CONFIRMED",
+  "prerequisites": [
+    "Same as new-booking-ntb",
+    "Investor has existing relationship with issuer (savings/KYC on file)"
+  ],
+  "outcome": "FD booked without kyc_url step",
+  "lifecycle_ref": "api/components/docs/lifecycle-and-states.json#booking_journey.etb",
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "related_flows": [
+    "new-booking-ntb"
+  ],
+  "skip_steps": [
+    "kyc_on_issuer_ui"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "summary": "Discovery broadcast",
+      "api": "search",
+      "direction": "BAP → Gateway → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/search.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/search/search-fd-discovery.json"
+      },
+      "error_codes": [
+        823002
+      ]
+    },
+    {
+      "step": 2,
+      "summary": "Catalog response",
+      "api": "on_search",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_search.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_search/on_search-scb-offer.json"
+      },
+      "error_codes": [
+        823003,
+        823023
+      ]
+    },
+    {
+      "step": 3,
+      "summary": "Offer selection",
+      "api": "select",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/select.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/select/select-fd-booking.json"
+      },
+      "error_codes": [
+        823013,
+        823014,
+        823017
+      ]
+    },
+    {
+      "step": 4,
+      "summary": "Selection confirmation",
+      "api": "on_select",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_select.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_select/on_select-fd-booking.json"
+      },
+      "error_codes": [
+        823014
+      ]
+    },
+    {
+      "step": 5,
+      "summary": "Investor details submission",
+      "api": "init",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/init.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/init/init-fd-ntb.json"
+      },
+      "error_codes": [
+        823001,
+        823005,
+        823006,
+        823008,
+        823017,
+        823022
+      ]
+    },
+    {
+      "step": 6,
+      "summary": "ETB confirmation",
+      "api": "on_init",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "BPP returns customer_type=ETB, status=ETB_CONFIRMED."
+        },
+        {
+          "description": "No kyc_url — nominee may be pre-filled from issuer records."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_init.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_init/on_init-etb.json"
+      },
+      "error_codes": [
+        823007,
+        823008,
+        823019,
+        823026
+      ],
+      "state": {
+        "after": "ETB_CONFIRMED"
+      }
+    },
+    {
+      "step": 7,
+      "summary": "Payment confirmation",
+      "api": "confirm",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/confirm.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/confirm/confirm-fd-upi.json"
+      },
+      "error_codes": [
+        823004,
+        823007,
+        823008,
+        823009,
+        823017,
+        823024
+      ],
+      "state": {
+        "before": "ETB_CONFIRMED",
+        "after": "PAYMENT_SUCCESS"
+      }
+    },
+    {
+      "step": 8,
+      "summary": "FD booking receipt",
+      "api": "on_confirm",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Same as NTB flow."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_confirm.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_confirm/on_confirm-fd-receipt.json"
+      },
+      "error_codes": [
+        823009,
+        823018,
+        823022
+      ],
+      "state": {
+        "after": "BOOKED"
+      }
+    }
+  ]
+}
