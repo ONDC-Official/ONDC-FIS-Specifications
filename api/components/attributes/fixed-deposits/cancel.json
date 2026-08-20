@@ -1,0 +1,195 @@
+{
+  "title": "ONDC FIS FD — cancel Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "cancel",
+  "direction": "BAP → BPP",
+  "purpose": "Premature or partial withdrawal request",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "cancel"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "ttl": {
+      "required": "optional",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "PT30S"
+    }
+  },
+  "message": {
+    "order": {
+      "id": {
+        "required": "mandatory",
+        "type": "string",
+        "owner": "BAP",
+        "beckn_path": "message.order.id"
+      },
+      "fulfillment": {
+        "tags": {
+          "WITHDRAWAL": {
+            "list": {
+              "WITHDRAWAL_TYPE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BAP",
+                "usage": "FULL",
+                "enum": [
+                  "FULL",
+                  "PARTIAL"
+                ],
+                "beckn_path": "message.order.fulfillment.tags[WITHDRAWAL_TYPE]",
+                "tag_code": "WITHDRAWAL_TYPE",
+                "error_codes": [
+                  823016
+                ]
+              },
+              "WITHDRAWAL_AMOUNT": {
+                "required": "conditional_mandatory",
+                "type": "number",
+                "owner": "BAP",
+                "usage": "7.25",
+                "condition": "Required if withdrawal_type = PARTIAL",
+                "beckn_path": "message.order.fulfillment.tags[WITHDRAWAL_AMOUNT]",
+                "tag_code": "WITHDRAWAL_AMOUNT",
+                "error_codes": [
+                  823011
+                ]
+              },
+              "FD_REFERENCE_NUMBER": {
+                "required": "mandatory",
+                "type": "string",
+                "owner": "BAP",
+                "usage": "--",
+                "beckn_path": "message.order.id",
+                "tag_code": "FD_REFERENCE_NUMBER",
+                "error_codes": [
+                  823015,
+                  823018
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/cancel/cancel-full-withdrawal.json",
+  "validation_rules": [
+    {
+      "id": "cancel_partial_amount",
+      "description": "withdrawal_amount required when withdrawal_type is PARTIAL.",
+      "owner": "BPP",
+      "error_codes": [
+        823011
+      ]
+    },
+    {
+      "id": "premature_withdrawal",
+      "description": "Product must allow premature/partial withdrawal for the requested operation.",
+      "owner": "BPP",
+      "error_codes": [
+        823016
+      ]
+    },
+    {
+      "id": "fd_reference_valid",
+      "description": "fd_reference_number must exist and belong to the investor for status, cancel, support.",
+      "owner": "BPP",
+      "error_codes": [
+        823015
+      ]
+    },
+    {
+      "id": "date_format",
+      "description": "DD-MM-YYYY for business dates unless ISO timestamp in Beckn time fields.",
+      "owner": "BAP|BPP",
+      "error_codes": [
+        823022
+      ]
+    }
+  ],
+  "error_codes": [
+    823011,
+    823015,
+    823016,
+    823022
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

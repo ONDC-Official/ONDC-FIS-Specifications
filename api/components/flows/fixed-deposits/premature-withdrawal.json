@@ -1,0 +1,83 @@
+{
+  "id": "premature-withdrawal",
+  "slug": "premature-withdrawal",
+  "summary": "Premature or Partial Withdrawal",
+  "description": "Full or partial FD closure with penalty and net credit calculation.",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "category": "post_booking",
+  "migration_phase": 5,
+  "migration_status": "complete",
+  "brd_refs": [
+    "premature_partial_withdrawal",
+    "closure_confirmation_funds_credit"
+  ],
+  "prerequisites": [
+    "FD ACTIVE",
+    "premature_withdrawal_allowed=true on original offer"
+  ],
+  "outcome": "Net amount credited to investor bank account",
+  "lifecycle_ref": "api/components/docs/lifecycle-and-states.json#post_booking_journeys.premature_or_partial_withdrawal",
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "variants": [
+    {
+      "name": "full",
+      "example": "cancel/cancel-full-withdrawal.json",
+      "withdrawal_type": "FULL"
+    },
+    {
+      "name": "partial",
+      "example": "cancel/cancel-partial-withdrawal.json",
+      "withdrawal_type": "PARTIAL"
+    }
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "summary": "Withdrawal request",
+      "api": "cancel",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "withdrawal_type FULL or PARTIAL."
+        },
+        {
+          "description": "withdrawal_amount mandatory when PARTIAL."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/cancel.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/cancel/cancel-full-withdrawal.json"
+      },
+      "error_codes": [
+        823011,
+        823015,
+        823016,
+        823022
+      ]
+    },
+    {
+      "step": 2,
+      "summary": "Withdrawal response",
+      "api": "on_cancel",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Returns closure_date, penalty_applied, final_interest_paid, tds_deducted, net_amount_credited."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_cancel.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_cancel/on_cancel-withdrawal.json"
+      },
+      "error_codes": [
+        823022
+      ],
+      "state": {
+        "after": "CANCELLED"
+      }
+    }
+  ]
+}

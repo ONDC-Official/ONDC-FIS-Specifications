@@ -1,0 +1,309 @@
+{
+  "title": "ONDC FIS FD — on_search Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "on_search",
+  "direction": "BPP → BAP",
+  "purpose": "Offer Discovery — issuer returns available FD products for the discovery screen",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "on_search"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    }
+  },
+  "message": {
+    "catalog": {
+      "bpp/descriptor": {
+        "name": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BPP",
+          "usage": "ABC Bank",
+          "beckn_path": "message.catalog.bpp/providers[].descriptor.name"
+        }
+      },
+      "bpp/providers": {
+        "id": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BPP",
+          "description": "Provider identifier"
+        },
+        "descriptor": {
+          "name": {
+            "required": "mandatory",
+            "type": "string",
+            "owner": "BPP",
+            "usage": "ABC Bank Fixed Deposits",
+            "beckn_path": "message.catalog.bpp/providers[].descriptor.name"
+          }
+        },
+        "tags": {
+          "ISSUER": {
+            "list": {
+              "ISSUER_TYPE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "SCB",
+                "enum": [
+                  "SCB",
+                  "SFB",
+                  "NBFC-D"
+                ],
+                "beckn_path": "message.catalog.bpp/providers[].tags[ISSUER_TYPE]",
+                "tag_code": "ISSUER_TYPE"
+              }
+            }
+          }
+        },
+        "items": {
+          "id": {
+            "required": "mandatory",
+            "type": "string",
+            "owner": "BPP"
+          },
+          "tags": {
+            "FD_OFFER": {
+              "list": {
+                "INTEREST_RATE": {
+                  "required": "mandatory",
+                  "type": "number",
+                  "owner": "BPP",
+                  "usage": "7.25",
+                  "description": "Annual interest rate % p.a. e.g. 7.50. Generally tied to tenure for a particular scheme.",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[INTEREST_RATE]",
+                  "tag_code": "INTEREST_RATE",
+                  "error_codes": [
+                    823018
+                  ]
+                },
+                "SENIOR_CITIZEN_RATE": {
+                  "required": "optional",
+                  "type": "number",
+                  "owner": "BPP",
+                  "usage": "7.25",
+                  "description": "Additional rate for investors aged 60+. e.g. 0.50",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[SENIOR_CITIZEN_RATE]",
+                  "tag_code": "SENIOR_CITIZEN_RATE"
+                },
+                "TENURE": {
+                  "required": "mandatory",
+                  "type": "string",
+                  "owner": "BPP",
+                  "usage": "--",
+                  "description": "Deposit duration as defined by the issuer. e.g. 12 months, 400 days",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[TENURE]",
+                  "tag_code": "TENURE",
+                  "error_codes": [
+                    823017,
+                    823018
+                  ]
+                },
+                "MINIMUM_DEPOSIT_AMOUNT": {
+                  "required": "mandatory",
+                  "type": "number",
+                  "owner": "BPP",
+                  "usage": "7.25",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[MINIMUM_DEPOSIT_AMOUNT]",
+                  "tag_code": "MINIMUM_DEPOSIT_AMOUNT",
+                  "error_codes": [
+                    823013
+                  ]
+                },
+                "INTEREST_PAYOUT_FREQUENCY": {
+                  "required": "mandatory",
+                  "type": "enum",
+                  "owner": "BPP",
+                  "usage": "MONTHLY",
+                  "enum": [
+                    "MONTHLY",
+                    "QUARTERLY",
+                    "HALF_YEARLY",
+                    "CUMULATIVE"
+                  ],
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[INTEREST_PAYOUT_FREQUENCY]",
+                  "tag_code": "INTEREST_PAYOUT_FREQUENCY"
+                },
+                "PREMATURE_WITHDRAWAL_ALLOWED": {
+                  "required": "mandatory",
+                  "type": "boolean",
+                  "owner": "BPP",
+                  "usage": "true",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[PREMATURE_WITHDRAWAL_ALLOWED]",
+                  "tag_code": "PREMATURE_WITHDRAWAL_ALLOWED",
+                  "error_codes": [
+                    823016
+                  ]
+                },
+                "PENALTY_RATE": {
+                  "required": "conditional_mandatory",
+                  "type": "number",
+                  "owner": "BPP",
+                  "usage": "7.25",
+                  "condition": "Required if premature_withdrawal_allowed = true",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[PENALTY_RATE]",
+                  "tag_code": "PENALTY_RATE",
+                  "error_codes": [
+                    823023
+                  ]
+                },
+                "DICGC_INSURED": {
+                  "required": "optional",
+                  "type": "boolean",
+                  "owner": "BPP",
+                  "usage": "true",
+                  "description": "True if covered under DICGC insurance up to ₹5 lakh",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[DICGC_INSURED]",
+                  "tag_code": "DICGC_INSURED"
+                },
+                "CREDIT_RATING_AGENCY": {
+                  "required": "conditional_mandatory",
+                  "type": "string",
+                  "owner": "BPP",
+                  "usage": "--",
+                  "description": "e.g. CRISIL, ICRA, CARE. RBI Fair Practices Code disclosure for NBFC deposit products.",
+                  "condition": "Required for NBFC-D issuers only. Not required for SCB or SFB.",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[CREDIT_RATING_AGENCY]",
+                  "tag_code": "CREDIT_RATING_AGENCY",
+                  "error_codes": [
+                    823003
+                  ]
+                },
+                "CREDIT_RATING": {
+                  "required": "conditional_mandatory",
+                  "type": "string",
+                  "owner": "BPP",
+                  "usage": "--",
+                  "description": "e.g. AAA, AA+, A",
+                  "condition": "Required for NBFC-D issuers only. Not required for SCB or SFB.",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[CREDIT_RATING]",
+                  "tag_code": "CREDIT_RATING",
+                  "error_codes": [
+                    823003
+                  ]
+                },
+                "RATING_LAST_UPDATED": {
+                  "required": "optional",
+                  "type": "string",
+                  "owner": "BPP",
+                  "usage": "--",
+                  "condition": "Recommended for NBFC-D issuers when credit_rating is present",
+                  "format": "DD-MM-YYYY",
+                  "beckn_path": "message.catalog.bpp/providers[].items[].tags[RATING_LAST_UPDATED]",
+                  "tag_code": "RATING_LAST_UPDATED"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/on_search/on_search-scb-offer.json",
+  "validation_rules": [
+    {
+      "id": "bap_display_filters",
+      "description": "Bank name and interest rate sorting are BAP-side display filters applied after on_search.",
+      "owner": "BAP",
+      "error_codes": []
+    },
+    {
+      "id": "nbfc_credit_rating",
+      "description": "on_search must include credit_rating_agency and credit_rating when issuer_type is NBFC-D.",
+      "owner": "BPP",
+      "error_codes": [
+        823003
+      ]
+    },
+    {
+      "id": "on_search_penalty_rate",
+      "description": "penalty_rate required when premature_withdrawal_allowed is true on on_search.",
+      "owner": "BPP",
+      "error_codes": [
+        823023
+      ]
+    }
+  ],
+  "error_codes": [
+    823003,
+    823023
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

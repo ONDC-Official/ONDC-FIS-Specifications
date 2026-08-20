@@ -1,0 +1,674 @@
+{
+  "title": "ONDC FIS FD — Error Codes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "code_range": "823001–823099",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "note": "Proposed FD-specific range (FIS14 MF uses 822xxx). Pending ONDC registry confirmation.",
+  "validation_rules_ref": "api/components/docs/validation-rules.json",
+  "beckn_nack_format": {
+    "description": "BPP returns NACK in callback with numeric error code in message.error",
+    "example": {
+      "message": {
+        "ack": {
+          "status": "NACK"
+        },
+        "error": {
+          "type": "DOMAIN-ERROR",
+          "code": "823001",
+          "message": "Investor not supported — v1 accepts INDIVIDUAL_RESIDENT only"
+        }
+      }
+    }
+  },
+  "categories": [
+    "booking",
+    "discovery",
+    "investor",
+    "kyc",
+    "payment",
+    "servicing",
+    "technical",
+    "validation",
+    "withdrawal"
+  ],
+  "codes": [
+    {
+      "event": "Investor not supported",
+      "description": "Investor type is out of scope for v1 (joint, NRI, minor, HUF, corporate). BAP must reject before network call; BPP returns if received.",
+      "from": "BAP|BPP",
+      "code": 823001,
+      "category": "investor",
+      "validation_rules": [
+        "investor_eligibility_v1"
+      ],
+      "actions": [
+        "init"
+      ],
+      "attributes": [
+        "INVESTOR_TYPE",
+        "investor_type"
+      ]
+    },
+    {
+      "event": "Invalid search filter",
+      "description": "Search message contains disallowed network filters (e.g. issuer name or interest rate sort). Only tenure_preference, senior_citizen, and interest are valid.",
+      "from": "BAP|Gateway",
+      "code": 823002,
+      "category": "discovery",
+      "validation_rules": [
+        "search_filters"
+      ],
+      "actions": [
+        "search"
+      ],
+      "attributes": []
+    },
+    {
+      "event": "NBFC credit rating missing",
+      "description": "on_search response for NBFC-D issuer missing credit_rating_agency or credit_rating.",
+      "from": "BPP",
+      "code": 823003,
+      "category": "discovery",
+      "validation_rules": [
+        "nbfc_credit_rating"
+      ],
+      "actions": [
+        "on_search"
+      ],
+      "attributes": [
+        "CREDIT_RATING_AGENCY",
+        "CREDIT_RATING"
+      ]
+    },
+    {
+      "event": "Deposit amount mismatch",
+      "description": "confirm amount does not match deposit_amount from select.",
+      "from": "BPP",
+      "code": 823004,
+      "category": "payment",
+      "validation_rules": [
+        "confirm_amount"
+      ],
+      "actions": [
+        "confirm"
+      ],
+      "attributes": [
+        "amount",
+        "DEPOSIT_AMOUNT"
+      ]
+    },
+    {
+      "event": "Bank or UPI verification failure",
+      "description": "Penny drop / IFSC verification or UPI handle validation failed. Provide bank_account_number + ifsc OR upi_handle.",
+      "from": "BPP",
+      "code": 823005,
+      "category": "investor",
+      "validation_rules": [
+        "init_bank_or_upi"
+      ],
+      "actions": [
+        "init"
+      ],
+      "attributes": [
+        "bank_account_number",
+        "ifsc",
+        "upi_handle",
+        "BANK_VERIFICATION_STATUS"
+      ]
+    },
+    {
+      "event": "Nominee details missing",
+      "description": "Neither nominee details nor no_nominee_declaration=true present on init (RBI Nov 2025).",
+      "from": "BPP",
+      "code": 823006,
+      "category": "investor",
+      "validation_rules": [
+        "init_nominee"
+      ],
+      "actions": [
+        "init"
+      ],
+      "attributes": [
+        "NOMINEE_NAME",
+        "NOMINEE_RELATIONSHIP",
+        "NOMINEE_DATE_OF_BIRTH",
+        "NO_NOMINEE_DECLARATION"
+      ]
+    },
+    {
+      "event": "Investor KYC pending or invalid",
+      "description": "KYC not completed on issuer interface or verification failed. Cannot proceed to payment.",
+      "from": "BPP",
+      "code": 823007,
+      "category": "kyc",
+      "validation_rules": [
+        "etb_ntb_branch"
+      ],
+      "actions": [
+        "on_init",
+        "confirm"
+      ],
+      "attributes": [
+        "status",
+        "KYC_URL"
+      ]
+    },
+    {
+      "event": "ETB/NTB data mismatch",
+      "description": "Customer type or status from on_init inconsistent with subsequent call data.",
+      "from": "BPP",
+      "code": 823008,
+      "category": "kyc",
+      "validation_rules": [
+        "etb_ntb_branch",
+        "data_mismatch"
+      ],
+      "actions": [
+        "on_init",
+        "init",
+        "confirm"
+      ],
+      "attributes": [
+        "CUSTOMER_TYPE",
+        "customer_type"
+      ]
+    },
+    {
+      "event": "Payment failed",
+      "description": "Payment to issuer designated account failed or was reversed.",
+      "from": "BPP",
+      "code": 823009,
+      "category": "payment",
+      "validation_rules": [
+        "payment_failed"
+      ],
+      "actions": [
+        "confirm",
+        "on_confirm"
+      ],
+      "attributes": [
+        "payment_status",
+        "PAYMENT_MODE"
+      ]
+    },
+    {
+      "event": "VKYC SLA breach — refund initiated",
+      "description": "VKYC not completed within vkyc_sla_hours when vkyc_sequence is AFTER_PAYMENT. Refund initiated to source account.",
+      "from": "BPP",
+      "code": 823010,
+      "category": "kyc",
+      "validation_rules": [
+        "vkyc_sla_refund"
+      ],
+      "actions": [
+        "on_status"
+      ],
+      "attributes": [
+        "VKYC_STATUS",
+        "VKYC_SLA_DEADLINE",
+        "REFUND_STATUS"
+      ]
+    },
+    {
+      "event": "Invalid partial withdrawal amount",
+      "description": "withdrawal_amount missing or invalid when withdrawal_type is PARTIAL.",
+      "from": "BPP",
+      "code": 823011,
+      "category": "withdrawal",
+      "validation_rules": [
+        "cancel_partial_amount"
+      ],
+      "actions": [
+        "cancel"
+      ],
+      "attributes": [
+        "WITHDRAWAL_AMOUNT",
+        "withdrawal_amount"
+      ]
+    },
+    {
+      "event": "Form 121 financial year missing",
+      "description": "financial_year required when service_type is FORM_121.",
+      "from": "BPP",
+      "code": 823012,
+      "category": "servicing",
+      "validation_rules": [
+        "support_form_121_fy"
+      ],
+      "actions": [
+        "support"
+      ],
+      "attributes": [
+        "FINANCIAL_YEAR",
+        "financial_year"
+      ]
+    },
+    {
+      "event": "Minimum deposit threshold not met",
+      "description": "deposit_amount below issuer minimum_deposit_amount from on_search.",
+      "from": "BPP",
+      "code": 823013,
+      "category": "booking",
+      "validation_rules": [
+        "minimum_deposit"
+      ],
+      "actions": [
+        "select"
+      ],
+      "attributes": [
+        "DEPOSIT_AMOUNT",
+        "deposit_amount",
+        "MINIMUM_DEPOSIT_AMOUNT"
+      ]
+    },
+    {
+      "event": "FD product not active",
+      "description": "Selected FD offer is no longer available. Refresh catalog via search.",
+      "from": "BPP",
+      "code": 823014,
+      "category": "booking",
+      "validation_rules": [
+        "product_active"
+      ],
+      "actions": [
+        "select",
+        "on_select"
+      ],
+      "attributes": []
+    },
+    {
+      "event": "Invalid FD reference",
+      "description": "fd_reference_number not found or not associated with investor.",
+      "from": "BPP",
+      "code": 823015,
+      "category": "servicing",
+      "validation_rules": [
+        "fd_reference_valid"
+      ],
+      "actions": [
+        "status",
+        "cancel",
+        "support",
+        "issue"
+      ],
+      "attributes": [
+        "FD_REFERENCE_NUMBER",
+        "fd_reference_number",
+        "ref_id"
+      ]
+    },
+    {
+      "event": "Premature withdrawal not allowed",
+      "description": "Issuer product does not permit premature or partial withdrawal for this FD.",
+      "from": "BPP",
+      "code": 823016,
+      "category": "withdrawal",
+      "validation_rules": [
+        "premature_withdrawal"
+      ],
+      "actions": [
+        "cancel"
+      ],
+      "attributes": [
+        "WITHDRAWAL_TYPE",
+        "PREMATURE_WITHDRAWAL_ALLOWED"
+      ]
+    },
+    {
+      "event": "Data mismatch across calls",
+      "description": "Attribute in current call does not match data from earlier calls in the same transaction (e.g. PAN mismatch).",
+      "from": "BPP",
+      "code": 823017,
+      "category": "technical",
+      "validation_rules": [
+        "data_mismatch",
+        "select_tenure"
+      ],
+      "actions": [
+        "init",
+        "select",
+        "confirm"
+      ],
+      "attributes": [
+        "pan",
+        "TENURE"
+      ]
+    },
+    {
+      "event": "on_confirm receipt incomplete",
+      "description": "BPP on_confirm missing one or more of the 10 mandatory FD receipt attributes.",
+      "from": "BPP",
+      "code": 823018,
+      "category": "booking",
+      "validation_rules": [
+        "on_confirm_required"
+      ],
+      "actions": [
+        "on_confirm"
+      ],
+      "attributes": [
+        "FD_REFERENCE_NUMBER",
+        "PRINCIPAL_AMOUNT",
+        "INTEREST_RATE",
+        "TENURE",
+        "START_DATE",
+        "MATURITY_DATE",
+        "MATURITY_AMOUNT",
+        "INTEREST_SCHEDULE",
+        "TDS_DETAILS"
+      ]
+    },
+    {
+      "event": "KYC URL missing for NTB",
+      "description": "on_init for NTB investor must include kyc_url. Omit only when ETB_CONFIRMED.",
+      "from": "BPP",
+      "code": 823019,
+      "category": "kyc",
+      "validation_rules": [
+        "etb_ntb_branch"
+      ],
+      "actions": [
+        "on_init"
+      ],
+      "attributes": [
+        "KYC_URL",
+        "kyc_url"
+      ]
+    },
+    {
+      "event": "Invalid service type",
+      "description": "Unsupported or missing SERVICE_TYPE on support request.",
+      "from": "BPP",
+      "code": 823020,
+      "category": "servicing",
+      "validation_rules": [
+        "support_service_type"
+      ],
+      "actions": [
+        "support",
+        "on_support"
+      ],
+      "attributes": [
+        "SERVICE_TYPE",
+        "service_type"
+      ]
+    },
+    {
+      "event": "Nominee update fields missing",
+      "description": "Nominee name, relationship, and DOB required when service_type is NOMINEE_UPDATE.",
+      "from": "BPP",
+      "code": 823021,
+      "category": "servicing",
+      "validation_rules": [
+        "support_nominee_update"
+      ],
+      "actions": [
+        "support"
+      ],
+      "attributes": [
+        "NOMINEE_NAME",
+        "NOMINEE_RELATIONSHIP",
+        "NOMINEE_DATE_OF_BIRTH"
+      ]
+    },
+    {
+      "event": "Invalid date format",
+      "description": "Business date not in DD-MM-YYYY format where required.",
+      "from": "BAP|BPP",
+      "code": 823022,
+      "category": "validation",
+      "validation_rules": [
+        "date_format"
+      ],
+      "actions": [
+        "init",
+        "on_confirm",
+        "cancel",
+        "on_cancel",
+        "support"
+      ],
+      "attributes": [
+        "DATE_OF_BIRTH",
+        "START_DATE",
+        "MATURITY_DATE",
+        "CLOSURE_DATE",
+        "FINANCIAL_YEAR"
+      ]
+    },
+    {
+      "event": "Penalty rate missing",
+      "description": "penalty_rate required on on_search when premature_withdrawal_allowed is true.",
+      "from": "BPP",
+      "code": 823023,
+      "category": "discovery",
+      "validation_rules": [
+        "on_search_penalty_rate"
+      ],
+      "actions": [
+        "on_search"
+      ],
+      "attributes": [
+        "PENALTY_RATE",
+        "penalty_rate"
+      ]
+    },
+    {
+      "event": "Invalid payment mode",
+      "description": "Payment mode not in UPI, IMPS, NET_BANKING or selected outside confirm step.",
+      "from": "BPP",
+      "code": 823024,
+      "category": "payment",
+      "validation_rules": [
+        "confirm_payment_mode"
+      ],
+      "actions": [
+        "confirm"
+      ],
+      "attributes": [
+        "PAYMENT_MODE",
+        "payment_mode"
+      ]
+    },
+    {
+      "event": "Maturity instruction update missing",
+      "description": "maturity_instruction required when service_type is MATURITY_INSTRUCTION_UPDATE.",
+      "from": "BPP",
+      "code": 823025,
+      "category": "servicing",
+      "validation_rules": [
+        "support_maturity_update"
+      ],
+      "actions": [
+        "support"
+      ],
+      "attributes": [
+        "MATURITY_INSTRUCTION",
+        "maturity_instruction"
+      ]
+    },
+    {
+      "event": "Bank verification failed",
+      "description": "bank_verification_status is FAILED on on_init — investor must provide alternate bank/UPI.",
+      "from": "BPP",
+      "code": 823026,
+      "category": "investor",
+      "validation_rules": [
+        "init_bank_or_upi"
+      ],
+      "actions": [
+        "on_init"
+      ],
+      "attributes": [
+        "BANK_VERIFICATION_STATUS"
+      ]
+    },
+    {
+      "event": "Fatal error",
+      "description": "BPP facing technical issue and cannot proceed. Retry later.",
+      "from": "BPP",
+      "code": 823099,
+      "category": "technical",
+      "validation_rules": [],
+      "actions": [
+        "*"
+      ],
+      "attributes": []
+    }
+  ],
+  "by_action": {
+    "init": [
+      823001,
+      823005,
+      823006,
+      823008,
+      823017,
+      823022
+    ],
+    "search": [
+      823002
+    ],
+    "on_search": [
+      823003,
+      823023
+    ],
+    "confirm": [
+      823004,
+      823007,
+      823008,
+      823009,
+      823017,
+      823024
+    ],
+    "on_init": [
+      823007,
+      823008,
+      823019,
+      823026
+    ],
+    "on_confirm": [
+      823009,
+      823018,
+      823022
+    ],
+    "on_status": [
+      823010
+    ],
+    "cancel": [
+      823011,
+      823015,
+      823016,
+      823022
+    ],
+    "support": [
+      823012,
+      823015,
+      823020,
+      823021,
+      823022,
+      823025
+    ],
+    "select": [
+      823013,
+      823014,
+      823017
+    ],
+    "on_select": [
+      823014
+    ],
+    "status": [
+      823015
+    ],
+    "issue": [
+      823015
+    ],
+    "on_support": [
+      823020
+    ],
+    "on_cancel": [
+      823022
+    ],
+    "*": [
+      823099
+    ]
+  },
+  "by_rule": {
+    "search_filters": [
+      823002
+    ],
+    "bap_display_filters": [],
+    "select_tenure": [
+      823017
+    ],
+    "investor_eligibility_v1": [
+      823001
+    ],
+    "init_bank_or_upi": [
+      823005,
+      823026
+    ],
+    "init_nominee": [
+      823006
+    ],
+    "nbfc_credit_rating": [
+      823003
+    ],
+    "on_search_penalty_rate": [
+      823023
+    ],
+    "minimum_deposit": [
+      823013
+    ],
+    "etb_ntb_branch": [
+      823007,
+      823019
+    ],
+    "confirm_amount": [
+      823004
+    ],
+    "confirm_payment_mode": [
+      823024
+    ],
+    "on_confirm_required": [
+      823018
+    ],
+    "vkyc_sla_refund": [
+      823010
+    ],
+    "cancel_partial_amount": [
+      823011
+    ],
+    "premature_withdrawal": [
+      823016
+    ],
+    "support_form_121_fy": [
+      823012
+    ],
+    "support_nominee_update": [
+      823021
+    ],
+    "support_maturity_update": [
+      823025
+    ],
+    "support_service_type": [
+      823020
+    ],
+    "fd_reference_valid": [
+      823015
+    ],
+    "product_active": [
+      823014
+    ],
+    "data_mismatch": [
+      823017
+    ],
+    "date_format": [
+      823022
+    ],
+    "igm_grievance": [],
+    "payment_failed": [
+      823009
+    ]
+  }
+}

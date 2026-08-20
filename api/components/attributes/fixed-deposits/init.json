@@ -1,0 +1,333 @@
+{
+  "title": "ONDC FIS FD — init Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "init",
+  "direction": "BAP → BPP",
+  "purpose": "KYC and Confirmation — investor completes KYC on issuer interface; BAP submits investor details alongside",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "init"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "ttl": {
+      "required": "optional",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "PT30S"
+    }
+  },
+  "message": {
+    "order": {
+      "billing": {
+        "name": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "beckn_path": "message.order.billing.name"
+        },
+        "phone": {
+          "required": "mandatory",
+          "type": "number",
+          "owner": "BAP",
+          "usage": "9876543210",
+          "description": "10-digit registered mobile number",
+          "beckn_path": "message.order.billing.phone"
+        },
+        "email": {
+          "required": "optional",
+          "type": "string",
+          "owner": "BAP",
+          "beckn_path": "message.order.billing.email"
+        },
+        "tax_number": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "ABCDE1234F",
+          "beckn_path": "message.order.billing.tax_number",
+          "error_codes": [
+            823001,
+            823017
+          ]
+        },
+        "address": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "beckn_path": "message.order.billing.address"
+        },
+        "tags": {
+          "INVESTOR_DETAILS": {
+            "list": {
+              "DATE_OF_BIRTH": {
+                "required": "mandatory",
+                "type": "string",
+                "owner": "BAP",
+                "usage": "--",
+                "format": "DD-MM-YYYY",
+                "beckn_path": "message.order.billing.tags[DATE_OF_BIRTH]",
+                "tag_code": "DATE_OF_BIRTH",
+                "error_codes": [
+                  823022
+                ]
+              },
+              "INVESTOR_TYPE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BAP",
+                "usage": "INDIVIDUAL_RESIDENT",
+                "description": "v1 accepts INDIVIDUAL_RESIDENT only. Other investor types are out of scope.",
+                "enum": [
+                  "INDIVIDUAL_RESIDENT"
+                ],
+                "beckn_path": "message.order.billing.tags[INVESTOR_TYPE]",
+                "tag_code": "INVESTOR_TYPE",
+                "error_codes": [
+                  823001
+                ]
+              }
+            }
+          }
+        }
+      },
+      "payments": {
+        "params": {
+          "bank_account_number": {
+            "required": "conditional_mandatory",
+            "type": "number",
+            "owner": "BAP",
+            "condition": "Required if UPI handle not provided. Source / payout account.",
+            "beckn_path": "message.order.payments[].params.bank_account_number",
+            "error_codes": [
+              823005,
+              823026
+            ]
+          },
+          "bank_code": {
+            "required": "conditional_mandatory",
+            "type": "string",
+            "owner": "BAP",
+            "usage": "ABCD0001234",
+            "condition": "Required if bank account number provided",
+            "beckn_path": "message.order.payments[].params.bank_code",
+            "error_codes": [
+              823005,
+              823026
+            ]
+          },
+          "vpa": {
+            "required": "conditional_mandatory",
+            "type": "string",
+            "owner": "BAP",
+            "condition": "Required if bank account number not provided. Used for penny-drop verification.",
+            "beckn_path": "message.order.payments[].params.vpa",
+            "error_codes": [
+              823005
+            ]
+          }
+        }
+      },
+      "fulfillment": {
+        "customer": {
+          "tags": {
+            "NOMINEE": {
+              "list": {
+                "NOMINEE_NAME": {
+                  "required": "conditional_mandatory",
+                  "type": "string",
+                  "owner": "BAP",
+                  "usage": "--",
+                  "condition": "Required if investor is nominating. One of nominee details or no_nominee_declaration must be present.",
+                  "beckn_path": "message.order.fulfillment.customer.tags[NOMINEE_NAME]",
+                  "tag_code": "NOMINEE_NAME",
+                  "error_codes": [
+                    823006,
+                    823021
+                  ]
+                },
+                "NOMINEE_RELATIONSHIP": {
+                  "required": "conditional_mandatory",
+                  "type": "string",
+                  "owner": "BAP",
+                  "usage": "--",
+                  "condition": "Required if nominating. e.g. Spouse, Child, Parent",
+                  "beckn_path": "message.order.fulfillment.customer.tags[NOMINEE_RELATIONSHIP]",
+                  "tag_code": "NOMINEE_RELATIONSHIP",
+                  "error_codes": [
+                    823006,
+                    823021
+                  ]
+                },
+                "NOMINEE_DATE_OF_BIRTH": {
+                  "required": "conditional_mandatory",
+                  "type": "string",
+                  "owner": "BAP",
+                  "usage": "--",
+                  "condition": "Required if nominating",
+                  "format": "DD-MM-YYYY",
+                  "beckn_path": "message.order.fulfillment.customer.tags[NOMINEE_DATE_OF_BIRTH]",
+                  "tag_code": "NOMINEE_DATE_OF_BIRTH",
+                  "error_codes": [
+                    823006,
+                    823021
+                  ]
+                },
+                "NOMINEE_CONTACT": {
+                  "required": "optional",
+                  "type": "string",
+                  "owner": "BAP",
+                  "usage": "--",
+                  "description": "Nominee mobile or email",
+                  "beckn_path": "message.order.fulfillment.customer.tags[NOMINEE_CONTACT]",
+                  "tag_code": "NOMINEE_CONTACT"
+                },
+                "NO_NOMINEE_DECLARATION": {
+                  "required": "conditional_mandatory",
+                  "type": "boolean",
+                  "owner": "BAP",
+                  "usage": "true",
+                  "condition": "True if investor opts out of nomination. Per RBI directions (Nov 2025) one of nominee details or this declaration must always be present.",
+                  "beckn_path": "message.order.fulfillment.customer.tags[NO_NOMINEE_DECLARATION]",
+                  "tag_code": "NO_NOMINEE_DECLARATION",
+                  "error_codes": [
+                    823006
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/init/init-fd-ntb.json",
+  "validation_rules": [
+    {
+      "id": "investor_eligibility_v1",
+      "description": "init must send INVESTOR_TYPE=INDIVIDUAL_RESIDENT. Reject joint, NRI, minor, HUF, corporate at BAP.",
+      "owner": "BAP|BPP",
+      "error_codes": [
+        823001
+      ]
+    },
+    {
+      "id": "init_bank_or_upi",
+      "description": "bank_account_number + ifsc OR upi_handle — one pair must be present.",
+      "owner": "BPP",
+      "error_codes": [
+        823005,
+        823026
+      ]
+    },
+    {
+      "id": "init_nominee",
+      "description": "Nominee details OR no_nominee_declaration=true required per RBI Nov 2025.",
+      "owner": "BPP",
+      "error_codes": [
+        823006
+      ]
+    },
+    {
+      "id": "data_mismatch",
+      "description": "Data in current call must match earlier calls in the same transaction_id.",
+      "owner": "BPP",
+      "error_codes": [
+        823017
+      ]
+    },
+    {
+      "id": "date_format",
+      "description": "DD-MM-YYYY for business dates unless ISO timestamp in Beckn time fields.",
+      "owner": "BAP|BPP",
+      "error_codes": [
+        823022
+      ]
+    }
+  ],
+  "error_codes": [
+    823001,
+    823005,
+    823006,
+    823008,
+    823017,
+    823022
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

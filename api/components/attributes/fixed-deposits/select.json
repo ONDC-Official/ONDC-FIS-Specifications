@@ -1,0 +1,207 @@
+{
+  "title": "ONDC FIS FD — select Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "select",
+  "direction": "BAP → BPP",
+  "purpose": "Offer Selection — investor picks a product and configures the FD. Tenure is already set by the product selected from on_search.",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "select"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "ttl": {
+      "required": "optional",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "PT30S"
+    }
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP"
+        }
+      },
+      "items": {
+        "price": {
+          "value": {
+            "required": "mandatory",
+            "type": "number",
+            "owner": "BAP",
+            "usage": "100000",
+            "description": "Amount to be deposited. Live calculator available on BAP.",
+            "beckn_path": "message.order.items[].price.value"
+          }
+        },
+        "tags": {
+          "FD_TERMS": {
+            "list": {
+              "DEPOSIT_AMOUNT": {
+                "required": "mandatory",
+                "type": "number",
+                "owner": "BAP",
+                "usage": "7.25",
+                "description": "Amount to be deposited. Live calculator available on BAP.",
+                "beckn_path": "message.order.items[].price.value",
+                "tag_code": "DEPOSIT_AMOUNT",
+                "error_codes": [
+                  823004,
+                  823013
+                ]
+              },
+              "PAYOUT_MODE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BAP",
+                "usage": "CUMULATIVE",
+                "enum": [
+                  "CUMULATIVE",
+                  "NON_CUMULATIVE"
+                ],
+                "beckn_path": "message.order.items[].tags[PAYOUT_MODE]",
+                "tag_code": "PAYOUT_MODE"
+              },
+              "MATURITY_INSTRUCTION": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BAP",
+                "usage": "AUTO_RENEW_PRINCIPAL",
+                "enum": [
+                  "AUTO_RENEW_PRINCIPAL",
+                  "AUTO_RENEW_PRINCIPAL_AND_INTEREST",
+                  "CREDIT_TO_BANK_ACCOUNT"
+                ],
+                "beckn_path": "message.order.items[].tags[MATURITY_INSTRUCTION]",
+                "tag_code": "MATURITY_INSTRUCTION",
+                "error_codes": [
+                  823025
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/select/select-fd-booking.json",
+  "validation_rules": [
+    {
+      "id": "select_tenure",
+      "description": "Tenure is not re-sent in select — it comes from the on_search product.",
+      "owner": "BAP",
+      "error_codes": [
+        823017
+      ]
+    },
+    {
+      "id": "minimum_deposit",
+      "description": "deposit_amount must meet minimum_deposit_amount from on_search.",
+      "owner": "BPP",
+      "error_codes": [
+        823013
+      ]
+    },
+    {
+      "id": "product_active",
+      "description": "Selected FD offer must still be active; refresh catalog if stale.",
+      "owner": "BPP",
+      "error_codes": [
+        823014
+      ]
+    },
+    {
+      "id": "data_mismatch",
+      "description": "Data in current call must match earlier calls in the same transaction_id.",
+      "owner": "BPP",
+      "error_codes": [
+        823017
+      ]
+    }
+  ],
+  "error_codes": [
+    823013,
+    823014,
+    823017
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

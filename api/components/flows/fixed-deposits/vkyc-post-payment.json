@@ -1,0 +1,89 @@
+{
+  "id": "vkyc-post-payment",
+  "slug": "vkyc-post-payment",
+  "summary": "VKYC After Payment",
+  "description": "When vkyc_sequence is AFTER_PAYMENT, BAP polls status until VKYC completes or SLA breach triggers refund.",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "category": "compliance",
+  "migration_phase": 5,
+  "migration_status": "complete",
+  "brd_refs": [
+    "vkyc_post_payment_refund_sla"
+  ],
+  "trigger": "on_init returns vkyc_sequence=AFTER_PAYMENT",
+  "prerequisites": [
+    "Payment successful (PAYMENT_SUCCESS)",
+    "FD may be in BOOKING_PENDING or VKYC_PENDING"
+  ],
+  "outcome": "VKYC_COMPLETED → BOOKED/ACTIVE, or REFUNDED on SLA breach",
+  "lifecycle_ref": "api/components/docs/lifecycle-and-states.json#post_booking_journeys.vkyc_post_payment",
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "related_flows": [
+    "new-booking-ntb",
+    "new-booking-etb"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "summary": "VKYC on issuer interface",
+      "step_id": "vkyc_on_issuer_ui",
+      "type": "off_network",
+      "actor": "Investor",
+      "details": [
+        {
+          "description": "Investor completes VKYC via vkyc_url within vkyc_sla_hours."
+        }
+      ],
+      "off_network": "Issuer VKYC UI",
+      "state": {
+        "before": "VKYC_PENDING",
+        "after": "VKYC_COMPLETED"
+      }
+    },
+    {
+      "step": 2,
+      "summary": "Status poll",
+      "api": "status",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "BAP polls fd_reference_number for VKYC and booking status."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/status.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/status/status-fd-active.json"
+      },
+      "error_codes": [
+        823015
+      ]
+    },
+    {
+      "step": 3,
+      "summary": "Status response",
+      "api": "on_status",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Returns VKYC_STATUS, VKYC_SLA_DEADLINE, REFUND_STATUS."
+        },
+        {
+          "description": "On SLA breach: REFUND_STATUS=INITIATED then COMPLETED, status=REFUNDED."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_status.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_status/on_status-vkyc-pending.json"
+      },
+      "error_codes": [
+        823010
+      ],
+      "state": {
+        "after": "VKYC_PENDING"
+      }
+    }
+  ]
+}

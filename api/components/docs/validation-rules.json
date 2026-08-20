@@ -1,0 +1,361 @@
+{
+  "title": "ONDC FIS FD — Validation Rules",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "migration_phase": 7,
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "rules": {
+    "search_filters": {
+      "description": "Only tenure_preference, senior_citizen, and interest are valid network search tags.",
+      "applies_to": [
+        "search"
+      ],
+      "owner": "BAP|Gateway",
+      "error_codes": [
+        823002
+      ]
+    },
+    "bap_display_filters": {
+      "description": "Bank name and interest rate sorting are BAP-side display filters applied after on_search.",
+      "applies_to": [
+        "search",
+        "on_search"
+      ],
+      "owner": "BAP",
+      "error_codes": [],
+      "note": "Informational — not a network error if applied on BAP only."
+    },
+    "select_tenure": {
+      "description": "Tenure is not re-sent in select — it comes from the on_search product.",
+      "applies_to": [
+        "select"
+      ],
+      "owner": "BAP",
+      "error_codes": [
+        823017
+      ]
+    },
+    "investor_eligibility_v1": {
+      "description": "init must send INVESTOR_TYPE=INDIVIDUAL_RESIDENT. Reject joint, NRI, minor, HUF, corporate at BAP.",
+      "applies_to": [
+        "init"
+      ],
+      "owner": "BAP|BPP",
+      "error_codes": [
+        823001
+      ]
+    },
+    "init_bank_or_upi": {
+      "description": "bank_account_number + ifsc OR upi_handle — one pair must be present.",
+      "applies_to": [
+        "init"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823005,
+        823026
+      ]
+    },
+    "init_nominee": {
+      "description": "Nominee details OR no_nominee_declaration=true required per RBI Nov 2025.",
+      "applies_to": [
+        "init"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823006
+      ]
+    },
+    "nbfc_credit_rating": {
+      "description": "on_search must include credit_rating_agency and credit_rating when issuer_type is NBFC-D.",
+      "applies_to": [
+        "on_search"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823003
+      ]
+    },
+    "on_search_penalty_rate": {
+      "description": "penalty_rate required when premature_withdrawal_allowed is true on on_search.",
+      "applies_to": [
+        "on_search"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823023
+      ]
+    },
+    "minimum_deposit": {
+      "description": "deposit_amount must meet minimum_deposit_amount from on_search.",
+      "applies_to": [
+        "select"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823013
+      ]
+    },
+    "etb_ntb_branch": {
+      "description": "on_init: ETB skips kyc_url; NTB requires kyc_url. KYC must complete before payment.",
+      "applies_to": [
+        "on_init"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823007,
+        823019
+      ]
+    },
+    "confirm_amount": {
+      "description": "confirm amount must match deposit_amount from select.",
+      "applies_to": [
+        "confirm"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823004
+      ]
+    },
+    "confirm_payment_mode": {
+      "description": "Payment mode is selected at confirm, not earlier in the journey.",
+      "applies_to": [
+        "confirm"
+      ],
+      "owner": "BAP",
+      "error_codes": [
+        823024
+      ]
+    },
+    "on_confirm_required": {
+      "description": "BPP must respond with on_confirm containing all 10 mandatory FD receipt attributes.",
+      "applies_to": [
+        "on_confirm"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823018
+      ]
+    },
+    "vkyc_sla_refund": {
+      "description": "If vkyc_sequence is AFTER_PAYMENT and VKYC not completed within vkyc_sla_hours, refund to source account.",
+      "applies_to": [
+        "on_init",
+        "on_status"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823010
+      ]
+    },
+    "cancel_partial_amount": {
+      "description": "withdrawal_amount required when withdrawal_type is PARTIAL.",
+      "applies_to": [
+        "cancel"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823011
+      ]
+    },
+    "premature_withdrawal": {
+      "description": "Product must allow premature/partial withdrawal for the requested operation.",
+      "applies_to": [
+        "cancel"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823016
+      ]
+    },
+    "support_form_121_fy": {
+      "description": "financial_year required when service_type is FORM_121.",
+      "applies_to": [
+        "support"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823012
+      ]
+    },
+    "support_nominee_update": {
+      "description": "Nominee name, relationship, and DOB required when service_type is NOMINEE_UPDATE.",
+      "applies_to": [
+        "support"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823021
+      ]
+    },
+    "support_maturity_update": {
+      "description": "maturity_instruction required when service_type is MATURITY_INSTRUCTION_UPDATE.",
+      "applies_to": [
+        "support"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823025
+      ]
+    },
+    "support_service_type": {
+      "description": "support uses SERVICE_TYPE enum for documents, nominee, maturity, portfolio, closure.",
+      "applies_to": [
+        "support",
+        "on_support"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823020
+      ]
+    },
+    "fd_reference_valid": {
+      "description": "fd_reference_number must exist and belong to the investor for status, cancel, support.",
+      "applies_to": [
+        "status",
+        "cancel",
+        "support",
+        "issue"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823015
+      ]
+    },
+    "product_active": {
+      "description": "Selected FD offer must still be active; refresh catalog if stale.",
+      "applies_to": [
+        "select",
+        "on_select"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823014
+      ]
+    },
+    "data_mismatch": {
+      "description": "Data in current call must match earlier calls in the same transaction_id.",
+      "applies_to": [
+        "init",
+        "confirm",
+        "select"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823017
+      ]
+    },
+    "date_format": {
+      "description": "DD-MM-YYYY for business dates unless ISO timestamp in Beckn time fields.",
+      "applies_to": [
+        "init",
+        "on_confirm",
+        "cancel",
+        "on_cancel",
+        "support"
+      ],
+      "owner": "BAP|BPP",
+      "error_codes": [
+        823022
+      ]
+    },
+    "igm_grievance": {
+      "description": "All grievances via issue/on_issue tracked through ONDC IGM until resolution.",
+      "applies_to": [
+        "issue",
+        "on_issue"
+      ],
+      "owner": "BAP|BPP",
+      "error_codes": []
+    },
+    "payment_failed": {
+      "description": "Payment to issuer designated account failed or was reversed.",
+      "applies_to": [
+        "confirm",
+        "on_confirm"
+      ],
+      "owner": "BPP",
+      "error_codes": [
+        823009
+      ]
+    }
+  },
+  "by_rule": {
+    "search_filters": [
+      823002
+    ],
+    "bap_display_filters": [],
+    "select_tenure": [
+      823017
+    ],
+    "investor_eligibility_v1": [
+      823001
+    ],
+    "init_bank_or_upi": [
+      823005,
+      823026
+    ],
+    "init_nominee": [
+      823006
+    ],
+    "nbfc_credit_rating": [
+      823003
+    ],
+    "on_search_penalty_rate": [
+      823023
+    ],
+    "minimum_deposit": [
+      823013
+    ],
+    "etb_ntb_branch": [
+      823007,
+      823019
+    ],
+    "confirm_amount": [
+      823004
+    ],
+    "confirm_payment_mode": [
+      823024
+    ],
+    "on_confirm_required": [
+      823018
+    ],
+    "vkyc_sla_refund": [
+      823010
+    ],
+    "cancel_partial_amount": [
+      823011
+    ],
+    "premature_withdrawal": [
+      823016
+    ],
+    "support_form_121_fy": [
+      823012
+    ],
+    "support_nominee_update": [
+      823021
+    ],
+    "support_maturity_update": [
+      823025
+    ],
+    "support_service_type": [
+      823020
+    ],
+    "fd_reference_valid": [
+      823015
+    ],
+    "product_active": [
+      823014
+    ],
+    "data_mismatch": [
+      823017
+    ],
+    "date_format": [
+      823022
+    ],
+    "igm_grievance": [],
+    "payment_failed": [
+      823009
+    ]
+  }
+}

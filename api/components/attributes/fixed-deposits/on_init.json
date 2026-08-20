@@ -1,0 +1,241 @@
+{
+  "title": "ONDC FIS FD — on_init Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "on_init",
+  "direction": "BPP → BAP",
+  "purpose": "Seller performs ETB/NTB check via PAN lookup against issuer core banking. Returns KYC URL only for NTB investors.",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "on_init"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    }
+  },
+  "message": {
+    "order": {
+      "id": {
+        "required": "mandatory",
+        "type": "string",
+        "owner": "BPP",
+        "usage": "fd-order-2026-001",
+        "beckn_path": "message.order.id"
+      },
+      "payments": {
+        "tags": {
+          "BANK_VERIFICATION": {
+            "list": {
+              "BANK_VERIFICATION_STATUS": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "VERIFIED",
+                "enum": [
+                  "VERIFIED",
+                  "PENDING",
+                  "FAILED"
+                ],
+                "beckn_path": "message.order.payments[].tags[BANK_VERIFICATION_STATUS]",
+                "tag_code": "BANK_VERIFICATION_STATUS",
+                "error_codes": [
+                  823005,
+                  823026
+                ]
+              }
+            }
+          }
+        }
+      },
+      "fulfillment": {
+        "state": {
+          "descriptor": {
+            "code": {
+              "required": "mandatory",
+              "type": "enum",
+              "owner": "BPP",
+              "usage": "NTB_CONFIRMED",
+              "description": "ETB_CONFIRMED: skip KYC, proceed to bank linkage and payment. NTB_CONFIRMED/KYC_PENDING: full KYC required.",
+              "enum": [
+                "ETB_CHECK_PENDING",
+                "ETB_CONFIRMED",
+                "NTB_CONFIRMED",
+                "KYC_PENDING"
+              ],
+              "beckn_path": "message.order.fulfillment.state.descriptor.code"
+            }
+          }
+        },
+        "tags": {
+          "ETB_NTB": {
+            "list": {
+              "CUSTOMER_TYPE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "ETB",
+                "description": "ETB = Existing to Bank (issuer recognises investor from core banking). NTB = New to Bank.",
+                "enum": [
+                  "ETB",
+                  "NTB"
+                ],
+                "beckn_path": "message.order.fulfillment.tags[CUSTOMER_TYPE]",
+                "tag_code": "CUSTOMER_TYPE",
+                "error_codes": [
+                  823008
+                ]
+              },
+              "KYC_URL": {
+                "required": "conditional_mandatory",
+                "type": "string",
+                "owner": "BPP",
+                "usage": "--",
+                "description": "Link to issuer KYC interface. ETB investors skip this step.",
+                "condition": "Required when customer_type is NTB. Omit or empty when ETB_CONFIRMED.",
+                "beckn_path": "message.order.fulfillment.tags[KYC_URL]",
+                "tag_code": "KYC_URL",
+                "error_codes": [
+                  823007,
+                  823019
+                ]
+              },
+              "VKYC_SEQUENCE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "BEFORE_PAYMENT",
+                "description": "Issuer-configurable. BRD: VKYC may be before payment or deferred post-payment.",
+                "enum": [
+                  "BEFORE_PAYMENT",
+                  "AFTER_PAYMENT"
+                ],
+                "beckn_path": "message.order.fulfillment.tags[VKYC_SEQUENCE]",
+                "tag_code": "VKYC_SEQUENCE"
+              },
+              "VKYC_SLA_HOURS": {
+                "required": "conditional_mandatory",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "description": "Hours within which investor must complete VKYC after payment",
+                "condition": "Required when vkyc_sequence is AFTER_PAYMENT",
+                "beckn_path": "message.order.fulfillment.tags[VKYC_SLA_HOURS]",
+                "tag_code": "VKYC_SLA_HOURS"
+              },
+              "VKYC_URL": {
+                "required": "conditional_mandatory",
+                "type": "string",
+                "owner": "BPP",
+                "usage": "--",
+                "condition": "Required when VKYC is pending (before or after payment per sequence)",
+                "beckn_path": "message.order.fulfillment.tags[VKYC_URL]",
+                "tag_code": "VKYC_URL"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/on_init/on_init-ntb.json",
+  "validation_rules": [
+    {
+      "id": "etb_ntb_branch",
+      "description": "on_init: ETB skips kyc_url; NTB requires kyc_url. KYC must complete before payment.",
+      "owner": "BPP",
+      "error_codes": [
+        823007,
+        823019
+      ]
+    },
+    {
+      "id": "vkyc_sla_refund",
+      "description": "If vkyc_sequence is AFTER_PAYMENT and VKYC not completed within vkyc_sla_hours, refund to source account.",
+      "owner": "BPP",
+      "error_codes": [
+        823010
+      ]
+    }
+  ],
+  "error_codes": [
+    823007,
+    823008,
+    823019,
+    823026
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

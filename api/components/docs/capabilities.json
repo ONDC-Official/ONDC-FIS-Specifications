@@ -1,0 +1,160 @@
+{
+  "title": "ONDC FIS FD — Capabilities",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "products": [
+    "FIXED_DEPOSIT"
+  ],
+  "issuer_types": {
+    "SCB": {
+      "name": "Scheduled Commercial Bank",
+      "dicgc_insured": true,
+      "credit_rating_disclosure": false
+    },
+    "SFB": {
+      "name": "Small Finance Bank",
+      "dicgc_insured": true,
+      "credit_rating_disclosure": false
+    },
+    "NBFC-D": {
+      "name": "Deposit-accepting NBFC",
+      "dicgc_insured": false,
+      "credit_rating_disclosure": true,
+      "regulatory_basis": "RBI Fair Practices Code — NBFC deposit disclosure requirement"
+    }
+  },
+  "investor_eligibility": {
+    "v1_in_scope": [
+      "INDIVIDUAL_RESIDENT"
+    ],
+    "v1_out_of_scope": [
+      "JOINT_ACCOUNT_HOLDERS",
+      "NRI_NRE_NRO",
+      "MINOR_WITH_GUARDIAN",
+      "HUF",
+      "CORPORATE"
+    ],
+    "statement": "v1 covers Individual resident investors only. Joint account holders, Non-Resident Indians (NRI/NRE/NRO), minors (with guardian), Hindu Undivided Families (HUF), and corporate investors are out of scope and will be addressed in subsequent protocol versions."
+  },
+  "payment_modes": [
+    "UPI",
+    "IMPS",
+    "NET_BANKING"
+  ],
+  "fund_flow": {
+    "customer_funds_to": "ISSUER_DESIGNATED_ACCOUNT",
+    "buyer_app_holds_funds": false,
+    "ondc_holds_funds": false,
+    "statement": "Investor payments go directly to the issuer's designated account. Neither the buyer app nor ONDC holds or routes customer funds."
+  },
+  "beckn_actions": [
+    "search",
+    "on_search",
+    "select",
+    "on_select",
+    "init",
+    "on_init",
+    "confirm",
+    "on_confirm",
+    "status",
+    "on_status",
+    "cancel",
+    "on_cancel",
+    "support",
+    "on_support",
+    "issue",
+    "on_issue"
+  ],
+  "post_booking_services": [
+    "STATUS_QUERY",
+    "PREMATURE_OR_PARTIAL_WITHDRAWAL",
+    "INTEREST_CERTIFICATE",
+    "FORM_121",
+    "NOMINEE_UPDATE",
+    "MATURITY_INSTRUCTION_UPDATE",
+    "PORTFOLIO_VIEW",
+    "CLOSURE_CONFIRMATION",
+    "IGM_GRIEVANCE"
+  ],
+  "kyc_model": {
+    "ownership": "BPP",
+    "location": "Issuer interface",
+    "etb_ntb_branching": true,
+    "vkyc_configurable": true,
+    "vkyc_sequences": [
+      "BEFORE_PAYMENT",
+      "AFTER_PAYMENT"
+    ]
+  },
+  "discovery_model": {
+    "search_broadcast": true,
+    "valid_network_filters": [
+      "tenure_preference",
+      "senior_citizen",
+      "interest"
+    ],
+    "bap_display_filters": [
+      "issuer_name",
+      "interest_rate_sort"
+    ]
+  },
+  "participants": {
+    "buyer_app": {
+      "role": "BAP",
+      "description": "Consumer platform — investor-facing distribution interface"
+    },
+    "seller_app": {
+      "role": "BPP",
+      "description": "Provider platform — RBI-regulated SCB, SFB, or NBFC-D"
+    },
+    "tsp": {
+      "role": "TSP",
+      "tsp_id": "MULTIPLUS",
+      "tsp_name": "Multiplus Finserv"
+    },
+    "off_network": [
+      "UIDAI",
+      "CKYC_REGISTRY",
+      "CERSAI",
+      "ONDC_GATEWAY",
+      "ONDC_REGISTRY",
+      "PAYMENT_GATEWAY"
+    ]
+  },
+  "vkyc": {
+    "description": "BRD Identity Verification Completion — issuer-configurable sequencing relative to payment",
+    "sequences": [
+      "BEFORE_PAYMENT",
+      "AFTER_PAYMENT"
+    ],
+    "post_payment_flow": {
+      "on_init_fields": [
+        "vkyc_sequence",
+        "vkyc_sla_hours",
+        "vkyc_url"
+      ],
+      "status_polling": "status / on_status with VKYC_STATUS and VKYC_SLA_DEADLINE",
+      "sla_breach": "BPP initiates refund to source bank account; REFUNDED status",
+      "flow_ref": "api/components/flows/fixed-deposits/vkyc-post-payment.json"
+    },
+    "verification": "Liveness check and PAN cross-verification on issuer interface"
+  },
+  "product_risk": {
+    "description": "Credit rating disclosure for NBFC-D issuers. Not required for SCB/SFB (DICGC covered).",
+    "applies_to_issuer_types": [
+      "NBFC-D"
+    ],
+    "fields": [
+      "credit_rating_agency",
+      "credit_rating",
+      "rating_last_updated",
+      "risk_level"
+    ],
+    "attributes_ref": "api/components/attributes/fixed-deposits/on_search.json"
+  },
+  "extensions": {
+    "namespace": "org.multiplus.ondc.fis.fd",
+    "version": "1.0"
+  },
+  "beckn_actions_ref": "api/components/beckn-actions.json"
+}

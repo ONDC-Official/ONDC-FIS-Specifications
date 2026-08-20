@@ -1,0 +1,64 @@
+{
+  "id": "status-query",
+  "slug": "status-query",
+  "summary": "FD Status Query",
+  "description": "Query active FD status including accrued interest and portfolio details.",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "category": "post_booking",
+  "migration_phase": 5,
+  "migration_status": "complete",
+  "brd_refs": [
+    "portfolio_status"
+  ],
+  "prerequisites": [
+    "FD reference number from on_confirm",
+    "FD in BOOKED or ACTIVE state"
+  ],
+  "outcome": "Current status, accrued_interest when ACTIVE",
+  "lifecycle_ref": "api/components/docs/lifecycle-and-states.json#post_booking_journeys.status_query",
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "steps": [
+    {
+      "step": 1,
+      "summary": "Status request",
+      "api": "status",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Query by fd_reference_number (ref_id)."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/status.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/status/status-fd-active.json"
+      },
+      "error_codes": [
+        823015
+      ]
+    },
+    {
+      "step": 2,
+      "summary": "Status response",
+      "api": "on_status",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Returns status, principal, accrued_interest, maturity_date, payout_history."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_status.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_status/on_status-active.json"
+      },
+      "error_codes": [
+        823010
+      ],
+      "state": {
+        "after": "ACTIVE"
+      }
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "title": "ONDC FIS FD — on_select Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "on_select",
+  "direction": "BPP → BAP",
+  "purpose": "Seller confirms selection and returns computed offer terms",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "on_select"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    }
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BPP"
+        }
+      },
+      "items": {
+        "tags": {
+          "FD_TERMS": {
+            "list": {
+              "DEPOSIT_AMOUNT": {
+                "required": "mandatory",
+                "type": "number",
+                "owner": "BPP",
+                "usage": "7.25",
+                "beckn_path": "message.order.quote.price.value",
+                "tag_code": "DEPOSIT_AMOUNT",
+                "error_codes": [
+                  823004,
+                  823013
+                ]
+              },
+              "PAYOUT_MODE": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "CUMULATIVE",
+                "enum": [
+                  "CUMULATIVE",
+                  "NON_CUMULATIVE"
+                ],
+                "beckn_path": "message.order.items[].tags[PAYOUT_MODE]",
+                "tag_code": "PAYOUT_MODE"
+              },
+              "MATURITY_INSTRUCTION": {
+                "required": "mandatory",
+                "type": "enum",
+                "owner": "BPP",
+                "usage": "--",
+                "beckn_path": "message.order.items[].tags[MATURITY_INSTRUCTION]",
+                "tag_code": "MATURITY_INSTRUCTION",
+                "error_codes": [
+                  823025
+                ]
+              }
+            }
+          }
+        }
+      },
+      "quote": {
+        "price": {
+          "value": {
+            "required": "mandatory",
+            "type": "number",
+            "owner": "BPP",
+            "usage": "100000",
+            "beckn_path": "message.order.quote.price.value"
+          }
+        },
+        "breakup": {
+          "maturity_amount_estimate": {
+            "required": "optional",
+            "type": "number",
+            "owner": "BPP",
+            "usage": "107250",
+            "beckn_path": "message.order.quote.breakup[].price.value"
+          }
+        }
+      },
+      "fulfillment": {
+        "end": {
+          "time": {
+            "timestamp": {
+              "required": "optional",
+              "type": "string",
+              "owner": "BPP",
+              "usage": "2027-08-20T00:00:00.000Z",
+              "format": "DD-MM-YYYY",
+              "beckn_path": "message.order.fulfillment.end.time.timestamp"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/on_select/on_select-fd-booking.json",
+  "validation_rules": [
+    {
+      "id": "product_active",
+      "description": "Selected FD offer must still be active; refresh catalog if stale.",
+      "owner": "BPP",
+      "error_codes": [
+        823014
+      ]
+    }
+  ],
+  "error_codes": [
+    823014
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

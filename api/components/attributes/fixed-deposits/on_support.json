@@ -1,0 +1,237 @@
+{
+  "title": "ONDC FIS FD — on_support Attributes",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "beckn_version": "2.0.0",
+  "action": "on_support",
+  "direction": "BPP → BAP",
+  "purpose": "Post-booking servicing response",
+  "migration_phase": 7,
+  "migration_status": "complete",
+  "context": {
+    "location": {
+      "country": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "IND",
+          "description": "Country code ISO 3166. Use IND for India."
+        }
+      },
+      "city": {
+        "code": {
+          "required": "mandatory",
+          "type": "string",
+          "owner": "BAP",
+          "usage": "*",
+          "description": "FD is location-agnostic; use *"
+        }
+      }
+    },
+    "domain": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "usage": "ONDC:FIS:FD"
+    },
+    "version": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "2.0.0",
+      "description": "Beckn protocol version"
+    },
+    "action": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "usage": "on_support"
+    },
+    "timestamp": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "RFC3339 timestamp"
+    },
+    "bap_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "bap_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP"
+    },
+    "transaction_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BAP",
+      "description": "Correlation ID for the transaction journey"
+    },
+    "message_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP",
+      "description": "Correlation ID for this request/response"
+    },
+    "bpp_id": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    },
+    "bpp_uri": {
+      "required": "mandatory",
+      "type": "string",
+      "owner": "BPP"
+    }
+  },
+  "message": {
+    "support": {
+      "tags": {
+        "FD_SERVICING": {
+          "list": {
+            "SERVICE_TYPE": {
+              "required": "mandatory",
+              "type": "enum",
+              "owner": "BPP",
+              "usage": "INTEREST_CERTIFICATE",
+              "enum": [
+                "INTEREST_CERTIFICATE",
+                "FORM_121",
+                "NOMINEE_UPDATE",
+                "MATURITY_INSTRUCTION_UPDATE",
+                "PORTFOLIO_VIEW",
+                "CLOSURE_CONFIRMATION"
+              ],
+              "beckn_path": "message.support.tags[SERVICE_TYPE]",
+              "tag_code": "SERVICE_TYPE",
+              "error_codes": [
+                823020
+              ]
+            },
+            "SERVICE_STATUS": {
+              "required": "mandatory",
+              "type": "enum",
+              "owner": "BPP",
+              "usage": "COMPLETED",
+              "enum": [
+                "COMPLETED",
+                "PENDING",
+                "FAILED"
+              ],
+              "beckn_path": "message.support.tags[SERVICE_STATUS]",
+              "tag_code": "SERVICE_STATUS"
+            },
+            "DOCUMENT_URL": {
+              "required": "conditional_mandatory",
+              "type": "string",
+              "owner": "BPP",
+              "usage": "--",
+              "condition": "Required for INTEREST_CERTIFICATE and FORM_121",
+              "beckn_path": "message.support.tags[DOCUMENT_URL]",
+              "tag_code": "DOCUMENT_URL"
+            },
+            "PRINCIPAL": {
+              "required": "conditional_mandatory",
+              "type": "number",
+              "owner": "BPP",
+              "usage": "7.25",
+              "condition": "Required when service_type is PORTFOLIO_VIEW",
+              "beckn_path": "message.support.tags[PRINCIPAL]",
+              "tag_code": "PRINCIPAL"
+            },
+            "ACCRUED_INTEREST": {
+              "required": "conditional_mandatory",
+              "type": "number",
+              "owner": "BPP",
+              "usage": "7.25",
+              "condition": "Required when service_type is PORTFOLIO_VIEW",
+              "beckn_path": "message.support.tags[ACCRUED_INTEREST]",
+              "tag_code": "ACCRUED_INTEREST"
+            },
+            "MATURITY_DATE": {
+              "required": "conditional_mandatory",
+              "type": "string",
+              "owner": "BPP",
+              "usage": "--",
+              "condition": "Required when service_type is PORTFOLIO_VIEW",
+              "format": "DD-MM-YYYY",
+              "beckn_path": "message.support.tags[MATURITY_DATE]",
+              "tag_code": "MATURITY_DATE",
+              "error_codes": [
+                823018,
+                823022
+              ]
+            },
+            "PAYOUT_HISTORY": {
+              "required": "optional",
+              "type": "string",
+              "owner": "BPP",
+              "usage": "--",
+              "condition": "Returned for PORTFOLIO_VIEW",
+              "beckn_path": "message.support.tags[PAYOUT_HISTORY]",
+              "tag_code": "PAYOUT_HISTORY"
+            },
+            "CLOSURE_DATE": {
+              "required": "conditional_mandatory",
+              "type": "string",
+              "owner": "BPP",
+              "usage": "--",
+              "condition": "Required for CLOSURE_CONFIRMATION",
+              "format": "DD-MM-YYYY",
+              "beckn_path": "message.support.tags[CLOSURE_DATE]",
+              "tag_code": "CLOSURE_DATE",
+              "error_codes": [
+                823022
+              ]
+            },
+            "FINAL_INTEREST_PAID": {
+              "required": "conditional_mandatory",
+              "type": "number",
+              "owner": "BPP",
+              "usage": "7.25",
+              "condition": "Required for CLOSURE_CONFIRMATION",
+              "beckn_path": "message.support.tags[FINAL_INTEREST_PAID]",
+              "tag_code": "FINAL_INTEREST_PAID"
+            },
+            "TDS_DEDUCTED": {
+              "required": "conditional_mandatory",
+              "type": "number",
+              "owner": "BPP",
+              "usage": "7.25",
+              "condition": "Required for CLOSURE_CONFIRMATION",
+              "beckn_path": "message.support.tags[TDS_DEDUCTED]",
+              "tag_code": "TDS_DEDUCTED"
+            },
+            "NET_AMOUNT_CREDITED": {
+              "required": "conditional_mandatory",
+              "type": "number",
+              "owner": "BPP",
+              "usage": "7.25",
+              "condition": "Required for CLOSURE_CONFIRMATION",
+              "beckn_path": "message.support.tags[NET_AMOUNT_CREDITED]",
+              "tag_code": "NET_AMOUNT_CREDITED"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_ref": "api/components/examples/fixed-deposits/on_support/on_support-interest-certificate.json",
+  "validation_rules": [
+    {
+      "id": "support_service_type",
+      "description": "support uses SERVICE_TYPE enum for documents, nominee, maturity, portfolio, closure.",
+      "owner": "BPP",
+      "error_codes": [
+        823020
+      ]
+    }
+  ],
+  "error_codes": [
+    823020
+  ],
+  "error_codes_ref": "api/components/error_codes/index.json"
+}

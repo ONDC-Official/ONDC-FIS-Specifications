@@ -1,0 +1,280 @@
+{
+  "id": "new-booking-ntb",
+  "slug": "new-booking-ntb",
+  "summary": "New FD Booking — New to Bank (NTB)",
+  "description": "Standard booking flow for investors with no existing relationship with the issuer. Full KYC on issuer interface after on_init.",
+  "domain": "ONDC:FIS:FD",
+  "version": "1.0.0",
+  "category": "booking",
+  "migration_phase": 5,
+  "migration_status": "complete",
+  "brd_refs": [
+    "kyc_on_issuer_interface",
+    "etb_repeat_investment",
+    "direct_payment_to_issuer",
+    "fd_receipt_on_confirmation"
+  ],
+  "gap_analysis": [
+    1,
+    2
+  ],
+  "trigger": "on_init returns customer_type=NTB",
+  "prerequisites": [
+    "Investor is INDIVIDUAL_RESIDENT (v1 scope)",
+    "BAP registered on ONDC FIS FD network",
+    "At least one BPP (issuer) subscribed to ONDC:FIS:FD"
+  ],
+  "outcome": "FD booked — BAP receives fd_reference_number and maturity details in on_confirm",
+  "fund_flow": "Investor payment goes directly to issuer designated account",
+  "lifecycle_ref": "api/components/docs/lifecycle-and-states.json#booking_journey.ntb",
+  "error_codes_ref": "api/components/error_codes/index.json",
+  "related_flows": [
+    "new-booking-etb",
+    "vkyc-post-payment"
+  ],
+  "references": [
+    "api/components/docs/brd-compliance.json#kyc_on_issuer_interface",
+    "api/components/docs/capabilities.json#kyc_model"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "summary": "Discovery broadcast",
+      "api": "search",
+      "direction": "BAP → Gateway → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "BAP sends search to ONDC Gateway; broadcast to all participating BPPs."
+        },
+        {
+          "description": "Valid network filters: tenure_preference, senior_citizen, interest only."
+        },
+        {
+          "description": "Bank name and rate sorting are BAP-side display filters after on_search."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/search.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/search/search-fd-discovery.json"
+      },
+      "error_codes": [
+        823002
+      ],
+      "state": {
+        "after": "SEARCHED"
+      }
+    },
+    {
+      "step": 2,
+      "summary": "Catalog response",
+      "api": "on_search",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Each issuer returns FD offers with rate, tenure, min deposit, payout frequency."
+        },
+        {
+          "description": "SCB/SFB: include dicgc_insured. NBFC-D: credit_rating_agency and credit_rating mandatory."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_search.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_search/on_search-scb-offer.json"
+      },
+      "error_codes": [
+        823003,
+        823023
+      ],
+      "references": [
+        "api/components/examples/fixed-deposits/on_search/on_search-nbfc-offer.json"
+      ]
+    },
+    {
+      "step": 3,
+      "summary": "Offer selection",
+      "api": "select",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Investor selects FD product, deposit_amount, payout_mode, maturity_instruction."
+        },
+        {
+          "description": "Tenure is not re-sent — fixed by the product from on_search."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/select.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/select/select-fd-booking.json"
+      },
+      "error_codes": [
+        823013,
+        823014,
+        823017
+      ],
+      "state": {
+        "after": "SELECTED"
+      }
+    },
+    {
+      "step": 4,
+      "summary": "Selection confirmation",
+      "api": "on_select",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "BPP confirms terms with maturity amount/date estimates."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_select.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_select/on_select-fd-booking.json"
+      },
+      "error_codes": [
+        823014
+      ]
+    },
+    {
+      "step": 5,
+      "summary": "Investor details submission",
+      "api": "init",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "BAP sends PAN, contact, address, bank/UPI, nominee or no-nominee declaration."
+        },
+        {
+          "description": "INVESTOR_TYPE must be INDIVIDUAL_RESIDENT."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/init.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/init/init-fd-ntb.json"
+      },
+      "error_codes": [
+        823001,
+        823005,
+        823006,
+        823008,
+        823017,
+        823022
+      ],
+      "state": {
+        "after": "INITIATED"
+      }
+    },
+    {
+      "step": 6,
+      "summary": "ETB/NTB check",
+      "api": "on_init",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "BPP performs PAN lookup against core banking."
+        },
+        {
+          "description": "NTB: returns customer_type=NTB, status=NTB_CONFIRMED, mandatory kyc_url."
+        },
+        {
+          "description": "Returns vkyc_sequence, vkyc_sla_hours, vkyc_url when applicable."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_init.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_init/on_init-ntb.json"
+      },
+      "error_codes": [
+        823007,
+        823008,
+        823019,
+        823026
+      ],
+      "state": {
+        "after": "NTB_CONFIRMED"
+      }
+    },
+    {
+      "step": 7,
+      "summary": "KYC on issuer interface",
+      "step_id": "kyc_on_issuer_ui",
+      "type": "off_network",
+      "actor": "Investor",
+      "details": [
+        {
+          "description": "Investor completes full KYC on issuer web/app via kyc_url."
+        },
+        {
+          "description": "KYC/AML owned by BPP — not performed on BAP."
+        }
+      ],
+      "off_network": "Issuer KYC UI (UIDAI/CKYC as applicable)",
+      "state": {
+        "before": "NTB_CONFIRMED",
+        "after": "KYC_COMPLETED"
+      }
+    },
+    {
+      "step": 8,
+      "summary": "Payment confirmation",
+      "api": "confirm",
+      "direction": "BAP → BPP",
+      "actor": "BAP",
+      "details": [
+        {
+          "description": "Payment mode selected here (UPI, IMPS, NET_BANKING)."
+        },
+        {
+          "description": "Amount must match select deposit_amount. Funds to issuer designated account."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/confirm.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/confirm/confirm-fd-upi.json"
+      },
+      "error_codes": [
+        823004,
+        823007,
+        823008,
+        823009,
+        823017,
+        823024
+      ],
+      "state": {
+        "before": "KYC_COMPLETED",
+        "after": "PAYMENT_SUCCESS"
+      }
+    },
+    {
+      "step": 9,
+      "summary": "FD booking receipt",
+      "api": "on_confirm",
+      "direction": "BPP → BAP",
+      "actor": "BPP",
+      "details": [
+        {
+          "description": "Mandatory response with all 10 receipt attributes including fd_reference_number."
+        },
+        {
+          "description": "Only way BAP receives FD reference and maturity schedule."
+        }
+      ],
+      "attributes_ref": "api/components/attributes/fixed-deposits/on_confirm.json",
+      "example": {
+        "path": "api/components/examples/fixed-deposits/on_confirm/on_confirm-fd-receipt.json"
+      },
+      "error_codes": [
+        823009,
+        823018,
+        823022
+      ],
+      "state": {
+        "after": "BOOKED"
+      }
+    }
+  ]
+}
