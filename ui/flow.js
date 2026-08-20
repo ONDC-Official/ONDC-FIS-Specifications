@@ -2,22 +2,6 @@
 
 var flows;
 
-function activateStep(link, content) {
-  document.querySelectorAll(".step-item").forEach(function (item) {
-    item.classList.remove("active");
-  });
-  document.querySelectorAll(".step-content").forEach(function (content) {
-    content.classList.remove("active");
-  });
-  link?.classList.add("active");
-  content?.classList.add("active");
-}
-
-function findInitialStepSummary(steps) {
-  const hashSummary = decodeURIComponent(window.location.hash.replace(/^#/, ""));
-  return steps?.find((step) => step.summary === hashSummary)?.summary || steps?.[0]?.summary;
-}
-
 async function loadSteps(steps) {
   const stepPane = document.querySelector(".step-pane");
   const contentPane = document.querySelector(".content-pane");
@@ -33,7 +17,6 @@ async function loadSteps(steps) {
       "step-item"
     );
     link.textContent = index + 1 + ". " + step.api;
-    link.dataset.stepSummary = step.summary;
 
     if (step.stepName) {
       link.appendChild(document.createElement("br"));
@@ -88,17 +71,18 @@ async function loadSteps(steps) {
     content.appendChild(yamlDiv);
     link.addEventListener("click", function (event) {
       event.preventDefault();
-      history.replaceState(null, "", "#" + encodeURIComponent(step.summary));
-      activateStep(link, content);
+      document.querySelectorAll(".step-item").forEach(function (item) {
+        item.classList.remove("active");
+      });
+      document.querySelectorAll(".step-content").forEach(function (content) {
+        content.classList.remove("active");
+      });
+      link.classList.add("active");
+      content.classList.add("active");
     });
     stepPane.appendChild(link);
     contentPane.appendChild(content);
   }
-
-  const initialSummary = findInitialStepSummary(steps);
-  const initialLink = stepPane.querySelector(`[data-step-summary="${CSS.escape(initialSummary)}"]`);
-  const initialContent = document.getElementById(initialSummary);
-  activateStep(initialLink, initialContent);
 }
 
 function updateFlow() {
@@ -117,6 +101,26 @@ async function loadFlow(flowName) {
     if (obj["summary"] === flowName) return obj;
   });
   flowSummary.textContent = selectedFlow["summary"];
+  // flowDescription.textContent = selectedFlow["details"]
+  var mermaidDiv = document.createElement("description-div");
+  if (selectedFlow?.["details"]) {
+    for (const [index, detail] of selectedFlow["details"].entries()) {
+      var mermaidPane = document.createElement("description-summary");
+      const { description, mermaid: mermaidGraph } = detail;
+      let result;
+      if (mermaidGraph) {
+        let removeBacktick = mermaidGraph?.replace(/`/g, "");
+        result = await mermaid.render(`main-summary${index}`, removeBacktick);
+      }
+      const {svg} = result || ''
+      mermaidPane.innerHTML =
+        "<p>" + `${index + 1}) ${description}` + "<p>" + "<p>" + svg + "<p>";
+
+      mermaidDiv.appendChild(mermaidPane);
+    }
+    //flowDescription.textContent.appendChild(mermaidDiv)
+  }
+  flowDescription.append(mermaidDiv);
   loadSteps(selectedFlow["steps"]);
 }
 
