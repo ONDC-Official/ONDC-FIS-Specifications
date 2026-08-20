@@ -1,0 +1,63 @@
+summary: LAMF - Foreclosure
+details:
+  - description: Detailed process for foreclosing an active LAMF credit line.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure success
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+references: if any
+steps:
+  - summary: The borrower requests foreclosure.
+    api: update
+    details:
+      - description: The borrower sends an update request against payments with FORECLOSURE as the payment label.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/update/update_request_lamf_foreclosure.yaml"
+  - summary: The lender returns the foreclosure quote.
+    api: on_update
+    details:
+      - description: The lender shares outstanding principal, accrued interest, foreclosure charges, and other charges.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_foreclosure_quote.yaml"
+  - summary: The lender confirms foreclosure payment success.
+    api: on_update
+    details:
+      - description: The lender confirms that the foreclosure payment was received.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_foreclosure_success.yaml"

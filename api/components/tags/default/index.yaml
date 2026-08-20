@@ -369,7 +369,7 @@ on_search:
             
                                          
       tags: &bppTerms
-        - &bpp_terms 
+        - &bpp_terms
           code: BPP_TERMS
           description: Describes the finder fees of the loan for buyer
           reference: <PR/Issue/Discussion Links md format text>
@@ -379,7 +379,45 @@ on_search:
               reference: <PR/Issue/Discussion Links md format text>
             - code: OFFLINE_CONTRACT
               description: Describes the offline contract.
-              reference: <PR/Issue/Discussion Links md format text>  
+              reference: <PR/Issue/Discussion Links md format text>
+        - &accountSummary
+          code: ACCOUNT_SUMMARY
+          description: Describes the latest LAMF or credit-line account summary snapshot returned on on_update and on_status responses
+          reference: <PR/Issue/Discussion Links md format text>
+          list:
+            - code: OVERDRAFT_LIMIT
+              description: Sanctioned or current overdraft/credit limit, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: UTILISED_AMOUNT
+              description: Current utilised amount against the facility, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: AVAILABLE_LIMIT
+              description: Current available limit against the facility, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: SHORTFALL_AMOUNT
+              description: Current margin shortfall amount, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: OVERDUE_AMOUNT
+              description: Current overdue amount, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: ORIGINAL_DUE_DATE
+              description: Original due date of the overdue interest or installment
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: OVERDUE_DAYS
+              description: Number of days the amount has been overdue
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: DUE_DATE
+              description: Current due date when applicable; omit when not applicable
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: CURRENT_COLLATERAL_VALUE
+              description: Current collateral valuation, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: CURRENT_OUTSTANDING
+              description: Current outstanding principal or utilised balance, should include unit INR
+              reference: <PR/Issue/Discussion Links md format text>
+            - code: LTV_PERCENT
+              description: Current loan-to-value percent
+              reference: <PR/Issue/Discussion Links md format text>
 
 
 select:
@@ -459,17 +497,31 @@ on_init:
                 reference: <PR/Issue/Discussion Links md format text>
               - code: FORECLOSURE_CHARGES
                 description: Describes the foreclosure charges, should include unit INR
-                reference: <PR/Issue/Discussion Links md format text>        
-          - *accountDetails 
-      
+                reference: <PR/Issue/Discussion Links md format text>
+          - *accountDetails
+          - &accountTransaction
+            code: ACCOUNT_TRANSACTION
+            description: Describes a ledger entry associated with a payment object on on_update and on_status responses
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: TYPE
+                description: Ledger direction or event class such as DEBIT, CREDIT, or INFO
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: DESCRIPTION
+                description: Human-readable description of the account transaction
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: DATE
+                description: Business date of the account transaction
+                reference: <PR/Issue/Discussion Links md format text>
+
       items: *a9
       provider: *a13
       fulfillments: *a10
-      tags: *bppTerms  
+      tags: *bppTerms
 confirm:
   message:
     order:
-      tags: 
+      tags:
         - *bap_terms
         - *bpp_terms
       payments: *a15
@@ -483,6 +535,7 @@ on_confirm: &order
       tags:
         - *bap_terms
         - *bpp_terms
+        - *accountSummary
 on_status: *order
 on_update: *order
 on_cancel: *order

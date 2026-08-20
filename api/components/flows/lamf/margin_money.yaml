@@ -1,0 +1,33 @@
+summary: LAMF - Margin Call
+details:
+- description: Unsolicited margin-call lifecycle notifications for an active LAMF credit line. The URL shared on raise is a lender redirection URL for cure actions, not an in-network payment collection URL.
+  mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - MARGIN_CALL_RAISED\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - MARGIN_CALL_RESOLVED\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - MARGIN_CALL_EXPIRED\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK"
+references: if any
+steps:
+- summary: The lender raises a margin call.
+  api: on_update
+  details:
+  - description: The lender posts MARGIN_CALL_RAISED with margin call id, shortfall amount, due date, current collateral value, current outstanding, LTV percent, and a redirection URL for the borrower to cure the shortfall.
+    mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  rect rgb(191, 223, 255)\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - MARGIN_CALL_RAISED\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  end"
+  reference: if any
+  example:
+    value:
+      $ref: ../../examples/loan-against-mf/on_update/on_update_lamf_margin_money.yaml
+- summary: The lender marks the margin call resolved.
+  api: on_update
+  details:
+  - description: The lender posts MARGIN_CALL_RESOLVED once the shortfall payment is received or the margin call is otherwise resolved.
+    mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  rect rgb(191, 223, 255)\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - MARGIN_CALL_RESOLVED\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  end"
+  reference: if any
+  example:
+    value:
+      $ref: ../../examples/loan-against-mf/on_update/on_update_lamf_margin_money_resolved.yaml
+- summary: The lender marks the margin call expired.
+  api: on_update
+  details:
+  - description: The lender posts MARGIN_CALL_EXPIRED when the margin call due date lapses without resolution. Expiry may precede liquidation initiation.
+    mermaid: "sequenceDiagram\n  participant Borrower Platform (BAP)\n  participant Lender Platform (BPP)\n  rect rgb(191, 223, 255)\n  Lender Platform (BPP)->>Borrower Platform (BAP): on_update - MARGIN_CALL_EXPIRED\n  Borrower Platform (BAP)-->>Lender Platform (BPP): ACK\n  end"
+  reference: if any
+  example:
+    value:
+      $ref: ../../examples/loan-against-mf/on_update/on_update_lamf_margin_money_expired.yaml
