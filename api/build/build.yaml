@@ -3086,6 +3086,29 @@ x-enum:
               - code: LOAN_DISBURSMENT
                 description: Describes, the payment label
                 reference: <PR/Issue/Discussion Links md format text
+              - code: DRAW_DOWN
+                description: >-
+                  Describes a drawdown disbursement payment on a credit line or
+                  LAMF facility
+                reference: <PR/Issue/Discussion Links md format text
+              - code: MISSED_INTEREST_PAYMENT
+                description: Describes a missed interest payment on a LAMF facility
+                reference: <PR/Issue/Discussion Links md format text
+              - code: MARGIN_CALL
+                description: >-
+                  Describes a margin-call related payment or ledger entry on a
+                  LAMF facility
+                reference: <PR/Issue/Discussion Links md format text
+              - code: LIQUIDATION
+                description: >-
+                  Describes a pledged-portfolio liquidation ledger entry on a
+                  LAMF facility
+                reference: <PR/Issue/Discussion Links md format text
+              - code: ACCOUNT_TRANSACTION
+                description: >-
+                  Describes a general account ledger transaction returned in
+                  on_update or on_status
+                reference: <PR/Issue/Discussion Links md format text
   on_init:
     context: *ref_0
     message:
@@ -3567,6 +3590,54 @@ x-tags:
               - code: OFFLINE_CONTRACT
                 description: Describes the offline contract.
                 reference: <PR/Issue/Discussion Links md format text>
+          - &ref_27
+            code: ACCOUNT_SUMMARY
+            description: >-
+              Describes the latest LAMF or credit-line account summary snapshot
+              returned on on_update and on_status responses
+            reference: <PR/Issue/Discussion Links md format text>
+            list:
+              - code: OVERDRAFT_LIMIT
+                description: >-
+                  Sanctioned or current overdraft/credit limit, should include
+                  unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: UTILISED_AMOUNT
+                description: >-
+                  Current utilised amount against the facility, should include
+                  unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: AVAILABLE_LIMIT
+                description: >-
+                  Current available limit against the facility, should include
+                  unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: SHORTFALL_AMOUNT
+                description: Current margin shortfall amount, should include unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OVERDUE_AMOUNT
+                description: Current overdue amount, should include unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: ORIGINAL_DUE_DATE
+                description: Original due date of the overdue interest or installment
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: OVERDUE_DAYS
+                description: Number of days the amount has been overdue
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: DUE_DATE
+                description: Current due date when applicable; omit when not applicable
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: CURRENT_COLLATERAL_VALUE
+                description: Current collateral valuation, should include unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: CURRENT_OUTSTANDING
+                description: >-
+                  Current outstanding principal or utilised balance, should
+                  include unit INR
+                reference: <PR/Issue/Discussion Links md format text>
+              - code: LTV_PERCENT
+                description: Current loan-to-value percent
+                reference: <PR/Issue/Discussion Links md format text>
   select:
     message:
       order:
@@ -3647,6 +3718,23 @@ x-tags:
                   description: Describes the foreclosure charges, should include unit INR
                   reference: <PR/Issue/Discussion Links md format text>
             - *ref_21
+            - code: ACCOUNT_TRANSACTION
+              description: >-
+                Describes a ledger entry associated with a payment object on
+                on_update and on_status responses
+              reference: <PR/Issue/Discussion Links md format text>
+              list:
+                - code: TYPE
+                  description: >-
+                    Ledger direction or event class such as DEBIT, CREDIT, or
+                    INFO
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: DESCRIPTION
+                  description: Human-readable description of the account transaction
+                  reference: <PR/Issue/Discussion Links md format text>
+                - code: DATE
+                  description: Business date of the account transaction
+                  reference: <PR/Issue/Discussion Links md format text>
         items: *ref_17
         provider: *ref_22
         fulfillments: *ref_19
@@ -3658,7 +3746,7 @@ x-tags:
           - *ref_24
           - *ref_25
         payments: *ref_26
-  on_confirm: &ref_27
+  on_confirm: &ref_28
     message:
       order:
         payments: *ref_26
@@ -3668,9 +3756,10 @@ x-tags:
         tags:
           - *ref_24
           - *ref_25
-  on_status: *ref_27
-  on_update: *ref_27
-  on_cancel: *ref_27
+          - *ref_27
+  on_status: *ref_28
+  on_update: *ref_28
+  on_cancel: *ref_28
 x-flows:
   - summary: Master Search
     details:
@@ -4676,7 +4765,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -5065,7 +5154,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -5410,7 +5499,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -7672,7 +7761,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -8220,7 +8309,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -8769,7 +8858,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -9321,7 +9410,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -9875,7 +9964,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: *ref_28
+          value: *ref_29
   - summary: Business Loan - Term Loan without Account Aggregator(Single Redirection)
     details:
       - description: Discovery of Funds
@@ -19308,6 +19397,21 @@ x-flows:
                               code: STATUS
                               name: Status
                             value: CONSENT_REQUIRED
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: >-
+                              Drawdown terms shared and borrower consent
+                              requested
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -19603,6 +19707,21 @@ x-flows:
                               code: STATUS
                               name: Status
                             value: DISBURSEMENT_INITIATED
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: >-
+                              Child drawdown order created and disbursement
+                              initiated
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -19822,6 +19941,22 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: HDFC0001234
                       transaction_id: LENDER_UTR_001
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: DEBIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: >-
+                              Drawdown amount credited to registered bank
+                              account
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -20022,6 +20157,19 @@ x-flows:
                               code: REJECTION_REASON
                               name: Rejection Reason
                             value: Requested amount exceeds available limit
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Drawdown request rejected
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -20248,6 +20396,22 @@ x-flows:
                       bank_account_number: '1800002341'
                       bank_code: HDFC0001234
                       transaction_id: LENDER_UTR_001
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: DEBIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: >-
+                              Base order utilisation updated after successful
+                              drawdown
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: F18
                     type: ONLINE
@@ -20603,6 +20767,19 @@ x-flows:
                               code: OVERDUE_AMOUNT
                               name: Overdue Amount
                             value: '5250'
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Missed interest payment quote shared with borrower
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -20838,6 +21015,19 @@ x-flows:
                               code: OVERDUE_AMOUNT
                               name: Overdue Amount
                             value: '0'
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Missed interest payment received through network
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -21091,6 +21281,20 @@ x-flows:
                       amount: '5250'
                       currency: INR
                       transaction_id: LENDER_COLLECTION_001
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Base order updated after missed interest payment
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: F18
                     type: ONLINE
@@ -21409,6 +21613,20 @@ x-flows:
                     params:
                       amount: '50000'
                       currency: INR
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Pre-part payment quote shared with borrower
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -21590,6 +21808,20 @@ x-flows:
                       amount: '50000'
                       currency: INR
                       transaction_id: LENDER_COLLECTION_002
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Pre-part payment received through network
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: DRAW_DOWN_001
                     type: ONLINE
@@ -21826,6 +22058,22 @@ x-flows:
                       amount: '50000'
                       currency: INR
                       transaction_id: LENDER_COLLECTION_002
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: >-
+                              Base order utilisation updated after pre-part
+                              payment
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 fulfillments:
                   - id: F18
                     type: ONLINE
@@ -22055,6 +22303,44 @@ x-flows:
                     params:
                       amount: '228000'
                       currency: INR
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Foreclosure quote shared with borrower
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
+                tags:
+                  - descriptor:
+                      code: ACCOUNT_SUMMARY
+                      name: Account Summary
+                    list:
+                      - descriptor:
+                          code: OVERDRAFT_LIMIT
+                        value: '1100000'
+                      - descriptor:
+                          code: UTILISED_AMOUNT
+                        value: '225000'
+                      - descriptor:
+                          code: AVAILABLE_LIMIT
+                        value: '875000'
+                      - descriptor:
+                          code: SHORTFALL_AMOUNT
+                        value: '0'
+                      - descriptor:
+                          code: OVERDUE_AMOUNT
+                        value: '0'
+                      - descriptor:
+                          code: LTV_PERCENT
+                          name: LTV Percent
+                        value: 60 %
       - summary: The lender confirms foreclosure payment success.
         api: on_update
         details:
@@ -22103,6 +22389,20 @@ x-flows:
                       amount: '228000'
                       currency: INR
                       transaction_id: LENDER_COLLECTION_003
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Foreclosure payment received and facility closed
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
                 tags:
                   - descriptor:
                       code: ACCOUNT_SUMMARY
@@ -22271,6 +22571,31 @@ x-flows:
                           range:
                             start: '2026-06-28T11:00:00.000Z'
                             end: '2026-07-05T23:59:59.000Z'
+                payments:
+                  - id: MARGIN_CALL_TXN_001
+                    type: POST_FULFILLMENT
+                    status: NOT-PAID
+                    collected_by: BPP
+                    time:
+                      label: MARGIN_CALL
+                      timestamp: '2026-06-28T11:00:00.000Z'
+                    params:
+                      amount: '15000'
+                      currency: INR
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Margin call raised against the LAMF facility
+                          - descriptor:
+                              code: DATE
+                            value: '2026-06-28'
       - summary: The lender marks the margin call resolved.
         api: on_update
         details:
@@ -22370,6 +22695,32 @@ x-flows:
                     state:
                       descriptor:
                         code: MARGIN_CALL_RESOLVED
+                payments:
+                  - id: MARGIN_CALL_TXN_001
+                    type: POST_FULFILLMENT
+                    status: PAID
+                    collected_by: BPP
+                    time:
+                      label: MARGIN_CALL
+                      timestamp: '2026-07-04T11:00:00.000Z'
+                    params:
+                      amount: '15000'
+                      currency: INR
+                      transaction_id: LENDER_COLLECTION_MARGIN_001
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Margin call resolved against the LAMF facility
+                          - descriptor:
+                              code: DATE
+                            value: '2026-07-04'
       - summary: The lender marks the margin call expired.
         api: on_update
         details:
@@ -22478,6 +22829,31 @@ x-flows:
                     state:
                       descriptor:
                         code: MARGIN_CALL_EXPIRED
+                payments:
+                  - id: MARGIN_CALL_TXN_001
+                    type: POST_FULFILLMENT
+                    status: NOT-PAID
+                    collected_by: BPP
+                    time:
+                      label: MARGIN_CALL
+                      timestamp: '2026-07-06T11:00:00.000Z'
+                    params:
+                      amount: '15000'
+                      currency: INR
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: INFO
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Margin call expired without resolution
+                          - descriptor:
+                              code: DATE
+                            value: '2026-07-06'
   - summary: LAMF - Liquidation
     details:
       - description: >-
@@ -22641,6 +23017,32 @@ x-flows:
                     state:
                       descriptor:
                         code: LIQUIDATION_COMPLETED
+                payments:
+                  - id: LIQUIDATION_TXN_001
+                    type: POST_FULFILLMENT
+                    status: PAID
+                    collected_by: BPP
+                    time:
+                      label: LIQUIDATION
+                      timestamp: '2026-07-06T11:00:00.000Z'
+                    params:
+                      amount: '5102.50'
+                      currency: INR
+                      transaction_id: LENDER_LIQUIDATION_001
+                    tags:
+                      - descriptor:
+                          code: ACCOUNT_TRANSACTION
+                          name: Account Transaction
+                        list:
+                          - descriptor:
+                              code: TYPE
+                            value: CREDIT
+                          - descriptor:
+                              code: DESCRIPTION
+                            value: Pledged units liquidated against outstanding
+                          - descriptor:
+                              code: DATE
+                            value: '2026-07-06'
 x-examples:
   Business-Term-Loan:
     summary: Business Term Loan
@@ -22650,12 +23052,12 @@ x-examples:
         examples:
           - summary: search_request_1.yaml
             description: TBD
-            value: *ref_29
+            value: *ref_30
       select:
         examples:
           - summary: select_request_1
             description: TBD
-            value: *ref_30
+            value: *ref_31
           - summary: select_request_2
             description: select_request_2.yaml
             value:
@@ -23201,10 +23603,10 @@ x-examples:
         examples:
           - summary: on_search_request_1
             description: TBD
-            value: *ref_31
+            value: *ref_32
           - summary: on_search_request_1
             description: TBD
-            value: *ref_31
+            value: *ref_32
       on_select:
         examples:
           - summary: on_select_request_1
@@ -23503,7 +23905,7 @@ x-examples:
                     ttl: P15D
           - summary: on_select_request_2
             description: on_select_request_2
-            value: &ref_32
+            value: &ref_33
               context:
                 domain: ONDC:FIS12
                 location:
@@ -23779,21 +24181,21 @@ x-examples:
                     ttl: P15D
           - summary: on_select_request_2
             description: TBD
-            value: *ref_32
+            value: *ref_33
       on_status:
         examples:
           - summary: on_status_request_emi_completion_1
             description: on_status_request_emi_completion_1
-            value: *ref_28
+            value: *ref_29
           - summary: on_status_request_emi_completion_2
             description: on_status_request_emi_completion_2
-            value: *ref_33
+            value: *ref_34
           - summary: on_status_request_emi_completion_3
             description: on_status_request_emi_completion_3
-            value: *ref_34
+            value: *ref_35
           - summary: on_status_request_emi_completion_4
             description: on_status_request_emi_completion_4
-            value: *ref_35
+            value: *ref_36
           - summary: on_status_request_emi_completion_5
             description: on_status_request_emi_completion_5
             value:
