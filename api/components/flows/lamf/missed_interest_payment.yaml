@@ -1,0 +1,109 @@
+summary: LAMF - Missed Interest Payment
+details:
+  - description: Detailed process for paying missed interest on an active LAMF credit line.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (MISSED_INTEREST_PAYMENT on Child Order)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest quote
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest success
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after missed interest payment
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+references: if any
+steps:
+  - summary: The borrower requests missed-interest payment details on the drawdown child order.
+    api: update
+    stepName: Child Order
+    details:
+      - description: The borrower sends an update request against the drawdown child order with MISSED_INTEREST_PAYMENT as the payment label.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (MISSED_INTEREST_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after missed interest payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/update/update_request_lamf_missed_interest.yaml"
+  - summary: The lender returns the missed-interest amount payable on the child order.
+    api: on_update
+    stepName: Child Order
+    details:
+      - description: The lender shares the interest, penal charges, other charges, payment URL, original due date, overdue days, overdue amount, and due date on the child order. The same payment id is retained from the borrower request through the payment URL and payment success callbacks.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (MISSED_INTEREST_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after missed interest payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_missed_interest_quote.yaml"
+  - summary: The lender confirms missed-interest payment success on the child order.
+    api: on_update
+    stepName: Child Order
+    details:
+      - description: The lender confirms on the child order that the missed-interest payment was received.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (MISSED_INTEREST_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after missed interest payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_missed_interest_success.yaml"
+  - summary: The lender updates the base order after a successful missed-interest payment.
+    api: on_update
+    stepName: Base Order
+    details:
+      - description: The lender sends an unsolicited base-order on_update after the child missed-interest payment succeeds.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (MISSED_INTEREST_PAYMENT on Child Order)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest quote
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Child Order missed interest success
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Base Order updated after missed interest payment
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_missed_interest_base_order.yaml"
