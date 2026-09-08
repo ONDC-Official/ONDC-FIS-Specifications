@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Domain** | `ONDC:FIS:FD` |
+| **Domain** | `ONDC:FIS14:FD` |
 | **Protocol version** | 1.0.0 |
 | **BRD version** | 1.0 (06 Jul 2026) |
 | **Gap analysis** | 14 Jul 2026 — all four gaps resolved |
@@ -48,7 +48,7 @@ ONDC/
     ├── beckn-actions.json
     ├── attributes/fixed-deposits/
     ├── flows/fixed-deposits/
-    ├── examples/fixed-deposits/                   ← 23 ONDC-format reference payloads
+    ├── examples/fixed-deposits/                   ← 21 ONDC-format reference payloads
     ├── error_codes/, enums/, tags/, docs/
 ```
 
@@ -57,7 +57,7 @@ ONDC/
 | Phase | Status | Scope |
 |-------|--------|-------|
 | **1 — Scaffold** | Done | Component tree, capabilities, BRD compliance |
-| **2 — Examples** | Done | 23 clean ONDC-format examples |
+| **2 — Examples** | Done | 21 clean ONDC-format examples |
 | **3 — Attributes** | Done | Per-action attribute definitions |
 | **4 — Error codes** | Done | 27 codes, validation rules, attribute wiring |
 | **5 — Flows** | Done | 7 flows with full step cross-links |
@@ -154,7 +154,7 @@ After `init`, the BPP performs a PAN lookup against its core banking system. If 
 
 - `customer_type`: `NTB`
 - `status`: `NTB_CONFIRMED` or `KYC_PENDING`
-- `kyc_url`: **mandatory** — investor completes KYC on the issuer's interface
+- `xinput`: **mandatory for NTB** — investor completes KYC and nominee forms on issuer interface (forms F01, F02)
 
 ### ETB — Existing to Bank (abbreviated flow)
 
@@ -166,7 +166,7 @@ search → on_search → select → on_select → init → on_init → confirm �
 
 When `on_init` returns `customer_type=ETB` and `status=ETB_CONFIRMED`:
 
-- Issuer retrieves existing KYC from core banking — **no `kyc_url`**
+- Issuer retrieves existing KYC from core banking — **no xinput forms required**
 - Investor proceeds directly to bank account linkage and payment
 - Nominee details may be pre-filled from issuer records
 
@@ -194,7 +194,7 @@ When `on_init` returns `customer_type=ETB` and `status=ETB_CONFIRMED`:
 | Offer selection | `select` | BAP → BPP | `deposit_amount`, `payout_mode`, `maturity_instruction` |
 | Offer confirmation | `on_select` | BPP → BAP | Confirmed terms, maturity amount/date estimates |
 | KYC and details | `init` | BAP → BPP | PAN, name, DOB, mobile, address, bank/UPI, nominee or no-nominee declaration, `INVESTOR_TYPE=INDIVIDUAL_RESIDENT` |
-| ETB/NTB check | `on_init` | BPP → BAP | `customer_type`, `status`, `kyc_url` (NTB only), `bank_verification_status`, `order_id` |
+| ETB/NTB check | `on_init` | BPP → BAP | `customer_type`, `status`, `xinput` (NTB only), `bank_verification_status`, `quote` |
 | Payment | `confirm` | BAP → BPP | `payment_mode`, `amount`, `transaction_id`, `payment_status` |
 | Receipt | `on_confirm` | BPP → BAP | FD reference, principal, rate, tenure, start/maturity dates, maturity amount, interest schedule, TDS, status |
 
@@ -261,7 +261,7 @@ Form 121 replaces Form 15G and Form 15H under the Income Tax Act 2025, effective
 | Payout mode | `CUMULATIVE`, `NON_CUMULATIVE` |
 | Maturity instruction | `AUTO_RENEW_PRINCIPAL`, `AUTO_RENEW_PRINCIPAL_AND_INTEREST`, `CREDIT_TO_BANK_ACCOUNT` |
 | Payment mode | `UPI`, `IMPS`, `NET_BANKING` |
-| Payment status | `SUCCESS`, `PENDING`, `FAILED` |
+| Payment status | `NOT-PAID`, `PAID`, `PENDING`, `FAILED` |
 | Customer type | `ETB`, `NTB` |
 | Issuer type | `SCB`, `SFB`, `NBFC-D` |
 | Withdrawal type | `FULL`, `PARTIAL` |
@@ -281,8 +281,9 @@ Full enum definitions: `api/components/enums/fixed-deposits.json`
 | **Investor eligibility** | `init` must send `INVESTOR_TYPE=INDIVIDUAL_RESIDENT`. Reject out-of-scope types at BAP. |
 | **Nominee** | Either nominee details (name, relationship, DOB) **or** `no_nominee_declaration=true` must be present (RBI Nov 2025). Nominee must not block order confirmation. |
 | **Bank or UPI** | Provide `bank_account_number` + IFSC **or** `upi_handle` — one pair must be present. |
-| **ETB/NTB branch** | `kyc_url` mandatory for NTB; omit for ETB_CONFIRMED. |
-| **Payment amount** | `confirm` amount must match `select` deposit amount. Payment mode is chosen at `confirm`, not earlier. |
+| **ETB/NTB branch** | `xinput` mandatory for NTB KYC/nominee; omit for ETB_CONFIRMED. |
+| **Payment amount** | `confirm` amount must match `select` deposit amount. Payment type is `PRE-FULFILLMENT`. |
+| **Status identifier** | Use `order_id` pre-booking OR `ref_id` post-booking — mutually exclusive. |
 | **NBFC credit rating** | `on_search` must include `credit_rating_agency` and `credit_rating` when `issuer_type=NBFC-D`. |
 | **Partial withdrawal** | `withdrawal_amount` required when `withdrawal_type=PARTIAL`. |
 | **Form 121** | `financial_year` required when `document_type=FORM_121`. |
@@ -305,7 +306,24 @@ All BRD requirements and the four gap-analysis items are **`covered: true`** in 
 | Portfolio view | `on_status`, `support` → `PORTFOLIO_VIEW` |
 | Nominee / maturity update | `support` → `NOMINEE_UPDATE`, `MATURITY_INSTRUCTION_UPDATE` |
 | Closure confirmation | `support` → `CLOSURE_CONFIRMATION` |
-| IGM grievance | `issue` / `on_issue` |
+| Closure confirmation | `support` → `CLOSURE_CONFIRMATION` + `on_cancel` |
+
+## Pending ONDC alignment
+
+| Item | Status |
+|------|--------|
+| `TENURE_PREFERENCE` ISO 8601 format (replacing buckets like `2Y_TO_3Y`) | Pending ONDC call |
+| `quantity` field semantics in `select` | Pending ONDC call — deposit amount is in `items[].price.value` |
+| `TAX_SAVER` category | TBD |
+
+## FIS14 structural conventions
+
+- Catalog uses `descriptor` and `providers` (not `bpp/descriptor`, `bpp/providers`)
+- Order payloads use `fulfillments[]` with `stops[]` for maturity/end dates
+- Tag value formats: `INTEREST_RATE` as `7.25 %`, `TENURE` as `P1Y`, `MINIMUM_DEPOSIT_AMOUNT` as `10000 INR`
+- TLC (Terms, Legal & Conditions) tags on search/on_search
+- NTB KYC/nominee via `xinput` forms on `on_init`
+- `on_confirm` order state is `ACTIVE` (not `COMPLETED`); payment status is `PAID`
 
 ## BRD gap analysis (18 Aug 2026)
 
@@ -364,4 +382,4 @@ Used throughout `api/components/attributes/fixed-deposits/`:
 
 ---
 
-*Multiplus ONDC Fixed Deposit Distribution Protocol v1.0 — ONDC Financial Services (`ONDC:FIS:FD`)*
+*Multiplus ONDC Fixed Deposit Distribution Protocol v1.0 — ONDC Financial Services (`ONDC:FIS14:FD`)*

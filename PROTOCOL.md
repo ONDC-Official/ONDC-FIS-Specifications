@@ -1,7 +1,7 @@
 # ONDC Fixed Deposit Protocol — Specification Guide
 
 **Document type:** Protocol specification for ONDC network submission  
-**Domain code:** `ONDC:FIS:FD`  
+**Domain code:** `ONDC:FIS14:FD`  
 **Protocol version:** 1.0.0  
 **Beckn version:** 2.0.0  
 **BRD reference:** Multiplus ONDC Fixed Deposit BRD v1.0 (06 July 2026)  
@@ -49,7 +49,7 @@ The protocol is built on the **Beckn open protocol** and follows the **ONDC Fina
 | **Standardised comparison** | Uniform offer attributes — rate, tenure, payout mode, premature penalty, DICGC/credit rating |
 | **Digital booking** | Full Beckn journey from selection through payment confirmation and FD receipt |
 | **Issuer-owned compliance** | KYC/VKYC on the issuer interface; BAP orchestrates, BPP verifies |
-| **Post-booking servicing** | Status query, withdrawal, interest certificates, Form 121, nominee updates, IGM |
+| **Post-booking servicing** | Status query, withdrawal, interest certificates, Form 121, nominee updates |
 | **Direct fund flow** | Investor funds transfer directly to the issuer; BAP and ONDC never hold customer money |
 
 ### v1 scope
@@ -104,7 +104,7 @@ Investor payments are routed **directly to the issuer's designated account**. Ne
 
 ### 4.2 Issuer-owned compliance
 
-KYC and AML verification are performed on the **issuer's web or mobile interface** (`kyc_url`, `vkyc_url`). The BAP collects investor data in `init` but does not perform identity verification. Regulatory liability remains with the BPP.
+KYC and AML verification are performed on the **issuer's web or mobile interface** via **`xinput`** forms (NTB) or **`vkyc_url`** (when applicable). The BAP collects investor data in `init` under `fulfillments[].customer` but does not perform identity verification. Regulatory liability remains with the BPP.
 
 ### 4.3 Open discovery, BAP-side filtering
 
@@ -175,13 +175,6 @@ The protocol defines **16 Beckn actions** across booking, post-booking servicing
 | `support` | BAP → BPP | Document and servicing requests |
 | `on_support` | BPP → BAP | Servicing response (certificates, portfolio, etc.) |
 
-### 6.3 Grievance actions
-
-| Action | Direction | Purpose |
-|--------|-----------|---------|
-| `issue` | BAP → BPP | IGM grievance initiation |
-| `on_issue` | BPP → BAP | Grievance acknowledgment and resolution |
-
 Full action registry: `api/components/beckn-actions.json`
 
 ---
@@ -212,8 +205,8 @@ sequenceDiagram
     BPP->>BAP: on_select (terms confirmed)
     Investor->>BAP: Enter PAN, nominee, bank details
     BAP->>BPP: init
-    BPP->>BAP: on_init (NTB, kyc_url)
-    Investor->>KYC: Complete KYC on issuer UI
+    BPP->>BAP: on_init (NTB, xinput)
+    Investor->>KYC: Complete KYC via xinput
     KYC-->>BPP: KYC verified
     Investor->>BAP: Confirm payment
     BAP->>BPP: confirm (UPI/IMPS/Net Banking)
@@ -230,8 +223,8 @@ sequenceDiagram
 | 3 | `select` | BAP | Investor selects product, deposit amount, payout mode, maturity instruction | SELECTED |
 | 4 | `on_select` | BPP | Confirms selection with maturity amount/date estimates | — |
 | 5 | `init` | BAP | PAN, contact, address, bank/UPI, nominee or no-nominee declaration | INITIATED |
-| 6 | `on_init` | BPP | PAN lookup → `customer_type=NTB`, mandatory `kyc_url` | NTB_CONFIRMED |
-| 7 | *(off-network)* | Investor | Full KYC on issuer interface via `kyc_url` | KYC_COMPLETED |
+| 6 | `on_init` | BPP | PAN lookup → `customer_type=NTB`, mandatory `xinput` for KYC/nominee | NTB_CONFIRMED |
+| 7 | *(off-network)* | Investor | Full KYC via xinput forms on issuer interface | KYC_COMPLETED |
 | 8 | `confirm` | BAP | Payment mode selected; amount must match `select` | PAYMENT_SUCCESS |
 | 9 | `on_confirm` | BPP | FD receipt — 10 mandatory attributes including `fd_reference_number` | BOOKED |
 
@@ -254,7 +247,7 @@ sequenceDiagram
 
     BAP->>BPP: search → on_search → select → on_select
     BAP->>BPP: init
-    BPP->>BAP: on_init (ETB_CONFIRMED — no kyc_url)
+    BPP->>BAP: on_init (ETB_CONFIRMED — no xinput)
     Note over BAP,BPP: KYC step skipped for ETB
     Investor->>BAP: Confirm payment
     BAP->>BPP: confirm
@@ -342,14 +335,6 @@ Servicing is initiated via `support` with a `SERVICE_TYPE` tag:
 
 **Flow:** `api/components/flows/fixed-deposits/post-booking-servicing.json`
 
-### 10.4 IGM grievance
-
-| Action | Purpose |
-|--------|---------|
-| `issue` / `on_issue` | Raise and track investor grievances per ONDC IGM requirements |
-
-**Flow:** `api/components/flows/fixed-deposits/igm-grievance.json`
-
 ---
 
 ## 11. Transaction lifecycle and states
@@ -427,8 +412,8 @@ Attempting to use bank name or rate as network search filters returns error **82
 | Aspect | Specification |
 |--------|---------------|
 | **Ownership** | BPP (issuer) |
-| **Location** | Off-network issuer UI (`kyc_url`, `vkyc_url`) |
-| **BAP role** | Collect data in `init`; redirect investor to issuer URL |
+| **Location** | Off-network issuer UI (`xinput`, `vkyc_url`) |
+| **BAP role** | Collect data in `init` under `fulfillments[]`; redirect investor to xinput forms |
 | **ETB/NTB branching** | Determined in `on_init` via PAN lookup against core banking |
 | **VKYC sequencing** | Issuer-configurable: `BEFORE_PAYMENT` or `AFTER_PAYMENT` |
 | **Investor type (v1)** | `INDIVIDUAL_RESIDENT` only — BAP must reject others before network call |
@@ -436,7 +421,7 @@ Attempting to use bank name or rate as network search filters returns error **82
 Off-network step in NTB flow (not a Beckn API call):
 
 ```
-Investor → kyc_url (issuer web/app) → KYC_COMPLETED → BAP proceeds to confirm
+Investor → xinput forms (issuer web/app) → KYC_COMPLETED → BAP proceeds to confirm
 ```
 
 ---
@@ -558,7 +543,7 @@ All BRD v1.0 requirements and four gap-analysis items are implemented. Matrix: `
 
 | Gap | Topic | Resolution |
 |-----|-------|------------|
-| 1 | ETB / NTB branching | `on_init` returns `customer_type` (ETB/NTB) with conditional `kyc_url` |
+| 1 | ETB / NTB branching | `on_init` returns `customer_type` (ETB/NTB) with conditional `xinput` |
 | 2 | MVP investor eligibility | v1 limited to `INDIVIDUAL_RESIDENT`; enforced on BAP and BPP |
 | 3 | NBFC-D credit rating | Conditional mandatory fields on `on_search` for NBFC-D issuers |
 | 4 | Form 121 vs 15G/15H | `support` service type `FORM_121` with `FINANCIAL_YEAR` tag |
@@ -570,7 +555,7 @@ All BRD v1.0 requirements and four gap-analysis items are implemented. Matrix: `
 | Open discovery across issuers | search / on_search | Covered |
 | Standardised offer attributes | on_search | Covered |
 | Selection with amount and payout | select / on_select | Covered |
-| KYC on issuer interface | on_init (kyc_url) | Covered |
+| KYC on issuer interface | on_init (xinput for NTB) | Covered |
 | ETB repeat investment | new-booking-etb flow | Covered |
 | Direct payment to issuer | confirm | Covered |
 | VKYC post-payment with refund SLA | vkyc-post-payment flow | Covered |
@@ -578,7 +563,9 @@ All BRD v1.0 requirements and four gap-analysis items are implemented. Matrix: `
 | Status and portfolio | status / support | Covered |
 | Premature / partial withdrawal | cancel / on_cancel | Covered |
 | Interest certificate & Form 121 | support / on_support | Covered |
-| IGM grievance | issue / on_issue | Covered |
+| Closure confirmation | support CLOSURE_CONFIRMATION + on_cancel | Covered |
+
+> **Note:** IGM grievance (`issue` / `on_issue`) is out of scope for this developer guide — handled off-network via ONDC IGM.
 
 ---
 
@@ -586,11 +573,11 @@ All BRD v1.0 requirements and four gap-analysis items are implemented. Matrix: `
 
 ### 18.1 Buyer App (BAP) checklist
 
-1. Register on ONDC FIS network with domain `ONDC:FIS:FD`.
+1. Register on ONDC FIS network with domain `ONDC:FIS14:FD`.
 2. Implement all 16 Beckn actions per `api/components/beckn-actions.json`.
 3. Broadcast `search` via Gateway; apply display filters client-side only.
 4. Reject out-of-scope investor types **before** initiating `init`.
-5. Redirect investor to `kyc_url` / `vkyc_url` — do not perform KYC in-app.
+5. Redirect investor to `xinput` / `vkyc_url` forms — do not perform KYC in-app.
 6. Route payment directly to issuer account per `on_init` payment terms.
 7. Store `fd_reference_number` from `on_confirm` — sole source of booking reference.
 8. Poll `status` when `vkyc_sequence=AFTER_PAYMENT`.
@@ -598,7 +585,7 @@ All BRD v1.0 requirements and four gap-analysis items are implemented. Matrix: `
 
 ### 18.2 Seller App / Issuer (BPP) checklist
 
-1. Subscribe to domain `ONDC:FIS:FD` on ONDC Registry.
+1. Subscribe to domain `ONDC:FIS14:FD` on ONDC Registry.
 2. Respond to Gateway-broadcast `search` with compliant `on_search` catalog.
 3. Include DICGC disclosure (SCB/SFB) or credit rating (NBFC-D) on every offer.
 4. Perform PAN lookup in `on_init`; return ETB or NTB with appropriate URLs.
@@ -652,9 +639,8 @@ All BRD v1.0 requirements and four gap-analysis items are implemented. Matrix: `
 | `status-query` | Post-booking | 2 | FD status enquiry |
 | `premature-withdrawal` | Post-booking | 2 | Full or partial premature closure |
 | `post-booking-servicing` | Post-booking | 2 | Certificates, Form 121, nominee update |
-| `igm-grievance` | Grievance | 2 | Investor grievance handling |
 
-### Example catalogue (23 payloads)
+### Example catalogue (21 payloads)
 
 Organised by Beckn action under `api/components/examples/fixed-deposits/<action>/`. Index: `api/components/examples/fixed-deposits/index.json`.
 
@@ -683,7 +669,7 @@ Organised by Beckn action under `api/components/examples/fixed-deposits/<action>
 
 | Item | Current specification | Pending |
 |------|----------------------|---------|
-| Domain code | `ONDC:FIS:FD` | ONDC official assignment |
+| Domain code | `ONDC:FIS14:FD` | ONDC official assignment |
 | Error code range | 823001–823099 | ONDC registry allocation |
 | Beckn version | 2.0.0 | Alignment with network policy |
 
