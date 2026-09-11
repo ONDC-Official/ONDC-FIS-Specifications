@@ -1,45 +1,48 @@
-summary: LAMF - Credit Line Foreclosure
+summary: LAMF - Term Loan Foreclosure
 details:
-  - description: Detailed process for foreclosing an active LAMF credit line.
+  - description: Detailed process for foreclosing an active LAMF Term Loan.
     mermaid: >-
       sequenceDiagram
         participant Borrower Platform (BAP)
         participant Lender Platform (BPP)
-        Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_update
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
         Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure success
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
 references: if any
 steps:
-  - summary: The lender confirms the term loan order.
-    api: on_confirm
+  - summary: The lender disburses the term loan and updates the order once after
+      disbursement with the repayment schedule.
+    api: on_update
     details:
       - description: >-
-          The BPP confirms the customer's credit line application and returns
-          the finalized transaction details and confirmation status to the BAP.
+          The BPP disburses the term loan in a single tranche and sends one
+          unsolicited on_update. The order moves to DISBURSED, the disbursement
+          payment is marked PAID, and the full installment repayment schedule is
+          attached to the order.
         mermaid: >-
           sequenceDiagram
-            title Order Confirmation
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            end
+            rect rgb(191, 223, 255)
             Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
             Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update 
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/loan-against-mf/on_confirm/on_confirm_request_single_redirection.yaml"
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_term_loan_disbursement.yaml"
+
   - summary: The borrower requests foreclosure.
     api: update
     details:
@@ -48,20 +51,20 @@ steps:
           sequenceDiagram
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
             Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
             Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
             end
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update 
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/loan-against-mf/update/update_request_lamf_foreclosure.yaml"
+        $ref: "../../examples/loan-against-mf/update/update_request_lamf_foreclosure_term.yaml"
   - summary: The lender returns the foreclosure quote.
     api: on_update
     details:
@@ -70,21 +73,21 @@ steps:
           sequenceDiagram
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_udpate
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             
             Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
             Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_foreclosure_quote.yaml"
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_term_foreclosure_1.yaml"
   - summary: The lender confirms foreclosure payment success.
     api: on_update
     details:
@@ -99,13 +102,13 @@ steps:
             Borrower Platform (BAP)->>Lender Platform (BPP): update-Request (FORECLOSURE)
             Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
            
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP): on_update - Foreclosure quote
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
     reference: if any
     example:
       value:
-        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_foreclosure_success.yaml"
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_term_foreclosure_2.yaml"

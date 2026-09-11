@@ -1,0 +1,114 @@
+summary: LAMF - Term Loan Pre-Part Payment
+details:
+  - description: Detailed process for Pre-Part Payment an active LAMF Term Loan.
+    mermaid: >-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+references: if any
+steps:
+  - summary: The lender disburses the term loan and updates the order once after
+      disbursement with the repayment schedule.
+    api: on_update
+    details:
+      - description: >-
+          The BPP disburses the term loan in a single tranche and sends one
+          unsolicited on_update. The order moves to DISBURSED, the disbursement
+          payment is marked PAID, and the full installment repayment schedule is
+          attached to the order.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update 
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_term_loan_disbursement.yaml"
+
+  - summary: The borrower requests pre-part payment.
+    api: update
+    details:
+      - description: The borrower sends an update request against payments with pre-part as the payment label.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update 
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/update/update_request_lamf_term_pre_part.yaml"
+  - summary: The lender returns the pre-part quote.
+    api: on_update
+    details:
+      - description: The lender shares outstanding principal, accrued interest, pre-part charges, and other charges.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_udpate
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_term_pre_part_1.yaml"
+  - summary: The lender confirms pre-part payment success.
+    api: on_update
+    details:
+      - description: The lender confirms that the pre-part payment was received.
+        mermaid: >-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            
+            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+           
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/loan-against-mf/on_update/on_update_lamf_term_pre_part_2.yaml"
