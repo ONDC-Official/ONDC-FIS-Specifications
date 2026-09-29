@@ -31,11 +31,15 @@ async function readBuildFile(branchName) {
   const url = `https://api.github.com/repos/ondc-official/ONDC-FIS-Specifications/contents/ui/build.js?ref=${branchName}`;
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: "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",
-      },
-    });
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error("Failed to fetch build file:", response.status, response.statusText);
+      const home = document.getElementById("home");
+      const loader = document.getElementById("loader");
+      if (home) home.style.display = "block";
+      if (loader) loader.style.display = "none";
+      return;
+    }
     const formattedResponse = await response?.json();
 
     /*
@@ -71,16 +75,24 @@ async function readBuildFile(branchName) {
     // }
      if(formattedResponse?.git_url){
       setTimeout(async ()=>{
-        const rawResponse = await fetch(formattedResponse.git_url, {
-          // headers: {
-          //   Authorization: "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",
-          // },
-        });
-        let formattedrawResponse = await rawResponse?.text();
-        formattedrawResponse =  JSON.parse(formattedrawResponse)
-        let splitedText = atob(formattedrawResponse?.content);
-        build_spec = JSON.parse(getStringAfterEquals(splitedText));
-        onFirstLoad(build_spec);
+        try {
+          const rawResponse = await fetch(formattedResponse.git_url);
+          if (!rawResponse.ok) {
+            console.error("Failed to fetch git blob:", rawResponse.status, rawResponse.statusText);
+            return;
+          }
+          let formattedrawResponse = await rawResponse?.text();
+          formattedrawResponse = JSON.parse(formattedrawResponse);
+          if (!formattedrawResponse?.content) {
+            console.error("No content field in git blob response");
+            return;
+          }
+          let splitedText = atob(formattedrawResponse.content.replace(/\s/g, ''));
+          build_spec = JSON.parse(getStringAfterEquals(splitedText));
+          onFirstLoad(build_spec);
+        } catch (innerError) {
+          console.error("Error processing build file content:", innerError?.message || innerError);
+        }
       },1200)
     }
     else{
@@ -101,14 +113,15 @@ async function readBuildFile(branchName) {
 
 async function fetchRequest(url){
   try{
-    const response = await fetch(url, {
-      headers: {
-        Authorization: "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",
-      },
-    });
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error("Failed to fetch:", url, response.status, response.statusText);
+      return [];
+    }
     return await response?.json();
-  }catch{
+  }catch(error){
     console.log("Error fetching contract", error?.message || error);
+    return [];
   }
 }
 
