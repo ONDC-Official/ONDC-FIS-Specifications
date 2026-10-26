@@ -73,7 +73,7 @@ const BRANCHES = [
   },
   {
     code: "draft-FIS12-2.3.0-PF",
-    name: "Purchase Finance",
+    name: "Purchase Finance (SOLAR)",
     short_desc: "Baseline for Solar PF",
     status: "DRAFT",
   },
