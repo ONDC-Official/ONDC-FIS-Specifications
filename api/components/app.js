@@ -276,6 +276,7 @@ async function getSwaggerYaml(example_set, outputPath) {
   try {
     const schema = await baseYMLFile(example_yaml);
     const baseYAML = await baseYMLFile(base_yaml);
+    require('./term-loan-servicing-schema').extendBLServicingSchema(baseYAML);
     const { flows, examples: exampleSets, enum: enums, tags,attributes } = schema || [];
     const { paths } = baseYAML;
     let hasTrueResult = false; // Flag variable
@@ -799,4 +800,3 @@ function compareFiles () {
     const yamlString = yaml.dump(yamlData);
     fs.writeFileSync(yamlFilePath, yamlString, 'utf8');
   };
-    

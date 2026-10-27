@@ -1,0 +1,42 @@
+summary: "Business Loan - Term Loan Missed EMI Payment"
+details:
+  -
+    description: "The borrower requests payment of overdue installment BL-INSTALLMENT-2 on the existing disbursed term-loan order. The lender quotes INR 30777: principal INR 30000, interest INR 600 and tax-inclusive late fees INR 177. The original installment payment ID and due-date range identify the obligation in the quote and receipt; it must not also appear as a duplicate payable installment. Other future installments remain payable."
+    mermaid: "sequenceDiagram\n  participant BAP as Borrower Platform BAP\n  participant BPP as Lender Platform BPP\n  BPP->>BAP: on_confirm original disbursed term-loan order\n  BAP-->>BPP: ACK\n  Note over BAP,BPP: First installment paid before servicing\n  BAP->>BPP: update payment intent\n  BPP-->>BAP: ACK\n  BPP->>BAP: on_update payable quote and payment URL\n  BAP-->>BPP: ACK\n  Note over BAP,BPP: Payment outside the protocol and lender verification\n  BPP->>BAP: on_update verified payment result\n  BAP-->>BPP: ACK"
+steps:
+  -
+    summary: "The lender confirms the term loan order."
+    api: "on_confirm"
+    details:
+      -
+        description: "The original disbursed loan confirmation establishes the order, transaction, provider, item and repayment schedule used below. This is historical origination context, not a new confirmation triggered by a servicing request. The first installment is paid before the later servicing request."
+    example:
+      value:
+        $ref: "../../examples/term-loan/on_confirm/on_confirm_servicing_loan.yaml"
+  -
+    summary: "The borrower requests term loan missed emi payment."
+    api: "update"
+    details:
+      -
+        description: "Use update_target payments and the original loan order ID. The three examples are independent alternatives on an existing loan, not additional origination steps."
+    example:
+      value:
+        $ref: "../../examples/term-loan/update/update_request_missed_emi_payment.yaml"
+  -
+    summary: "The lender quotes the term loan missed emi payment."
+    api: "on_update"
+    details:
+      -
+        description: "The solicited callback retains the request message ID. The quote is valid for 15 minutes and its payment URL must expire with that quote. Collect only payments.params.amount. The order quote and item price retain PL-style loan-level totals: original principal plus revised contractual interest and servicing charges, including repayments already made. They are not a second collection amount. This illustrative loan started at INR 90000; the first INR 30900 installment is already paid. Charges are lender-confirmed, tax-inclusive examples, not network-wide rate requirements. No payment is verified yet."
+    example:
+      value:
+        $ref: "../../examples/term-loan/on_update/on_update_missed_emi_payment_quote.yaml"
+  -
+    summary: "The lender confirms verified term loan missed emi payment."
+    api: "on_update"
+    details:
+      -
+        description: "This unsolicited callback uses a fresh message ID and retains the transaction, order, payment and quote IDs. Send PAID only after authoritative lender payment verification. A redirect return, screenshot, UTR or transport ACK is not payment confirmation."
+    example:
+      value:
+        $ref: "../../examples/term-loan/on_update/on_update_missed_emi_payment_success.yaml"

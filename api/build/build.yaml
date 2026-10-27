@@ -4708,7 +4708,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_30
             context:
               domain: ONDC:FIS12:BL
               location:
@@ -5099,7 +5099,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_32
             context:
               domain: ONDC:FIS12:BL
               location:
@@ -5444,7 +5444,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_31
             context:
               domain: ONDC:FIS12:BL
               location:
@@ -8254,7 +8254,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_34
             context:
               domain: ONDC:FIS12:BL
               location:
@@ -8803,7 +8803,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_35
             context:
               domain: ONDC:FIS12:BL
               location:
@@ -9355,7 +9355,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_36
             context:
               domain: ONDC:FIS12:BL
               location:
@@ -15387,6 +15387,1719 @@ x-flows:
                       - descriptor:
                           code: OFFLINE_CONTRACT
                         value: 'true'
+  - summary: Business Loan - Term Loan Pre-Part Payment
+    details:
+      - description: >-
+          The borrower requests a principal prepayment of INR 15000 on the
+          existing disbursed term-loan order. The lender quotes INR 15177
+          including a tax-inclusive INR 177 charge and returns a payment or
+          hosted-servicing URL. Only lender-confirmed receipt produces the
+          unsolicited success callback. The remaining two installments are
+          replaced by the lender-approved revised schedule; no child order is
+          created.
+        mermaid: |-
+          sequenceDiagram
+            participant BAP as Borrower Platform BAP
+            participant BPP as Lender Platform BPP
+            BPP->>BAP: on_confirm original disbursed term-loan order
+            BAP-->>BPP: ACK
+            Note over BAP,BPP: First installment paid before servicing
+            BAP->>BPP: update payment intent
+            BPP-->>BAP: ACK
+            BPP->>BAP: on_update payable quote and payment URL
+            BAP-->>BPP: ACK
+            Note over BAP,BPP: Payment outside the protocol and lender verification
+            BPP->>BAP: on_update verified payment result
+            BAP-->>BPP: ACK
+    steps:
+      - summary: The lender confirms the term loan order.
+        api: on_confirm
+        details:
+          - description: >-
+              The original disbursed loan confirmation establishes the order,
+              transaction, provider, item and repayment schedule used below.
+              This is historical origination context, not a new confirmation
+              triggered by a servicing request. The first installment is paid
+              before the later servicing request.
+        example:
+          value: &ref_29
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_confirm
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0100-f23b-4c67-8acd-100000000001
+              timestamp: '2026-01-01T10:00:00.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: ACTIVE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '91800.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0300-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '91800.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1800.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30600.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30300.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 300.00 INR
+      - summary: The borrower requests term loan pre-part payment.
+        api: update
+        details:
+          - description: >-
+              Use update_target payments and the original loan order ID. The
+              three examples are independent alternatives on an existing loan,
+              not additional origination steps.
+        example:
+          value: &ref_37
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0101-f23b-4c67-8acd-100000000001
+              timestamp: '2026-02-01T10:00:00.000Z'
+              ttl: PT30M
+            message:
+              update_target: payments
+              order:
+                id: BL-ORDER-001
+                payments:
+                  - id: BL-PRE-PART-1
+                    time:
+                      label: PRE_PART_PAYMENT
+                    params:
+                      amount: '15000.00'
+                      currency: INR
+      - summary: The lender quotes the term loan pre-part payment.
+        api: on_update
+        details:
+          - description: >-
+              The solicited callback retains the request message ID. The quote
+              is valid for 15 minutes and its payment URL must expire with that
+              quote. Collect only payments.params.amount. The order quote and
+              item price retain PL-style loan-level totals: original principal
+              plus revised contractual interest and servicing charges, including
+              repayments already made. They are not a second collection amount.
+              This illustrative loan started at INR 90000; the first INR 30900
+              installment is already paid. Charges are lender-confirmed,
+              tax-inclusive examples, not network-wide rate requirements. No
+              payment is verified yet.
+        example:
+          value: &ref_40
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0101-f23b-4c67-8acd-100000000001
+              timestamp: '2026-02-01T10:00:01.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: ACTIVE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '91752.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0301-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '91752.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1575.00'
+                    - title: PRE_PAYMENT_CHARGE
+                      price:
+                        currency: INR
+                        value: '177.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-PRE-PART-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '15177.00'
+                      currency: INR
+                    time:
+                      label: PRE_PART_PAYMENT
+                    url: >-
+                      https://lender.example/servicing/BL-ORDER-001?service=PRE_PART_PAYMENT&transaction_id=b15e0001-f23b-4c67-8acd-100000000001&amount=15177.00
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30600.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30300.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 300.00 INR
+      - summary: The lender confirms verified term loan pre-part payment.
+        api: on_update
+        details:
+          - description: >-
+              This unsolicited callback uses a fresh message ID and retains the
+              transaction, order, payment and quote IDs. Send PAID only after
+              authoritative lender payment verification. A redirect return,
+              screenshot, UTR or transport ACK is not payment confirmation.
+        example:
+          value: &ref_41
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0201-f23b-4c67-8acd-100000000001
+              timestamp: '2026-02-01T10:05:00.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: ACTIVE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '91752.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0301-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '91752.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1575.00'
+                    - title: PRE_PAYMENT_CHARGE
+                      price:
+                        currency: INR
+                        value: '177.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-PRE-PART-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '15177.00'
+                      currency: INR
+                      transaction_id: PAYMENT-REFERENCE-1
+                    time:
+                      label: PRE_PART_PAYMENT
+                      timestamp: '2026-02-01T10:05:00.000Z'
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '22950.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 22500.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 450.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '22725.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 22500.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 225.00 INR
+  - summary: Business Loan - Term Loan Foreclosure
+    details:
+      - description: >-
+          The borrower requests closure of the existing disbursed term-loan
+          order. The lender quotes INR 62016: outstanding principal INR 60000,
+          accrued interest INR 600 and tax-inclusive foreclosure charges INR
+          1416. Future unaccrued interest is excluded. The order remains ACTIVE
+          until receipt is verified. Success closes the order and fulfillment,
+          retains previously paid installments as PAID and retains remaining
+          original installments as DEFERRED, mirroring PL 2.0.3. Deferred rows
+          preserve IDs, dates, amounts and breakup for history; they are not
+          additional collectible payments or individually paid receipts.
+        mermaid: |-
+          sequenceDiagram
+            participant BAP as Borrower Platform BAP
+            participant BPP as Lender Platform BPP
+            BPP->>BAP: on_confirm original disbursed term-loan order
+            BAP-->>BPP: ACK
+            Note over BAP,BPP: First installment paid before servicing
+            BAP->>BPP: update payment intent
+            BPP-->>BAP: ACK
+            BPP->>BAP: on_update payable quote and payment URL
+            BAP-->>BPP: ACK
+            Note over BAP,BPP: Payment outside the protocol and lender verification
+            BPP->>BAP: on_update verified payment result
+            BAP-->>BPP: ACK
+    steps:
+      - summary: The lender confirms the term loan order.
+        api: on_confirm
+        details:
+          - description: >-
+              The original disbursed loan confirmation establishes the order,
+              transaction, provider, item and repayment schedule used below.
+              This is historical origination context, not a new confirmation
+              triggered by a servicing request. The first installment is paid
+              before the later servicing request.
+        example:
+          value: *ref_29
+      - summary: The borrower requests term loan foreclosure.
+        api: update
+        details:
+          - description: >-
+              Use update_target payments and the original loan order ID. The
+              three examples are independent alternatives on an existing loan,
+              not additional origination steps.
+        example:
+          value: &ref_38
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0102-f23b-4c67-8acd-100000000001
+              timestamp: '2026-03-01T10:00:00.000Z'
+              ttl: PT30M
+            message:
+              update_target: payments
+              order:
+                id: BL-ORDER-001
+                payments:
+                  - id: BL-FORECLOSURE-1
+                    time:
+                      label: FORECLOSURE
+      - summary: The lender quotes the term loan foreclosure.
+        api: on_update
+        details:
+          - description: >-
+              The solicited callback retains the request message ID. The quote
+              is valid for 15 minutes and its payment URL must expire with that
+              quote. Collect only payments.params.amount. The order quote and
+              item price retain PL-style loan-level totals: original principal
+              plus revised contractual interest and servicing charges, including
+              repayments already made. They are not a second collection amount.
+              This illustrative loan started at INR 90000; the first INR 30900
+              installment is already paid. Charges are lender-confirmed,
+              tax-inclusive examples, not network-wide rate requirements. No
+              payment is verified yet.
+        example:
+          value: &ref_42
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0102-f23b-4c67-8acd-100000000001
+              timestamp: '2026-03-01T10:00:01.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: ACTIVE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '92916.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0302-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '92916.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1500.00'
+                    - title: FORECLOSURE_CHARGES
+                      price:
+                        currency: INR
+                        value: '1416.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-FORECLOSURE-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '62016.00'
+                      currency: INR
+                    time:
+                      label: FORECLOSURE
+                    url: >-
+                      https://lender.example/servicing/BL-ORDER-001?service=FORECLOSURE&transaction_id=b15e0001-f23b-4c67-8acd-100000000001&amount=62016.00
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30600.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30300.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 300.00 INR
+      - summary: The lender confirms verified term loan foreclosure.
+        api: on_update
+        details:
+          - description: >-
+              This unsolicited callback uses a fresh message ID and retains the
+              transaction, order, payment and quote IDs. Send PAID only after
+              authoritative lender payment verification. A redirect return,
+              screenshot, UTR or transport ACK is not payment confirmation.
+        example:
+          value: &ref_43
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0202-f23b-4c67-8acd-100000000001
+              timestamp: '2026-03-01T10:05:00.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: COMPLETE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '92916.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: COMPLETED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0302-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '92916.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1500.00'
+                    - title: FORECLOSURE_CHARGES
+                      price:
+                        currency: INR
+                        value: '1416.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-FORECLOSURE-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '62016.00'
+                      currency: INR
+                      transaction_id: PAYMENT-REFERENCE-2
+                    time:
+                      label: FORECLOSURE
+                      timestamp: '2026-03-01T10:05:00.000Z'
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: DEFERRED
+                    params:
+                      amount: '30600.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: DEFERRED
+                    params:
+                      amount: '30300.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 300.00 INR
+  - summary: Business Loan - Term Loan Missed EMI Payment
+    details:
+      - description: >-
+          The borrower requests payment of overdue installment BL-INSTALLMENT-2
+          on the existing disbursed term-loan order. The lender quotes INR
+          30777: principal INR 30000, interest INR 600 and tax-inclusive late
+          fees INR 177. The original installment payment ID and due-date range
+          identify the obligation in the quote and receipt; it must not also
+          appear as a duplicate payable installment. Other future installments
+          remain payable.
+        mermaid: |-
+          sequenceDiagram
+            participant BAP as Borrower Platform BAP
+            participant BPP as Lender Platform BPP
+            BPP->>BAP: on_confirm original disbursed term-loan order
+            BAP-->>BPP: ACK
+            Note over BAP,BPP: First installment paid before servicing
+            BAP->>BPP: update payment intent
+            BPP-->>BAP: ACK
+            BPP->>BAP: on_update payable quote and payment URL
+            BAP-->>BPP: ACK
+            Note over BAP,BPP: Payment outside the protocol and lender verification
+            BPP->>BAP: on_update verified payment result
+            BAP-->>BPP: ACK
+    steps:
+      - summary: The lender confirms the term loan order.
+        api: on_confirm
+        details:
+          - description: >-
+              The original disbursed loan confirmation establishes the order,
+              transaction, provider, item and repayment schedule used below.
+              This is historical origination context, not a new confirmation
+              triggered by a servicing request. The first installment is paid
+              before the later servicing request.
+        example:
+          value: *ref_29
+      - summary: The borrower requests term loan missed emi payment.
+        api: update
+        details:
+          - description: >-
+              Use update_target payments and the original loan order ID. The
+              three examples are independent alternatives on an existing loan,
+              not additional origination steps.
+        example:
+          value: &ref_39
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0103-f23b-4c67-8acd-100000000001
+              timestamp: '2026-03-15T10:00:00.000Z'
+              ttl: PT30M
+            message:
+              update_target: payments
+              order:
+                id: BL-ORDER-001
+                payments:
+                  - id: BL-INSTALLMENT-2
+                    time:
+                      label: MISSED_EMI_PAYMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+      - summary: The lender quotes the term loan missed emi payment.
+        api: on_update
+        details:
+          - description: >-
+              The solicited callback retains the request message ID. The quote
+              is valid for 15 minutes and its payment URL must expire with that
+              quote. Collect only payments.params.amount. The order quote and
+              item price retain PL-style loan-level totals: original principal
+              plus revised contractual interest and servicing charges, including
+              repayments already made. They are not a second collection amount.
+              This illustrative loan started at INR 90000; the first INR 30900
+              installment is already paid. Charges are lender-confirmed,
+              tax-inclusive examples, not network-wide rate requirements. No
+              payment is verified yet.
+        example:
+          value: &ref_44
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0103-f23b-4c67-8acd-100000000001
+              timestamp: '2026-03-15T10:00:01.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: ACTIVE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '91977.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0303-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '91977.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1800.00'
+                    - title: LATE_FEE_AMOUNT
+                      price:
+                        currency: INR
+                        value: '177.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30777.00'
+                      currency: INR
+                    time:
+                      label: MISSED_EMI_PAYMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    url: >-
+                      https://lender.example/servicing/BL-ORDER-001?service=MISSED_EMI_PAYMENT&transaction_id=b15e0001-f23b-4c67-8acd-100000000001&amount=30777.00
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30300.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 300.00 INR
+      - summary: The lender confirms verified term loan missed emi payment.
+        api: on_update
+        details:
+          - description: >-
+              This unsolicited callback uses a fresh message ID and retains the
+              transaction, order, payment and quote IDs. Send PAID only after
+              authoritative lender payment verification. A redirect return,
+              screenshot, UTR or transport ACK is not payment confirmation.
+        example:
+          value: &ref_45
+            context:
+              domain: ONDC:FIS12:BL
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.3.0
+              action: on_update
+              bap_id: bap.example.com
+              bap_uri: https://bap.example.com
+              bpp_id: bpp.example.com
+              bpp_uri: https://bpp.example.com
+              transaction_id: b15e0001-f23b-4c67-8acd-100000000001
+              message_id: b15e0203-f23b-4c67-8acd-100000000001
+              timestamp: '2026-03-15T10:05:00.000Z'
+              ttl: PT30M
+            message:
+              order:
+                id: BL-ORDER-001
+                status: ACTIVE
+                provider:
+                  id: PROVIDER_ID
+                  descriptor:
+                    name: Example Business Lender
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                      list:
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                          value: '18001234567'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                          value: support@lender.example
+                    - descriptor:
+                        code: LSP_INFO
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                          value: Example LSP
+                        - descriptor:
+                            code: LSP_EMAIL
+                          value: support@lsp.example
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                          value: '18007654321'
+                items:
+                  - id: CHILD_TERM_LOAN_ID_1
+                    parent_item_id: TERM_LOAN_ID_2
+                    descriptor:
+                      code: LOAN
+                      name: Business Term Loan
+                    category_ids:
+                      - '101124'
+                      - '101117'
+                      - '101211'
+                    fulfillment_ids:
+                      - F7
+                    price:
+                      currency: INR
+                      value: '91977.00'
+                    tags:
+                      - descriptor:
+                          code: LOAN_INFO
+                        list:
+                          - descriptor:
+                              code: INTEREST_RATE
+                            value: 12 %
+                          - descriptor:
+                              code: INTEREST_RATE_TYPE
+                            value: FIXED
+                          - descriptor:
+                              code: TERM
+                            value: P3M
+                          - descriptor:
+                              code: REPAYMENT_FREQUENCY
+                            value: P1M
+                          - descriptor:
+                              code: NUMBER_OF_INSTALLMENTS
+                            value: '3'
+                fulfillments:
+                  - id: F7
+                    type: ONLINE
+                    state:
+                      descriptor:
+                        code: DISBURSED
+                    stops:
+                      - id: '1'
+                        type: PERSONAL_INFORMATION_BUSINESS_TERM
+                        instructions:
+                          name: PERSONAL INFORMATION BUSINESS TERM
+                          code: COMPLETED
+                      - id: '2'
+                        type: SINGLE_REDIRECTION
+                        instructions:
+                          name: SINGLE REDIRECTION
+                          code: COMPLETED
+                      - id: '3'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: COMPLETED
+                      - id: '4'
+                        type: EMANDATE
+                        instructions:
+                          name: EMANDATE
+                          code: COMPLETED
+                      - id: '5'
+                        type: LOAN_AGREEMENT
+                        instructions:
+                          name: LOAN AGREEMENT
+                          code: COMPLETED
+                quote:
+                  id: b15e0303-f23b-4c67-8acd-100000000001
+                  price:
+                    currency: INR
+                    value: '91977.00'
+                  breakup:
+                    - title: PRINCIPAL_AMOUNT
+                      price:
+                        currency: INR
+                        value: '90000.00'
+                    - title: INTEREST_AMOUNT
+                      price:
+                        currency: INR
+                        value: '1800.00'
+                    - title: LATE_FEE_AMOUNT
+                      price:
+                        currency: INR
+                        value: '177.00'
+                  ttl: PT15M
+                payments:
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30777.00'
+                      currency: INR
+                      transaction_id: PAYMENT-REFERENCE-3
+                    time:
+                      label: MISSED_EMI_PAYMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                      timestamp: '2026-03-15T10:05:00.000Z'
+                  - id: BL-INSTALLMENT-1
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: PAID
+                    params:
+                      amount: '30900.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-02-01T00:00:00.000Z'
+                        end: '2026-02-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 900.00 INR
+                  - id: BL-INSTALLMENT-3
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: NOT-PAID
+                    params:
+                      amount: '30300.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-04-01T00:00:00.000Z'
+                        end: '2026-04-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 300.00 INR
 x-examples:
   Business-Term-Loan:
     summary: Business Term Loan
@@ -15396,12 +17109,12 @@ x-examples:
         examples:
           - summary: search_request_1.yaml
             description: TBD
-            value: *ref_29
+            value: *ref_30
       select:
         examples:
           - summary: select_request_1
             description: TBD
-            value: *ref_30
+            value: *ref_31
           - summary: select_request_2
             description: select_request_2.yaml
             value:
@@ -15943,14 +17656,19 @@ x-examples:
                         - descriptor:
                             code: OFFLINE_CONTRACT
                           value: 'true'
+          - summary: Term Loan Confirmation Before Servicing
+            description: >-
+              Original disbursed loan confirmation and repayment schedule shared
+              by the three independent servicing flows.
+            value: *ref_29
       on_search:
         examples:
           - summary: on_search_request_1
             description: TBD
-            value: *ref_31
+            value: *ref_32
           - summary: on_search_request_1
             description: TBD
-            value: *ref_31
+            value: *ref_32
       on_select:
         examples:
           - summary: on_select_request_1
@@ -16249,7 +17967,7 @@ x-examples:
                     ttl: P15D
           - summary: on_select_request_2
             description: on_select_request_2
-            value: &ref_32
+            value: &ref_33
               context:
                 domain: ONDC:FIS12:BL
                 location:
@@ -16525,7 +18243,7 @@ x-examples:
                     ttl: P15D
           - summary: on_select_request_2
             description: TBD
-            value: *ref_32
+            value: *ref_33
       on_status:
         examples:
           - summary: on_status_request_emi_completion_1
@@ -16533,13 +18251,13 @@ x-examples:
             value: *ref_28
           - summary: on_status_request_emi_completion_2
             description: on_status_request_emi_completion_2
-            value: *ref_33
+            value: *ref_34
           - summary: on_status_request_emi_completion_3
             description: on_status_request_emi_completion_3
-            value: *ref_34
+            value: *ref_35
           - summary: on_status_request_emi_completion_4
             description: on_status_request_emi_completion_4
-            value: *ref_35
+            value: *ref_36
           - summary: on_status_request_emi_completion_5
             description: on_status_request_emi_completion_5
             value:
@@ -17075,6 +18793,49 @@ x-examples:
                         - descriptor:
                             code: OFFLINE_CONTRACT
                           value: 'true'
+      update:
+        examples:
+          - summary: Term Loan Pre-Part Payment
+            description: >-
+              Servicing intent on an existing disbursed business term-loan
+              order.
+            value: *ref_37
+          - summary: Term Loan Foreclosure
+            description: >-
+              Servicing intent on an existing disbursed business term-loan
+              order.
+            value: *ref_38
+          - summary: Term Loan Missed EMI Payment
+            description: >-
+              Servicing intent on an existing disbursed business term-loan
+              order.
+            value: *ref_39
+      on_update:
+        examples:
+          - summary: Term Loan Pre-Part Payment quote
+            description: Lender payable quote and payment URL; not payment confirmation.
+            value: *ref_40
+          - summary: Term Loan Pre-Part Payment success
+            description: >-
+              Unsolicited callback after authoritative lender payment
+              verification.
+            value: *ref_41
+          - summary: Term Loan Foreclosure quote
+            description: Lender payable quote and payment URL; not payment confirmation.
+            value: *ref_42
+          - summary: Term Loan Foreclosure success
+            description: >-
+              Unsolicited callback after authoritative lender payment
+              verification.
+            value: *ref_43
+          - summary: Term Loan Missed EMI Payment quote
+            description: Lender payable quote and payment URL; not payment confirmation.
+            value: *ref_44
+          - summary: Term Loan Missed EMI Payment success
+            description: >-
+              Unsolicited callback after authoritative lender payment
+              verification.
+            value: *ref_45
 x-errorcodes:
   code:
     - code: 80101

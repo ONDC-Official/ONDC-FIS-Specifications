@@ -1,5 +1,68 @@
 # ONDC-FIS-Specifications
 
+## Business Term Loan servicing in 2.3.0
+
+The BL branch adds pre-part payment, foreclosure and missed-EMI payment flows
+under `api/components/flows/term-loan/`. Each is an independent post-disbursal
+example: the original loan `on_confirm`, `update` with `update_target: payments`, a solicited `on_update` quote
+and payment URL, then an unsolicited `on_update` after lender-verified payment.
+All calls use `ONDC:FIS12:BL`, version `2.3.0` and the existing loan order. No
+LAMF drawdown child orders or new protocol API actions are introduced.
+
+Collect only the amount in the selected payment's `params.amount`. As in the
+PL servicing pattern, the order quote and item price are loan-level contractual
+totals, including repayments already made; they are not an extra collection.
+The illustrative loan has principal INR 90000, a fixed annual rate of 12% and
+three monthly reducing-balance installments. The first INR 30900 installment is
+paid before servicing begins. The opening confirmation shows the original schedule
+before that repayment; it is historical context, not a new confirmation sent
+for every servicing request. Each flow proceeds independently, not from the
+outcome of another servicing example. Charges are illustrative, lender-confirmed
+and tax-inclusive; the specification does not prescribe lender fee policy.
+
+The missed-EMI flow reuses the overdue installment's payment ID and due-date
+range instead of introducing a duplicate payable entry. Pre-part success carries
+the lender-approved revised remaining schedule. Verified foreclosure uses the
+pinned core's `order.status: COMPLETE` and BL fulfillment state `COMPLETED`, with
+the remaining original installments retained as `DEFERRED`, mirroring PL 2.0.3.
+Their IDs, dates, amounts and breakup remain unchanged; they are schedule history,
+not individually paid installments or additional collectible amounts after closure.
+Exclude these deferred rows when reconciling the amended loan total against paid
+receipts. A redirect return, manual payment reference,
+screenshot or transport ACK must never be treated as verified receipt.
+
+To validate and rebuild this contribution:
+
+```sh
+git submodule update --init
+cd api/components
+npm ci --ignore-scripts
+npm run build:servicing
+npm run test:servicing
+```
+
+The Flow viewer selects the first call automatically and preserves flow/step
+links on refresh. Optional diagrams do not emit undefined text; diagram failures
+leave the JSON example readable. Protocol payloads render as literal selectable
+text. The optional Attribute tab is disabled when no definitions are published,
+without aborting the other tabs. Viewer regression tests run with test:servicing.
+
+The focused builder changes only the servicing flow/example extensions in
+`api/build/build.yaml` and `ui/build.js`. It preserves the published API schemas
+and existing origination examples/flows. For a fresh generation from a reviewed
+published BL revision, use `npm run build:servicing -- --base-ref <git-ref>`.
+
+The general `npm start` build has pre-existing `Business Loan Search/on_search`
+validation failures. Its pinned-core rebuild also rewrites existing schema
+constraints. These are not fixed or bypassed in the servicing schema tests:
+all ten new payloads are validated against both the pinned core with the explicit
+BL `on_update` DEFERRED extension and the retained published API schemas.
+The published BL schema already permits DEFERRED; `term-loan-servicing-schema.js`
+adds only that status to the old core callback during the general build, without
+editing the submodule or changing other APIs. Unknown statuses are still rejected.
+Do not use the general build's zero exit
+status alone as validation evidence.
+
 These specifications are to enable ONDC Network Participants to expose or consume financial services on ONDC.
 
 ONDC FIS specification is an adaptation of [beckn financial specifications](https://github.com/beckn/financial-services).

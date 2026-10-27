@@ -1,0 +1,245 @@
+context:
+  domain: "ONDC:FIS12:BL"
+  location:
+    country:
+      code: "IND"
+    city:
+      code: "*"
+  version: "2.3.0"
+  action: "on_update"
+  bap_id: "bap.example.com"
+  bap_uri: "https://bap.example.com"
+  bpp_id: "bpp.example.com"
+  bpp_uri: "https://bpp.example.com"
+  transaction_id: "b15e0001-f23b-4c67-8acd-100000000001"
+  message_id: "b15e0101-f23b-4c67-8acd-100000000001"
+  timestamp: "2026-02-01T10:00:01.000Z"
+  ttl: "PT30M"
+message:
+  order:
+    id: "BL-ORDER-001"
+    status: "ACTIVE"
+    provider:
+      id: "PROVIDER_ID"
+      descriptor:
+        name: "Example Business Lender"
+      tags:
+        -
+          descriptor:
+            code: "CONTACT_INFO"
+          list:
+            -
+              descriptor:
+                code: "CUSTOMER_SUPPORT_CONTACT_NUMBER"
+              value: "18001234567"
+            -
+              descriptor:
+                code: "CUSTOMER_SUPPORT_EMAIL"
+              value: "support@lender.example"
+        -
+          descriptor:
+            code: "LSP_INFO"
+          list:
+            -
+              descriptor:
+                code: "LSP_NAME"
+              value: "Example LSP"
+            -
+              descriptor:
+                code: "LSP_EMAIL"
+              value: "support@lsp.example"
+            -
+              descriptor:
+                code: "LSP_CONTACT_NUMBER"
+              value: "18007654321"
+    items:
+      -
+        id: "CHILD_TERM_LOAN_ID_1"
+        parent_item_id: "TERM_LOAN_ID_2"
+        descriptor:
+          code: "LOAN"
+          name: "Business Term Loan"
+        category_ids:
+          - "101124"
+          - "101117"
+          - "101211"
+        fulfillment_ids:
+          - "F7"
+        price:
+          currency: "INR"
+          value: "91752.00"
+        tags:
+          -
+            descriptor:
+              code: "LOAN_INFO"
+            list:
+              -
+                descriptor:
+                  code: "INTEREST_RATE"
+                value: "12 %"
+              -
+                descriptor:
+                  code: "INTEREST_RATE_TYPE"
+                value: "FIXED"
+              -
+                descriptor:
+                  code: "TERM"
+                value: "P3M"
+              -
+                descriptor:
+                  code: "REPAYMENT_FREQUENCY"
+                value: "P1M"
+              -
+                descriptor:
+                  code: "NUMBER_OF_INSTALLMENTS"
+                value: "3"
+    fulfillments:
+      -
+        id: "F7"
+        type: "ONLINE"
+        state:
+          descriptor:
+            code: "DISBURSED"
+        stops:
+          -
+            id: "1"
+            type: "PERSONAL_INFORMATION_BUSINESS_TERM"
+            instructions:
+              name: "PERSONAL INFORMATION BUSINESS TERM"
+              code: "COMPLETED"
+          -
+            id: "2"
+            type: "SINGLE_REDIRECTION"
+            instructions:
+              name: "SINGLE REDIRECTION"
+              code: "COMPLETED"
+          -
+            id: "3"
+            type: "KYC"
+            instructions:
+              name: "KYC"
+              code: "COMPLETED"
+          -
+            id: "4"
+            type: "EMANDATE"
+            instructions:
+              name: "EMANDATE"
+              code: "COMPLETED"
+          -
+            id: "5"
+            type: "LOAN_AGREEMENT"
+            instructions:
+              name: "LOAN AGREEMENT"
+              code: "COMPLETED"
+    quote:
+      id: "b15e0301-f23b-4c67-8acd-100000000001"
+      price:
+        currency: "INR"
+        value: "91752.00"
+      breakup:
+        -
+          title: "PRINCIPAL_AMOUNT"
+          price:
+            currency: "INR"
+            value: "90000.00"
+        -
+          title: "INTEREST_AMOUNT"
+          price:
+            currency: "INR"
+            value: "1575.00"
+        -
+          title: "PRE_PAYMENT_CHARGE"
+          price:
+            currency: "INR"
+            value: "177.00"
+      ttl: "PT15M"
+    payments:
+      -
+        id: "BL-PRE-PART-1"
+        type: "POST-FULFILLMENT"
+        collected_by: "BPP"
+        status: "NOT-PAID"
+        params:
+          amount: "15177.00"
+          currency: "INR"
+        time:
+          label: "PRE_PART_PAYMENT"
+        url: "https://lender.example/servicing/BL-ORDER-001?service=PRE_PART_PAYMENT&transaction_id=b15e0001-f23b-4c67-8acd-100000000001&amount=15177.00"
+      -
+        id: "BL-INSTALLMENT-1"
+        type: "POST-FULFILLMENT"
+        collected_by: "BPP"
+        status: "PAID"
+        params:
+          amount: "30900.00"
+          currency: "INR"
+        time:
+          label: "INSTALLMENT"
+          range:
+            start: "2026-02-01T00:00:00.000Z"
+            end: "2026-02-01T23:59:59.999Z"
+        tags:
+          -
+            descriptor:
+              code: "BREAKUP"
+            list:
+              -
+                descriptor:
+                  code: "PRINCIPAL_AMOUNT"
+                value: "30000.00 INR"
+              -
+                descriptor:
+                  code: "INTEREST_AMOUNT"
+                value: "900.00 INR"
+      -
+        id: "BL-INSTALLMENT-2"
+        type: "POST-FULFILLMENT"
+        collected_by: "BPP"
+        status: "NOT-PAID"
+        params:
+          amount: "30600.00"
+          currency: "INR"
+        time:
+          label: "INSTALLMENT"
+          range:
+            start: "2026-03-01T00:00:00.000Z"
+            end: "2026-03-01T23:59:59.999Z"
+        tags:
+          -
+            descriptor:
+              code: "BREAKUP"
+            list:
+              -
+                descriptor:
+                  code: "PRINCIPAL_AMOUNT"
+                value: "30000.00 INR"
+              -
+                descriptor:
+                  code: "INTEREST_AMOUNT"
+                value: "600.00 INR"
+      -
+        id: "BL-INSTALLMENT-3"
+        type: "POST-FULFILLMENT"
+        collected_by: "BPP"
+        status: "NOT-PAID"
+        params:
+          amount: "30300.00"
+          currency: "INR"
+        time:
+          label: "INSTALLMENT"
+          range:
+            start: "2026-04-01T00:00:00.000Z"
+            end: "2026-04-01T23:59:59.999Z"
+        tags:
+          -
+            descriptor:
+              code: "BREAKUP"
+            list:
+              -
+                descriptor:
+                  code: "PRINCIPAL_AMOUNT"
+                value: "30000.00 INR"
+              -
+                descriptor:
+                  code: "INTEREST_AMOUNT"
+                value: "300.00 INR"
