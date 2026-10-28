@@ -58,7 +58,7 @@ for (const [index, name] of names.entries()) {
       assert.equal(example.message.order.id, request.message.order.id);
       for (const key of ['bap_id', 'bap_uri', 'bpp_id', 'bpp_uri'])
         assert.equal(example.context[key], request.context[key]);
-      const payment = example.message.order.payments.find(p => p.id === first.id);
+      const payment = example.message.order.payments.find(p => p.time.label === first.time.label);
       assert.ok(payment);
       assert.equal(payment.time.label, labels[index]);
       assert.equal(new Set(example.message.order.payments.map(p => p.id)).size,
@@ -73,7 +73,7 @@ for (const [index, name] of names.entries()) {
     assert.ok(Date.parse(success.context.timestamp) > Date.parse(quote.context.timestamp));
     for (const example of [quote, success]) {
       const order = example.message.order;
-      const payment = order.payments.find(p => p.id === first.id);
+      const payment = order.payments.find(p => p.time.label === first.time.label);
       assert.equal(payment.params.amount, expectedAmounts[index]);
       assert.equal(payment.params.currency, 'INR');
       assert.equal(order.quote.price.value, expectedLoanTotals[index]);
@@ -93,8 +93,10 @@ for (const [index, name] of names.entries()) {
       minor(success.message.order.quote.price.value), 'receipts and collectible future repayments must match the amended loan total; deferred history is not a second collection');
     assert.deepEqual(success.message.order.provider, quote.message.order.provider);
     assert.deepEqual(success.message.order.items, quote.message.order.items);
-    const quotedPayment = quote.message.order.payments.find(p => p.id === first.id);
-    const receipt = success.message.order.payments.find(p => p.id === first.id);
+    const quotedPayment = quote.message.order.payments.find(p => p.time.label === first.time.label);
+    const receipt = success.message.order.payments.find(p => p.time.label === first.time.label);
+    assert.equal(receipt.id, quotedPayment.id, 'settlement ID must survive confirmation');
+    if (first.id) assert.equal(quotedPayment.id, first.id);
     assert.equal(quotedPayment.status, 'NOT-PAID');
     assert.equal(receipt.status, 'PAID');
     assert.equal(receipt.url, undefined, 'paid receipt must not solicit another collection');
@@ -152,12 +154,25 @@ test('pre-part updates remaining principal and the lender-approved schedule', ()
   assert.equal(principals.reduce((n, p) => n + minor(p), 0n), 4500000n);
 });
 
-test('missed EMI uses the original installment ID once and preserves its due date', () => {
+test('missed EMI settles separately and preserves the original installment history', () => {
+  const original = read('examples/term-loan/on_confirm/on_confirm_servicing_loan.yaml')
+    .message.order.payments.find(p => p.id === 'BL-INSTALLMENT-2');
   const request = fixture('missed_emi_payment', 'request');
+  assert.deepEqual(request.message.order.payments, [{ time: { label: 'MISSED_EMI_PAYMENT' } }]);
   for (const phase of ['quote', 'success']) {
     const order = fixture('missed_emi_payment', phase).message.order;
-    assert.equal(order.payments.filter(p => p.id === 'BL-INSTALLMENT-2').length, 1);
-    assert.deepEqual(order.payments[0].time.range, request.message.order.payments[0].time.range);
+    const installment = order.payments.find(p => p.id === original.id);
+    const settlement = order.payments.find(p => p.time.label === 'MISSED_EMI_PAYMENT');
+    assert.deepEqual(installment, { ...original, status: phase === 'quote' ? 'DELAYED' : 'DEFERRED' });
+    assert.equal(settlement.id, 'BL-MISSED-EMI-1');
+    assert.notEqual(settlement.id, original.id);
+    assert.deepEqual(settlement.time.range, original.time.range);
+    assert.equal(settlement.status, phase === 'quote' ? 'NOT-PAID' : 'PAID');
+    const breakup = Object.fromEntries(settlement.tags.find(t => t.descriptor.code === 'BREAKUP')
+      .list.map(t => [t.descriptor.code, t.value]));
+    assert.deepEqual(breakup, { PRINCIPAL_AMOUNT: '30000.00 INR', INTEREST_AMOUNT: '600.00 INR', LATE_FEE_AMOUNT: '177.00 INR' });
+    assert.equal(Object.values(breakup).reduce((sum, v) => sum + minor(v.split(' ')[0]), 0n), minor(settlement.params.amount));
+    assert.equal(order.payments.filter(p => p.id === original.id).length, 1);
     assert.equal(order.payments.find(p => p.id === 'BL-INSTALLMENT-3').status, 'NOT-PAID');
   }
 });
@@ -180,18 +195,20 @@ test('verified foreclosure closes the same loan and leaves no collectible future
   assert.ok(order.payments.filter(p => p.status === 'DEFERRED').every(p => !p.url && !p.params.transaction_id && !p.time.timestamp));
 });
 
-test('DEFERRED extends only the old-core on_update payment enum and rejects unknown statuses', async () => {
+test('DEFERRED and DELAYED extend only the old-core on_update payment enum and reject unknown statuses', async () => {
   const core = await RefParser.dereference(path.join(root, 'beckn_yaml.yaml'));
   const before = structuredClone(core);
   const statusFor = spec => spec.paths['/on_update'].post.requestBody.content['application/json']
     .schema.properties.message.properties.order.properties.payments.items.properties.status;
   assert.deepEqual(statusFor(core).enum, ['PAID', 'NOT-PAID']);
   const registry = read('enum/default/index.yaml');
-  assert.ok(JSON.stringify(registry).includes('"DEFERRED"'));
   extendBLServicingSchema(core);
-  assert.deepEqual(statusFor(core).enum, ['PAID', 'NOT-PAID', 'DEFERRED']);
+  assert.deepEqual(statusFor(core).enum, ['PAID', 'NOT-PAID', 'DEFERRED', 'DELAYED']);
   const published = await RefParser.dereference(path.join(root, '../build/build.yaml'));
-  assert.ok(statusFor(published).enum.includes('DEFERRED'));
+  for (const value of ['DEFERRED', 'DELAYED']) {
+    assert.ok(JSON.stringify(registry).includes(JSON.stringify(value)));
+    assert.ok(statusFor(published).enum.includes(value));
+  }
   for (const api of Object.keys(before.paths).filter(api => api !== '/on_update'))
     assert.deepEqual(core.paths[api], before.paths[api], 'unrelated API changed: ' + api);
   const once = structuredClone(core);

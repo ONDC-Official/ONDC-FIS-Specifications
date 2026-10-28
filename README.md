@@ -20,8 +20,14 @@ for every servicing request. Each flow proceeds independently, not from the
 outcome of another servicing example. Charges are illustrative, lender-confirmed
 and tax-inclusive; the specification does not prescribe lender fee policy.
 
-The missed-EMI flow reuses the overdue installment's payment ID and due-date
-range instead of introducing a duplicate payable entry. Pre-part success carries
+The missed-EMI flow follows PL 2.0.3 and LAMF 2.3.0: a separate
+`MISSED_EMI_PAYMENT` entry carries the settlement and charge breakup. The original
+installment retains its ID, label, amount, due-date range and breakup, changing
+from `DELAYED` in the quote to `DEFERRED` after verified settlement. The separate
+settlement changes from `NOT-PAID` to `PAID` and carries the same due-date range.
+Do not collect both entries or count deferred history as another paid receipt.
+
+Pre-part success carries
 the lender-approved revised remaining schedule. Verified foreclosure uses the
 pinned core's `order.status: COMPLETE` and BL fulfillment state `COMPLETED`, with
 the remaining original installments retained as `DEFERRED`, mirroring PL 2.0.3.
@@ -56,9 +62,9 @@ The general `npm start` build has pre-existing `Business Loan Search/on_search`
 validation failures. Its pinned-core rebuild also rewrites existing schema
 constraints. These are not fixed or bypassed in the servicing schema tests:
 all ten new payloads are validated against both the pinned core with the explicit
-BL `on_update` DEFERRED extension and the retained published API schemas.
-The published BL schema already permits DEFERRED; `term-loan-servicing-schema.js`
-adds only that status to the old core callback during the general build, without
+BL `on_update` DEFERRED/DELAYED extension and the retained published API schemas.
+The published BL schema already permits DEFERRED and DELAYED; `term-loan-servicing-schema.js`
+adds only those statuses to the old core callback during the general build, without
 editing the submodule or changing other APIs. Unknown statuses are still rejected.
 Do not use the general build's zero exit
 status alone as validation evidence.

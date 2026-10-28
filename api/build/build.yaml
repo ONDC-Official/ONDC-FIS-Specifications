@@ -16625,10 +16625,15 @@ x-flows:
           The borrower requests payment of overdue installment BL-INSTALLMENT-2
           on the existing disbursed term-loan order. The lender quotes INR
           30777: principal INR 30000, interest INR 600 and tax-inclusive late
-          fees INR 177. The original installment payment ID and due-date range
-          identify the obligation in the quote and receipt; it must not also
-          appear as a duplicate payable installment. Other future installments
-          remain payable.
+          fees INR 177. Following PL 2.0.3 and LAMF 2.3.0, the lender creates a
+          separate MISSED_EMI_PAYMENT settlement BL-MISSED-EMI-1 with principal,
+          interest and late-fee breakup. The original BL-INSTALLMENT-2 retains
+          its ID, INSTALLMENT label, amount, due-date range and breakup: DELAYED
+          in the quote and DEFERRED after verified settlement. The settlement
+          carries the same due-date range and changes from NOT-PAID to PAID. Do
+          not collect the original installment in addition to this settlement;
+          the deferred row is history, not another receipt. Other future
+          installments remain payable.
         mermaid: |-
           sequenceDiagram
             participant BAP as Borrower Platform BAP
@@ -16686,23 +16691,20 @@ x-flows:
               order:
                 id: BL-ORDER-001
                 payments:
-                  - id: BL-INSTALLMENT-2
-                    time:
+                  - time:
                       label: MISSED_EMI_PAYMENT
-                      range:
-                        start: '2026-03-01T00:00:00.000Z'
-                        end: '2026-03-01T23:59:59.999Z'
       - summary: The lender quotes the term loan missed emi payment.
         api: on_update
         details:
           - description: >-
               The solicited callback retains the request message ID. The quote
               is valid for 15 minutes and its payment URL must expire with that
-              quote. Collect only payments.params.amount. The order quote and
-              item price retain PL-style loan-level totals: original principal
-              plus revised contractual interest and servicing charges, including
-              repayments already made. They are not a second collection amount.
-              This illustrative loan started at INR 90000; the first INR 30900
+              quote. Collect only the MISSED_EMI_PAYMENT settlement amount in
+              payments.params.amount. The order quote and item price retain
+              PL-style loan-level totals: original principal plus revised
+              contractual interest and servicing charges, including repayments
+              already made. They are not a second collection amount. This
+              illustrative loan started at INR 90000; the first INR 30900
               installment is already paid. Charges are lender-confirmed,
               tax-inclusive examples, not network-wide rate requirements. No
               payment is verified yet.
@@ -16841,7 +16843,7 @@ x-flows:
                         value: '177.00'
                   ttl: PT15M
                 payments:
-                  - id: BL-INSTALLMENT-2
+                  - id: BL-MISSED-EMI-1
                     type: POST-FULFILLMENT
                     collected_by: BPP
                     status: NOT-PAID
@@ -16855,6 +16857,19 @@ x-flows:
                         end: '2026-03-01T23:59:59.999Z'
                     url: >-
                       https://lender.example/servicing/BL-ORDER-001?service=MISSED_EMI_PAYMENT&transaction_id=b15e0001-f23b-4c67-8acd-100000000001&amount=30777.00
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
+                          - descriptor:
+                              code: LATE_FEE_AMOUNT
+                            value: 177.00 INR
                   - id: BL-INSTALLMENT-1
                     type: POST-FULFILLMENT
                     collected_by: BPP
@@ -16877,6 +16892,28 @@ x-flows:
                           - descriptor:
                               code: INTEREST_AMOUNT
                             value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: DELAYED
+                    params:
+                      amount: '30600.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
                   - id: BL-INSTALLMENT-3
                     type: POST-FULFILLMENT
                     collected_by: BPP
@@ -17042,7 +17079,7 @@ x-flows:
                         value: '177.00'
                   ttl: PT15M
                 payments:
-                  - id: BL-INSTALLMENT-2
+                  - id: BL-MISSED-EMI-1
                     type: POST-FULFILLMENT
                     collected_by: BPP
                     status: PAID
@@ -17056,6 +17093,19 @@ x-flows:
                         start: '2026-03-01T00:00:00.000Z'
                         end: '2026-03-01T23:59:59.999Z'
                       timestamp: '2026-03-15T10:05:00.000Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
+                          - descriptor:
+                              code: LATE_FEE_AMOUNT
+                            value: 177.00 INR
                   - id: BL-INSTALLMENT-1
                     type: POST-FULFILLMENT
                     collected_by: BPP
@@ -17078,6 +17128,28 @@ x-flows:
                           - descriptor:
                               code: INTEREST_AMOUNT
                             value: 900.00 INR
+                  - id: BL-INSTALLMENT-2
+                    type: POST-FULFILLMENT
+                    collected_by: BPP
+                    status: DEFERRED
+                    params:
+                      amount: '30600.00'
+                      currency: INR
+                    time:
+                      label: INSTALLMENT
+                      range:
+                        start: '2026-03-01T00:00:00.000Z'
+                        end: '2026-03-01T23:59:59.999Z'
+                    tags:
+                      - descriptor:
+                          code: BREAKUP
+                        list:
+                          - descriptor:
+                              code: PRINCIPAL_AMOUNT
+                            value: 30000.00 INR
+                          - descriptor:
+                              code: INTEREST_AMOUNT
+                            value: 600.00 INR
                   - id: BL-INSTALLMENT-3
                     type: POST-FULFILLMENT
                     collected_by: BPP
