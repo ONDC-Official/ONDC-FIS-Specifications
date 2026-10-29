@@ -29,7 +29,10 @@ async function build() {
   assert.equal(flows.length, names.length, 'servicing flow registration is incomplete');
   const summaries = new Set(flows.map(flow => flow.summary));
   const retainedFlows = spec['x-flows'].filter(flow => !summaries.has(flow.summary));
-  spec['x-flows'] = [...retainedFlows, ...flows];
+  const originationName = 'Business Loan - Term Loan without Account Aggregator(Single Redirection)';
+  const updatedOrigination = layer.flows.find(flow => flow.summary === originationName);
+  assert.ok(updatedOrigination, 'origination flow registration missing');
+  spec['x-flows'] = [...retainedFlows.map(flow => flow.summary === originationName ? updatedOrigination : flow), ...flows];
   const source = layer.examples['Business-Term-Loan'].example_set;
   const publishedExamples = spec['x-examples']['Business-Term-Loan'].example_set;
   for (const api of ['update', 'on_update']) publishedExamples[api] = source[api];
@@ -43,7 +46,7 @@ async function build() {
   const viewer = structuredClone(spec);
   for (const entry of Object.values(viewer['x-examples'])) delete entry.example_set.form;
   fs.writeFileSync(path.resolve(__dirname, '../../ui/build.js'), 'let build_spec = ' + JSON.stringify(viewer));
-  console.log(`Built ${flows.length} four-call term-loan servicing flows and 10 examples; preserved schemas and ${retainedFlows.length} other flows.`);
+  console.log(`Built ${flows.length} four-call term-loan servicing flows and 10 examples; preserved schemas and updated the original single-redirection flow.`);
 }
 
 build().catch(error => { console.error(error); process.exitCode = 1; });

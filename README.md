@@ -24,19 +24,24 @@ moves DELAYED to DEFERRED after verified receipt. Foreclosure uses a separate
 settlement, changes order and fulfillment to COMPLETED on verified receipt and
 retains the installments as DEFERRED. Payment types use underscore spelling.
 
-**Origination example requires ONDC clarification:** The reused confirmation has
-five installments with the same placeholder payment ID and all due dates before
-its confirmation timestamp. Its item price is INR 441800; its quote is INR
-232800; its principal, interest, processing and insurance amounts total INR
-232300; and its five installments total INR 231800. The pre-part, missed-EMI
-and foreclosure examples demonstrate protocol structure only: due dates do not
-establish a valid advance-payment scenario and the displayed foreclosure amount
-is not a lender-verified payoff. The original quote contains informational net
-disbursed amount as well as charges; do not sum every breakup row as charges.
-ONDC should confirm corrected origination values, unique installment IDs, dates
-and the matching servicing amounts before these examples become calculation or
-production integration fixtures. A return redirect, screenshot, UTR or transport
-ACK is not verified payment.
+The original single-redirection journey uses an illustrative INR 400000 loan
+at 12% fixed annual interest over five monthly installments. Assuming monthly
+reducing-balance interest and rounding to paise, each installment is INR 82415.92;
+principal totals INR 400000 and interest totals INR 12079.60. The INR 1800
+processing fee and INR 500 insurance charge are deducted upfront, giving INR
+397700 net disbursed. The total loan quote is INR 414379.60, including those
+upfront charges; net disbursed is informational and is not added again. The
+quoted effective annualized IRR is approximately 15.33% under these assumptions.
+Installments have distinct IDs and due dates after disbursement.
+
+The pre-part example illustrates advance payment of the first contractual
+installment, including its scheduled interest, with the other installments
+unchanged. Foreclosure occurs one day after disbursement; its INR 400131.51
+settlement includes INR 131.51 interest (actual/365) and zero foreclosure fee
+within the illustrative cooling-off period. The missed installment settlement is
+INR 82592.92, including an illustrative INR 177 late fee. These are scenario
+assumptions, not network-wide lender fee or calculation rules. A return redirect,
+screenshot, UTR or transport ACK is not verified payment.
 
 To validate and rebuild this contribution:
 
@@ -55,8 +60,8 @@ text. The optional Attribute tab is disabled when no definitions are published,
 without aborting the other tabs. Viewer regression tests run with test:servicing.
 
 The focused builder changes only the servicing flow/example extensions in
-`api/build/build.yaml` and `ui/build.js`. It preserves the published API schemas
-and existing origination examples/flows. For a fresh generation from a reviewed
+`api/build/build.yaml` and `ui/build.js`. It preserves the published API schemas and updates the existing
+single-redirection origination flow to match the corrected source examples. For a fresh generation from a reviewed
 published BL revision, use `npm run build:servicing -- --base-ref <git-ref>`.
 
 The general `npm start` build has pre-existing `Business Loan Search/on_search`
