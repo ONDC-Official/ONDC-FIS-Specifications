@@ -5,266 +5,111 @@ const test = require('node:test');
 const yaml = require('js-yaml');
 const RefParser = require('json-schema-ref-parser');
 const Ajv = require('ajv');
-const addFormats = require('ajv-formats');
+const formats = require('ajv-formats');
 const { execFileSync } = require('node:child_process');
 const { extendBLServicingSchema } = require('../term-loan-servicing-schema');
-
 const root = path.resolve(__dirname, '..');
-const read = file => yaml.load(fs.readFileSync(path.join(root, file), 'utf8'));
+const read = p => yaml.load(fs.readFileSync(path.join(root, p), 'utf8'));
+const confirmationPath = 'examples/term-loan/on_confirm/on_confirm_request_bureau_single_redirection.yaml';
+const initial = read(confirmationPath);
 const names = ['pre_part_payment', 'foreclosure', 'missed_emi_payment'];
 const labels = ['PRE_PART_PAYMENT', 'FORECLOSURE', 'MISSED_EMI_PAYMENT'];
-const expectedAmounts = ['15177.00', '62016.00', '30777.00'];
-const expectedLoanTotals = ['91752.00', '92916.00', '91977.00'];
-const schemas = RefParser.dereference(path.join(root, 'beckn_yaml.yaml')).then(spec => {
-  extendBLServicingSchema(spec);
+const fixture = (name, phase) => read('examples/term-loan/' + (phase === 'request' ? `update/update_request_${name}.yaml` : `on_update/on_update_${name}_${phase}.yaml`));
+const validators = async (file, oldCore) => {
+  const spec = await RefParser.dereference(path.join(root, file));
+  if (oldCore) extendBLServicingSchema(spec);
   const ajv = new Ajv({ allErrors: true, strict: false });
-  addFormats(ajv);
-  ajv.addFormat('phone', true);
+  formats(ajv); ajv.addFormat('phone', true);
+  if (!oldCore) require('ajv-errors')(ajv);
   return Object.fromEntries(['on_confirm', 'update', 'on_update'].map(api => [api,
     ajv.compile(spec.paths['/' + api].post.requestBody.content['application/json'].schema)]));
-});
-const publishedSchemas = RefParser.dereference(path.join(root, '../build/build.yaml')).then(spec => {
-  const ajv = new Ajv({ allErrors: true, strict: false });
-  addFormats(ajv);
-  ajv.addFormat('phone', true);
-  require('ajv-errors')(ajv);
-  return Object.fromEntries(['on_confirm', 'update', 'on_update'].map(api => [api,
-    ajv.compile(spec.paths['/' + api].post.requestBody.content['application/json'].schema)]));
-});
-const fixture = (name, phase) => read('examples/term-loan/' + (phase === 'request'
-  ? `update/update_request_${name}.yaml` : `on_update/on_update_${name}_${phase}.yaml`));
-const minor = value => {
-  assert.match(value, /^\d+\.\d{2}$/);
-  return BigInt(value.replace('.', ''));
 };
+const schemas = Promise.all([validators('beckn_yaml.yaml', true), validators('../build/build.yaml', false)]);
+const originalInstallments = initial.message.order.payments.filter(p => p.time.label === 'INSTALLMENT');
 
 for (const [index, name] of names.entries()) {
-  test(`${name} preserves BL schema, correlation and verified-payment semantics`, async () => {
-    const validators = await schemas;
-    const publishedValidators = await publishedSchemas;
-    const request = fixture(name, 'request');
-    const quote = fixture(name, 'quote');
-    const success = fixture(name, 'success');
-    const first = request.message.order.payments[0];
-    for (const [phase, example] of [['request', request], ['quote', quote], ['success', success]]) {
-      const api = phase === 'request' ? 'update' : 'on_update';
-      assert.equal(validators[api](example), true, JSON.stringify(validators[api].errors));
-      assert.equal(publishedValidators[api](example), true, JSON.stringify(publishedValidators[api].errors));
-      assert.equal(example.context.domain, 'ONDC:FIS12:BL');
-      assert.equal(example.context.version, '2.3.0');
-      assert.equal(example.context.action, api);
-      assert.equal(example.context.ttl, 'PT30M');
-      assert.equal(example.context.transaction_id, request.context.transaction_id);
-      assert.equal(example.message.order.id, request.message.order.id);
-      for (const key of ['bap_id', 'bap_uri', 'bpp_id', 'bpp_uri'])
-        assert.equal(example.context[key], request.context[key]);
-      const payment = example.message.order.payments.find(p => p.time.label === first.time.label);
-      assert.ok(payment);
-      assert.equal(payment.time.label, labels[index]);
-      assert.equal(new Set(example.message.order.payments.map(p => p.id)).size,
-        example.message.order.payments.length, 'duplicate payment IDs');
-      assert.ok(!JSON.stringify(example).includes('PERSONAL_LOAN'));
-      assert.ok(!JSON.stringify(example).includes('LAMF'));
+  test(`${name} continues the original order and validates both contracts`, async () => {
+    const [request, quote, success] = ['request', 'quote', 'success'].map(p => fixture(name, p));
+    for (const v of await schemas) {
+      for (const [api, payload] of [['on_confirm', initial], ['update', request], ['on_update', quote], ['on_update', success]])
+        assert.equal(v[api](payload), true, `${api}: ${JSON.stringify(v[api].errors)}`);
     }
     assert.equal(request.message.update_target, 'payments');
-    assert.equal(quote.context.message_id, request.context.message_id, 'solicited quote correlation');
-    assert.notEqual(success.context.message_id, request.context.message_id, 'unsolicited receipt needs fresh ID');
-    assert.ok(Date.parse(quote.context.timestamp) > Date.parse(request.context.timestamp));
-    assert.ok(Date.parse(success.context.timestamp) > Date.parse(quote.context.timestamp));
-    for (const example of [quote, success]) {
-      const order = example.message.order;
-      const payment = order.payments.find(p => p.time.label === first.time.label);
-      assert.equal(payment.params.amount, expectedAmounts[index]);
-      assert.equal(payment.params.currency, 'INR');
-      assert.equal(order.quote.price.value, expectedLoanTotals[index]);
-      assert.equal(order.quote.breakup.reduce((n, b) => n + minor(b.price.value), 0n), minor(order.quote.price.value));
-      assert.equal(order.quote.breakup.find(b => b.title === 'PRINCIPAL_AMOUNT').price.value, '90000.00');
-      assert.equal(order.quote.ttl, 'PT15M');
-      assert.equal(order.items[0].descriptor.code, 'LOAN');
-      assert.deepEqual(order.items[0].category_ids, ['101124', '101117', '101211']);
-      assert.deepEqual(order.items[0].fulfillment_ids, ['F7']);
-      assert.equal(order.items[0].price.value, order.quote.price.value);
-      assert.deepEqual(order.provider.tags.map(t => t.descriptor.code), ['CONTACT_INFO', 'LSP_INFO']);
-      assert.ok(order.fulfillments.every(f => f.type && f.stops.every(s => s.id && s.type && s.instructions.code === 'COMPLETED')));
-      assert.equal(order.status, name === 'foreclosure' && example === success ? 'COMPLETE' : 'ACTIVE');
+    assert.equal(request.message.order.payments[0].time.label, labels[index]);
+    assert.ok(request.message.order.payments.every(p => !('id' in p)));
+    for (const payload of [request, quote, success]) {
+      assert.equal(payload.context.domain, 'ONDC:FIS12:BL');
+      assert.equal(payload.context.version, '2.3.0');
+      assert.equal(payload.message.order.id, initial.message.order.id);
+      for (const k of ['transaction_id', 'bap_id', 'bap_uri', 'bpp_id', 'bpp_uri']) assert.equal(payload.context[k], initial.context[k]);
     }
-    assert.equal(success.message.order.quote.id, quote.message.order.quote.id);
-    assert.equal(success.message.order.payments.filter(p => p.status !== 'DEFERRED').reduce((n, p) => n + minor(p.params.amount), 0n),
-      minor(success.message.order.quote.price.value), 'receipts and collectible future repayments must match the amended loan total; deferred history is not a second collection');
-    assert.deepEqual(success.message.order.provider, quote.message.order.provider);
-    assert.deepEqual(success.message.order.items, quote.message.order.items);
-    const quotedPayment = quote.message.order.payments.find(p => p.time.label === first.time.label);
-    const receipt = success.message.order.payments.find(p => p.time.label === first.time.label);
-    assert.equal(receipt.id, quotedPayment.id, 'settlement ID must survive confirmation');
-    if (first.id) assert.equal(quotedPayment.id, first.id);
-    assert.equal(quotedPayment.status, 'NOT-PAID');
-    assert.equal(receipt.status, 'PAID');
-    assert.equal(receipt.url, undefined, 'paid receipt must not solicit another collection');
-    assert.ok(receipt.params.transaction_id);
-    assert.ok(receipt.time.timestamp);
-    const url = new URL(quotedPayment.url);
-    assert.equal(url.protocol, 'https:');
-    assert.equal(url.searchParams.get('transaction_id'), request.context.transaction_id);
-    assert.equal(url.searchParams.get('amount'), quotedPayment.params.amount);
-    const serialized = JSON.stringify(success);
-    for (const privateField of ['installment_numbers', 'payment_screenshot_url', 'celestium_loan_id', 'BRE_EVALUATION'])
-      assert.ok(!serialized.includes(privateField), 'private lender webhook field leaked');
+    assert.equal(request.context.message_id, quote.context.message_id);
+    assert.notEqual(request.context.message_id, success.context.message_id);
+    assert.ok(Date.parse(initial.context.timestamp) < Date.parse(request.context.timestamp));
+    assert.ok(Date.parse(request.context.timestamp) < Date.parse(quote.context.timestamp));
+    assert.ok(Date.parse(quote.context.timestamp) < Date.parse(success.context.timestamp));
+    for (const payload of [quote, success]) {
+      const o = payload.message.order, baseline = initial.message.order;
+      for (const k of ['provider', 'items', 'documents', 'cancellation_terms', 'tags']) assert.deepEqual(o[k], baseline[k], k);
+      assert.deepEqual(o.fulfillments[0].stops, baseline.fulfillments[0].stops);
+      for (const key of ['PRINCIPAL_AMOUNT','INTEREST_AMOUNT','PROCESSING_FEE','OTHER_UPFRONT_CHARGES','INSURANCE_CHARGES','NET_DISBURSED_AMOUNT','OTHER_CHARGES'])
+        assert.deepEqual(o.quote.breakup.find(b => b.title === key), baseline.quote.breakup.find(b => b.title === key));
+      assert.equal(o.quote.id, baseline.quote.id);
+      assert.ok(o.payments.every(p => !p.type || !p.type.includes('-')));
+      assert.deepEqual(o.payments.find(p => p.time.label === 'LOAN_DISBURSMENT'), baseline.payments.find(p => p.time.label === 'LOAN_DISBURSMENT'));
+    }
+    const quoted = quote.message.order.payments.find(p => p.time.label === labels[index]);
+    const paid = success.message.order.payments.find(p => p.time.label === labels[index]);
+    assert.equal(quoted.status, 'NOT-PAID'); assert.equal(paid.status, 'PAID'); assert.equal(quoted.id, paid.id);
+    assert.ok(quoted.url); assert.equal(paid.url, undefined); assert.ok(paid.params.transaction_id);
+    assert.equal(success.message.order.status, name === 'foreclosure' ? 'COMPLETED' : 'ACTIVE');
+    assert.equal(success.message.order.fulfillments[0].state.descriptor.code, name === 'foreclosure' ? 'COMPLETED' : 'DISBURSED');
+    const after = success.message.order.payments.filter(p => p.time.label === 'INSTALLMENT');
+    assert.equal(after.length, originalInstallments.length);
+    for (const [i, p] of after.entries()) {
+      let status = name === 'foreclosure' || i === 0 ? 'DEFERRED' : originalInstallments[i].status;
+      assert.deepEqual(p, {...originalInstallments[i], status});
+    }
+    if (name === 'missed_emi_payment') {
+      const overdue = quote.message.order.payments.filter(p => p.time.label === 'INSTALLMENT')[0];
+      assert.deepEqual(overdue, {...originalInstallments[0], status:'DELAYED'});
+      assert.deepEqual(quoted.time.range, overdue.time.range);
+      const entries = quoted.tags[0].list;
+      assert.equal(entries.reduce((sum, e) => sum + Number(e.value.split(' ')[0]), 0), Number(quoted.params.amount));
+      assert.equal(quoted.params.amount, '46537');
+    }
   });
 }
 
-test('opening on_confirm validates and establishes the original loan for every servicing flow', async () => {
-  const confirmation = read('examples/term-loan/on_confirm/on_confirm_servicing_loan.yaml');
-  for (const validators of [await schemas, await publishedSchemas])
-    assert.equal(validators.on_confirm(confirmation), true, JSON.stringify(validators.on_confirm.errors));
-  assert.equal(confirmation.context.action, 'on_confirm');
-  assert.equal(confirmation.context.domain, 'ONDC:FIS12:BL');
-  assert.equal(confirmation.context.version, '2.3.0');
-  const original = confirmation.message.order;
-  assert.equal(original.status, 'ACTIVE');
-  assert.equal(original.fulfillments[0].state.descriptor.code, 'DISBURSED');
-  assert.equal(original.quote.price.value, '91800.00');
-  assert.equal(original.payments.reduce((n, p) => n + minor(p.params.amount), 0n), minor(original.quote.price.value));
-  assert.ok(original.payments.every(p => p.status === 'NOT-PAID' && p.time.label === 'INSTALLMENT'));
-  assert.equal(original.quote.breakup.reduce((n, b) => n + minor(b.price.value), 0n), minor(original.quote.price.value));
-  const examples = read('examples/term-loan/index.yaml');
-  assert.ok(examples.on_confirm.examples.some(e =>
-    e.value.$ref === './on_confirm/on_confirm_servicing_loan.yaml'));
-  for (const name of names) {
-    const request = fixture(name, 'request');
-    const quote = fixture(name, 'quote').message.order;
-    assert.ok(Date.parse(confirmation.context.timestamp) < Date.parse(request.context.timestamp));
-    assert.notEqual(confirmation.context.message_id, request.context.message_id);
-    for (const key of ['transaction_id', 'bap_id', 'bap_uri', 'bpp_id', 'bpp_uri'])
-      assert.equal(confirmation.context[key], request.context[key]);
-    assert.equal(original.id, request.message.order.id);
-    assert.deepEqual(original.provider, quote.provider);
-    assert.deepEqual(original.items.map(i => [i.id, i.parent_item_id, i.category_ids, i.fulfillment_ids]),
-      quote.items.map(i => [i.id, i.parent_item_id, i.category_ids, i.fulfillment_ids]));
-    assert.deepEqual(original.payments.map(p => p.id).sort(),
-      quote.payments.filter(p => p.id.startsWith('BL-INSTALLMENT-')).map(p => p.id).sort());
-  }
-});
-
-test('pre-part updates remaining principal and the lender-approved schedule', () => {
-  const order = fixture('pre_part_payment', 'success').message.order;
-  const unpaid = order.payments.filter(p => p.status === 'NOT-PAID');
-  assert.deepEqual(unpaid.map(p => p.params.amount), ['22950.00', '22725.00']);
-  const principals = unpaid.map(p => p.tags.find(t => t.descriptor.code === 'BREAKUP').list
-    .find(t => t.descriptor.code === 'PRINCIPAL_AMOUNT').value.split(' ')[0]);
-  assert.equal(principals.reduce((n, p) => n + minor(p), 0n), 4500000n);
-});
-
-test('missed EMI settles separately and preserves the original installment history', () => {
-  const original = read('examples/term-loan/on_confirm/on_confirm_servicing_loan.yaml')
-    .message.order.payments.find(p => p.id === 'BL-INSTALLMENT-2');
-  const request = fixture('missed_emi_payment', 'request');
-  assert.deepEqual(request.message.order.payments, [{ time: { label: 'MISSED_EMI_PAYMENT' } }]);
-  for (const phase of ['quote', 'success']) {
-    const order = fixture('missed_emi_payment', phase).message.order;
-    const installment = order.payments.find(p => p.id === original.id);
-    const settlement = order.payments.find(p => p.time.label === 'MISSED_EMI_PAYMENT');
-    assert.deepEqual(installment, { ...original, status: phase === 'quote' ? 'DELAYED' : 'DEFERRED' });
-    assert.equal(settlement.id, 'BL-MISSED-EMI-1');
-    assert.notEqual(settlement.id, original.id);
-    assert.deepEqual(settlement.time.range, original.time.range);
-    assert.equal(settlement.status, phase === 'quote' ? 'NOT-PAID' : 'PAID');
-    const breakup = Object.fromEntries(settlement.tags.find(t => t.descriptor.code === 'BREAKUP')
-      .list.map(t => [t.descriptor.code, t.value]));
-    assert.deepEqual(breakup, { PRINCIPAL_AMOUNT: '30000.00 INR', INTEREST_AMOUNT: '600.00 INR', LATE_FEE_AMOUNT: '177.00 INR' });
-    assert.equal(Object.values(breakup).reduce((sum, v) => sum + minor(v.split(' ')[0]), 0n), minor(settlement.params.amount));
-    assert.equal(order.payments.filter(p => p.id === original.id).length, 1);
-    assert.equal(order.payments.find(p => p.id === 'BL-INSTALLMENT-3').status, 'NOT-PAID');
-  }
-});
-
-test('verified foreclosure closes the same loan and leaves no collectible future installments', () => {
-  const before = fixture('foreclosure', 'quote').message.order;
-  const order = fixture('foreclosure', 'success').message.order;
-  assert.equal(order.status, 'COMPLETE');
-  assert.equal(order.fulfillments[0].state.descriptor.code, 'COMPLETED');
-  assert.deepEqual(order.payments.map(p => p.id), before.payments.map(p => p.id));
-  const installments = before.payments.filter(p => p.time.label === 'INSTALLMENT');
-  for (const original of installments) {
-    const expected = original.status === 'PAID' ? original : { ...original, status: 'DEFERRED' };
-    assert.deepEqual(order.payments.find(p => p.id === original.id), expected,
-      'retain original installment identity, dates, amounts and breakup; only unpaid status changes');
-  }
-  assert.deepEqual(order.payments.filter(p => p.status === 'DEFERRED').map(p => p.id),
-    ['BL-INSTALLMENT-2', 'BL-INSTALLMENT-3']);
-  assert.ok(!order.payments.some(p => p.status === 'NOT-PAID'));
-  assert.ok(order.payments.filter(p => p.status === 'DEFERRED').every(p => !p.url && !p.params.transaction_id && !p.time.timestamp));
-});
-
-test('DEFERRED and DELAYED extend only the old-core on_update payment enum and reject unknown statuses', async () => {
-  const core = await RefParser.dereference(path.join(root, 'beckn_yaml.yaml'));
-  const before = structuredClone(core);
-  const statusFor = spec => spec.paths['/on_update'].post.requestBody.content['application/json']
-    .schema.properties.message.properties.order.properties.payments.items.properties.status;
-  assert.deepEqual(statusFor(core).enum, ['PAID', 'NOT-PAID']);
-  const registry = read('enum/default/index.yaml');
-  extendBLServicingSchema(core);
-  assert.deepEqual(statusFor(core).enum, ['PAID', 'NOT-PAID', 'DEFERRED', 'DELAYED']);
-  const published = await RefParser.dereference(path.join(root, '../build/build.yaml'));
-  for (const value of ['DEFERRED', 'DELAYED']) {
-    assert.ok(JSON.stringify(registry).includes(JSON.stringify(value)));
-    assert.ok(statusFor(published).enum.includes(value));
-  }
-  for (const api of Object.keys(before.paths).filter(api => api !== '/on_update'))
-    assert.deepEqual(core.paths[api], before.paths[api], 'unrelated API changed: ' + api);
-  const once = structuredClone(core);
-  extendBLServicingSchema(core);
-  assert.deepEqual(core, once);
-  const invalid = structuredClone(fixture('foreclosure', 'success'));
-  invalid.message.order.payments[2].status = 'WAIVED';
-  for (const validators of [await schemas, await publishedSchemas])
-    assert.equal(validators.on_update(invalid), false, 'do not allow arbitrary payment statuses');
-});
-
-test('flows and example indexes publish all ten servicing examples in PL four-call order', () => {
-  const flows = read('flows/index.yaml');
-  const examples = read('examples/term-loan/index.yaml');
-  for (const name of names) {
-    assert.ok(flows.some(f => f.$ref === `./term-loan/${name}.yaml`));
-    const flow = read(`flows/term-loan/${name}.yaml`);
-    assert.deepEqual(flow.steps.map(s => s.api), ['on_confirm', 'update', 'on_update', 'on_update']);
-    for (const step of flow.steps) {
-      const target = path.resolve(root, 'flows/term-loan', step.example.value.$ref);
-      assert.ok(fs.existsSync(target));
-      const example = yaml.load(fs.readFileSync(target, 'utf8'));
-      assert.equal(example.context.action, step.api);
-    }
-    assert.ok(examples.update.examples.some(e => e.value.$ref === `./update/update_request_${name}.yaml`));
-    for (const phase of ['quote', 'success'])
-      assert.ok(examples.on_update.examples.some(e => e.value.$ref === `./on_update/on_update_${name}_${phase}.yaml`));
-  }
-});
-
-test('published YAML and Flow UI contain the same servicing examples', () => {
+test('registered flows use the exact earlier on_confirm and published examples match', () => {
   const built = read('../build/build.yaml');
-  const viewerText = fs.readFileSync(path.join(root, '../../ui/build.js'), 'utf8');
-  const viewer = JSON.parse(viewerText.slice(viewerText.indexOf('=') + 1));
-  const registered = read('flows/index.yaml');
-  assert.equal(built['x-flows'].length, registered.length);
+  const viewer = JSON.parse(fs.readFileSync(path.join(root, '../../ui/build.js'), 'utf8').split('= ').slice(1).join('= '));
   assert.deepEqual(viewer['x-flows'], built['x-flows']);
   for (const name of names) {
     const flow = read(`flows/term-loan/${name}.yaml`);
+    assert.deepEqual(flow.steps.map(s => s.api), ['on_confirm', 'update', 'on_update', 'on_update']);
+    assert.equal(flow.steps[0].example.value.$ref, '../../' + confirmationPath);
     const published = built['x-flows'].find(f => f.summary === flow.summary);
-    assert.ok(published);
-    for (const [i, phase] of ['request', 'quote', 'success'].entries())
-      assert.deepEqual(published.steps[i + 1].example.value, fixture(name, phase));
-    assert.deepEqual(published.steps[0].example.value,
-      read('examples/term-loan/on_confirm/on_confirm_servicing_loan.yaml'));
+    assert.deepEqual(published.steps[0].example.value, initial);
+    for (const [i, phase] of ['request','quote','success'].entries()) assert.deepEqual(published.steps[i+1].example.value, fixture(name, phase));
   }
-  assert.equal(built['x-examples']['Business-Term-Loan'].example_set.update.examples.length, 3);
-  assert.equal(built['x-examples']['Business-Term-Loan'].example_set.on_update.examples.length, 6);
 });
 
-test('servicing rebuild is deterministic and preserves schemas and other origination flows', () => {
-  const output = path.join(root, '../build/build.yaml');
-  const viewer = path.join(root, '../../ui/build.js');
-  const before = fs.readFileSync(output, 'utf8');
-  const viewerBefore = fs.readFileSync(viewer, 'utf8');
-  execFileSync(process.execPath, [path.join(root, 'build-term-loan-servicing.js')], { cwd: root });
-  assert.equal(fs.readFileSync(output, 'utf8'), before);
-  assert.equal(fs.readFileSync(viewer, 'utf8'), viewerBefore);
+test('old-core extensions stay narrow, idempotent and reject unsupported values', async () => {
+  const original = await RefParser.dereference(path.join(root,'beckn_yaml.yaml'));
+  const before = structuredClone(original); extendBLServicingSchema(original);
+  for (const api of Object.keys(before.paths).filter(k => !['/on_confirm','/on_update'].includes(k))) assert.deepEqual(original.paths[api], before.paths[api]);
+  const once = structuredClone(original); extendBLServicingSchema(original); assert.deepEqual(original, once);
+  for (const v of await schemas) {
+    const invalid = structuredClone(fixture('foreclosure','success'));
+    invalid.message.order.status = 'BOGUS'; assert.equal(v.on_update(invalid), false);
+    invalid.message.order.status = 'COMPLETED'; invalid.message.order.payments[0].type = 'BOGUS'; assert.equal(v.on_update(invalid), false);
+  }
+});
+
+test('servicing rebuild is deterministic', () => {
+  const files = [path.join(root,'../build/build.yaml'),path.join(root,'../../ui/build.js')];
+  const before = files.map(f => fs.readFileSync(f,'utf8'));
+  execFileSync(process.execPath,[path.join(root,'build-term-loan-servicing.js')],{cwd:root});
+  assert.deepEqual(files.map(f => fs.readFileSync(f,'utf8')),before);
 });

@@ -9,33 +9,34 @@ and payment URL, then an unsolicited `on_update` after lender-verified payment.
 All calls use `ONDC:FIS12:BL`, version `2.3.0` and the existing loan order. No
 LAMF drawdown child orders or new protocol API actions are introduced.
 
-Collect only the amount in the selected payment's `params.amount`. As in the
-PL servicing pattern, the order quote and item price are loan-level contractual
-totals, including repayments already made; they are not an extra collection.
-The illustrative loan has principal INR 90000, a fixed annual rate of 12% and
-three monthly reducing-balance installments. The first INR 30900 installment is
-paid before servicing begins. The opening confirmation shows the original schedule
-before that repayment; it is historical context, not a new confirmation sent
-for every servicing request. Each flow proceeds independently, not from the
-outcome of another servicing example. Charges are illustrative, lender-confirmed
-and tax-inclusive; the specification does not prescribe lender fee policy.
+The original confirmation is reused directly from the existing bureau-only
+single-redirection flow. All servicing requests use its order and transaction IDs;
+request payments have no ID. Callbacks preserve its provider, item, fulfillment
+and stop hierarchy, documents, terms, disbursement and quote fields. Each
+servicing flow is an independent illustration. Collect only the selected
+servicing payment amount, never the order quote or a deferred historical row.
 
-The missed-EMI flow follows PL 2.0.3 and LAMF 2.3.0: a separate
-`MISSED_EMI_PAYMENT` entry carries the settlement and charge breakup. The original
-installment retains its ID, label, amount, due-date range and breakup, changing
-from `DELAYED` in the quote to `DEFERRED` after verified settlement. The separate
-settlement changes from `NOT-PAID` to `PAID` and carries the same due-date range.
-Do not collect both entries or count deferred history as another paid receipt.
+The pre-part illustration quotes an amount equal to one original installment;
+a separate payment is marked PAID after verification and the corresponding
+installment becomes DEFERRED. The missed-EMI illustration uses a separate
+settlement for an original installment and an illustrative late fee; the original
+moves DELAYED to DEFERRED after verified receipt. Foreclosure uses a separate
+settlement, changes order and fulfillment to COMPLETED on verified receipt and
+retains the installments as DEFERRED. Payment types use underscore spelling.
 
-Pre-part success carries
-the lender-approved revised remaining schedule. Verified foreclosure uses the
-pinned core's `order.status: COMPLETE` and BL fulfillment state `COMPLETED`, with
-the remaining original installments retained as `DEFERRED`, mirroring PL 2.0.3.
-Their IDs, dates, amounts and breakup remain unchanged; they are schedule history,
-not individually paid installments or additional collectible amounts after closure.
-Exclude these deferred rows when reconciling the amended loan total against paid
-receipts. A redirect return, manual payment reference,
-screenshot or transport ACK must never be treated as verified receipt.
+**Origination example requires ONDC clarification:** The reused confirmation has
+five installments with the same placeholder payment ID and all due dates before
+its confirmation timestamp. Its item price is INR 441800; its quote is INR
+232800; its principal, interest, processing and insurance amounts total INR
+232300; and its five installments total INR 231800. The pre-part, missed-EMI
+and foreclosure examples demonstrate protocol structure only: due dates do not
+establish a valid advance-payment scenario and the displayed foreclosure amount
+is not a lender-verified payoff. The original quote contains informational net
+disbursed amount as well as charges; do not sum every breakup row as charges.
+ONDC should confirm corrected origination values, unique installment IDs, dates
+and the matching servicing amounts before these examples become calculation or
+production integration fixtures. A return redirect, screenshot, UTR or transport
+ACK is not verified payment.
 
 To validate and rebuild this contribution:
 
@@ -60,14 +61,12 @@ published BL revision, use `npm run build:servicing -- --base-ref <git-ref>`.
 
 The general `npm start` build has pre-existing `Business Loan Search/on_search`
 validation failures. Its pinned-core rebuild also rewrites existing schema
-constraints. These are not fixed or bypassed in the servicing schema tests:
-all ten new payloads are validated against both the pinned core with the explicit
-BL `on_update` DEFERRED/DELAYED extension and the retained published API schemas.
-The published BL schema already permits DEFERRED and DELAYED; `term-loan-servicing-schema.js`
-adds only those statuses to the old core callback during the general build, without
-editing the submodule or changing other APIs. Unknown statuses are still rejected.
-Do not use the general build's zero exit
-status alone as validation evidence.
+constraints. The servicing examples are validated against the published BL
+schemas and against the old core with a narrow compatibility extension for the
+published BL underscore payment types, string quote ID, DELAYED/DEFERRED payment
+statuses and COMPLETED order status in the relevant callbacks. The extension does
+not change the submodule or unrelated API paths. Unknown values remain rejected.
+Do not use the general build's zero exit status alone as validation evidence.
 
 These specifications are to enable ONDC Network Participants to expose or consume financial services on ONDC.
 

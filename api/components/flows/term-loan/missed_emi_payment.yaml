@@ -1,42 +1,60 @@
-summary: "Business Loan - Term Loan Missed EMI Payment"
+summary: Business Loan - Term Loan Missed EMI Payment
 details:
-  -
-    description: "The borrower requests payment of overdue installment BL-INSTALLMENT-2 on the existing disbursed term-loan order. The lender quotes INR 30777: principal INR 30000, interest INR 600 and tax-inclusive late fees INR 177. Following PL 2.0.3 and LAMF 2.3.0, the lender creates a separate MISSED_EMI_PAYMENT settlement BL-MISSED-EMI-1 with principal, interest and late-fee breakup. The original BL-INSTALLMENT-2 retains its ID, INSTALLMENT label, amount, due-date range and breakup: DELAYED in the quote and DEFERRED after verified settlement. The settlement carries the same due-date range and changes from NOT-PAID to PAID. Do not collect the original installment in addition to this settlement; the deferred row is history, not another receipt. Other future installments remain payable."
-    mermaid: "sequenceDiagram\n  participant BAP as Borrower Platform BAP\n  participant BPP as Lender Platform BPP\n  BPP->>BAP: on_confirm original disbursed term-loan order\n  BAP-->>BPP: ACK\n  Note over BAP,BPP: First installment paid before servicing\n  BAP->>BPP: update payment intent\n  BPP-->>BAP: ACK\n  BPP->>BAP: on_update payable quote and payment URL\n  BAP-->>BPP: ACK\n  Note over BAP,BPP: Payment outside the protocol and lender verification\n  BPP->>BAP: on_update verified payment result\n  BAP-->>BPP: ACK"
+  - description: >-
+      The borrower requests payment of a missed original installment. The separate settlement of INR
+      46537 comprises the original INR 46360 installment and INR 177 illustrative late fee. The
+      original installment is DELAYED at quote and DEFERRED after verified settlement. Its ID and
+      due-date range are preserved; do not collect the original installment separately.
+    mermaid: |-
+      sequenceDiagram
+        participant BAP as Borrower Platform BAP
+        participant BPP as Lender Platform BPP
+        BPP->>BAP: on_confirm original disbursed term-loan order
+        BAP-->>BPP: ACK
+        Note over BAP,BPP: Original loan confirmation precedes servicing
+        BAP->>BPP: update payment intent
+        BPP-->>BAP: ACK
+        BPP->>BAP: on_update payable quote and payment URL
+        BAP-->>BPP: ACK
+        Note over BAP,BPP: Payment outside the protocol and lender verification
+        BPP->>BAP: on_update verified payment result
+        BAP-->>BPP: ACK
 steps:
-  -
-    summary: "The lender confirms the term loan order."
-    api: "on_confirm"
+  - summary: The lender confirms the term loan order.
+    api: on_confirm
     details:
-      -
-        description: "The original disbursed loan confirmation establishes the order, transaction, provider, item and repayment schedule used below. This is historical origination context, not a new confirmation triggered by a servicing request. The first installment is paid before the later servicing request."
+      - description: >-
+          The original confirmation is the existing bureau-only single-redirection flow, included as
+          historical context. Each servicing flow is an independent illustration.
     example:
       value:
-        $ref: "../../examples/term-loan/on_confirm/on_confirm_servicing_loan.yaml"
-  -
-    summary: "The borrower requests term loan missed emi payment."
-    api: "update"
+        $ref: ../../examples/term-loan/on_confirm/on_confirm_request_bureau_single_redirection.yaml
+  - summary: The borrower requests term loan missed emi payment.
+    api: update
     details:
-      -
-        description: "Use update_target payments and the original loan order ID. The three examples are independent alternatives on an existing loan, not additional origination steps."
+      - description: >-
+          Use update_target payments and the original loan order ID. The three examples are
+          independent alternatives on an existing loan, not additional origination steps.
     example:
       value:
-        $ref: "../../examples/term-loan/update/update_request_missed_emi_payment.yaml"
-  -
-    summary: "The lender quotes the term loan missed emi payment."
-    api: "on_update"
+        $ref: ../../examples/term-loan/update/update_request_missed_emi_payment.yaml
+  - summary: The lender quotes the term loan missed emi payment.
+    api: on_update
     details:
-      -
-        description: "The solicited callback retains the request message ID. The quote is valid for 15 minutes and its payment URL must expire with that quote. Collect only the MISSED_EMI_PAYMENT settlement amount in payments.params.amount. The order quote and item price retain PL-style loan-level totals: original principal plus revised contractual interest and servicing charges, including repayments already made. They are not a second collection amount. This illustrative loan started at INR 90000; the first INR 30900 installment is already paid. Charges are lender-confirmed, tax-inclusive examples, not network-wide rate requirements. No payment is verified yet."
+      - description: >-
+          The solicited callback retains the update message ID. The original order and quote are
+          retained, with applicable servicing charges. Collect only the selected servicing payment
+          amount. The source origination example contains inconsistent financial totals and dates;
+          these illustrations are not payoff calculation fixtures.
     example:
       value:
-        $ref: "../../examples/term-loan/on_update/on_update_missed_emi_payment_quote.yaml"
-  -
-    summary: "The lender confirms verified term loan missed emi payment."
-    api: "on_update"
+        $ref: ../../examples/term-loan/on_update/on_update_missed_emi_payment_quote.yaml
+  - summary: The lender confirms verified term loan missed emi payment.
+    api: on_update
     details:
-      -
-        description: "This unsolicited callback uses a fresh message ID and retains the transaction, order, payment and quote IDs. Send PAID only after authoritative lender payment verification. A redirect return, screenshot, UTR or transport ACK is not payment confirmation."
+      - description: >-
+          The unsolicited callback uses a fresh message ID and retains the transaction, order and
+          settlement payment IDs. Mark PAID only after authoritative lender verification.
     example:
       value:
-        $ref: "../../examples/term-loan/on_update/on_update_missed_emi_payment_success.yaml"
+        $ref: ../../examples/term-loan/on_update/on_update_missed_emi_payment_success.yaml
