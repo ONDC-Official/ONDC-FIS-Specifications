@@ -1,0 +1,94 @@
+summary: Personal Loan - Pre-Part Payment
+details:
+  - description: The borrower asks for a pre-part payment with update (payment label PRE_PART_PAYMENT). The lender returns a quote and a payment link in on_update, then an on_update with the payment PAID. EMI 1 has been paid. Once the part payment is paid, the next unpaid instalment (2) is DEFERRED.
+    mermaid: |-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+        Borrower Platform (BAP)->>Lender Platform (BPP): update
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+references: if any
+steps:
+  - summary: The lender confirms the order when the loan is disbursed (unsolicited on_confirm).
+    api: on_confirm
+    details:
+      - description: The lender confirms the order when the loan is disbursed (unsolicited on_confirm).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_confirm/on_confirm_request_disbursed_sr.yaml
+  - summary: 'EMI 1 is paid: unsolicited on_status with instalment 1 PAID.'
+    api: on_status
+    details:
+      - description: 'EMI 1 is paid: unsolicited on_status with instalment 1 PAID.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_emi_1_paid.yaml
+  - summary: The borrower app sends the pre-part payment request with the order ID (payment label PRE_PART_PAYMENT).
+    api: update
+    details:
+      - description: The borrower app sends the pre-part payment request with the order ID (payment label PRE_PART_PAYMENT).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/update/update_request_pre_part_payment.yaml
+  - summary: The lender returns the quote and the payment link.
+    api: on_update
+    details:
+      - description: The lender returns the quote and the payment link.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_update/on_update_request_pre_part_payment_quote.yaml
+  - summary: The lender confirms the payment (PAID).
+    api: on_update
+    details:
+      - description: The lender confirms the payment (PAID).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_update/on_update_request_pre_part_payment_paid.yaml
