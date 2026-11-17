@@ -1,0 +1,77 @@
+summary: Personal Loan - Dedupe Check (Accepted)
+details:
+  - description: The borrower app runs the dedupe check with the lender before the select that asks for an offer. The lender accepts the lead.
+    mermaid: |-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): search
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_search
+        Borrower Platform (BAP)->>Lender Platform (BPP): select
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+references: if any
+steps:
+  - summary: The borrower searches for personal loans on the network.
+    api: search
+    details:
+      - description: The borrower searches for personal loans on the network.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): search
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/search/search-request-common.yaml
+  - summary: The lender publishes its Personal Loan catalog, with the personal details form (PERSONAL_INFORMATION, mime_type none) on each loan item.
+    api: on_search
+    details:
+      - description: The lender publishes its Personal Loan catalog, with the personal details form (PERSONAL_INFORMATION, mime_type none) on each loan item.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_search
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_search/on_search_request_common.yaml
+  - summary: Before asking for an offer, the borrower app checks with the lender using PAN, date of birth and phone (PRE_QUALIFIER item, fulfillment type DEDUPE).
+    api: select
+    details:
+      - description: Before asking for an offer, the borrower app checks with the lender using PAN, date of birth and phone (PRE_QUALIFIER item, fulfillment type DEDUPE).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/select/select_request_dedupe.yaml
+  - summary: The lender accepts the lead (fulfillment state ACCEPTED). The borrower app can now ask for an offer.
+    api: on_select
+    details:
+      - description: The lender accepts the lead (fulfillment state ACCEPTED). The borrower app can now ask for an offer.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_select/on_select_request_dedupe_accepted.yaml
