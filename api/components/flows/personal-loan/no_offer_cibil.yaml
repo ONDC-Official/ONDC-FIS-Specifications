@@ -1,0 +1,77 @@
+summary: Personal Loan - No Offer (CIBIL rejection)
+details:
+  - description: 'The borrower asks for an offer and the lender cannot make one. The on_select carries no offer: the LOAN_OFFER step is FAILED, the fulfillment state is REJECTED and error.code is 80226.'
+    mermaid: |-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): search
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_search
+        Borrower Platform (BAP)->>Lender Platform (BPP): select
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+references: if any
+steps:
+  - summary: The borrower searches for personal loans on the network.
+    api: search
+    details:
+      - description: The borrower searches for personal loans on the network.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): search
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/search/search-request-common.yaml
+  - summary: The lender publishes its Personal Loan catalog, with the personal details form (PERSONAL_INFORMATION, mime_type none) on each loan item.
+    api: on_search
+    details:
+      - description: The lender publishes its Personal Loan catalog, with the personal details form (PERSONAL_INFORMATION, mime_type none) on each loan item.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_search
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_search/on_search_request_common.yaml
+  - summary: The borrower app shows the lender's personal details form on its own screen and sends the values in select to ask for an offer.
+    api: select
+    details:
+      - description: The borrower app shows the lender's personal details form on its own screen and sends the values in select to ask for an offer.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/select/select_request_personal_information_sr.yaml
+  - summary: The lender returns no offer, with reason code 80226 (CIBIL rejection).
+    api: on_select
+    details:
+      - description: The lender returns no offer, with reason code 80226 (CIBIL rejection).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_select/on_select_request_no_offer_cibil.yaml
