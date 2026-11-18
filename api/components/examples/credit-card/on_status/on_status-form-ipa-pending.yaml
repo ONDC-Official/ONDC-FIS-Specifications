@@ -6,7 +6,7 @@ context:
     city:
       code: "*"
   version: 2.0.3
-  action: on_select
+  action: on_status
   ttl: PT15M
   timestamp: '2025-08-18T14:20:14.368Z'
   bap_id: pramaan.ondc.org
@@ -130,9 +130,7 @@ message:
                   code: TRAVEL_BENEFITS
                   name: Travel Benefits
                   short_desc: Travel Benefits
-                value: |-
-                  - 2 Points per ₹150 spent on MMT, 
-                   - 2 Points per ₹150 spent on others
+                value: 2 Points per ₹150 spent
               - descriptor:
                   code: LIFESTYLE_BENEFITS
                   name: Lifestyle Benefits
@@ -149,13 +147,63 @@ message:
                   code: TNC_LINK
                   name: Terms & Conditions
                   short_desc: Terms and Conditions
-                value: https://hdfcbank.com/cc/tnc.html
+                value: https://icicibank.com/loan/tnc.html
             display: true
-        matched: true
-        recommended: true
         xinput:
           form:
             id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
           form_response:
-            status: SUCCESS
+            status: OFFLINE_PENDING
             submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+    fulfillments:
+      - id: "1"
+        type: ONLINE
+        stops:
+          - id: "1"
+            type: MOBILE_OTP
+            instructions:
+              name: Mobile OTP
+              code: SUCCESSFUL
+              short_desc: Mobile OTP verification
+          - id: "2"
+            type: IPA
+            instructions:
+              name: In-principal Approval
+              code: PENDING
+              short_desc: In-principal Approval
+            parent_stop_id: "1"
+          - id: "30"
+            type: KYC
+            instructions:
+              name: KYC
+              code: PENDING
+              short_desc: Know your customer
+            parent_stop_id: "2"
+          - id: "31"
+            type: EKYC
+            instructions:
+              name: EKYC
+              code: PENDING
+              short_desc: Know your customer
+            parent_stop_id: "30"
+          - id: "32"
+            type: VKYC
+            instructions:
+              name: VKYC
+              code: PENDING
+              short_desc: Video KYC
+            parent_stop_id: "31"
+          - id: "33"
+            type: NBDC
+            instructions:
+              name: NBDC
+              code: PENDING
+              short_desc: Net banking or debit card verification
+            parent_stop_id: "31"
+          - id: "34"
+            type: BIO-KYC
+            instructions:
+              name: BIO-KYC
+              code: PENDING
+              short_desc: Offline KYC
+            parent_stop_id: "30"
