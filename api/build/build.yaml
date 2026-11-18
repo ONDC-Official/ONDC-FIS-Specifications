@@ -973,8 +973,6 @@ components:
           $ref: '#/components/schemas/XInput'
         external_ref:
           $ref: '#/components/schemas/MediaFile'
-        cancel_eligible:
-          type: boolean
     Catalog:
       description: >-
         Describes the products or services offered by a BPP. This is typically
@@ -1257,10 +1255,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
-        symbol:
-          description: URL to the image. This can be a data url or an remote url
-          type: string
-          format: uri
     Domain:
       description: >-
         Described the industry sector or sub-sector. The network policy should
@@ -1355,7 +1349,8 @@ components:
         data:
           description: The form submission data
           type: object
-          additionalProperties: true
+          additionalProperties:
+            type: string
         mime_type:
           description: >-
             This field indicates the nature and format of the form received by
@@ -1367,7 +1362,6 @@ components:
             - application/html
             - application/xml
             - text/html-multi
-            - none
         resubmit:
           type: boolean
         multiple_sumbissions:
@@ -1910,9 +1904,6 @@ components:
             - REJECTED
             - CREATED
             - COMPLETED
-            - SOFT_CANCEL
-            - ON_HOLD
-            - IN_PROGRESS
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
@@ -2142,7 +2133,6 @@ components:
             - ON_FULFILLMENT
             - POST_FULFILLMENT
             - ON_ORDER
-            - REFUND
         status:
           type: string
           enum:
@@ -2244,7 +2234,6 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -2934,6 +2923,12 @@ x-enum:
                   - code: COMPLETED
                     description: When the overall process for loan gets over
                     reference: <PR/Issue/Discussion Links md format text
+                  - code: DISPATCHED
+                    description: Credit card dispatched by the issuer.
+                    reference: <PR/Issue/Discussion Links md format text
+                  - code: APPROVED
+                    description: When a credit card application is initiated by the issuer.
+                    reference: <PR/Issue/Discussion Links md format text
                   - code: ACCEPTED
                     description: Describes the state when as Accepted
                     reference: <PR/Issue/Discussion Links md format text
@@ -2973,6 +2968,26 @@ x-enum:
                 - code: LOAN_AGREEMENT
                   description: Describes the stops type as PERSONAL_INFORMATION
                   reference: <PR/Issue/Discussion Links md format text
+                - code: MOBILE_OTP
+                  description: Describes the stops type as MOBILE_OTP
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: IPA
+                  description: Describes the stops type as IPA(In-principal Approval)
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: EKYC
+                  description: Describes the stops type as EKYC
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: VKYC
+                  description: Describes the stops type as VKYC
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: NBDC
+                  description: >-
+                    Describes the stop type as NBDC (Net Banking or Debit Card
+                    Verification)
+                  reference: <PR/Issue/Discussion Links md format text
+                - code: BIO-KYC
+                  description: Describes the stop type as BIO-KYC
+                  reference: <PR/Issue/Discussion Links md format text
               instructions:
                 code:
                   - code: PENDING
@@ -2997,6 +3012,9 @@ x-enum:
                     reference: <PR/Issue/Discussion Links md format text
                   - code: SUCCESSFUL
                     description: The process has been completed successfully.
+                    reference: <PR/Issue/Discussion Links md format text
+                  - code: NOT_APPLICABLE
+                    description: The process is not applicable for the selected item.
                     reference: <PR/Issue/Discussion Links md format text
   select:
     context: *ref_0
@@ -3976,7 +3994,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_24
+          value: &ref_25
             context:
               domain: ONDC:FIS12
               location:
@@ -4032,7 +4050,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_26
+          value: &ref_27
             context:
               domain: ONDC:FIS12
               location:
@@ -4394,7 +4412,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_35
+          value: &ref_36
             context:
               domain: ONDC:FIS12
               location:
@@ -4758,7 +4776,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_37
+          value: &ref_38
             context:
               domain: ONDC:FIS12
               location:
@@ -5088,7 +5106,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_36
+          value: &ref_37
             context:
               domain: ONDC:FIS12
               location:
@@ -5420,7 +5438,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_28
+          value: &ref_29
             context:
               domain: ONDC:FIS12
               location:
@@ -8418,7 +8436,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_25
+          value: &ref_26
             context:
               domain: ONDC:FIS12
               location:
@@ -8474,7 +8492,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_27
+          value: &ref_28
             context:
               domain: ONDC:FIS12
               location:
@@ -9181,7 +9199,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_38
+          value: &ref_39
             context:
               domain: ONDC:FIS12
               location:
@@ -10509,7 +10527,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_29
+          value: &ref_30
             context:
               domain: ONDC:FIS12
               location:
@@ -10586,7 +10604,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_30
+          value: &ref_31
             context:
               domain: ONDC:FIS12
               location:
@@ -13820,7 +13838,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_33
+          value: &ref_34
             context:
               domain: ONDC:FIS12
               location:
@@ -14293,7 +14311,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_34
+          value: &ref_35
             context:
               domain: ONDC:FIS12
               location:
@@ -14844,7 +14862,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_31
+          value: &ref_32
             context:
               domain: ONDC:FIS12
               location:
@@ -15315,7 +15333,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_32
+          value: &ref_33
             context:
               domain: ONDC:FIS12
               location:
@@ -16887,7 +16905,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_39
+          value: &ref_40
             context:
               domain: ONDC:FIS12
               location:
@@ -16946,7 +16964,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_40
+          value: &ref_41
             context:
               domain: ONDC:FIS12
               location:
@@ -17313,7 +17331,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_41
+          value: &ref_42
             context:
               domain: ONDC:FIS12
               location:
@@ -17360,7 +17378,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_42
+          value: &ref_43
             context:
               domain: ONDC:FIS12
               location:
@@ -17717,7 +17735,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_43
+          value: &ref_44
             context:
               domain: ONDC:FIS12
               location:
@@ -18376,7 +18394,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_46
+          value: &ref_47
             context:
               domain: ONDC:FIS12
               location:
@@ -18728,7 +18746,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_44
+          value: &ref_45
             context:
               domain: ONDC:FIS12
               location:
@@ -18803,7 +18821,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_45
+          value: &ref_46
             context:
               domain: ONDC:FIS12
               location:
@@ -19674,7 +19692,7 @@ x-flows:
                 Borrower Platform (BAP)->>Lender Platform(BPP): ACK
         reference: if any
         example:
-          value: &ref_47
+          value: &ref_48
             context:
               domain: ONDC:FIS12
               location:
@@ -19731,7 +19749,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_48
+          value: &ref_49
             context:
               domain: ONDC:FIS12
               location:
@@ -20034,6 +20052,58 @@ x-flows:
                               code: LSP_ADDRESS
                               name: Lsp Address
                             value: Mumbai Maharashtra 400013
+                    fulfillments:
+                      - id: '1'
+                        type: ONLINE
+                        stops:
+                          - id: '1'
+                            type: MOBILE_OTP
+                            instructions:
+                              name: Mobile OTP
+                              code: PENDING
+                              short_desc: Mobile OTP verification
+                          - id: '2'
+                            type: IPA
+                            instructions:
+                              name: In-principal Approval
+                              code: PENDING
+                              short_desc: In-principal Approval
+                            parent_stop_id: '1'
+                          - id: '30'
+                            type: KYC
+                            instructions:
+                              name: KYC
+                              code: PENDING
+                              short_desc: Know your customer
+                            parent_stop_id: '2'
+                          - id: '31'
+                            type: EKYC
+                            instructions:
+                              name: EKYC
+                              code: PENDING
+                              short_desc: Know your customer
+                            parent_stop_id: '30'
+                          - id: '32'
+                            type: VKYC
+                            instructions:
+                              name: VKYC
+                              code: PENDING
+                              short_desc: Video KYC
+                            parent_stop_id: '31'
+                          - id: '33'
+                            type: NBDC
+                            instructions:
+                              name: NBDC
+                              code: PENDING
+                              short_desc: Net banking or debit card verification
+                            parent_stop_id: '31'
+                          - id: '34'
+                            type: BIO-KYC
+                            instructions:
+                              name: BIO-KYC
+                              code: PENDING
+                              short_desc: Offline KYC
+                            parent_stop_id: '30'
                 tags:
                   - descriptor:
                       code: BPP_TERMS
@@ -20074,7 +20144,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: |-
+          value: |
             <!DOCTYPE html>
             <html lang="en">
 
@@ -20159,7 +20229,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_49
+          value: &ref_50
             context:
               domain: ONDC:FIS12
               location:
@@ -20213,7 +20283,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_50
+          value: &ref_51
             context:
               domain: ONDC:FIS12
               location:
@@ -20391,6 +20461,58 @@ x-flows:
                         resubmit: false
                         multiple_sumbissions: false
                       required: true
+                fulfillments:
+                  - id: '1'
+                    type: ONLINE
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: PENDING
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: PENDING
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: PENDING
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: PENDING
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: PENDING
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: PENDING
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: PENDING
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
       - summary: The lender provides the relevant forms, such as links for KYC etc.
         api: form
         details:
@@ -20436,7 +20558,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_55
+          value: &ref_56
             context:
               domain: ONDC:FIS12
               location:
@@ -20598,24 +20720,79 @@ x-flows:
                       form_response:
                         status: OFFLINE_PENDING
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
-      - summary: The borrower request for order status
-        api: status
+                fulfillments:
+                  - id: '1'
+                    type: ONLINE
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: PENDING
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: PENDING
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: PENDING
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: PENDING
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: PENDING
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: PENDING
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
+      - summary: The lender sends the form status
+        api: on_status
         details:
-          - description: The borrower request for order status
+          - description: The lender sends the form status
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
+                participant Lender Form Service
                 rect rgb(191, 223, 255)
-                Borrower Platform (BAP)->>Lender Platform (BPP): status
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
                 end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_23
+          value: &ref_57
             context:
               domain: ONDC:FIS12
               location:
@@ -20624,9 +20801,9 @@ x-flows:
                 city:
                   code: '*'
               version: 2.0.3
-              action: status
-              ttl: PT10M
-              timestamp: '2025-08-18T14:20:14.148Z'
+              action: on_status
+              ttl: PT15M
+              timestamp: '2025-08-18T14:20:14.368Z'
               bap_id: pramaan.ondc.org
               bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
               transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
@@ -20634,25 +20811,456 @@ x-flows:
               bpp_id: hdfc-cc.refo.dev
               bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
             message:
-              ref_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
-      - summary: The lender sends the latest order status of the form
+              order:
+                provider:
+                  id: '101'
+                  descriptor:
+                    images:
+                      - url: https://url.com/hdfc/hdfc-sm.png
+                        size_type: sm
+                      - url: https://url.com/hdfc/hdfc-md.png
+                        size_type: md
+                      - url: https://url.com/hdfc/hdfc-lg.png
+                        size_type: lg
+                    name: HDFC Bank Limited
+                    short_desc: HDFC Bank Limited
+                    long_desc: HDFC Bank Limited
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: Rishav Singh
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: support@hdfcbank.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: GRO_DESIGNATION
+                            name: Gro Designation
+                          value: Grievance Redressal Officer
+                        - descriptor:
+                            code: GRO_ADDRESS
+                            name: Gro Address
+                          value: Mumbai Maharashtra 400013
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://www.hdfcbank.com/personal/need-help/contact-us
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: loansupport@example.com
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: HDFC BANK LIMITED
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: support@hdfcbank.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: Mumbai Maharashtra 400013
+                items:
+                  - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                    descriptor:
+                      code: CARD
+                      name: HDFC Gold Credit Card
+                      short_desc: Experience the Golden Side Of Life
+                      images:
+                        - url: https://url.com/hdfc/cards/hdfc-sm.png
+                          size_type: sm
+                        - url: https://url.com/hdfc/cards/hdfc-md.png
+                          size_type: md
+                        - url: https://url.com/hdfc/cards/hdfc-lg.png
+                          size_type: lg
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: WELCOME_BENEFIT
+                              name: Welcome Benefit
+                              short_desc: Welcome Benefit
+                            value: >-
+                              Complimentary Swiggy One and MMT Black Gold
+                              membership as Welcome benefits
+                          - descriptor:
+                              code: ANNUAL_FEE
+                              name: Annual Fee
+                              short_desc: Annual membership fee
+                            value: 1000 INR
+                          - descriptor:
+                              code: JOINING_FEE
+                              name: Joining Fee
+                              short_desc: One-time joining fee
+                            value: 500 INR
+                          - descriptor:
+                              code: REWARDS
+                              name: Rewards
+                              short_desc: Reward points earned on spent
+                            value: 2 Points per ₹150 spent
+                          - descriptor:
+                              code: TRAVEL_BENEFITS
+                              name: Travel Benefits
+                              short_desc: Travel Benefits
+                            value: 2 Points per ₹150 spent
+                          - descriptor:
+                              code: LIFESTYLE_BENEFITS
+                              name: Lifestyle Benefits
+                              short_desc: Lifestyle Benefits
+                            value: >-
+                              Enjoy the exclusive 24/7 Concierge Services on
+                              your HDFC Bank Regalia Gold Credit Card. Simply
+                              call us: toll-free on 1860 425 1188 (India) /
+                              Email ID: regaliagold.support@smartbuyoffers.co
+                          - descriptor:
+                              code: EVERYDAY_BENEFITS
+                              name: Everyday Benefits
+                              short_desc: 1% fuel surcharge waiver on transactions
+                            value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                        display: true
+                    xinput:
+                      form:
+                        id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
+                      form_response:
+                        status: OFFLINE_PENDING
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                fulfillments:
+                  - id: '1'
+                    type: ONLINE
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: SUCCESSFUL
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: PENDING
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: PENDING
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: PENDING
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: PENDING
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: PENDING
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
+      - summary: The lender sends the form status
         api: on_status
         details:
-          - description: The lender sends the latest order status of the form
+          - description: The lender sends the form status
             mermaid: |-
               sequenceDiagram
                 title Initializing Order
                 participant Borrower Platform (BAP)
                 participant Lender Platform (BPP)
-                Borrower Platform (BAP)->>Lender Platform (BPP): status
-                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                participant Lender Form Service
                 rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
                 Lender Platform (BPP)->>Borrower Platform (BAP):on_status
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-                end
         reference: if any
         example:
-          value: &ref_56
+          value: &ref_58
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.3
+              action: on_status
+              ttl: PT15M
+              timestamp: '2025-08-18T14:20:14.368Z'
+              bap_id: pramaan.ondc.org
+              bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
+              transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+              message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
+              bpp_id: hdfc-cc.refo.dev
+              bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
+            message:
+              order:
+                provider:
+                  id: '101'
+                  descriptor:
+                    images:
+                      - url: https://url.com/hdfc/hdfc-sm.png
+                        size_type: sm
+                      - url: https://url.com/hdfc/hdfc-md.png
+                        size_type: md
+                      - url: https://url.com/hdfc/hdfc-lg.png
+                        size_type: lg
+                    name: HDFC Bank Limited
+                    short_desc: HDFC Bank Limited
+                    long_desc: HDFC Bank Limited
+                  tags:
+                    - descriptor:
+                        code: CONTACT_INFO
+                        name: Contact Info
+                      list:
+                        - descriptor:
+                            code: GRO_NAME
+                            name: Gro name
+                          value: Rishav Singh
+                        - descriptor:
+                            code: GRO_EMAIL
+                            name: Gro email
+                          value: support@hdfcbank.com
+                        - descriptor:
+                            code: GRO_CONTACT_NUMBER
+                            name: Gro contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: GRO_DESIGNATION
+                            name: Gro Designation
+                          value: Grievance Redressal Officer
+                        - descriptor:
+                            code: GRO_ADDRESS
+                            name: Gro Address
+                          value: Mumbai Maharashtra 400013
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_LINK
+                            name: Customer support link
+                          value: >-
+                            https://www.hdfcbank.com/personal/need-help/contact-us
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_CONTACT_NUMBER
+                            name: Customer support contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: CUSTOMER_SUPPORT_EMAIL
+                            name: Customer support email
+                          value: loansupport@example.com
+                    - descriptor:
+                        code: LSP_INFO
+                        name: Lsp Info
+                      list:
+                        - descriptor:
+                            code: LSP_NAME
+                            name: Lsp name
+                          value: HDFC BANK LIMITED
+                        - descriptor:
+                            code: LSP_EMAIL
+                            name: Lsp email
+                          value: support@hdfcbank.com
+                        - descriptor:
+                            code: LSP_CONTACT_NUMBER
+                            name: Lsp contact number
+                          value: '18001600'
+                        - descriptor:
+                            code: LSP_ADDRESS
+                            name: Lsp Address
+                          value: Mumbai Maharashtra 400013
+                items:
+                  - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
+                    descriptor:
+                      code: CARD
+                      name: HDFC Gold Credit Card
+                      short_desc: Experience the Golden Side Of Life
+                      images:
+                        - url: https://url.com/hdfc/cards/hdfc-sm.png
+                          size_type: sm
+                        - url: https://url.com/hdfc/cards/hdfc-md.png
+                          size_type: md
+                        - url: https://url.com/hdfc/cards/hdfc-lg.png
+                          size_type: lg
+                    tags:
+                      - descriptor:
+                          name: General Information
+                          code: GENERAL_INFO
+                        list:
+                          - descriptor:
+                              code: WELCOME_BENEFIT
+                              name: Welcome Benefit
+                              short_desc: Welcome Benefit
+                            value: >-
+                              Complimentary Swiggy One and MMT Black Gold
+                              membership as Welcome benefits
+                          - descriptor:
+                              code: ANNUAL_FEE
+                              name: Annual Fee
+                              short_desc: Annual membership fee
+                            value: 1000 INR
+                          - descriptor:
+                              code: JOINING_FEE
+                              name: Joining Fee
+                              short_desc: One-time joining fee
+                            value: 500 INR
+                          - descriptor:
+                              code: REWARDS
+                              name: Rewards
+                              short_desc: Reward points earned on spent
+                            value: 2 Points per ₹150 spent
+                          - descriptor:
+                              code: TRAVEL_BENEFITS
+                              name: Travel Benefits
+                              short_desc: Travel Benefits
+                            value: 2 Points per ₹150 spent
+                          - descriptor:
+                              code: LIFESTYLE_BENEFITS
+                              name: Lifestyle Benefits
+                              short_desc: Lifestyle Benefits
+                            value: >-
+                              Enjoy the exclusive 24/7 Concierge Services on
+                              your HDFC Bank Regalia Gold Credit Card. Simply
+                              call us: toll-free on 1860 425 1188 (India) /
+                              Email ID: regaliagold.support@smartbuyoffers.co
+                          - descriptor:
+                              code: EVERYDAY_BENEFITS
+                              name: Everyday Benefits
+                              short_desc: 1% fuel surcharge waiver on transactions
+                            value: Up to ₹250 per billing cycle
+                          - descriptor:
+                              code: TNC_LINK
+                              name: Terms & Conditions
+                              short_desc: Terms and Conditions
+                            value: https://icicibank.com/loan/tnc.html
+                        display: true
+                    xinput:
+                      form:
+                        id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
+                      form_response:
+                        status: OFFLINE_PENDING
+                        submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                fulfillments:
+                  - id: '1'
+                    type: ONLINE
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: SUCCESSFUL
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: IN_PROGRESS
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: NOT_APPLICABLE
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: PENDING
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: PENDING
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
+      - summary: The lender sends the form status
+        api: on_status
+        details:
+          - description: The lender sends the form status
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                participant Lender Form Service
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Form Service: Get Form(KYC)
+                Lender Form Service-->>Borrower Platform (BAP): Form Received
+                Borrower Platform (BAP)->>Lender Form Service: Form Submission
+                Lender Form Service-->>Borrower Platform (BAP): Submission ID
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_23
             context:
               domain: ONDC:FIS12
               location:
@@ -20809,6 +21417,113 @@ x-flows:
                       form_response:
                         status: COMPLETED
                         submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+                fulfillments:
+                  - id: '1'
+                    type: ONLINE
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: SUCCESSFUL
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: NOT_APPLICABLE
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: SUCCESSFUL
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: NOT_APPLICABLE
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
+      - summary: The borrower request for order status
+        api: status
+        details:
+          - description: The borrower request for order status
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                rect rgb(191, 223, 255)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                end
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        reference: if any
+        example:
+          value: &ref_24
+            context:
+              domain: ONDC:FIS12
+              location:
+                country:
+                  code: IND
+                city:
+                  code: '*'
+              version: 2.0.3
+              action: status
+              ttl: PT10M
+              timestamp: '2025-08-18T14:20:14.148Z'
+              bap_id: pramaan.ondc.org
+              bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
+              transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+              message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
+              bpp_id: hdfc-cc.refo.dev
+              bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
+            message:
+              ref_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
+      - summary: The lender sends the latest order status of the form
+        api: on_status
+        details:
+          - description: The lender sends the latest order status of the form
+            mermaid: |-
+              sequenceDiagram
+                title Initializing Order
+                participant Borrower Platform (BAP)
+                participant Lender Platform (BPP)
+                Borrower Platform (BAP)->>Lender Platform (BPP): status
+                Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+                rect rgb(191, 223, 255)
+                Lender Platform (BPP)->>Borrower Platform (BAP):on_status
+                Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+                end
+        reference: if any
+        example:
+          value: *ref_23
       - summary: The borrower initiates the credit card request by filling the form.
         api: init
         details:
@@ -20833,7 +21548,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_51
+          value: &ref_52
             context:
               domain: ONDC:FIS12
               location:
@@ -20903,7 +21618,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_52
+          value: &ref_53
             context:
               domain: ONDC:FIS12
               location:
@@ -21065,6 +21780,55 @@ x-flows:
                     state:
                       descriptor:
                         code: INITIATED
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: SUCCESSFUL
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: NOT_APPLICABLE
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: SUCCESSFUL
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: NOT_APPLICABLE
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
                 tags:
                   - descriptor:
                       code: BPP_TERMS
@@ -21102,7 +21866,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: &ref_53
+          value: &ref_54
             context:
               domain: ONDC:FIS12
               location:
@@ -21175,7 +21939,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_54
+          value: &ref_55
             context:
               domain: ONDC:FIS12
               location:
@@ -21356,6 +22120,55 @@ x-flows:
                               code: SHIPPING_ADDRESS
                               name: Shipping Address
                             value: 102, New Colony Navi Mumbai 400081
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: SUCCESSFUL
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: NOT_APPLICABLE
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: SUCCESSFUL
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: NOT_APPLICABLE
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
                 tags:
                   - descriptor:
                       code: BAP_TERMS
@@ -21402,7 +22215,7 @@ x-flows:
                 Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
         reference: if any
         example:
-          value: *ref_23
+          value: *ref_24
       - summary: The lender shares the latest card status with the borrower.
         api: on_status
         details:
@@ -21423,7 +22236,7 @@ x-flows:
                 end
         reference: if any
         example:
-          value: &ref_57
+          value: &ref_59
             context:
               domain: ONDC:FIS12
               location:
@@ -21604,6 +22417,55 @@ x-flows:
                               code: SHIPPING_ADDRESS
                               name: Shipping Address
                             value: 102, New Colony Navi Mumbai 400081
+                    stops:
+                      - id: '1'
+                        type: MOBILE_OTP
+                        instructions:
+                          name: Mobile OTP
+                          code: SUCCESSFUL
+                          short_desc: Mobile OTP verification
+                      - id: '2'
+                        type: IPA
+                        instructions:
+                          name: In-principal Approval
+                          code: SUCCESSFUL
+                          short_desc: In-principal Approval
+                        parent_stop_id: '1'
+                      - id: '30'
+                        type: KYC
+                        instructions:
+                          name: KYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '2'
+                      - id: '31'
+                        type: EKYC
+                        instructions:
+                          name: EKYC
+                          code: SUCCESSFUL
+                          short_desc: Know your customer
+                        parent_stop_id: '30'
+                      - id: '32'
+                        type: VKYC
+                        instructions:
+                          name: VKYC
+                          code: NOT_APPLICABLE
+                          short_desc: Video KYC
+                        parent_stop_id: '31'
+                      - id: '33'
+                        type: NBDC
+                        instructions:
+                          name: NBDC
+                          code: SUCCESSFUL
+                          short_desc: Net banking or debit card verification
+                        parent_stop_id: '31'
+                      - id: '34'
+                        type: BIO-KYC
+                        instructions:
+                          name: BIO-KYC
+                          code: NOT_APPLICABLE
+                          short_desc: Offline KYC
+                        parent_stop_id: '30'
                 tags:
                   - descriptor:
                       code: BAP_TERMS
@@ -21650,26 +22512,26 @@ x-examples:
         examples:
           - summary: select-request-personal-info
             description: TBD
-            value: *ref_24
+            value: *ref_25
           - summary: select-request-set-loan-amount
             description: TBD
-            value: *ref_25
+            value: *ref_26
       on_select:
         examples:
           - summary: on_select-request-with-kyc-form_offline
             description: TBD
-            value: *ref_26
+            value: *ref_27
           - summary: on_select-request-with-kyc-form_single_redirection
             description: TBD
-            value: *ref_27
+            value: *ref_28
       confirm:
         examples:
           - summary: confirm_request_offline
             description: TBD
-            value: *ref_28
+            value: *ref_29
           - summary: confirm_request_single_redirection
             description: TBD
-            value: *ref_29
+            value: *ref_30
       on_confirm:
         examples:
           - summary: on_confirm_request_offline_online
@@ -21677,7 +22539,7 @@ x-examples:
             value: *ref_22
           - summary: on_confirm_request_single_redireciton
             description: TBD
-            value: *ref_30
+            value: *ref_31
       update:
         examples:
           - summary: update-request
@@ -21749,16 +22611,16 @@ x-examples:
         examples:
           - summary: on_update-request-pre-part
             description: TBD
-            value: *ref_31
+            value: *ref_32
           - summary: on_update-request-prepayment
             description: TBD
-            value: *ref_32
+            value: *ref_33
           - summary: on_update-request-forclosuer
             description: TBD
-            value: *ref_33
+            value: *ref_34
           - summary: on_update-request-forclosuer-success
             description: TBD
-            value: *ref_34
+            value: *ref_35
       status:
         examples:
           - summary: status-request
@@ -21768,16 +22630,16 @@ x-examples:
         examples:
           - summary: on_status-form-offline-kyc_pending
             description: TBD
-            value: *ref_35
+            value: *ref_36
           - summary: on_status-form-offline-kyc_completed
             description: TBD
-            value: *ref_36
+            value: *ref_37
           - summary: on_status-form-offline-kyc_pending_2
             description: TBD
-            value: *ref_37
+            value: *ref_38
           - summary: on_status-form-offline-kyc_pending_single_redirection_1
             description: TBD
-            value: *ref_38
+            value: *ref_39
   gold-loan:
     summary: gold-loan
     description: gold-loan
@@ -21786,17 +22648,17 @@ x-examples:
         examples:
           - summary: search for gold loan
             description: TBD
-            value: *ref_39
+            value: *ref_40
       on_search:
         examples:
           - summary: gold loan catalog
             description: TBD
-            value: *ref_40
+            value: *ref_41
       select:
         examples:
           - summary: select-request-gold-info
             description: TBD
-            value: *ref_41
+            value: *ref_42
           - summary: select-request-set-loan-amount
             description: TBD
             value:
@@ -22418,25 +23280,25 @@ x-examples:
                           phone: +91-99xx99xx99xx
           - summary: on_select-request-set-loan-amount_2
             description: TBD
-            value: *ref_42
+            value: *ref_43
           - summary: on_select-request-JOURNEY_OFFLINE_2
             description: TBD
-            value: *ref_43
+            value: *ref_44
       confirm:
         examples:
           - summary: confirm-request_2
             description: TBD
-            value: *ref_44
+            value: *ref_45
       on_confirm:
         examples:
           - summary: on_confirm-request_2
             description: TBD
-            value: *ref_45
+            value: *ref_46
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_46
+            value: *ref_47
   credit-card:
     summary: credit-card
     description: credit-card
@@ -22445,496 +23307,69 @@ x-examples:
         examples:
           - summary: search-request-1
             description: TBD
-            value: *ref_47
-          - summary: search-request-1
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS12
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                version: 2.0.3
-                action: search
-                ttl: PT10M
-                timestamp: '2025-08-18T14:20:14.148Z'
-                bap_id: pramaan.ondc.org
-                bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
-                transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
-                message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
-                bpp_id: hdfc-cc.refo.dev
-                bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
-              message:
-                intent:
-                  provider:
-                    id: '101'
-                    items:
-                      - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
-                        xinput:
-                          form:
-                            id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
-                          form_response:
-                            status: SUCCESS
-                            submission_id: f27ab737-bd34-48c2-af73-7efe6062087f
-                  tags:
-                    - descriptor:
-                        code: BAP_TERMS
-                        name: BAP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bap.credit.becknprotocol.io/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
+            value: *ref_48
       on_search:
         examples:
           - summary: on_search-request-1
             description: TBD
-            value: *ref_48
-          - summary: on_search-request-2
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS12
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                version: 2.0.3
-                action: on_search
-                ttl: PT5M
-                timestamp: '2025-08-18T14:20:11.983Z'
-                bap_id: pramaan.ondc.org
-                bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
-                transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
-                message_id: 89df9a22-04ee-4399-8a7b-0182cd2b66df
-                bpp_id: hdfc-cc.refo.dev
-                bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
-              message:
-                catalog:
-                  descriptor:
-                    name: ICICI Bank
-                  providers:
-                    - id: '101'
-                      descriptor:
-                        name: HDFC Bank Limited
-                        images:
-                          - url: https://url.com/hdfc/hdfc-sm.png
-                            size_type: sm
-                          - url: https://url.com/hdfc/hdfc-md.png
-                            size_type: md
-                          - url: https://url.com/hdfc/hdfc-lg.png
-                            size_type: lg
-                        short_desc: HDFC Bank Limited
-                        long_desc: HDFC Bank Limited
-                      items:
-                        - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
-                          parent_item_id: '1001'
-                          descriptor:
-                            code: CARD
-                            name: HDFC Gold Credit Card
-                            short_desc: Experience the Golden Side Of Life
-                            images:
-                              - url: https://url.com/hdfc/cards/hdfc-sm.png
-                                size_type: sm
-                              - url: https://url.com/hdfc/cards/hdfc-md.png
-                                size_type: md
-                              - url: https://url.com/hdfc/cards/hdfc-lg.png
-                                size_type: lg
-                          category_ids:
-                            - '1001'
-                          tags:
-                            - descriptor:
-                                name: General Information
-                                code: GENERAL_INFO
-                              list:
-                                - descriptor:
-                                    code: WELCOME_BENEFIT
-                                    name: Welcome Benefit
-                                    short_desc: Welcome Benefit
-                                  value: >-
-                                    Complimentary Swiggy One and MMT Black Gold
-                                    membership as Welcome benefits
-                                - descriptor:
-                                    code: ANNUAL_FEE
-                                    name: Annual Fee
-                                    short_desc: Annual membership fee
-                                  value: 1000 INR
-                                - descriptor:
-                                    code: JOINING_FEE
-                                    name: Joining Fee
-                                    short_desc: One-time joining fee
-                                  value: 500 INR
-                                - descriptor:
-                                    code: REWARDS
-                                    name: Rewards
-                                    short_desc: Reward points earned on spent
-                                  value: 2 Points per ₹150 spent
-                                - descriptor:
-                                    code: TRAVEL_BENEFITS
-                                    name: Travel Benefits
-                                    short_desc: Travel Benefits
-                                  value: 2 Points per ₹150 spent
-                                - descriptor:
-                                    code: LIFESTYLE_BENEFITS
-                                    name: Lifestyle Benefits
-                                    short_desc: Lifestyle Benefits
-                                  value: >-
-                                    Enjoy the exclusive 24/7 Concierge Services
-                                    on your HDFC Bank Regalia Gold Credit Card.
-                                    Simply call us: toll-free on 1860 425 1188
-                                    (India) / Email ID:
-                                    regaliagold.support@smartbuyoffers.co
-                                - descriptor:
-                                    code: EVERYDAY_BENEFITS
-                                    name: Everyday Benefits
-                                    short_desc: 1% fuel surcharge waiver on transactions
-                                  value: Up to ₹250 per billing cycle
-                                - descriptor:
-                                    code: TNC_LINK
-                                    name: Terms & Conditions
-                                    short_desc: Terms and Conditions
-                                  value: https://hdfcbank.com/cc/tnc.html
-                              display: true
-                          matched: true
-                          recommended: true
-                          xinput:
-                            head:
-                              descriptor:
-                                name: Customer Information
-                            form:
-                              id: 0e4b4a09-d1ae-4234-8512-3f1cf31f8bc3
-                            form_response:
-                              status: SUCCESS
-                              submission_id: f27ab737-bd34-48c2-af73-7efe6062087f
-                      tags:
-                        - descriptor:
-                            code: CONTACT_INFO
-                            name: Contact Info
-                          list:
-                            - descriptor:
-                                code: GRO_NAME
-                                name: Gro name
-                              value: Rishav Singh
-                            - descriptor:
-                                code: GRO_EMAIL
-                                name: Gro email
-                              value: support@hdfcbank.com
-                            - descriptor:
-                                code: GRO_CONTACT_NUMBER
-                                name: Gro contact number
-                              value: '18001600'
-                            - descriptor:
-                                code: GRO_DESIGNATION
-                                name: Gro Designation
-                              value: Grievance Redressal Officer
-                            - descriptor:
-                                code: GRO_ADDRESS
-                                name: Gro Address
-                              value: Mumbai Maharashtra 400013
-                            - descriptor:
-                                code: CUSTOMER_SUPPORT_LINK
-                                name: Customer support link
-                              value: >-
-                                https://www.hdfcbank.com/personal/need-help/contact-us
-                            - descriptor:
-                                code: CUSTOMER_SUPPORT_CONTACT_NUMBER
-                                name: Customer support contact number
-                              value: '18001600'
-                            - descriptor:
-                                code: CUSTOMER_SUPPORT_EMAIL
-                                name: Customer support email
-                              value: loansupport@example.com
-                        - descriptor:
-                            code: LSP_INFO
-                            name: Lsp Info
-                          list:
-                            - descriptor:
-                                code: LSP_NAME
-                                name: Lsp name
-                              value: HDFC BANK LIMITED
-                            - descriptor:
-                                code: LSP_EMAIL
-                                name: Lsp email
-                              value: support@hdfcbank.com
-                            - descriptor:
-                                code: LSP_CONTACT_NUMBER
-                                name: Lsp contact number
-                              value: '18001600'
-                            - descriptor:
-                                code: LSP_ADDRESS
-                                name: Lsp Address
-                              value: Mumbai Maharashtra 400013
-                  tags:
-                    - descriptor:
-                        code: BPP_TERMS
-                        name: BPP Terms of Engagement
-                      display: false
-                      list:
-                        - descriptor:
-                            code: STATIC_TERMS
-                          value: >-
-                            https://bpp.credit.becknprotocol.org/personal-banking/loans/personal-loan
-                        - descriptor:
-                            code: OFFLINE_CONTRACT
-                          value: 'true'
+            value: *ref_49
       select:
         examples:
           - summary: select-request-1
             description: TBD
-            value: *ref_49
-          - summary: select-request-2
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS12
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                version: 2.0.3
-                action: select
-                ttl: PT10M
-                timestamp: '2025-08-18T14:20:14.148Z'
-                bap_id: pramaan.ondc.org
-                bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
-                transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
-                message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
-                bpp_id: hdfc-cc.refo.dev
-                bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
-              message:
-                order:
-                  provider:
-                    id: '101'
-                  items:
-                    - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
-                      xinput:
-                        form:
-                          id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
-                        form_response:
-                          status: SUCCESS
-                          submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+            value: *ref_50
       on_select:
         examples:
           - summary: on_select-request-1
             description: TBD
-            value: *ref_50
-          - summary: on_select-request-2
-            description: TBD
-            value:
-              context:
-                domain: ONDC:FIS12
-                location:
-                  country:
-                    code: IND
-                  city:
-                    code: '*'
-                version: 2.0.3
-                action: on_select
-                ttl: PT15M
-                timestamp: '2025-08-18T14:20:14.368Z'
-                bap_id: pramaan.ondc.org
-                bap_uri: https://pramaan.ondc.org/beta/staging/mock/buyer
-                transaction_id: 04b2dc1f-1e96-43e9-8ea6-604bbf489560
-                message_id: 67849eb5-b6eb-4065-b096-094cdfc03590
-                bpp_id: hdfc-cc.refo.dev
-                bpp_uri: https://hdfc-cc.refo.dev/app/ondc/seller
-              message:
-                order:
-                  provider:
-                    id: '101'
-                    descriptor:
-                      images:
-                        - url: https://url.com/hdfc/hdfc-sm.png
-                          size_type: sm
-                        - url: https://url.com/hdfc/hdfc-md.png
-                          size_type: md
-                        - url: https://url.com/hdfc/hdfc-lg.png
-                          size_type: lg
-                      name: HDFC Bank Limited
-                      short_desc: HDFC Bank Limited
-                      long_desc: HDFC Bank Limited
-                    tags:
-                      - descriptor:
-                          code: CONTACT_INFO
-                          name: Contact Info
-                        list:
-                          - descriptor:
-                              code: GRO_NAME
-                              name: Gro name
-                            value: Rishav Singh
-                          - descriptor:
-                              code: GRO_EMAIL
-                              name: Gro email
-                            value: support@hdfcbank.com
-                          - descriptor:
-                              code: GRO_CONTACT_NUMBER
-                              name: Gro contact number
-                            value: '18001600'
-                          - descriptor:
-                              code: GRO_DESIGNATION
-                              name: Gro Designation
-                            value: Grievance Redressal Officer
-                          - descriptor:
-                              code: GRO_ADDRESS
-                              name: Gro Address
-                            value: Mumbai Maharashtra 400013
-                          - descriptor:
-                              code: CUSTOMER_SUPPORT_LINK
-                              name: Customer support link
-                            value: >-
-                              https://www.hdfcbank.com/personal/need-help/contact-us
-                          - descriptor:
-                              code: CUSTOMER_SUPPORT_CONTACT_NUMBER
-                              name: Customer support contact number
-                            value: '18001600'
-                          - descriptor:
-                              code: CUSTOMER_SUPPORT_EMAIL
-                              name: Customer support email
-                            value: loansupport@example.com
-                      - descriptor:
-                          code: LSP_INFO
-                          name: Lsp Info
-                        list:
-                          - descriptor:
-                              code: LSP_NAME
-                              name: Lsp name
-                            value: HDFC BANK LIMITED
-                          - descriptor:
-                              code: LSP_EMAIL
-                              name: Lsp email
-                            value: support@hdfcbank.com
-                          - descriptor:
-                              code: LSP_CONTACT_NUMBER
-                              name: Lsp contact number
-                            value: '18001600'
-                          - descriptor:
-                              code: LSP_ADDRESS
-                              name: Lsp Address
-                            value: Mumbai Maharashtra 400013
-                  items:
-                    - id: d9eb81e2-96b5-477f-98dc-8518ad60d72e
-                      descriptor:
-                        code: CARD
-                        name: HDFC Gold Credit Card
-                        short_desc: Experience the Golden Side Of Life
-                        images:
-                          - url: https://url.com/hdfc/cards/hdfc-sm.png
-                            size_type: sm
-                          - url: https://url.com/hdfc/cards/hdfc-md.png
-                            size_type: md
-                          - url: https://url.com/hdfc/cards/hdfc-lg.png
-                            size_type: lg
-                      tags:
-                        - descriptor:
-                            name: General Information
-                            code: GENERAL_INFO
-                          list:
-                            - descriptor:
-                                code: WELCOME_BENEFIT
-                                name: Welcome Benefit
-                                short_desc: Welcome Benefit
-                              value: >-
-                                Complimentary Swiggy One and MMT Black Gold
-                                membership as Welcome benefits
-                            - descriptor:
-                                code: ANNUAL_FEE
-                                name: Annual Fee
-                                short_desc: Annual membership fee
-                              value: 1000 INR
-                            - descriptor:
-                                code: JOINING_FEE
-                                name: Joining Fee
-                                short_desc: One-time joining fee
-                              value: 500 INR
-                            - descriptor:
-                                code: REWARDS
-                                name: Rewards
-                                short_desc: Reward points earned on spent
-                              value: 2 Points per ₹150 spent
-                            - descriptor:
-                                code: TRAVEL_BENEFITS
-                                name: Travel Benefits
-                                short_desc: Travel Benefits
-                              value: |-
-                                - 2 Points per ₹150 spent on MMT, 
-                                 - 2 Points per ₹150 spent on others
-                            - descriptor:
-                                code: LIFESTYLE_BENEFITS
-                                name: Lifestyle Benefits
-                                short_desc: Lifestyle Benefits
-                              value: >-
-                                Enjoy the exclusive 24/7 Concierge Services on
-                                your HDFC Bank Regalia Gold Credit Card. Simply
-                                call us: toll-free on 1860 425 1188 (India) /
-                                Email ID: regaliagold.support@smartbuyoffers.co
-                            - descriptor:
-                                code: EVERYDAY_BENEFITS
-                                name: Everyday Benefits
-                                short_desc: 1% fuel surcharge waiver on transactions
-                              value: Up to ₹250 per billing cycle
-                            - descriptor:
-                                code: TNC_LINK
-                                name: Terms & Conditions
-                                short_desc: Terms and Conditions
-                              value: https://hdfcbank.com/cc/tnc.html
-                          display: true
-                      matched: true
-                      recommended: true
-                      xinput:
-                        form:
-                          id: c0e857f6-15b6-4b4d-a7da-ad63b4b2e52b
-                        form_response:
-                          status: SUCCESS
-                          submission_id: 79850933-4e41-4c76-bbe6-c5a392481226
+            value: *ref_51
       init:
         examples:
           - summary: init-request-1
             description: TBD
-            value: *ref_51
+            value: *ref_52
       on_init:
         examples:
           - summary: on_init-request-1
             description: TBD
-            value: *ref_52
+            value: *ref_53
       confirm:
         examples:
           - summary: confirm-request
             description: TBD
-            value: *ref_53
+            value: *ref_54
       on_confirm:
         examples:
           - summary: on_confirm-request
             description: TBD
-            value: *ref_54
+            value: *ref_55
       status:
         examples:
           - summary: status-request
             description: TBD
-            value: *ref_23
+            value: *ref_24
       on_status:
         examples:
-          - summary: on_status-form-pending
-            description: TBD
-            value: *ref_55
-          - summary: on_status-form-completed
+          - summary: on_status-form-ipa-pending
             description: TBD
             value: *ref_56
-          - summary: on_status-request
+          - summary: on_status-IPA-completed
             description: TBD
             value: *ref_57
+          - summary: on_status-KYC-in-progress
+            description: TBD
+            value: *ref_58
+          - summary: on_status-form-completed
+            description: TBD
+            value: *ref_23
+          - summary: on_status-request
+            description: TBD
+            value: *ref_59
       form/personal-info:
         examples:
           - summary: personal-info
             description: TBD
-            value: |-
+            value: |
               <!DOCTYPE html>
               <html lang="en">
 
