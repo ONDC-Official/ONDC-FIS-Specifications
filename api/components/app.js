@@ -15,6 +15,9 @@ addFormats(ajv);
 require("ajv-errors")(ajv);
 const process = require("process");
 
+// Strict YAML parse check of every spec file before anything is built; exits 1 on an error.
+require("./check-yaml.js");
+
 const args = process.argv.slice(2);
 // var example_set = args[0]
 // var flow_set = args[1]

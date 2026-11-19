@@ -66,6 +66,8 @@ Loan
     ├── Bureau Loan
     ├── Derived Data
     └── Additional Upload
+│
+└── Pre Qualifier
 
 
 
@@ -278,3 +280,30 @@ Validates income and tax compliance.
 
 - System-generated insights
 - Credit models
+
+---
+
+# 7. Pre Qualifier
+
+**Pre Qualifier** is the dedupe check the borrower app runs with the lender before it asks for an offer (PAN, date of birth and phone). It sits directly under the **Loan** root and is not a loan product.
+
+---
+
+# 8. Personal Loan Category IDs (ONDC:FIS12:PL)
+
+These are the category IDs the Personal Loan catalog uses. Each ID has one meaning.
+
+| Category ID | Code               | Parent                    | Used for                                   |
+| ----------- | ------------------ | ------------------------- | ------------------------------------------ |
+| 101110      | LOAN               | -                         | Root category                              |
+| 104110      | UNSECURED_PERSONAL | 101110 LOAN               | Classification on inputs                   |
+| 104112      | OFFERS             | 101110 LOAN               | Offers                                     |
+| 104129      | ADDITIONAL_DATA    | 101110 LOAN               | Additional data                            |
+| 101111      | PERSONAL_FINANCING | 104110 UNSECURED_PERSONAL | Personal Loan item                         |
+| 101117      | TERM_LOAN          | 104112 OFFERS             | Personal Loan item                         |
+| 101211      | BUREAU_LOAN        | 104129 ADDITIONAL_DATA    | Personal Loan item (bureau based)          |
+| 104146      | PRE_QUALIFIER      | 101110 LOAN               | Dedupe item (proposed)                      |
+
+- `PERSONAL_FINANCING` 101111, `TERM_LOAN` 101117 and `BUREAU_LOAN` 101211 are the IDs the 2.3.0 base already uses for personal loans.
+- `PRE_QUALIFIER` needs its own ID: 104137 is already `STATEMENT_UPLOAD` in the base catalog, and the base Master Search catalog declared 104137 twice (`STATEMENT_UPLOAD` and `PRE_QUALIFIER`). 104146 is proposed because it is the next number after the highest ID used on any FIS12 branch (104145) and no branch uses it. The registry owner has to confirm or assign it.
+- Do not use the 2.0.3 IDs 101124 (`BUREAU_LOAN` in 2.0.3) and 101125 (`PRE_QUALIFIER` in 2.0.3) for PL: in 2.3.0 they are `SOLE_PROPRIETORSHIP` and `PRIVATE_LTD`.
