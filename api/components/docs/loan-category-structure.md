@@ -307,4 +307,3 @@ These are the category IDs the Personal Loan catalog uses. Each ID has one meani
 - `PERSONAL_FINANCING` 101111, `TERM_LOAN` 101117 and `BUREAU_LOAN` 101211 are the IDs the 2.3.0 base already uses for personal loans.
 - `PRE_QUALIFIER` needs its own ID: 104137 is already `STATEMENT_UPLOAD` in the base catalog, and the base Master Search catalog declared 104137 twice (`STATEMENT_UPLOAD` and `PRE_QUALIFIER`). 104146 is proposed because it is the next number after the highest ID used on any FIS12 branch (104145) and no branch uses it. The registry owner has to confirm or assign it.
 - Do not use the 2.0.3 IDs 101124 (`BUREAU_LOAN` in 2.0.3) and 101125 (`PRE_QUALIFIER` in 2.0.3) for PL: in 2.3.0 they are `SOLE_PROPRIETORSHIP` and `PRIVATE_LTD`.
-
