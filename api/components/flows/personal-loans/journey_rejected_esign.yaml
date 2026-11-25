@@ -1,0 +1,77 @@
+summary: Personal Loan - Rejected During the Journey (E-sign failure)
+details:
+  - description: The borrower is redirected to the lender's journey (offline journey, loan agreement signed with Aadhaar eSign) and a step fails. The lender rejects the application after the redirection with reason code 80209. The journey starts after the Personal Loan Search flow (search / on_search).
+    mermaid: |-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): select
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+        Borrower Platform (BAP)->>Lender Form Service: form
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+references: if any
+steps:
+  - summary: The borrower app shows the lender's personal details form on its own screen and sends the values in select to ask for an offer.
+    api: select
+    details:
+      - description: The borrower app shows the lender's personal details form on its own screen and sends the values in select to ask for an offer.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/select/select_request_personal_information.yaml
+  - summary: The lender sends the offer and, in the same reply, the link to its own journey (JOURNEY_OFFLINE xinput, mime_type application/html). There is no second select to pick an offer.
+    api: on_select
+    details:
+      - description: The lender sends the offer and, in the same reply, the link to its own journey (JOURNEY_OFFLINE xinput, mime_type application/html). There is no second select to pick an offer.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_select/on_select_request_offer_offline.yaml
+  - summary: The borrower accepts the offer and goes through the steps on the lender's pages, until one of them fails.
+    api: form
+    details:
+      - description: The borrower accepts the offer and goes through the steps on the lender's pages, until one of them fails.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Open the lender's journey page
+            Lender Form Service-->>Borrower Platform (BAP): Borrower completes the steps on the lender's pages
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/forms/personal-loans-offline-journey.html
+  - summary: 'The step fails: the lender sends an unsolicited on_status with the failing step FAILED, fulfillment state REJECTED and error.code 80209 (E-sign failure).'
+    api: on_status
+    details:
+      - description: 'The step fails: the lender sends an unsolicited on_status with the failing step FAILED, fulfillment state REJECTED and error.code 80209 (E-sign failure).'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_rejected_esign.yaml
