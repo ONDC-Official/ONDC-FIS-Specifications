@@ -38,3 +38,21 @@
 | aa_id | PERSONAL_INFORMATION_LAMF |  | string | false | `^[A-Za-z0-9]+@[A-Za-z0-9]+(?:\.[A-Za-z]{2,})?$` | - |  |
 | statementUpload | PERSONAL_INFORMATION_LAMF |  | file | true | - | - | .json |
 | rtaName | PERSONAL_INFORMATION_LAMF |  | enum | true | - | cams\|KFintech |  |
+| panName | PERSONAL_INFORMATION | Personal Loan | string | true | `^[A-Za-z]+(?:\s[A-Za-z]+)*$` | - |  |
+| personalEmail | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$` | - |  |
+| officialEmail | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$` | - |  |
+| dob | PERSONAL_INFORMATION |  | string | true | `^(0[1-9]\|[12][0-9]\|3[01])/(0[1-9]\|1[0-2])/\d{4}$` | - |  |
+| gender | PERSONAL_INFORMATION |  | enum | true | - | Male\|Female\|Transgender |  |
+| pan | PERSONAL_INFORMATION |  | string | true | `^[A-Z]{5}[0-9]{4}[A-Z]$` | - |  |
+| contactNumber | PERSONAL_INFORMATION |  | string | true | `^(?:\+91\|91)?[6-9]\d{9}$` | - |  |
+| employmentType | PERSONAL_INFORMATION |  | enum | true | - | Salaried\|Self Employment |  |
+| income | PERSONAL_INFORMATION |  | string | true | `^(?!0+(\.0+)?$)\d+(\.\d{1,2})?$` | - |  |
+| companyName | PERSONAL_INFORMATION |  | string | true | `^[a-zA-Z]+(?:[ .'-][a-zA-Z]+)*$` | - |  |
+| udyamNumber | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z0-9-]+$` | - |  |
+| addressL1 | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z0-9\s,.-/]+$` | - |  |
+| addressL2 | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z0-9\s,.-/]+$` | - |  |
+| city | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z]+(?:[ .'-][a-zA-Z]+)*$` | - |  |
+| state | PERSONAL_INFORMATION |  | string | - | `^[a-zA-Z]+(?:[ .'-][a-zA-Z]+)*$` | - |  |
+| pincode | PERSONAL_INFORMATION |  | string | - | `^[1-9][0-9]{5}$` | - |  |
+| bureauConsent | PERSONAL_INFORMATION |  | boolean | true/false | - | - |  |
+| endUse | PERSONAL_INFORMATION |  | enum | true | - | Purchase of Consumer Durables\|Education\|Travel\|Health\|Other Consumption Purposes |  |
