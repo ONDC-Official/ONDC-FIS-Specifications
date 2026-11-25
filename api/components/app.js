@@ -36,6 +36,7 @@ getSwaggerYaml("example_set", outputPath);
 const { buildAttribiutes } = require('./build-attributes.js')
 const { buildErrorCodes } = require('./build-error-code.js')
 const { buildTlc } = require('./build-tlc.js');
+const { applyFormSchemaOverride } = require('./form-schema-override.js');
 
 const SKIP_VALIDATION = {
   flows: "skip1",
@@ -278,7 +279,7 @@ async function validateAttributes(attribute, schemaMap) {
 async function getSwaggerYaml(example_set, outputPath) {
   try {
     const schema = await baseYMLFile(example_yaml);
-    const baseYAML = await baseYMLFile(base_yaml);
+    const baseYAML = applyFormSchemaOverride(await baseYMLFile(base_yaml));
     const { flows, examples: exampleSets, enum: enums, tags,attributes } = schema || [];
     const { paths } = baseYAML;
     let hasTrueResult = false; // Flag variable
@@ -340,7 +341,7 @@ async function getSwaggerYaml(example_set, outputPath) {
       examples = examples[example_set];
       buildSwagger(base_yaml, tempPath);
       const spec_file = fs.readFileSync(tempPath);
-      const spec = yaml.load(spec_file);
+      const spec = applyFormSchemaOverride(yaml.load(spec_file));
       addEnumTag(spec, schema);
       GenerateYaml(spec, examples, outputPath);
       cleanup();

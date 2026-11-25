@@ -13,9 +13,7 @@ The differentiation in MIME types and additional settings, such as resubmit and 
       "descriptor": {
         "name": "Form Name"
         "code": "FORM_ENUM_VALUE_1"
-      },
-     
-      "headings": ["FORM_ENUM_VALUE_1", "FORM_ENUM_VALUE_2]
+      }
     },
     "form": {
       "id": "<Form_ID>",
@@ -32,7 +30,6 @@ The differentiation in MIME types and additional settings, such as resubmit and 
 
   - `name`: Describes the form name.
   - `code`: Describes the form heading using a predefined enum format.
-  - `headings`: Array containing all the form headings.
 
 - `form`: Represents the form itself.
 
@@ -62,9 +59,32 @@ Instead, the Seller App requests the required additional information directly as
       },
       "fullName": {
         "type": "string"
-      },
+      }
+    }
   }
  ```
+
+The Buyer App sends the values inline in its next call (see the rule below). It uses the same `form.id` and the same keys as the Seller App's `data`, with each value under `value`:
+ ```
+  "form": {
+    "id": "F01",
+    "data": {
+      "userType": {
+        "value": "Individual"
+      },
+      "pan": {
+        "value": "ABCDE1234F"
+      },
+      "fullName": {
+        "value": "John Doe"
+      }
+    }
+  }
+ ```
+
+In Protocol 2.3.0, when an on_action call carries an XInput form with `mime_type: none`, the Buyer App submits the form inline in its next call of the same action (for example, a form in `on_select` is sent back in `select`). There is no separate form URL and no `submission_id`.
+
+For Personal Loan, the personal details form published in `on_search` is submitted in `select`, where the Buyer App asks for the offer.
 
 
 
