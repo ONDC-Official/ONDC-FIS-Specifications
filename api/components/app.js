@@ -333,7 +333,12 @@ async function getSwaggerYaml(example_set, outputPath) {
     const missingTags = findMissingTags(tags, exampleSets);
     console.log('Missing Tags:', JSON.stringify(missingTags, null, 2));
 
-    if (hasTrueResult) return;
+    // A failed flow, example, enum or tag validation must fail the build, not exit 0 with an old build.yaml.
+    if (hasTrueResult) {
+      console.error("Build failed: validation errors above. build.yaml was not written.");
+      process.exitCode = 1;
+      return;
+    }
 
     if (!hasTrueResult) {
       //remove these
@@ -348,6 +353,7 @@ async function getSwaggerYaml(example_set, outputPath) {
     }
   } catch (error) {
     console.log("Error generating build file", error);
+    process.exitCode = 1;
   }
 }
 

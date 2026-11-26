@@ -9,8 +9,7 @@ const path = require("path");
 const yaml = require("js-yaml");
 
 const ROOT = __dirname;
-// Working-Capital-Loan and examplesOLD are kept from the 2.3.0 base but are not used on the PL branch.
-const SKIP_DIRS = new Set(["node_modules", ".git", "Working-Capital-Loan", "examplesOLD"]);
+const SKIP_DIRS = new Set(["node_modules", ".git"]);
 
 function listYaml(dir, out) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
