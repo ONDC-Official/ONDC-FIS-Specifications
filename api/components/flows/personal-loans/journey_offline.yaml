@@ -1,0 +1,230 @@
+summary: Personal Loan - Offline Journey
+details:
+  - description: 'Works like the single redirection journey, with an offline step in between: fulfillment type SEMI_ONLINE, a JOURNEY_OFFLINE step, and form_response.status OFFLINE_PENDING while the offline step is open. No init / on_init and no BAP confirm. The journey starts after the Personal Loan Search flow (search / on_search).'
+    mermaid: |-
+      sequenceDiagram
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Borrower Platform (BAP)->>Lender Platform (BPP): select (dedupe)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_select (dedupe accepted)
+        Borrower Platform (BAP)->>Lender Platform (BPP): select (personal details)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_select (offer and journey link)
+        Borrower Platform (BAP)->>Lender Form Service: form
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+        Borrower Platform (BAP)->>Lender Platform (BPP): select
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm
+references: if any
+steps:
+  - summary: Before asking for an offer, the borrower app runs the dedupe check with the lender (select on the Pre Qualifier item, fulfillment type DEDUPE, with the borrower's PAN, date of birth and phone).
+    api: select
+    details:
+      - description: Before asking for an offer, the borrower app runs the dedupe check with the lender (select on the Pre Qualifier item, fulfillment type DEDUPE, with the borrower's PAN, date of birth and phone).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/dedupe/select/select_request.yaml
+  - summary: The lender accepts the lead (fulfillment state ACCEPTED). If it rejects the lead, the journey stops here (see Personal Loan - Dedupe Check (Rejected)).
+    api: on_select
+    details:
+      - description: The lender accepts the lead (fulfillment state ACCEPTED). If it rejects the lead, the journey stops here (see Personal Loan - Dedupe Check (Rejected)).
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/dedupe/on_select/on_select_request.yaml
+  - summary: The borrower app shows the lender's personal details form on its own screen and sends the values in select to ask for an offer.
+    api: select
+    details:
+      - description: The borrower app shows the lender's personal details form on its own screen and sends the values in select to ask for an offer.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/select/select_request_personal_information_offline.yaml
+  - summary: The lender sends the offer and, in the same reply, the link to its own journey (JOURNEY_OFFLINE xinput, mime_type application/html). There is no second select to pick an offer.
+    api: on_select
+    details:
+      - description: The lender sends the offer and, in the same reply, the link to its own journey (JOURNEY_OFFLINE xinput, mime_type application/html). There is no second select to pick an offer.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_select/on_select_request_offer_offline.yaml
+  - summary: The borrower accepts the offer and completes KYC, bank account verification, repayment set-up and the loan agreement on the lender's pages.
+    api: form
+    details:
+      - description: The borrower accepts the offer and completes KYC, bank account verification, repayment set-up and the loan agreement on the lender's pages.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Form Service
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Form Service: Open the lender's journey page
+            Lender Form Service-->>Borrower Platform (BAP): Borrower completes the steps on the lender's pages
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/forms/personal-loans-offline-journey.html
+  - summary: 'Unsolicited on_status after the step: offer accepted, offline step open (form_response.status OFFLINE_PENDING).'
+    api: on_status
+    details:
+      - description: 'Unsolicited on_status after the step: offer accepted, offline step open (form_response.status OFFLINE_PENDING).'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_offline_pending.yaml
+  - summary: 'Unsolicited on_status after the step: KYC completed offline.'
+    api: on_status
+    details:
+      - description: 'Unsolicited on_status after the step: KYC completed offline.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_offline_kyc.yaml
+  - summary: 'Unsolicited on_status after the step: bank account verified.'
+    api: on_status
+    details:
+      - description: 'Unsolicited on_status after the step: bank account verified.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_offline_bank_account.yaml
+  - summary: 'Unsolicited on_status after the step: repayment set up.'
+    api: on_status
+    details:
+      - description: 'Unsolicited on_status after the step: repayment set up.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_offline_repayment.yaml
+  - summary: 'Unsolicited on_status after the step: loan agreement signed, offline step closed.'
+    api: on_status
+    details:
+      - description: 'Unsolicited on_status after the step: loan agreement signed, offline step closed.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_status
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_status/on_status_request_offline_agreement.yaml
+  - summary: 'Optional: the borrower app sends the submission_id of the lender''s journey form.'
+    api: select
+    details:
+      - description: 'Optional: the borrower app sends the submission_id of the lender''s journey form.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): select
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/select/select_request_submission_id_offline.yaml
+  - summary: 'Optional: the lender replies with the updated step statuses.'
+    api: on_select
+    details:
+      - description: 'Optional: the lender replies with the updated step statuses.'
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_select
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_select/on_select_request_checklist_offline.yaml
+  - summary: The lender sends an unsolicited on_confirm only when the loan is disbursed (fulfillment state DISBURSED), with the order ID, the loan account number, the loan documents, the disbursal payment and the instalment schedule. There is no BAP confirm.
+    api: on_confirm
+    details:
+      - description: The lender sends an unsolicited on_confirm only when the loan is disbursed (fulfillment state DISBURSED), with the order ID, the loan account number, the loan documents, the disbursal payment and the instalment schedule. There is no BAP confirm.
+        mermaid: |-
+          sequenceDiagram
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: ../../examples/personal-loans/on_confirm/on_confirm_request_disbursed_offline.yaml

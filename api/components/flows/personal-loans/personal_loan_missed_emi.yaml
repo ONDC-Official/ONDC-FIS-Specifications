@@ -1,94 +1,110 @@
-summary: Personal Loan - Missed-EMI Payment
+summary: Personal Loan - Missed EMI Payment
 details:
-  - description: Detailed process for Missed-EMI Payment
+  - description: The borrower asks to pay a missed EMI with payment label MISSED_EMI_PAYMENT. The lender replies with a quote and a payment link (the DELAYED EMI plus the late fee), then sends an unsolicited on_update once the payment is PAID; the DELAYED EMI is DEFERRED.
     mermaid: >-
       sequenceDiagram
+        title Personal Loan Missed EMI Payment
         participant Borrower Platform (BAP)
         participant Lender Platform (BPP)
-        Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
-        Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request
+        Borrower Platform (BAP)->>Lender Platform (BPP): update (MISSED_EMI_PAYMENT)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-        Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
         Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
-
 references: if any
-filepath: './loan-foreclouser.yaml'
-steps:      
-  - summary: The provider platform updates the consumer.
-    api: on_update
+steps:
+  - summary: The lender confirms the personal loan order once the amount is disbursed.
+    api: on_confirm
     details:
-      - description: The provider platform updates the consumer with updated Disbursement state response.
+      - description: The lender confirms the personal loan order once the amount is disbursed.
         mermaid: >-
           sequenceDiagram
+            title Personal Loan Missed EMI Payment
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (MISSED_EMI_PAYMENT)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/personal-loans/on_update/on_update_request_pl_1.yaml" 
-  - summary: The borrower (BAP) sends the update request for loan Missed-EMI Payment
+        $ref: "../../examples/personal-loans/on_confirm/on_confirm_request_disbursed.yaml"
+  - summary: The borrower asks to pay a missed EMI by sending the order ID with update_target payments and label MISSED_EMI_PAYMENT.
     api: update
     details:
-      - description: The borrower (BAP) sends the update request by sending the order ID to be updated along with the object in the order to be updated as update_target.
+      - description: The borrower asks to pay a missed EMI by sending the order ID with update_target payments and label MISSED_EMI_PAYMENT.
         mermaid: >-
           sequenceDiagram
+            title Personal Loan Missed EMI Payment
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_confirm
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
-            Borrower Platform (BAP)->>Lender Platform (BPP): update-Request
-            Lender Platform (BPP)-->>Borrower Platform (BAP):ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (MISSED_EMI_PAYMENT)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
             end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/personal-loans/update/update_request_pl-missed-emi_1.yaml"
-  - summary: The provider platform updates the consumer.
+        $ref: "../../examples/personal-loans/update/update_request_missed_emi_payment.yaml"
+  - summary: The lender sends the quote and a payment link for the MISSED_EMI_PAYMENT payment (the DELAYED EMI plus the late fee).
     api: on_update
     details:
-      - description: The provider platform updates the consumer with on_update request response.
+      - description: The lender sends the quote and a payment link for the MISSED_EMI_PAYMENT payment (the DELAYED EMI plus the late fee).
         mermaid: >-
           sequenceDiagram
+            title Personal Loan Missed EMI Payment
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (MISSED_EMI_PAYMENT)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
     reference: if any
     example:
       value:
-        $ref: "../../examples/personal-loans/on_update/on_update_request_pl_missed_emi_1.yaml"
-  - summary: The provider platform updates the consumer with loan Missed-EMI Payment success.
+        $ref: "../../examples/personal-loans/on_update/on_update_request_missed_emi_payment_quote.yaml"
+  - summary: The lender confirms the MISSED_EMI_PAYMENT payment is PAID; the DELAYED EMI is DEFERRED.
     api: on_update
     details:
-      - description: The provider platform updates the consumer with on_update success response.
+      - description: The lender confirms the MISSED_EMI_PAYMENT payment is PAID; the DELAYED EMI is DEFERRED.
         mermaid: >-
           sequenceDiagram
+            title Personal Loan Missed EMI Payment
             participant Borrower Platform (BAP)
             participant Lender Platform (BPP)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update request
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (MISSED_EMI_PAYMENT)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             rect rgb(191, 223, 255)
-            Lender Platform (BPP)->>Borrower Platform (BAP):on_update - Update success
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
             Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
             end
-          
     reference: if any
     example:
       value:
-        $ref: "../../examples/personal-loans/on_update/on_update_request_pl_missed_emi_2.yaml"  
-         
-        
+        $ref: "../../examples/personal-loans/on_update/on_update_request_missed_emi_payment_success.yaml"
