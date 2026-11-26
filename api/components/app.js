@@ -15,6 +15,9 @@ addFormats(ajv);
 require("ajv-errors")(ajv);
 const process = require("process");
 
+// Strict YAML parse check of every spec file before anything is built; exits 1 on an error.
+require("./check-yaml.js");
+
 const args = process.argv.slice(2);
 // var example_set = args[0]
 // var flow_set = args[1]
@@ -33,6 +36,7 @@ getSwaggerYaml("example_set", outputPath);
 const { buildAttribiutes } = require('./build-attributes.js')
 const { buildErrorCodes } = require('./build-error-code.js')
 const { buildTlc } = require('./build-tlc.js');
+const { applyFormSchemaOverride } = require('./form-schema-override.js');
 
 const SKIP_VALIDATION = {
   flows: "skip1",
@@ -275,7 +279,7 @@ async function validateAttributes(attribute, schemaMap) {
 async function getSwaggerYaml(example_set, outputPath) {
   try {
     const schema = await baseYMLFile(example_yaml);
-    const baseYAML = await baseYMLFile(base_yaml);
+    const baseYAML = applyFormSchemaOverride(await baseYMLFile(base_yaml));
     const { flows, examples: exampleSets, enum: enums, tags,attributes } = schema || [];
     const { paths } = baseYAML;
     let hasTrueResult = false; // Flag variable
@@ -329,7 +333,12 @@ async function getSwaggerYaml(example_set, outputPath) {
     const missingTags = findMissingTags(tags, exampleSets);
     console.log('Missing Tags:', JSON.stringify(missingTags, null, 2));
 
-    if (hasTrueResult) return;
+    // A failed flow, example, enum or tag validation must fail the build, not exit 0 with an old build.yaml.
+    if (hasTrueResult) {
+      console.error("Build failed: validation errors above. build.yaml was not written.");
+      process.exitCode = 1;
+      return;
+    }
 
     if (!hasTrueResult) {
       //remove these
@@ -337,13 +346,14 @@ async function getSwaggerYaml(example_set, outputPath) {
       examples = examples[example_set];
       buildSwagger(base_yaml, tempPath);
       const spec_file = fs.readFileSync(tempPath);
-      const spec = yaml.load(spec_file);
+      const spec = applyFormSchemaOverride(yaml.load(spec_file));
       addEnumTag(spec, schema);
       GenerateYaml(spec, examples, outputPath);
       cleanup();
     }
   } catch (error) {
     console.log("Error generating build file", error);
+    process.exitCode = 1;
   }
 }
 

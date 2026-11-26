@@ -54,7 +54,8 @@ function addAttributeSets(option) {
 }
 
 function flattenObject(obj, prefix = "", result = {},requiredAttr) {
-  if ("required" in obj) {
+  // A rule has a string "required"; an example field named "required" (xinput.required) is a child rule.
+  if (typeof obj["required"] === "string") {
     if(requiredAttr===undefined || requiredAttr.includes(prefix)){
     var table = document.getElementById("tableset");
     const newRow = document.createElement("tr");

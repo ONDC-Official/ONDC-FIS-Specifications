@@ -1,0 +1,110 @@
+summary: Personal Loan - Foreclosure
+details:
+  - description: The borrower asks to close the loan early with payment label FORECLOSURE. The lender replies with a quote and a payment link (outstanding principal, interest and foreclosure charges), then sends an unsolicited on_update once the payment is PAID; the remaining EMIs are DEFERRED and the loan is COMPLETED.
+    mermaid: >-
+      sequenceDiagram
+        title Personal Loan Foreclosure
+        participant Borrower Platform (BAP)
+        participant Lender Platform (BPP)
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Borrower Platform (BAP)->>Lender Platform (BPP): update (FORECLOSURE)
+        Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+        Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+        Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+references: if any
+steps:
+  - summary: The lender confirms the personal loan order once the amount is disbursed.
+    api: on_confirm
+    details:
+      - description: The lender confirms the personal loan order once the amount is disbursed.
+        mermaid: >-
+          sequenceDiagram
+            title Personal Loan Foreclosure
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (FORECLOSURE)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/on_confirm/on_confirm_request_disbursed.yaml"
+  - summary: The borrower asks to close the loan early by sending the order ID with update_target payments and label FORECLOSURE.
+    api: update
+    details:
+      - description: The borrower asks to close the loan early by sending the order ID with update_target payments and label FORECLOSURE.
+        mermaid: >-
+          sequenceDiagram
+            title Personal Loan Foreclosure
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (FORECLOSURE)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/update/update_request_foreclosure.yaml"
+  - summary: The lender sends the quote and a payment link for the FORECLOSURE payment (outstanding principal, interest and foreclosure charges).
+    api: on_update
+    details:
+      - description: The lender sends the quote and a payment link for the FORECLOSURE payment (outstanding principal, interest and foreclosure charges).
+        mermaid: >-
+          sequenceDiagram
+            title Personal Loan Foreclosure
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (FORECLOSURE)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/on_update/on_update_request_foreclosure_quote.yaml"
+  - summary: The lender confirms the FORECLOSURE payment is PAID; the remaining EMIs are DEFERRED and the loan is COMPLETED.
+    api: on_update
+    details:
+      - description: The lender confirms the FORECLOSURE payment is PAID; the remaining EMIs are DEFERRED and the loan is COMPLETED.
+        mermaid: >-
+          sequenceDiagram
+            title Personal Loan Foreclosure
+            participant Borrower Platform (BAP)
+            participant Lender Platform (BPP)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_confirm (DISBURSED)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            Borrower Platform (BAP)->>Lender Platform (BPP): update (FORECLOSURE)
+            Lender Platform (BPP)-->>Borrower Platform (BAP): ACK
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (quote)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            rect rgb(191, 223, 255)
+            Lender Platform (BPP)->>Borrower Platform (BAP): on_update (PAID)
+            Borrower Platform (BAP)-->>Lender Platform (BPP): ACK
+            end
+    reference: if any
+    example:
+      value:
+        $ref: "../../examples/personal-loans/on_update/on_update_request_foreclosure_success.yaml"
