@@ -62,7 +62,9 @@ Proposed mapping (2.0.3 used `FINALIZED` / `SELECTED`):
 | ---------------------------------------------------------- | ----------------- |
 | The offer is shown (`on_select` with the offer)            | IN_PROGRESS       |
 | The borrower accepts the offer on the lender's pages       | COMPLETED         |
-| The lender cannot make an offer (`on_select` with no offer) | FAILED           |
+| The lender cannot make an offer (`on_select` with no offer) | Not sent         |
+
+When the lender cannot make an offer, `on_select` carries only `context` and `error` (the reason code, for example `80226` CIBIL rejection). There is no `message`, so no step statuses are sent.
 
 ---
 
